@@ -592,9 +592,9 @@ TRANSPARENCY_GAPS = [
         "status": "ongoing",
     },
     {
-        "gap": "Virginia SB 553 — monthly water reporting mandate",
-        "impact": "Would require water providers to report DC consumption monthly",
-        "status": "in committee (House Ag/Natural Resources, Feb 2026)",
+        "gap": "Virginia DC water reporting (HB 496 / SB 553)",
+        "impact": "ENACTED 2026 — water utilities must report monthly DC water volumes; data not yet published",
+        "status": "signed by Gov. Spanberger 2026; first reports pending",
     },
     {
         "gap": "California AB 93 — vetoed Oct 2024",
@@ -680,7 +680,16 @@ TIMELINE_EVENTS = [
         "label": "Virginia SB 553 Passes Senate 25-15",
         "category": "policy",
         "detail": "Monthly DC water reporting bill passes Senate. "
-        "Sponsor: Sen. Srinivasan (D-Loudoun). Now in House committee.",
+        "Sponsor: Sen. Srinivasan (D-Loudoun). Companion to House HB 496.",
+    },
+    {
+        "date": "2026-04-13",
+        "year": 2026,
+        "label": "Virginia Enacts DC Water Reporting (HB 496)",
+        "category": "policy",
+        "detail": "Gov. Spanberger signs HB 496 (SB 553 companion), amending "
+        "Code § 62.1-44.38 to require monthly reporting of water volumes "
+        "delivered to data centers — Virginia's first mandatory DC water-disclosure law.",
     },
 ]
 

@@ -2,7 +2,7 @@
 
 Items are ordered by priority (high / medium / low). Each includes a sample prompt for generating an implementation plan.
 
-Last reviewed: 2026-03-16.
+Last reviewed: 2026-05-25.
 
 ---
 
@@ -79,15 +79,39 @@ The EPA Facility Registry Service links facilities across 90+ EPA databases. Que
 **Sample prompt:**
 > Build a utility module `utils/frs_lookup.py` that queries the EPA Envirofacts REST API for facilities by NAICS code and state. For each facility, retrieve the FRS Registry ID, geographic coordinates, and linked program IDs (NPDES, RCRA, TRI, CAA). Use this to build a mapping of data center facilities to their regulatory footprints across EPA databases. Integrate with the existing scraper pipeline to auto-discover which WWTP service areas data center facilities fall within.
 
-### Virginia Legislative Tracker (SB 553) (elevated from Low)
-Virginia SB 553 (2026 session) would require water providers to report data center water consumption to the State Water Control Board monthly. If enacted, this creates a new mandatory reporting data source.
+### Virginia DC Water Reporting Scraper (HB 496 / SB 553 — ENACTED 2026)
+Virginia **enacted** data center water reporting in the 2026 session. HB 496 (signed by Gov. Spanberger) amends Code § 62.1-44.38 to require water utilities to report the total monthly volume of water provided to data centers, including reclaimed water; SB 553 was the Senate companion, reconciled with the House version in conference. This converts a hypothetical into a new **mandatory** reporting data source — the highest-value scrape target to come online since EPA ECHO DMR.
 
-**URL:** `https://legiscan.com/VA/bill/SB553/2026`
+**URLs:** `https://lis.virginia.gov/bill-details/20261/SB553` · `https://legiscan.com/VA/bill/SB553/2026`
 
-**Data status:** Active — very close to passage. Passed Senate 25-15 on February 9, 2026 (sponsor: Sen. Kannan Srinivasan, D-Loudoun). Currently in House Committee on Agriculture, Chesapeake and Natural Resources as of February 12, 2026. Related bills: HB496, HB591. If enacted, requires water providers to report total volume (including reclaimed water) provided to each data center monthly. Watch this closely — if it passes, the State Water Control Board reporting data becomes a major new scrape target.
+**Data status:** ENACTED 2026 (confirmed via B&D Law and Virginia Mercury 2026 session recaps). Effective ~July 1, 2026 (standard for VA regular-session bills). The conference reconciled a Senate version (report aggregate volumes to the State Water Control Board / DEQ) with a House version (water-use disclosure during local zoning), so **verify the exact reporting channel and first-report date before building** — reports may land at DEQ/SWCB, in a new portal, or in local rezoning filings. First monthly reports will follow once the mechanism is established.
 
 **Sample prompt:**
-> Build a simple legislative tracker that monitors the status of Virginia SB 553 and related bills (HB 496, HB 591) via the LegiScan API or Virginia LIS website. Alert when bill status changes. If SB 553 is enacted, design a scraper for the new monthly water consumption reports that will be filed with the State Water Control Board.
+> Virginia HB 496 / SB 553 (2026) now requires water utilities to report monthly data center water volumes. First, investigate where these reports are published (State Water Control Board, DEQ portal, or local zoning records). Until the first reports appear, build a lightweight status monitor (LegiScan API / Virginia LIS) that watches for the reporting portal going live and the first data drop. Then build a scraper for the reports following the BaseScraper pattern, map the new fields to DocumentRecord, and integrate with the dedup pipeline. Add the source to the dashboard Transparency Scorecard once data is flowing.
+
+### Per-Query Reality-Check Panel (Andy Masley framing)
+Extend the existing Per-Query Explainer (`render_per_query_explainer`) with Andy Masley's plain-English comparisons, which anchor the "skeptic" pole of the debate: an individual AI query's water use is trivial (~2 mL including electricity). The point isn't that AI water doesn't matter — it's *why this tracker measures facilities and aggregates, not chatbots*.
+
+**Source:** Andy Masley, "The AI water issue is fake" (`blog.andymasley.com/p/the-ai-water-issue-is-fake`) and "How thirsty is AI?" (`andymasley.com/visuals/water`).
+
+**Content to surface (verified figures only):**
+- "X prompts = the same water as ___" table (using ~2 mL/prompt): warm bath ≈ 5,000 prompts; kettle ≈ 125; one sheet of paper ≈ 2,550; a 400-page book ≈ 1,000,000; a pair of jeans ≈ 5,400,000. One American's daily water footprint ≈ 800,000 prompts.
+- "The 500 mL bottle myth" callout: the viral per-email/per-prompt figure was inflated ~50–250×; the underlying study meant ~500 mL per 20–50 prompts.
+- Use ONLY his verified figures — the "microwave/hamburger" framings circulating online are not in his posts; his real energy analogy is a space heater.
+
+**Sample prompt:**
+> Extend `render_per_query_explainer` in dashboard.py with a "reality check" sub-panel: a table of "X prompts = same water as [everyday activity]" using Andy Masley's ~2 mL/prompt comparisons, plus a callout debunking the "500 mL bottle per prompt" claim (inflated 50–250×). Add a one-line bridge: "Per query is trivial — that's why we track facilities and utilities, where the aggregate impact is real and measurable." Cite Masley's posts and add tests asserting the comparison data renders and matches the sourced values.
+
+### Narrative Balance: Skeptic vs. Critic Poles (landing framing)
+The public debate has two poles, and the dashboard's data is the tiebreaker between them:
+- **Andy Masley (skeptic):** a single AI query's water is negligible; the panic conflates per-query with aggregate.
+- **Karen Hao, *Empire of AI* (critic):** the aggregate, local footprint is large and deliberately hidden ("a data center can use as much water as a town").
+- **This tracker:** measures exactly the aggregate/facility number (WWTP DMR flows, utility sales) that settles the argument — per-query is tiny, but one facility ≈ a town's worth of water.
+
+This "both numbers are true" spine could anchor the Phase 2 landing page / scrollytelling intro.
+
+**Sample prompt:**
+> Design a short "Why this tracker exists" intro section (Streamlit panel now, scrollytelling hero in Phase 2) that frames the two poles of the AI-water debate — Masley (per-query is trivial) vs. Hao (aggregate/local is severe and hidden) — and positions the tracker's facility-level data as the arbiter. Pull one verified figure from each side, link to sources, keep it neutral, and let the data adjudicate.
 
 ---
 
@@ -141,6 +165,31 @@ Phase 1 Streamlit dashboard is built (see `dashboard.py`). Phase 2 migrates the 
 
 **Sample prompt:**
 > Migrate the Streamlit dashboard to Observable Framework with a scrollytelling landing page (3-4 key findings with human-relatable comparisons like "equivalent to X households"), an interactive explorer with Leaflet map and cross-filtering, and facility detail pages with effluent-chart-style time series. Deploy as a static site on GitHub Pages. Use D3.js/Observable Plot for charts and deck.gl for the map.
+
+### Global Context Panel: "One Facility = A Town" (Karen Hao)
+A panel that benchmarks VA/OH facilities against well-documented global cases, giving readers scale and showing Data Center Alley is one node in a worldwide pattern.
+
+**Source:** Karen Hao, *Empire of AI* (2025) and "AI Is Taking Water From the Desert," The Atlantic (Mar 2024). Use her **corrected** figures — she publicly revised the Chile number in Dec 2025 (`karendhao.com/20251217/empire-water-changes`).
+
+**Content to surface (verified):**
+- Goodyear/Phoenix, AZ (Microsoft): ~56M gal/yr ≈ ~670 families, during a record drought.
+- Cerrillos, Chile (Google): permitted ~5.33B L/yr ≈ roughly the annual use of the town's ~88,000 residents (≈1.05×, NOT the "1,000×" that circulated).
+- Set beside Loudoun (1.6B gal/yr ≈ ~22K homes) and PWC (478M gal, 56 DCs).
+- Optional extraction map: Atacama (lithium/copper) → Arizona → Uruguay → Northern Virginia.
+
+**Sample prompt:**
+> Add a "Global Context" panel to the dashboard that places tracked VA/OH facility/utility numbers beside documented global cases (Goodyear AZ ~56M gal/yr ≈ 670 families; Chile Cerrillos ~5.33B L/yr ≈ a town of 88,000). Use Karen Hao's corrected figures, cite sources, and include her Dec 2025 correction as a note. Render relatable "≈ N households/town" equivalents consistent with the existing Local Context cards. Add tests for the comparison data.
+
+### National Data Center Water Legislation Tracker
+Extend the Policy Timeline / Transparency Scorecard from VA-centric to a multi-state + federal view of who *mandates* water/energy disclosure. Shows where the next mandatory data sources will appear (especially Ohio, which this project already covers).
+
+**Bills to track (verify each status before publishing — several unconfirmed):**
+- **Enacted:** Minnesota HF 16 (signed Jun 2025 — water-appropriation permits + disclosure); Virginia HB 496 / SB 553 (2026).
+- **Introduced / in committee:** Georgia SB 421 (anti-NDA "Data Center Transparency Act"); Ohio SB 378 / HB 784 (water-consumption reports); South Carolina HB 4583 (closed-loop); California AB 1577; Iowa HF 2447; Michigan SB 762; Kansas SB 400.
+- **Federal:** HR 6984 (Data Center Transparency Act — EIA energy data); HR 5332 (Liquid Cooling for AI Act); a Durbin water/energy disclosure bill (Senate number unconfirmed).
+
+**Sample prompt:**
+> Build a `data/reference/legislation.json` dataset of state + federal data center water/energy disclosure bills (number, jurisdiction, sponsor, one-line summary, status, source URL, last-verified date) and a dashboard panel that renders it as a US "disclosure map" or sortable table color-coded by enacted / introduced / failed. Seed it with the bills above, verifying each status via LegiScan/state legislature pages first and flagging unverified entries explicitly. Add a lightweight monitor to re-check statuses on a schedule.
 
 ---
 
@@ -211,6 +260,18 @@ As the dashboard grows (context, scorecard, timeline panels), use `st.navigation
 **Sample prompt:**
 > Refactor the dashboard to use `st.navigation(position="top")` for multi-page layout: "Overview" (current flow chart + metrics), "Context" (local context cards + per-query explainer), "Scorecard" (transparency), "Timeline" (disclosure events). Each page loads only its own content. Mobile users get top tabs instead of hidden sidebar.
 
+### Transparency Quote Cards & Data-Integrity Examples (Karen Hao)
+Small cards that reinforce *why* the project relies on ECHO DMR / ACFR / FOIA workarounds — and model good data hygiene.
+
+**Source:** Karen Hao — The Open Notebook interview (May 2024); her Dec 2025 self-correction.
+
+**Content:**
+- Quote on buried data: Arizona's numbers surfaced only in city-council meeting footnotes after redacted FOIAs; "people within Microsoft don't even really know" because usage isn't fully tracked internally.
+- Feature her published correction as a model: show how a key figure was revised (Chile "1,000×" → ~1.05×), reinforcing the Transparency Scorecard's confidence ratings.
+
+**Sample prompt:**
+> Add a "Why the workarounds?" callout to the Transparency Scorecard panel with 1–2 sourced quotes from Karen Hao on company stonewalling and buried data, plus a short "data-integrity" note showcasing her public correction of the Chile figure as a model for how this project flags uncertainty. Cite sources, keep it to a compact card, and add a test for the static content.
+
 ---
 
 ## Reference: Data Source Landscape
@@ -227,7 +288,7 @@ As the dashboard grows (context, scorecard, timeline panels), use `st.navigation
 - Loudoun Water ACFRs and rate studies are the single best public source for aggregate data center water consumption (~1.6B gal/year in 2023, 250% increase from 2019).
 - DEQ myDEQ portal has facility-level withdrawal data but requires account creation.
 - 25 of 31 Virginia localities with data centers have signed NDAs complicating FOIA.
-- SB 553 (2026) passed Senate 25-15 on Feb 9, 2026 — would mandate monthly reporting. Currently in House committee.
+- SB 553 / HB 496 (2026) **ENACTED** — Gov. Spanberger signed the data center water reporting mandate (HB 496 amends Code § 62.1-44.38; monthly volumes delivered to data centers, incl. reclaimed). New mandatory source coming online; effective ~July 1, 2026. Reporting channel (SWCB/DEQ vs. local zoning) to be confirmed.
 - VWP permits (ArcGIS layers 192/193) cover surface water withdrawals.
 
 **Ohio:**
