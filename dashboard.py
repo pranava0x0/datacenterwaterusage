@@ -1253,7 +1253,7 @@ def main():
     is_mobile = device.device_type == DeviceType.MOBILE
     is_tablet = device.device_type == DeviceType.TABLET
 
-    # Title
+    # Title (above tabs, consistent across views)
     if is_mobile:
         st.title("DC Water Tracker")
     else:
@@ -1263,106 +1263,93 @@ def main():
             "via public regulatory data."
         )
 
-    # Load data
-    df = load_data()
-    if df.empty:
-        st.warning(
-            "No data found. Run the scraping pipeline first:\n\n"
-            "```bash\npython main.py --scraper epa_echo --limit 50\n```"
-        )
-        return
+    # Two tabs — Legislation is the homepage, Data is the measurements side.
+    tab_legislation, tab_data = st.tabs(["Legislation", "Data"])
 
-    # Data freshness
-    render_data_freshness(df)
+    # --- Legislation tab (homepage) ---
+    with tab_legislation:
+        render_legislation_tracker()
+        st.markdown("---")
+        render_timeline()
+        st.markdown("---")
+        render_company_water_claims()
 
-    # Filters
-    if is_mobile:
+    # --- Data tab ---
+    with tab_data:
+        df = load_data()
+        if df.empty:
+            st.warning(
+                "No data found. Run the scraping pipeline first:\n\n"
+                "```bash\npython main.py --scraper epa_echo --limit 50\n```"
+            )
+            return
+
+        render_data_freshness(df)
+
+        # Filters — inline (popover) across all devices inside the tab so the
+        # sidebar doesn't bleed filters onto the Legislation tab.
         filtered_df = render_inline_filters(df)
-    else:
-        filtered_df = render_sidebar(df)
 
-    # Hero metrics
-    if is_mobile or is_tablet:
-        render_hero_compact(filtered_df)
-    else:
-        render_hero(filtered_df)
+        # Hero metrics
+        if is_mobile or is_tablet:
+            render_hero_compact(filtered_df)
+        else:
+            render_hero(filtered_df)
 
-    # Flow chart (always shown, full width)
-    render_flow_chart(filtered_df, cfg)
+        # Flow chart (always shown, full width)
+        render_flow_chart(filtered_df, cfg)
 
-    # Local context — always shown, high value
-    if is_mobile:
-        with st.expander("How does this compare?"):
-            render_local_context(is_mobile=True)
-    else:
-        render_local_context(is_mobile=False)
+        # Local context — always shown
+        if is_mobile:
+            with st.expander("How does this compare?"):
+                render_local_context(is_mobile=True)
+        else:
+            render_local_context(is_mobile=False)
 
-    # Source breakdown — desktop only, in main area
-    if not is_mobile and not is_tablet:
-        with st.expander("Records by Source"):
-            render_source_breakdown(filtered_df, cfg)
+        # Source breakdown — desktop only
+        if not is_mobile and not is_tablet:
+            with st.expander("Records by Source"):
+                render_source_breakdown(filtered_df, cfg)
 
-    # Seasonal heatmap — desktop/tablet only, collapsed
-    if not is_mobile:
-        with st.expander("Seasonal Patterns"):
-            render_seasonal_heatmap(filtered_df, cfg)
+        # Seasonal heatmap — desktop/tablet only
+        if not is_mobile:
+            with st.expander("Seasonal Patterns"):
+                render_seasonal_heatmap(filtered_df, cfg)
 
-    # Transparency Scorecard
-    if is_mobile:
-        with st.expander("Transparency Scorecard"):
-            render_transparency_scorecard()
-    else:
-        with st.expander("Transparency Scorecard", expanded=False):
-            render_transparency_scorecard()
+        # Transparency Scorecard
+        if is_mobile:
+            with st.expander("Transparency Scorecard"):
+                render_transparency_scorecard()
+        else:
+            with st.expander("Transparency Scorecard", expanded=False):
+                render_transparency_scorecard()
 
-    # Company Water Claims (verbatim operator commitments)
-    if is_mobile:
-        with st.expander("Company Water Claims"):
-            render_company_water_claims()
-    else:
-        with st.expander("Company Water Claims", expanded=False):
-            render_company_water_claims()
+        # Per-query explainer
+        if is_mobile:
+            with st.expander("Per-query water: why estimates vary"):
+                render_per_query_explainer()
+        else:
+            with st.expander(
+                "Understanding Per-Query Water Estimates", expanded=False
+            ):
+                render_per_query_explainer()
 
-    # Policy & Disclosure Timeline
-    if is_mobile:
-        with st.expander("Policy & Disclosure Timeline"):
-            render_timeline()
-    else:
-        with st.expander("Policy & Disclosure Timeline", expanded=False):
-            render_timeline()
+        # Data table
+        if is_mobile:
+            with st.expander("View data table"):
+                render_data_table(filtered_df, compact=True)
+        else:
+            st.subheader("Records")
+            render_data_table(filtered_df, compact=is_tablet)
 
-    # National legislation tracker
-    if is_mobile:
-        with st.expander("Legislation Tracker"):
-            render_legislation_tracker()
-    else:
-        with st.expander("Data Center Water Legislation Tracker", expanded=False):
-            render_legislation_tracker()
-
-    # Per-query explainer — always available
-    if is_mobile:
-        with st.expander("Per-query water: why estimates vary"):
-            render_per_query_explainer()
-    else:
-        with st.expander("Understanding Per-Query Water Estimates", expanded=False):
-            render_per_query_explainer()
-
-    # Data table
-    if is_mobile:
-        with st.expander("View data table"):
-            render_data_table(filtered_df, compact=True)
-    else:
-        st.subheader("Records")
-        render_data_table(filtered_df, compact=is_tablet)
-
-    # Mobile download button (sidebar not visible on mobile)
-    if is_mobile and not filtered_df.empty:
-        st.download_button(
-            "Download CSV",
-            filtered_df.to_csv(index=False),
-            "dc_water_data.csv",
-            "text/csv",
-        )
+        # Mobile download button (sidebar not visible on mobile)
+        if is_mobile and not filtered_df.empty:
+            st.download_button(
+                "Download CSV",
+                filtered_df.to_csv(index=False),
+                "dc_water_data.csv",
+                "text/csv",
+            )
 
 
 if __name__ == "__main__":

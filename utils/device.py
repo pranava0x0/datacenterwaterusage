@@ -37,7 +37,11 @@ class DeviceInfo(NamedTuple):
 def get_viewport_width() -> int | None:
     """Get the client viewport width via JavaScript.
 
-    Returns None on first render before JS executes.
+    Returns None on first render before JS executes, or when the reported
+    value is implausibly small. Some streamlit-js-eval versions return 0
+    as a placeholder before the real width arrives — without this guard
+    the classifier would treat 0 < MOBILE_MAX as mobile on every first
+    render.
     """
     try:
         from streamlit_js_eval import streamlit_js_eval
@@ -46,8 +50,15 @@ def get_viewport_width() -> int | None:
             js_expressions="window.innerWidth",
             key="viewport_width",
         )
-        if width is not None:
-            return int(width)
+        if width is None:
+            return None
+        try:
+            w = int(width)
+        except (TypeError, ValueError):
+            return None
+        if w < 200:
+            return None
+        return w
     except ImportError:
         pass
     return None
