@@ -26,6 +26,7 @@ from dashboard import (
     _legislation_rows,
     _legislation_status_summary,
     CONTEXT_DATA,
+    MASLEY_COMPARISONS,
     PER_QUERY_ESTIMATES,
     SCORECARD_DATA,
     TRANSPARENCY_GAPS,
@@ -507,3 +508,32 @@ class TestLegislationTracker:
     def test_status_summary_is_string(self):
         summary = _legislation_status_summary(self._bills())
         assert isinstance(summary, str) and "Enacted" in summary
+
+
+# --- Tests for Andy Masley reality-check comparisons ---
+
+
+class TestMasleyComparisons:
+    def test_present_and_sized(self):
+        assert len(MASLEY_COMPARISONS) >= 6
+
+    def test_field_shapes(self):
+        for c in MASLEY_COMPARISONS:
+            assert isinstance(c.get("activity"), str) and c["activity"]
+            assert isinstance(c.get("prompts"), int) and c["prompts"] > 0
+
+    def test_known_anchors_match_masley_figures(self):
+        # ~2 mL/prompt translations from "The AI water issue is fake"
+        by_activity = {c["activity"]: c["prompts"] for c in MASLEY_COMPARISONS}
+        assert by_activity.get("Heating a kettle") == 125
+        assert by_activity.get("A warm bath") == 5_000
+
+    def test_includes_everyday_and_aggregate_examples(self):
+        # Need both the "trivial" appliance/object end and the "aggregate"
+        # manufacturing/per-capita end for the panel to make Masley's point.
+        activities = [c["activity"].lower() for c in MASLEY_COMPARISONS]
+        assert any("kettle" in a or "bath" in a for a in activities)
+        assert any(
+            "jeans" in a or "t-shirt" in a or "book" in a or "american" in a
+            for a in activities
+        )

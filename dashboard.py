@@ -739,6 +739,19 @@ PER_QUERY_ESTIMATES = [
     },
 ]
 
+# Andy Masley everyday-activity comparisons; ~2 mL per prompt (on-site + electricity).
+# Source: "The AI water issue is fake" — blog.andymasley.com/p/the-ai-water-issue-is-fake
+MASLEY_COMPARISONS = [
+    {"activity": "Heating a kettle", "prompts": 125},
+    {"activity": "PS5 for 1 hour", "prompts": 200},
+    {"activity": "One sheet of paper", "prompts": 2_550},
+    {"activity": "A warm bath", "prompts": 5_000},
+    {"activity": "One American's daily water footprint", "prompts": 800_000},
+    {"activity": "Reading a 400-page book", "prompts": 1_000_000},
+    {"activity": "Manufacturing a T-shirt", "prompts": 1_300_000},
+    {"activity": "Manufacturing a pair of jeans", "prompts": 5_400_000},
+]
+
 
 def compute_household_equivalent(gallons_per_year: int, gpd: int = 200) -> int:
     """Convert annual gallons to equivalent number of households served."""
@@ -824,6 +837,45 @@ fundamentally different accounting methods.</p>
         "thermoelectric cooling at power plants is ~80%.\n"
         "4. **Withdrawal vs. consumption** — Withdrawal counts water taken; "
         "consumption counts water not returned. Withdrawal numbers are 3-5x higher."
+    )
+
+    st.markdown("---")
+    st.markdown(
+        "**Reality check — per Andy Masley.** Including the electricity-generation "
+        "water, one query is ~2 mL. Translated into everyday terms:"
+    )
+    masley_df = pd.DataFrame(
+        [
+            {
+                "Same water as…": c["activity"],
+                "= this many AI prompts": f"{c['prompts']:,}",
+            }
+            for c in MASLEY_COMPARISONS
+        ]
+    )
+    st.dataframe(
+        masley_df,
+        use_container_width=True,
+        hide_index=True,
+        height=35 * len(MASLEY_COMPARISONS) + 40,
+    )
+
+    st.info(
+        "**The 500 mL bottle myth.** The viral 'one bottle per email/prompt' figure "
+        "(Washington Post, 2023) was inflated 50–250×. The underlying research "
+        "actually found ~500 mL per *20–50* prompts — not per single prompt."
+    )
+
+    st.markdown(
+        "**Why this tracker measures facilities, not chatbots.** Per query is "
+        "trivial. That's why we track WWTP discharge volumes, utility sales to data "
+        "centers, and policy mandates — where the *aggregate, local* impact is "
+        "real and measurable."
+    )
+
+    st.caption(
+        "Comparisons from Andy Masley, \"The AI water issue is fake\" "
+        "(blog.andymasley.com/p/the-ai-water-issue-is-fake)."
     )
 
     with st.expander("Detailed estimates"):
