@@ -23,6 +23,7 @@ from dashboard import (
     _classify_source,
     compute_household_equivalent,
     load_legislation,
+    load_company_water_claims,
     _legislation_rows,
     _legislation_status_summary,
     CONTEXT_DATA,
@@ -537,3 +538,64 @@ class TestMasleyComparisons:
             "jeans" in a or "t-shirt" in a or "book" in a or "american" in a
             for a in activities
         )
+
+
+# --- Tests for Company Water Claims panel (mirrored from datacentercommunitybenefits) ---
+
+
+VALID_DELIVERED_STATUS = {"delivered", "partial", "contested", "shortfall"}
+
+
+class TestCompanyWaterClaims:
+    def _payload(self):
+        return load_company_water_claims()
+
+    def _claims(self):
+        return self._payload().get("claims", [])
+
+    def test_dataset_loads(self):
+        payload = self._payload()
+        assert payload.get("last_updated")
+        assert len(payload.get("claims", [])) >= 20
+
+    def test_missing_file_returns_empty(self):
+        empty = load_company_water_claims("/nonexistent/company_water_claims.json")
+        assert empty["claims"] == []
+        assert empty["companies"] == {}
+
+    def test_all_claims_are_water_themed(self):
+        for c in self._claims():
+            # theme field may be absent (snapshot already filtered) — if present must be water
+            if "theme" in c:
+                assert c["theme"] == "water", c.get("id")
+
+    def test_required_fields_present(self):
+        required = {"id", "company_slug", "statement", "source_url", "source_title"}
+        for c in self._claims():
+            missing = required - set(c)
+            assert not missing, f"{c.get('id')} missing {missing}"
+            assert c["statement"].strip(), f"{c['id']} has empty statement"
+
+    def test_company_slugs_resolve(self):
+        companies = self._payload().get("companies", {})
+        for c in self._claims():
+            assert c["company_slug"] in companies, c["company_slug"]
+
+    def test_source_urls_are_http(self):
+        for c in self._claims():
+            assert c["source_url"].startswith("http"), c.get("id")
+
+    def test_delivered_status_valid_when_present(self):
+        for c in self._claims():
+            d = c.get("delivered")
+            if not d:
+                continue
+            assert d.get("status") in VALID_DELIVERED_STATUS, c.get("id")
+            assert d.get("summary"), f"{c['id']} delivered without summary"
+            assert d.get("source_url", "").startswith("http"), c.get("id")
+
+    def test_known_hyperscalers_represented(self):
+        slugs = {c["company_slug"] for c in self._claims()}
+        # The big four hyperscalers should each have at least one claim.
+        for required in ("meta", "google", "microsoft", "amazon"):
+            assert required in slugs, required

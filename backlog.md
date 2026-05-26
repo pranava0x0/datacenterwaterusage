@@ -8,6 +8,10 @@ Last reviewed: 2026-05-25.
 
 ## Completed (March 2026)
 
+### ✅ Company Water Claims Panel (May 2026)
+**Status**: Built — `data/reference/company_water_claims.json` (29 water-themed claims across 13 data-center operators, mirrored from `pranava0x0/datacentercommunitybenefits`) + `render_company_water_claims()` panel. Each claim is a verbatim first-party quote with source link; 5 have independent delivered-vs-promised assessments (Partial/Contested/etc.) with their own assessment source. 8 tests.
+**Follow-ups**: scheduled refresh script that pulls the latest `docs/data/claims.json` from the sibling repo and re-filters theme=water (today the snapshot is manual). Optional: surface non-water themes (energy, infrastructure) the same way.
+
 ### ✅ National Data Center Water Legislation Tracker (May 2026)
 **Status**: Built — `data/reference/legislation.json` (14 state + federal bills) + `render_legislation_tracker()` dashboard panel (sorted by status, flags verified vs. unconfirmed entries). 10 tests in test_dashboard.py. VA HB 496/SB 553 and MN HF 16 confirmed enacted; remaining entries flagged "Unconfirmed" pending primary-source verification.
 **Follow-ups**: confirm the unconfirmed bill statuses against legislature records; add a scheduled re-verification monitor; optional US choropleth map.

@@ -31,6 +31,7 @@ BASE_DIR = Path(__file__).parent
 CSV_PATH = BASE_DIR / "data" / "output" / "results.csv"
 JSON_PATH = BASE_DIR / "data" / "output" / "results.json"
 LEGISLATION_PATH = BASE_DIR / "data" / "reference" / "legislation.json"
+COMPANY_WATER_CLAIMS_PATH = BASE_DIR / "data" / "reference" / "company_water_claims.json"
 
 COLORS = {
     "primary": "#08519c",
@@ -118,6 +119,21 @@ def load_legislation(path: Path = LEGISLATION_PATH) -> dict:
     if isinstance(payload, list):
         return {"last_updated": None, "bills": payload}
     payload.setdefault("bills", [])
+    return payload
+
+
+def load_company_water_claims(path: Path = COMPANY_WATER_CLAIMS_PATH) -> dict:
+    """Load the company water-claims dataset (mirrored from datacentercommunitybenefits).
+
+    Returns a payload dict {"last_updated", "companies", "claims", ...}.
+    Tolerates a missing file by returning an empty payload.
+    """
+    if not Path(path).exists():
+        return {"last_updated": None, "companies": {}, "claims": []}
+    with open(path, encoding="utf-8") as f:
+        payload = json.load(f)
+    payload.setdefault("claims", [])
+    payload.setdefault("companies", {})
     return payload
 
 
@@ -1075,6 +1091,95 @@ def render_legislation_tracker():
     )
 
 
+# --- Company Water Claims ---
+
+DELIVERED_STATUS_COLORS = {
+    "delivered": "success",
+    "partial": "warning",
+    "contested": "warning",
+    "shortfall": "danger",
+}
+
+
+def render_company_water_claims():
+    """Render the Company Water Claims panel — verbatim operator commitments."""
+    st.subheader("Company Water Claims")
+
+    payload = load_company_water_claims()
+    claims = payload.get("claims", [])
+    if not claims:
+        st.info("Company water-claims dataset not found or empty.")
+        return
+
+    companies = payload.get("companies", {})
+    delivered_count = sum(1 for c in claims if c.get("delivered"))
+    company_count = len({c.get("company_slug") for c in claims})
+    live_url = payload.get("live_dashboard", "")
+
+    st.markdown(
+        "Verbatim water-related commitments from data-center operators, "
+        f"mirrored from [Data Center Community Benefits]({live_url}). "
+        "Each quote links to its first-party source. Where independent assessment "
+        "has been captured, a **delivered-vs-promised** badge appears beneath."
+    )
+    st.markdown(
+        f"**{len(claims)} claims** · {company_count} companies · "
+        f"{delivered_count} delivered-vs-promised assessments"
+    )
+
+    rendered_companies: list[str] = []
+    for claim in claims:
+        slug = claim.get("company_slug", "unknown")
+        if slug not in rendered_companies:
+            rendered_companies.append(slug)
+            st.markdown(f"#### {companies.get(slug, slug)}")
+        _render_water_claim_card(claim)
+
+    st.caption(
+        f"Snapshotted from {payload.get('source_repo', 'datacentercommunitybenefits')} "
+        f"on {payload.get('last_updated', 'unknown')}. "
+        "Quotes are verbatim — they reflect what each company has *claimed*, "
+        "not independently verified water usage. See the Transparency Scorecard "
+        "for what's actually measurable."
+    )
+
+
+def _render_water_claim_card(claim: dict):
+    """Render one claim: quote + source + optional delivered-vs-promised badge."""
+    statement = claim.get("statement", "")
+    source_url = claim.get("source_url", "")
+    source_title = claim.get("source_title", "source")
+    date_str = claim.get("published_at") or claim.get("captured_at") or ""
+
+    st.markdown(
+        f"> *{statement}*  \n"
+        f"<span style='font-size:0.9em;color:{COLORS['text']}'>"
+        f"&mdash; <a href='{source_url}'>{source_title}</a> ({date_str})"
+        f"</span>",
+        unsafe_allow_html=True,
+    )
+
+    delivered = claim.get("delivered")
+    if delivered:
+        status = str(delivered.get("status", "")).lower()
+        color_key = DELIVERED_STATUS_COLORS.get(status, "secondary")
+        color = COLORS.get(color_key, COLORS["secondary"])
+        d_summary = delivered.get("summary", "")
+        d_url = delivered.get("source_url", "")
+        d_title = delivered.get("source_title", "assessment")
+        d_assessed = delivered.get("assessed_at", "")
+        st.markdown(
+            f"<div style='border-left:3px solid {color}; padding:4px 10px; "
+            f"margin:4px 0 14px 0; background:{COLORS['bg']}; font-size:0.92em;'>"
+            f"<strong>Delivered vs. promised: {status.title()}</strong> "
+            f"<span style='color:#666'>(assessed {d_assessed})</span><br/>"
+            f"{d_summary}<br/>"
+            f"<em>Assessment: <a href='{d_url}'>{d_title}</a></em>"
+            f"</div>",
+            unsafe_allow_html=True,
+        )
+
+
 def render_data_freshness(df: pd.DataFrame):
     """Show when data was last updated."""
     if "scraped_at" not in df.columns or df["scraped_at"].isna().all():
@@ -1209,6 +1314,14 @@ def main():
     else:
         with st.expander("Transparency Scorecard", expanded=False):
             render_transparency_scorecard()
+
+    # Company Water Claims (verbatim operator commitments)
+    if is_mobile:
+        with st.expander("Company Water Claims"):
+            render_company_water_claims()
+    else:
+        with st.expander("Company Water Claims", expanded=False):
+            render_company_water_claims()
 
     # Policy & Disclosure Timeline
     if is_mobile:
