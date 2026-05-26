@@ -2,7 +2,7 @@
 
 _Last updated: 2026-05-26_
 
-UAT run 2026-05-26 covered desktop (1280×900), tablet (768×1024), and mobile (375×812) on the local Streamlit preview. All 12 issues found in that run have been resolved in the same session.
+UAT round 1 (2026-05-26) covered desktop / tablet / mobile and found UAT-001..UAT-012. UAT round 2 (2026-05-26) focused on the Data tab and surfaced UAT-013 / UAT-014. All 14 issues are resolved.
 
 ---
 
@@ -13,6 +13,24 @@ _None._
 ---
 
 ## Resolved Issues
+
+### [UAT-014] Records table cells show literal "None" for missing values
+- **Severity**: medium
+- **Page/Section**: Data tab → Records table (when toggled on)
+- **Discovered**: 2026-05-26 (round 2)
+- **Resolved**: 2026-05-26
+- **Status**: resolved
+- **Description**: Many records have NULL Facility / document_date / Water Metric, which `st.dataframe` was rendering as the string "None" — looked like data-quality noise. e.g. multiple OH rows displayed "None" in three of five columns.
+- **Fix**: `render_data_table` now `fillna("—")` + replaces "None"/"nan"/"" with em-dash before rendering. `dashboard.py:render_data_table`.
+
+### [UAT-013] Records table column headers inconsistent (snake_case mixed with Title Case)
+- **Severity**: high
+- **Page/Section**: Data tab → Records table
+- **Discovered**: 2026-05-26 (round 2)
+- **Resolved**: 2026-05-26
+- **Status**: resolved
+- **Description**: Only three columns had friendly names via `column_config` ("Facility", "Water Metric", "Flow (MGD)"). The other three (`state`, `document_date`, `permit_number`) showed their raw snake_case schema names next to the renamed ones. Inconsistent and amateurish.
+- **Fix**: `render_data_table` now applies `column_config` to every visible column from a single `column_titles` dict (State / Facility / Document Date / Water Metric / Flow (MGD) / Permit #), with sensible width hints per column. Also adds `hide_index=True` so the integer-index column no longer renders.
 
 ### [UAT-001] Title flickers mobile → desktop on cold render
 - **Severity**: low

@@ -1308,21 +1308,47 @@ def render_data_table(df: pd.DataFrame, compact: bool = False):
     if "document_date" in display_df.columns:
         display_df["document_date"] = display_df["document_date"].dt.strftime("%Y-%m-%d")
 
+    # Replace NaN / None / empty / literal "None" with an em-dash so the table
+    # doesn't show the string "None" in cells that simply don't have data.
+    display_df = display_df.fillna("—")
+    for col in display_df.columns:
+        if display_df[col].dtype == object:
+            display_df[col] = display_df[col].replace(
+                {"None": "—", "nan": "—", "": "—"}
+            )
+
+    # Friendly column titles for EVERY visible column — the previous config
+    # only renamed three of them, leaving snake_case headers like
+    # `state` / `document_date` / `permit_number` next to "Facility" and
+    # "Water Metric".
+    column_titles = {
+        "state": "State",
+        "company_llc_name": "Facility",
+        "document_date": "Document Date",
+        "extracted_water_metric": "Water Metric",
+        "flow_mgd": "Flow (MGD)",
+        "permit_number": "Permit #",
+    }
     column_config = {}
-    if "company_llc_name" in available_cols:
-        column_config["company_llc_name"] = st.column_config.TextColumn("Facility")
-    if "extracted_water_metric" in available_cols:
-        column_config["extracted_water_metric"] = st.column_config.TextColumn(
-            "Water Metric", width="medium"
-        )
-    if "flow_mgd" in available_cols:
-        column_config["flow_mgd"] = st.column_config.NumberColumn(
-            "Flow (MGD)", format="%.1f"
-        )
+    for col in available_cols:
+        title = column_titles.get(col, col.replace("_", " ").title())
+        if col == "flow_mgd":
+            column_config[col] = st.column_config.NumberColumn(title, format="%.1f")
+        elif col == "extracted_water_metric":
+            column_config[col] = st.column_config.TextColumn(title, width="medium")
+        elif col == "company_llc_name":
+            column_config[col] = st.column_config.TextColumn(title, width="large")
+        elif col == "state":
+            column_config[col] = st.column_config.TextColumn(title, width="small")
+        elif col == "permit_number":
+            column_config[col] = st.column_config.TextColumn(title, width="small")
+        else:
+            column_config[col] = st.column_config.TextColumn(title)
 
     st.dataframe(
         display_df,
         use_container_width=True,
+        hide_index=True,
         height=height,
         column_config=column_config,
     )
