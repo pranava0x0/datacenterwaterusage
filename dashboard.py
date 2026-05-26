@@ -1268,11 +1268,28 @@ def main():
 
     # --- Legislation tab (homepage) ---
     with tab_legislation:
+        # Headline panel — eager.
         render_legislation_tracker()
+
+        # Lazy panels — toggle-gated so the cold-start render skips the
+        # heavy markdown construction below the fold. (st.expander still
+        # executes its content eagerly; only st.toggle / st.checkbox
+        # actually defer.)
         st.markdown("---")
-        render_timeline()
+        if st.toggle(
+            "Show Policy & Disclosure Timeline",
+            value=False,
+            key="lazy_timeline",
+        ):
+            render_timeline()
+
         st.markdown("---")
-        render_company_water_claims()
+        if st.toggle(
+            "Show Company Water Claims (29 verbatim operator quotes)",
+            value=False,
+            key="lazy_claims",
+        ):
+            render_company_water_claims()
 
     # --- Data tab ---
     with tab_data:
@@ -1284,65 +1301,66 @@ def main():
             )
             return
 
+        # Eager: freshness, filters, hero, flow chart, local context.
         render_data_freshness(df)
-
-        # Filters — inline (popover) across all devices inside the tab so the
-        # sidebar doesn't bleed filters onto the Legislation tab.
         filtered_df = render_inline_filters(df)
 
-        # Hero metrics
         if is_mobile or is_tablet:
             render_hero_compact(filtered_df)
         else:
             render_hero(filtered_df)
 
-        # Flow chart (always shown, full width)
         render_flow_chart(filtered_df, cfg)
 
-        # Local context — always shown
         if is_mobile:
             with st.expander("How does this compare?"):
                 render_local_context(is_mobile=True)
         else:
             render_local_context(is_mobile=False)
 
-        # Source breakdown — desktop only
+        # Lazy panels — toggle to load. Skipped during cold start to keep
+        # first paint fast; each render_* call is the heavy work.
+        st.markdown("---")
+        st.caption("Optional views — toggle to load:")
+
         if not is_mobile and not is_tablet:
-            with st.expander("Records by Source"):
+            if st.toggle(
+                "Records by Source chart",
+                value=False,
+                key="lazy_breakdown",
+            ):
                 render_source_breakdown(filtered_df, cfg)
 
-        # Seasonal heatmap — desktop/tablet only
         if not is_mobile:
-            with st.expander("Seasonal Patterns"):
+            if st.toggle(
+                "Seasonal Patterns heatmap",
+                value=False,
+                key="lazy_heatmap",
+            ):
                 render_seasonal_heatmap(filtered_df, cfg)
 
-        # Transparency Scorecard
-        if is_mobile:
-            with st.expander("Transparency Scorecard"):
-                render_transparency_scorecard()
-        else:
-            with st.expander("Transparency Scorecard", expanded=False):
-                render_transparency_scorecard()
+        if st.toggle(
+            "Transparency Scorecard",
+            value=False,
+            key="lazy_scorecard",
+        ):
+            render_transparency_scorecard()
 
-        # Per-query explainer
-        if is_mobile:
-            with st.expander("Per-query water: why estimates vary"):
-                render_per_query_explainer()
-        else:
-            with st.expander(
-                "Understanding Per-Query Water Estimates", expanded=False
-            ):
-                render_per_query_explainer()
+        if st.toggle(
+            "Per-query water estimates explainer",
+            value=False,
+            key="lazy_perquery",
+        ):
+            render_per_query_explainer()
 
-        # Data table
-        if is_mobile:
-            with st.expander("View data table"):
-                render_data_table(filtered_df, compact=True)
-        else:
-            st.subheader("Records")
-            render_data_table(filtered_df, compact=is_tablet)
+        if st.toggle(
+            "Records table",
+            value=False,
+            key="lazy_table",
+        ):
+            render_data_table(filtered_df, compact=(is_mobile or is_tablet))
 
-        # Mobile download button (sidebar not visible on mobile)
+        # Mobile download button (sidebar not visible on mobile).
         if is_mobile and not filtered_df.empty:
             st.download_button(
                 "Download CSV",
