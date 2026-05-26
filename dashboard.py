@@ -1058,14 +1058,27 @@ def _legislation_rows(bills: list[dict]) -> list[dict]:
     return rows
 
 
+LEGISLATION_STATUS_BADGE_COLORS = {
+    "enacted": COLORS["success"],
+    "introduced": COLORS["primary"],
+    "failed": COLORS["danger"],
+    "unknown": COLORS["secondary"],
+}
+
+
 def render_legislation_tracker(is_mobile: bool = False, is_tablet: bool = False):
     """Render the National Legislation Tracker panel.
 
-    Desktop: compact dataframe (Bill / Status / Summary / Source) with taller
-    rows so the Summary cell shows two lines.
-    Mobile + tablet: vertical card list, one card per bill, to avoid the
-    horizontal-scroll-table UX.
+    Renders a vertical list of bordered bill cards at every viewport — cards
+    scan more cleanly than the previous dataframe (no cell truncation, the
+    summary always reads as a paragraph, status carries a colored badge).
+    Same primitive works at mobile, tablet, and desktop without per-viewport
+    branching.
     """
+    # is_mobile / is_tablet kept on the signature for forward compatibility
+    # (callers in main() still pass them), but the card layout is shared.
+    del is_mobile, is_tablet
+
     st.subheader("Data Center Water Legislation Tracker")
     st.markdown(
         "State and federal bills on data center water (and energy) disclosure. "
@@ -1089,43 +1102,8 @@ def render_legislation_tracker(is_mobile: bool = False, is_tablet: bool = False)
             b.get("jurisdiction", ""),
         ),
     )
-
-    if is_mobile or is_tablet:
-        for bill in sorted_bills:
-            _render_bill_card(bill)
-    else:
-        # Desktop / wide: trimmed 4-column dataframe with 2-line summaries.
-        # bill_id already encodes the jurisdiction ("VA HB 496", "US HR 6984")
-        # and every bill includes water, so Jurisdiction / Scope add no signal.
-        # The "verified" flag stays in the JSON for downstream tooling but
-        # is intentionally not surfaced in the UI.
-        display_rows = [
-            {
-                "Bill": b.get("bill_id", ""),
-                "Status": LEGISLATION_STATUS_LABELS.get(
-                    b.get("status"), str(b.get("status", ""))
-                ),
-                "Summary": b.get("summary", ""),
-                "Source": b.get("source_url", ""),
-            }
-            for b in sorted_bills
-        ]
-        leg_df = pd.DataFrame(display_rows)
-        st.dataframe(
-            leg_df,
-            use_container_width=True,
-            hide_index=True,
-            row_height=70,
-            height=min(800, 70 * len(display_rows) + 40),
-            column_config={
-                "Bill": st.column_config.TextColumn("Bill", width="medium"),
-                "Status": st.column_config.TextColumn("Status", width="small"),
-                "Summary": st.column_config.TextColumn("Summary", width="large"),
-                "Source": st.column_config.LinkColumn(
-                    "Source", display_text="open", width="small"
-                ),
-            },
-        )
+    for bill in sorted_bills:
+        _render_bill_card(bill)
 
     last_updated = payload.get("last_updated") or "unknown"
     st.caption(
@@ -1136,18 +1114,30 @@ def render_legislation_tracker(is_mobile: bool = False, is_tablet: bool = False)
 
 
 def _render_bill_card(bill: dict):
-    """Render one legislation entry as a vertical card (mobile/tablet)."""
+    """Render one legislation entry as a bordered card with a colored status pill."""
     bill_id = bill.get("bill_id", "")
-    status = bill.get("status", "")
-    status_label = LEGISLATION_STATUS_LABELS.get(status, status.title())
+    status = (bill.get("status") or "").lower()
+    status_label = LEGISLATION_STATUS_LABELS.get(status, status.title() or "Unknown")
+    badge_color = LEGISLATION_STATUS_BADGE_COLORS.get(status, COLORS["secondary"])
     summary = bill.get("summary", "")
     source_url = bill.get("source_url", "")
     sponsor = bill.get("sponsor", "")
 
     with st.container(border=True):
-        head_cols = st.columns([3, 2])
-        head_cols[0].markdown(f"**{bill_id}**")
-        head_cols[1].markdown(f"_{status_label}_")
+        st.markdown(
+            (
+                '<div style="display:flex; justify-content:space-between; '
+                'align-items:center; gap:0.5rem; flex-wrap:wrap; '
+                'margin-bottom:0.35rem;">'
+                f'<span style="font-weight:700; font-size:1.05rem;">{bill_id}</span>'
+                f'<span style="background:{badge_color}; color:white; '
+                'padding:0.15rem 0.7rem; border-radius:999px; '
+                'font-size:0.78rem; font-weight:600; letter-spacing:0.02em; '
+                f'white-space:nowrap;">{status_label}</span>'
+                '</div>'
+            ),
+            unsafe_allow_html=True,
+        )
         if summary:
             st.markdown(summary)
         meta_parts = []
