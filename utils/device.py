@@ -143,6 +143,26 @@ def get_chart_config(device_type: DeviceType) -> dict:
 
 _RESPONSIVE_CSS = """
 <style>
+/* --- Water aesthetic: page surface + droplet texture + wave underline --- */
+/* See DESIGN.md for the rules. Pattern uses an inline SVG of four teardrop
+   ellipses per 120x120 tile at ~5% opacity over a near-white #f5f9fc surface.
+   background-attachment: fixed so the texture doesn't shear during scroll. */
+[data-testid="stAppViewContainer"] > .main,
+.stApp {
+    background-color: #f5f9fc;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><g fill='%2308519c' fill-opacity='0.055'><ellipse cx='22' cy='18' rx='2' ry='3'/><ellipse cx='88' cy='42' rx='1.6' ry='2.4'/><ellipse cx='55' cy='78' rx='2.2' ry='3.3'/><ellipse cx='100' cy='100' rx='1.4' ry='2.1'/></g></svg>");
+    background-repeat: repeat;
+    background-attachment: fixed;
+}
+/* Single hint-of-motion wave underline beneath the h1 title only. */
+.stApp h1 {
+    padding-bottom: 0.4rem;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 6' preserveAspectRatio='none'><path d='M0 3 Q 15 0, 30 3 T 60 3' fill='none' stroke='%233182bd' stroke-width='1.2' stroke-opacity='0.55'/></svg>");
+    background-repeat: repeat-x;
+    background-position: left bottom;
+    background-size: 60px 6px;
+}
+
 /* --- Base: tighten default Streamlit padding --- */
 .stMainBlockContainer {
     padding-top: 1rem;
