@@ -8,6 +8,7 @@ Run with: streamlit run dashboard.py
 
 from __future__ import annotations
 
+import json
 import re
 from datetime import datetime
 from pathlib import Path
@@ -29,6 +30,7 @@ from utils.device import (
 BASE_DIR = Path(__file__).parent
 CSV_PATH = BASE_DIR / "data" / "output" / "results.csv"
 JSON_PATH = BASE_DIR / "data" / "output" / "results.json"
+LEGISLATION_PATH = BASE_DIR / "data" / "reference" / "legislation.json"
 
 COLORS = {
     "primary": "#08519c",
@@ -101,6 +103,22 @@ def _classify_source(portal: str) -> str:
     if "general_permit" in str(portal):
         return "General Permit Tracker"
     return "Other"
+
+
+def load_legislation(path: Path = LEGISLATION_PATH) -> dict:
+    """Load the data center water/energy legislation dataset.
+
+    Returns a payload dict of the form {"last_updated": str, "bills": [...]}.
+    Tolerates a missing file (returns an empty payload) or a bare list.
+    """
+    if not Path(path).exists():
+        return {"last_updated": None, "bills": []}
+    with open(path, encoding="utf-8") as f:
+        payload = json.load(f)
+    if isinstance(payload, list):
+        return {"last_updated": None, "bills": payload}
+    payload.setdefault("bills", [])
+    return payload
 
 
 # --- Page Config ---
@@ -917,6 +935,94 @@ def render_timeline():
         )
 
 
+# --- National Legislation Tracker ---
+
+LEGISLATION_STATUS_ORDER = {"enacted": 0, "introduced": 1, "failed": 2, "unknown": 3}
+LEGISLATION_STATUS_LABELS = {
+    "enacted": "Enacted",
+    "introduced": "Introduced",
+    "failed": "Failed / Vetoed",
+    "unknown": "Unknown",
+}
+
+
+def _legislation_status_summary(bills: list[dict]) -> str:
+    """Build a '2 Enacted · 10 Introduced · ...' summary string."""
+    counts: dict[str, int] = {}
+    for b in bills:
+        status = b.get("status", "unknown")
+        counts[status] = counts.get(status, 0) + 1
+    ordered = sorted(counts, key=lambda s: LEGISLATION_STATUS_ORDER.get(s, 9))
+    return " · ".join(
+        f"{counts[s]} {LEGISLATION_STATUS_LABELS.get(s, s.title())}" for s in ordered
+    )
+
+
+def _legislation_rows(bills: list[dict]) -> list[dict]:
+    """Flatten legislation records into display rows, sorted by status then place."""
+    ordered = sorted(
+        bills,
+        key=lambda b: (
+            LEGISLATION_STATUS_ORDER.get(b.get("status"), 9),
+            b.get("jurisdiction", ""),
+        ),
+    )
+    rows = []
+    for b in ordered:
+        rows.append(
+            {
+                "Bill": b.get("bill_id", ""),
+                "Jurisdiction": b.get("jurisdiction", ""),
+                "Scope": ", ".join(s.title() for s in b.get("scope", [])),
+                "Status": LEGISLATION_STATUS_LABELS.get(
+                    b.get("status"), str(b.get("status", ""))
+                ),
+                "Verified": "Yes" if b.get("verified") else "Unconfirmed",
+                "Summary": b.get("summary", ""),
+                "Source": b.get("source_url", ""),
+            }
+        )
+    return rows
+
+
+def render_legislation_tracker():
+    """Render the National Legislation Tracker panel."""
+    st.subheader("Data Center Water Legislation Tracker")
+    st.markdown(
+        "State and federal bills on data center water (and energy) disclosure. "
+        "Enacted laws are the next mandatory data sources to come online."
+    )
+
+    payload = load_legislation()
+    bills = payload.get("bills", [])
+    if not bills:
+        st.info("Legislation dataset not found or empty.")
+        return
+
+    st.markdown(
+        f"**{len(bills)} bills tracked** — {_legislation_status_summary(bills)}"
+    )
+
+    leg_df = pd.DataFrame(_legislation_rows(bills))
+    st.dataframe(
+        leg_df,
+        use_container_width=True,
+        hide_index=True,
+        height=min(560, 35 * len(leg_df) + 40),
+        column_config={
+            "Summary": st.column_config.TextColumn("Summary", width="large"),
+            "Source": st.column_config.LinkColumn("Source", display_text="open"),
+        },
+    )
+
+    last_updated = payload.get("last_updated") or "unknown"
+    st.caption(
+        "Entries marked **Unconfirmed** are from secondary sources and have not been "
+        "independently verified against the legislature record — confirm before relying "
+        f"on them. Dataset last updated {last_updated}."
+    )
+
+
 def render_data_freshness(df: pd.DataFrame):
     """Show when data was last updated."""
     if "scraped_at" not in df.columns or df["scraped_at"].isna().all():
@@ -1059,6 +1165,14 @@ def main():
     else:
         with st.expander("Policy & Disclosure Timeline", expanded=False):
             render_timeline()
+
+    # National legislation tracker
+    if is_mobile:
+        with st.expander("Legislation Tracker"):
+            render_legislation_tracker()
+    else:
+        with st.expander("Data Center Water Legislation Tracker", expanded=False):
+            render_legislation_tracker()
 
     # Per-query explainer — always available
     if is_mobile:

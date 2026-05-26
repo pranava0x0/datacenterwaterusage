@@ -8,6 +8,10 @@ Last reviewed: 2026-05-25.
 
 ## Completed (March 2026)
 
+### ✅ National Data Center Water Legislation Tracker (May 2026)
+**Status**: Built — `data/reference/legislation.json` (14 state + federal bills) + `render_legislation_tracker()` dashboard panel (sorted by status, flags verified vs. unconfirmed entries). 10 tests in test_dashboard.py. VA HB 496/SB 553 and MN HF 16 confirmed enacted; remaining entries flagged "Unconfirmed" pending primary-source verification.
+**Follow-ups**: confirm the unconfirmed bill statuses against legislature records; add a scheduled re-verification monitor; optional US choropleth map.
+
 ### ✅ EPA ECHO NAICS Facility Discovery (Federal)
 **Status**: Built — `scrapers/epa_echo_naics.py` (18 tests)
 
@@ -179,17 +183,6 @@ A panel that benchmarks VA/OH facilities against well-documented global cases, g
 
 **Sample prompt:**
 > Add a "Global Context" panel to the dashboard that places tracked VA/OH facility/utility numbers beside documented global cases (Goodyear AZ ~56M gal/yr ≈ 670 families; Chile Cerrillos ~5.33B L/yr ≈ a town of 88,000). Use Karen Hao's corrected figures, cite sources, and include her Dec 2025 correction as a note. Render relatable "≈ N households/town" equivalents consistent with the existing Local Context cards. Add tests for the comparison data.
-
-### National Data Center Water Legislation Tracker
-Extend the Policy Timeline / Transparency Scorecard from VA-centric to a multi-state + federal view of who *mandates* water/energy disclosure. Shows where the next mandatory data sources will appear (especially Ohio, which this project already covers).
-
-**Bills to track (verify each status before publishing — several unconfirmed):**
-- **Enacted:** Minnesota HF 16 (signed Jun 2025 — water-appropriation permits + disclosure); Virginia HB 496 / SB 553 (2026).
-- **Introduced / in committee:** Georgia SB 421 (anti-NDA "Data Center Transparency Act"); Ohio SB 378 / HB 784 (water-consumption reports); South Carolina HB 4583 (closed-loop); California AB 1577; Iowa HF 2447; Michigan SB 762; Kansas SB 400.
-- **Federal:** HR 6984 (Data Center Transparency Act — EIA energy data); HR 5332 (Liquid Cooling for AI Act); a Durbin water/energy disclosure bill (Senate number unconfirmed).
-
-**Sample prompt:**
-> Build a `data/reference/legislation.json` dataset of state + federal data center water/energy disclosure bills (number, jurisdiction, sponsor, one-line summary, status, source URL, last-verified date) and a dashboard panel that renders it as a US "disclosure map" or sortable table color-coded by enacted / introduced / failed. Seed it with the bills above, verifying each status via LegiScan/state legislature pages first and flagging unverified entries explicitly. Add a lightweight monitor to re-check statuses on a schedule.
 
 ---
 

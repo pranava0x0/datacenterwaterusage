@@ -22,6 +22,9 @@ from dashboard import (
     _extract_flow_mgd,
     _classify_source,
     compute_household_equivalent,
+    load_legislation,
+    _legislation_rows,
+    _legislation_status_summary,
     CONTEXT_DATA,
     PER_QUERY_ESTIMATES,
     SCORECARD_DATA,
@@ -426,3 +429,81 @@ class TestTimelineData:
     def test_multiple_categories_represented(self):
         categories = {e["category"] for e in TIMELINE_EVENTS}
         assert len(categories) >= 3
+
+
+# --- Tests for the National Legislation Tracker ---
+
+VALID_LEG_STATUS = {"enacted", "introduced", "failed", "unknown"}
+VALID_LEG_CONFIDENCE = {"high", "medium", "low"}
+VALID_LEG_SCOPE = {"water", "energy"}
+
+
+class TestLegislationTracker:
+    def _bills(self):
+        return load_legislation().get("bills", [])
+
+    def test_dataset_loads(self):
+        payload = load_legislation()
+        assert payload.get("last_updated")
+        assert len(payload.get("bills", [])) >= 10
+
+    def test_missing_file_returns_empty(self):
+        payload = load_legislation("/nonexistent/legislation.json")
+        assert payload["bills"] == []
+
+    def test_required_fields_present(self):
+        required = {
+            "bill_id",
+            "jurisdiction",
+            "level",
+            "summary",
+            "scope",
+            "status",
+            "source_url",
+            "last_verified",
+            "verified",
+            "confidence",
+        }
+        for b in self._bills():
+            missing = required - set(b)
+            assert not missing, f"{b.get('bill_id')} missing {missing}"
+            assert isinstance(b["scope"], list) and b["scope"]
+            assert isinstance(b["verified"], bool)
+
+    def test_valid_enums(self):
+        for b in self._bills():
+            assert b["status"] in VALID_LEG_STATUS, b["bill_id"]
+            assert b["confidence"] in VALID_LEG_CONFIDENCE, b["bill_id"]
+            assert set(b["scope"]) <= VALID_LEG_SCOPE, b["bill_id"]
+
+    def test_enacted_bills_are_verified(self):
+        # Never assert a law is enacted without having verified it.
+        for b in self._bills():
+            if b["status"] == "enacted":
+                assert b["verified"] is True, f"{b['bill_id']} enacted but unverified"
+
+    def test_verified_bills_have_status_detail(self):
+        for b in self._bills():
+            if b["verified"]:
+                assert b.get("status_detail"), f"{b['bill_id']} verified w/o detail"
+
+    def test_source_urls_are_http(self):
+        for b in self._bills():
+            url = b.get("source_url", "")
+            if url:
+                assert url.startswith("http"), f"{b['bill_id']} bad url {url}"
+
+    def test_known_enacted_laws_present(self):
+        ids = {b["bill_id"] for b in self._bills() if b["status"] == "enacted"}
+        assert any("HB 496" in i or "SB 553" in i for i in ids)  # Virginia
+        assert any("HF 16" in i for i in ids)  # Minnesota
+
+    def test_rows_match_bill_count(self):
+        bills = self._bills()
+        rows = _legislation_rows(bills)
+        assert len(rows) == len(bills)
+        assert {"Bill", "Status", "Verified", "Summary"} <= set(rows[0])
+
+    def test_status_summary_is_string(self):
+        summary = _legislation_status_summary(self._bills())
+        assert isinstance(summary, str) and "Enacted" in summary
