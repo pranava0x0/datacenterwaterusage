@@ -20,10 +20,10 @@ _None at HEAD._ But see SEC-001 below — the leaked PII is still present in the
 - **Discovered**: 2026-05-26 (security audit)
 - **Resolved at HEAD**: 2026-05-26 — but **the leak is still in every commit reachable from main** before `99c8bba` and on the public origin (`pranava0x0/datacenterwaterusage`). A history rewrite is required to fully purge it from the public repo.
 - **Status**: resolved at HEAD; **public history still contains the leak** (5 rows × ~20 commits).
-- **Description**: The `local_file_path` column in scraped records was being stored as the absolute path on disk, e.g. `<home>/data/downloads/ohio/columbus/RFQ028877_…`. Five rows from the `oh_columbus_legistar` scraper carried this prefix, exposing the macOS username (`pranava`), the fact that the repo lived on iCloud Drive at one point, and the working directory name. Not a credential, but personally identifiable.
+- **Description**: The `local_file_path` column in scraped records was being stored as the absolute path on disk — e.g. `<home>/Library/Mobile Documents/com~apple~CloudDocs/<projects-dir>/data/downloads/ohio/columbus/RFQ…`. Rows from the `oh_columbus_legistar` scraper carried this prefix, exposing the developer's home-directory username, the fact that the repo lived on iCloud Drive at one point, and the local working-directory name. Not a credential, but personally identifiable.
 - **Fix**:
   - `scrapers/base.py`: added `_to_repo_relative_path()` helper. `_build_record` now normalizes any absolute `local_path` to a project-relative path before it lands in `DocumentRecord.local_file_path`. Falls back to stripping everything before `data/downloads/` for paths that aren't anchored under the project root (e.g., the historical iCloud paths).
-  - `data/output/results.csv` / `results.json`: scrubbed the 5 affected rows in-place (`/.../data/downloads/...` → `data/downloads/...`). Verified `git ls-files | xargs grep '<home>/...'` returns nothing at HEAD.
+  - `data/output/results.csv` / `results.json`: scrubbed the affected rows in-place (`<home>/.../data/downloads/...` → `data/downloads/...`). Verified `git ls-files | xargs grep <home-prefix>` returns nothing at HEAD.
   - **Follow-up needed (user decision)**: history rewrite to also purge the leak from past commits + force-push to origin. Without the rewrite, `git log -p data/output/results.csv` on origin will still surface the home-directory paths.
 
 ### [UAT-016] Vestigial `mobile_state` / `mobile_date` widget keys
