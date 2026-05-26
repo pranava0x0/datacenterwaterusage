@@ -46,9 +46,20 @@ def get_viewport_width() -> int | None:
     try:
         from streamlit_js_eval import streamlit_js_eval
 
+        # streamlit-js-eval runs inside its own component iframe, so
+        # `window.innerWidth` reports the iframe's own viewport (sized to the
+        # Streamlit content column, ~600px even on a 1280px host page). Reach
+        # for `window.parent.innerWidth` to escape the iframe and get the host
+        # viewport. Falls back to inner-width if cross-origin blocks access.
         width = streamlit_js_eval(
-            js_expressions="window.innerWidth",
-            key="viewport_width",
+            js_expressions=(
+                "(()=>{try{return window.parent.innerWidth;}"
+                "catch(e){return window.innerWidth;}})()"
+            ),
+            # Key change forces streamlit-js-eval to remount the component
+            # iframe with the new js_expressions string (the previous key was
+            # cached with the old `window.innerWidth` expression).
+            key="viewport_width_parent_v1",
         )
         if width is None:
             return None

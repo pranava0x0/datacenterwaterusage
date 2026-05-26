@@ -1053,8 +1053,14 @@ def _legislation_rows(bills: list[dict]) -> list[dict]:
     return rows
 
 
-def render_legislation_tracker():
-    """Render the National Legislation Tracker panel."""
+def render_legislation_tracker(is_mobile: bool = False, is_tablet: bool = False):
+    """Render the National Legislation Tracker panel.
+
+    Desktop: compact dataframe (Bill / Status / Summary / Source) with taller
+    rows so the Summary cell shows two lines.
+    Mobile + tablet: vertical card list, one card per bill, to avoid the
+    horizontal-scroll-table UX.
+    """
     st.subheader("Data Center Water Legislation Tracker")
     st.markdown(
         "State and federal bills on data center water (and energy) disclosure. "
@@ -1071,24 +1077,81 @@ def render_legislation_tracker():
         f"**{len(bills)} bills tracked** — {_legislation_status_summary(bills)}"
     )
 
-    leg_df = pd.DataFrame(_legislation_rows(bills))
-    st.dataframe(
-        leg_df,
-        use_container_width=True,
-        hide_index=True,
-        height=min(560, 35 * len(leg_df) + 40),
-        column_config={
-            "Summary": st.column_config.TextColumn("Summary", width="large"),
-            "Source": st.column_config.LinkColumn("Source", display_text="open"),
-        },
+    sorted_bills = sorted(
+        bills,
+        key=lambda b: (
+            LEGISLATION_STATUS_ORDER.get(b.get("status"), 9),
+            b.get("jurisdiction", ""),
+        ),
     )
+
+    if is_mobile or is_tablet:
+        for bill in sorted_bills:
+            _render_bill_card(bill)
+    else:
+        # Desktop / wide: trimmed 4-column dataframe with 2-line summaries.
+        # bill_id already encodes the jurisdiction ("VA HB 496", "US HR 6984")
+        # and every bill includes water, so Jurisdiction / Scope add no signal.
+        # The "verified" flag stays in the JSON for downstream tooling but
+        # is intentionally not surfaced in the UI.
+        display_rows = [
+            {
+                "Bill": b.get("bill_id", ""),
+                "Status": LEGISLATION_STATUS_LABELS.get(
+                    b.get("status"), str(b.get("status", ""))
+                ),
+                "Summary": b.get("summary", ""),
+                "Source": b.get("source_url", ""),
+            }
+            for b in sorted_bills
+        ]
+        leg_df = pd.DataFrame(display_rows)
+        st.dataframe(
+            leg_df,
+            use_container_width=True,
+            hide_index=True,
+            row_height=70,
+            height=min(800, 70 * len(display_rows) + 40),
+            column_config={
+                "Bill": st.column_config.TextColumn("Bill", width="medium"),
+                "Status": st.column_config.TextColumn("Status", width="small"),
+                "Summary": st.column_config.TextColumn("Summary", width="large"),
+                "Source": st.column_config.LinkColumn(
+                    "Source", display_text="open", width="small"
+                ),
+            },
+        )
 
     last_updated = payload.get("last_updated") or "unknown"
     st.caption(
-        "Entries marked **Unconfirmed** are from secondary sources and have not been "
-        "independently verified against the legislature record — confirm before relying "
-        f"on them. Dataset last updated {last_updated}."
+        f"Dataset last updated {last_updated}. Verification status for each "
+        "entry is tracked in the underlying JSON; treat any not flagged "
+        "verified=true there as secondary-sourced."
     )
+
+
+def _render_bill_card(bill: dict):
+    """Render one legislation entry as a vertical card (mobile/tablet)."""
+    bill_id = bill.get("bill_id", "")
+    status = bill.get("status", "")
+    status_label = LEGISLATION_STATUS_LABELS.get(status, status.title())
+    summary = bill.get("summary", "")
+    source_url = bill.get("source_url", "")
+    sponsor = bill.get("sponsor", "")
+
+    with st.container(border=True):
+        head_cols = st.columns([3, 2])
+        head_cols[0].markdown(f"**{bill_id}**")
+        head_cols[1].markdown(f"_{status_label}_")
+        if summary:
+            st.markdown(summary)
+        meta_parts = []
+        if sponsor:
+            meta_parts.append(sponsor)
+        if source_url:
+            meta_parts.append(f"[Source]({source_url})")
+        if meta_parts:
+            st.caption(" · ".join(meta_parts))
 
 
 # --- Company Water Claims ---
@@ -1145,39 +1208,61 @@ def render_company_water_claims():
 
 
 def _render_water_claim_card(claim: dict):
-    """Render one claim: quote + source + optional delivered-vs-promised badge."""
+    """Render one claim as a bordered card with native Streamlit components.
+
+    Uses st.container(border=True) for clear card boundaries, st.caption for
+    the attribution line, and semantic st.success/warning/error boxes for the
+    delivered-vs-promised assessment so status reads at a glance. Surfaces
+    `project_id` when present so site-specific commitments aren't anonymous.
+    """
     statement = claim.get("statement", "")
     source_url = claim.get("source_url", "")
     source_title = claim.get("source_title", "source")
     date_str = claim.get("published_at") or claim.get("captured_at") or ""
+    project_id = claim.get("project_id")
 
-    st.markdown(
-        f"> *{statement}*  \n"
-        f"<span style='font-size:0.9em;color:{COLORS['text']}'>"
-        f"&mdash; <a href='{source_url}'>{source_title}</a> ({date_str})"
-        f"</span>",
-        unsafe_allow_html=True,
-    )
+    with st.container(border=True):
+        # Verbatim quote — italic, curly quotes, no blockquote markup.
+        st.markdown(f"*“{statement}”*")
 
-    delivered = claim.get("delivered")
-    if delivered:
-        status = str(delivered.get("status", "")).lower()
-        color_key = DELIVERED_STATUS_COLORS.get(status, "secondary")
-        color = COLORS.get(color_key, COLORS["secondary"])
-        d_summary = delivered.get("summary", "")
-        d_url = delivered.get("source_url", "")
-        d_title = delivered.get("source_title", "assessment")
-        d_assessed = delivered.get("assessed_at", "")
-        st.markdown(
-            f"<div style='border-left:3px solid {color}; padding:4px 10px; "
-            f"margin:4px 0 14px 0; background:{COLORS['bg']}; font-size:0.92em;'>"
-            f"<strong>Delivered vs. promised: {status.title()}</strong> "
-            f"<span style='color:#666'>(assessed {d_assessed})</span><br/>"
-            f"{d_summary}<br/>"
-            f"<em>Assessment: <a href='{d_url}'>{d_title}</a></em>"
-            f"</div>",
-            unsafe_allow_html=True,
-        )
+        # Attribution: source · date · project (when applicable).
+        caption_parts = []
+        if source_url:
+            caption_parts.append(f"[{source_title}]({source_url})")
+        elif source_title:
+            caption_parts.append(source_title)
+        if date_str:
+            caption_parts.append(str(date_str))
+        if project_id:
+            caption_parts.append(f"Project: `{project_id}`")
+        if caption_parts:
+            st.caption(" · ".join(caption_parts))
+
+        delivered = claim.get("delivered")
+        if delivered:
+            status = str(delivered.get("status", "")).lower()
+            status_label = {
+                "delivered": "Delivered",
+                "partial": "Partial",
+                "contested": "Contested",
+                "shortfall": "Shortfall",
+            }.get(status, status.title() or "Unknown")
+            d_summary = delivered.get("summary", "")
+            d_url = delivered.get("source_url", "")
+            d_title = delivered.get("source_title", "assessment")
+            d_assessed = delivered.get("assessed_at", "")
+            box_fn = {
+                "delivered": st.success,
+                "partial": st.warning,
+                "contested": st.warning,
+                "shortfall": st.error,
+            }.get(status, st.info)
+            box_fn(
+                f"**Delivered vs. promised: {status_label}** "
+                f"_(assessed {d_assessed})_\n\n"
+                f"{d_summary}\n\n"
+                f"[Assessment: {d_title}]({d_url})"
+            )
 
 
 def render_data_freshness(df: pd.DataFrame):
@@ -1268,8 +1353,9 @@ def main():
 
     # --- Legislation tab (homepage) ---
     with tab_legislation:
-        # Headline panel — eager.
-        render_legislation_tracker()
+        # Headline panel — eager. Pass device flags so it can switch from the
+        # dataframe layout (desktop) to a vertical card list (mobile/tablet).
+        render_legislation_tracker(is_mobile=is_mobile, is_tablet=is_tablet)
 
         # Lazy panels — toggle-gated so the cold-start render skips the
         # heavy markdown construction below the fold. (st.expander still
