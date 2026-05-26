@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>Data Center Water Use Tracker</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@stlite/browser@1.7.3/build/stlite.css"
+    />
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+      }
+      #root {
+        height: 100vh;
+      }
+      #boot {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        padding: 0 2rem;
+        text-align: center;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        color: #555;
+      }
+      #boot small {
+        display: block;
+        color: #999;
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div id="boot">
+        <div>
+          <div>Loading the Data Center Water Use Tracker…</div>
+          <small>
+            First load takes 20–40s while Python + Pyodide warm up in your
+            browser. Subsequent loads are cached.
+          </small>
+        </div>
+      </div>
+    </div>
+    <script type="module">
+      import { mount } from "https://cdn.jsdelivr.net/npm/@stlite/browser@1.7.3/build/stlite.js";
+
+      mount(
+        {
+          requirements: ["pandas", "plotly", "streamlit-js-eval"],
+          entrypoint: "dashboard.py",
+          files: {
+            "dashboard.py": { url: "./dashboard.py" },
+            "utils/__init__.py": { url: "./utils/__init__.py" },
+            "utils/device.py": { url: "./utils/device.py" },
+            "data/output/results.csv": { url: "./data/output/results.csv" },
+            "data/output/results.json": { url: "./data/output/results.json" },
+            "data/reference/legislation.json": {
+              url: "./data/reference/legislation.json",
+            },
+            "data/reference/company_water_claims.json": {
+              url: "./data/reference/company_water_claims.json",
+            },
+          },
+          streamlitConfig: {
+            "browser.gatherUsageStats": false,
+          },
+        },
+        document.getElementById("root"),
+      );
+    </script>
+  </body>
+</html>

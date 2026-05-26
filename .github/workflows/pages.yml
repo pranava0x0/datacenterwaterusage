@@ -1,0 +1,52 @@
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Assemble site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assemble _site/
+        run: |
+          set -eux
+          mkdir -p _site/utils _site/data/output _site/data/reference
+          cp pages/index.html _site/index.html
+          cp dashboard.py _site/dashboard.py
+          cp utils/__init__.py _site/utils/__init__.py
+          cp utils/device.py _site/utils/device.py
+          cp data/output/results.csv _site/data/output/results.csv
+          cp data/output/results.json _site/data/output/results.json
+          cp data/reference/legislation.json _site/data/reference/legislation.json
+          cp data/reference/company_water_claims.json _site/data/reference/company_water_claims.json
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    name: Deploy to Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
