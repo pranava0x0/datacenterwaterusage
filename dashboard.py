@@ -184,11 +184,11 @@ def _apply_filters(
 
 
 def render_inline_filters(df: pd.DataFrame) -> pd.DataFrame:
-    """Minimal inline filters for mobile (no sidebar)."""
+    """Inline filter popover used inside the Data tab on all viewports."""
     with st.popover("Filter data"):
         states = sorted(df["state"].dropna().unique().tolist())
         selected_states = st.multiselect(
-            "State", states, default=states, key="mobile_state"
+            "State", states, default=states, key="data_state_filter"
         )
 
         date_range = None
@@ -201,7 +201,7 @@ def render_inline_filters(df: pd.DataFrame) -> pd.DataFrame:
                     value=(min_date, max_date),
                     min_value=min_date,
                     max_value=max_date,
-                    key="mobile_date",
+                    key="data_date_filter",
                 )
 
     return _apply_filters(df, selected_states, date_range=date_range)
@@ -370,13 +370,18 @@ def render_flow_chart(df: pd.DataFrame, cfg: dict):
         )
 
     if "VA0091383" in flow_df["permit_number"].values:
-        fig.add_hline(
-            y=11.0,
-            line_dash="dash",
-            line_color=COLORS["danger"],
-            annotation_text="Permit Limit (11 MGD)" if cfg["show_legend"] else None,
-            annotation_position="top right",
-        )
+        # Build hline kwargs conditionally so we never pass annotation_text=None,
+        # which Plotly silently replaces with the placeholder string "new text"
+        # (visibly rendered in the chart corner on mobile prior to this fix).
+        hline_kwargs = {
+            "y": 11.0,
+            "line_dash": "dash",
+            "line_color": COLORS["danger"],
+        }
+        if cfg["show_legend"]:
+            hline_kwargs["annotation_text"] = "Permit Limit (11 MGD)"
+            hline_kwargs["annotation_position"] = "top right"
+        fig.add_hline(**hline_kwargs)
 
     title = (
         "Monthly WWTP Flow"

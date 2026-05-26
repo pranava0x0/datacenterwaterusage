@@ -2,7 +2,7 @@
 
 _Last updated: 2026-05-26_
 
-UAT round 1 (2026-05-26) covered desktop / tablet / mobile and found UAT-001..UAT-012. UAT round 2 (2026-05-26) focused on the Data tab and surfaced UAT-013 / UAT-014. All 14 issues are resolved.
+UAT round 1 (2026-05-26) covered desktop / tablet / mobile and found UAT-001..UAT-012. UAT round 2 (2026-05-26) focused on the Data tab and surfaced UAT-013 / UAT-014. UAT round 3 (2026-05-26) tested interactions and mobile depth, surfacing UAT-015 / UAT-016. All 16 issues are resolved.
 
 ---
 
@@ -13,6 +13,24 @@ _None._
 ---
 
 ## Resolved Issues
+
+### [UAT-016] Vestigial `mobile_state` / `mobile_date` widget keys
+- **Severity**: low (code smell)
+- **Page/Section**: Data tab → Filter popover
+- **Discovered**: 2026-05-26 (round 3)
+- **Resolved**: 2026-05-26
+- **Status**: resolved
+- **Description**: The state multiselect and date-range picker inside `render_inline_filters` had keys named `mobile_state` and `mobile_date` — leftover from when inline filters were used only on mobile. Since the tab restructure moved this popover into the Data tab for all viewports, the names were misleading.
+- **Fix**: Renamed the keys to `data_state_filter` / `data_date_filter` to reflect their actual scope. Also updated the function's docstring.
+
+### [UAT-015] Flow chart shows "new text" placeholder annotation on mobile
+- **Severity**: high
+- **Page/Section**: Data tab → Monthly WWTP Flow chart, mobile (and any layout where `cfg["show_legend"]` is False)
+- **Discovered**: 2026-05-26 (round 3)
+- **Resolved**: 2026-05-26
+- **Status**: resolved
+- **Description**: `render_flow_chart` called `fig.add_hline(..., annotation_text=None, annotation_position="top right")` on mobile. Plotly does not treat `annotation_text=None` as "no annotation" — it still creates the annotation and silently fills the text with its internal placeholder string `"new text"`. End users saw "new text" rendered in the top-right corner of the chart on every mobile cold load.
+- **Fix**: Build the `add_hline` kwargs conditionally — only attach `annotation_text` and `annotation_position` when there is actual text to show. Mobile now renders the dashed permit-limit line with no annotation label. Verified at 375px: no "new text" string anywhere in the page (`document.body.innerText.includes('new text') === false`).
 
 ### [UAT-014] Records table cells show literal "None" for missing values
 - **Severity**: medium
