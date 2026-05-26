@@ -3,6 +3,7 @@ from __future__ import annotations
 import abc
 import asyncio
 import random
+from pathlib import Path
 from typing import AsyncGenerator, Optional
 
 import structlog
@@ -10,6 +11,32 @@ import structlog
 from models.document import DocumentRecord, DocumentSource
 from storage.state_manager import StateManager
 from storage.file_store import FileStore
+
+
+_PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+
+def _to_repo_relative_path(p: Optional[str]) -> Optional[str]:
+    """Normalize a local file path to be project-relative.
+
+    Absolute paths under the project root are committed to data/output as
+    relative paths so we don't leak the developer's home-directory layout
+    into the public dataset. Anything we can't anchor to the project root
+    is reduced to its 'data/downloads/...' suffix where present, or left
+    as-is otherwise.
+    """
+    if not p:
+        return p
+    s = str(p)
+    try:
+        return Path(s).resolve().relative_to(_PROJECT_ROOT).as_posix()
+    except (ValueError, OSError):
+        pass
+    marker = "data/downloads/"
+    idx = s.find(marker)
+    if idx >= 0:
+        return s[idx:]
+    return s
 
 
 class BaseScraper(abc.ABC):
@@ -110,7 +137,7 @@ class BaseScraper(abc.ABC):
             document_date=date_val,
             source_url=meta.get("url", ""),
             document_url=meta.get("document_url") or meta.get("pdf_url"),
-            local_file_path=local_path,
+            local_file_path=_to_repo_relative_path(local_path),
             source_portal=self.source,
             permit_number=meta.get("permit_number"),
             match_term=meta.get("match_term"),
