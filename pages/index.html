@@ -8,6 +8,8 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <title>Data Center Water Use Tracker</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@stlite/browser@1.7.3/build/stlite.css"
@@ -47,8 +49,10 @@
         <div>
           <div>Loading the Data Center Water Use Tracker…</div>
           <small>
-            First load takes 20–40s while Python + Pyodide warm up in your
-            browser. Subsequent loads are cached.
+            First visit downloads ~15 MB of Python + Streamlit + Plotly and
+            runs them in your browser (≈25–40s on a fast connection).
+            Subsequent visits are cached and load in &lt;5s. The progress
+            list on the right shows what the runtime is doing.
           </small>
         </div>
       </div>
@@ -58,7 +62,10 @@
 
       mount(
         {
-          requirements: ["pandas", "plotly", "streamlit-js-eval"],
+          // streamlit-js-eval intentionally omitted — utils/device.py
+          // catches the ImportError and falls back to desktop layout, saving
+          // one micropip round-trip on cold start.
+          requirements: ["pandas", "plotly"],
           entrypoint: "dashboard.py",
           files: {
             "dashboard.py": { url: "./dashboard.py" },
