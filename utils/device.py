@@ -143,6 +143,43 @@ def get_chart_config(device_type: DeviceType) -> dict:
 
 _RESPONSIVE_CSS = """
 <style>
+/* --- Defensive rendering hardening ---
+   Some Streamlit versions dim content during script reruns by setting
+   data-stale="true" with low opacity, which makes text look ghostly while
+   the page rebuilds. Keep content fully opaque so it stays readable. Also
+   force text colors and link colors so they survive any theme override
+   (Streamlit Cloud, system dark-mode auto-detection, etc.). */
+[data-stale="true"],
+.element-container[data-stale="true"],
+[data-testid="stElementContainer"][data-stale="true"],
+.stApp [data-stale="true"] {
+    opacity: 1 !important;
+    filter: none !important;
+    pointer-events: auto !important;
+}
+.stApp {
+    color: #1a1a2e;
+}
+.stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6 {
+    color: #1a1a2e !important;
+}
+.stApp p, .stApp li, .stApp [data-testid="stMarkdownContainer"] {
+    color: #1a1a2e;
+}
+.stApp a {
+    color: #08519c;
+}
+/* Belt-and-suspenders: even if a theme override hits the text, this keeps
+   the bill/CWA card content readable. */
+.bill-card,
+.bill-card * {
+    color: #1a1a2e;
+}
+.bill-card a,
+.bill-card .bill-card-details > summary {
+    color: #08519c !important;
+}
+
 /* --- Water aesthetic: page surface + droplet texture + wave underline --- */
 /* See DESIGN.md for the rules. Pattern uses an inline SVG of four teardrop
    ellipses per 120x120 tile at ~5% opacity over a near-white #f5f9fc surface.
@@ -330,7 +367,8 @@ _RESPONSIVE_CSS = """
 }
 /* --- Bill card (single-emit, native <details>) styling --- */
 /* Explicit colors throughout so cards remain readable during any Streamlit
-   stale-content overlay or theme variation. */
+   stale-content overlay or theme variation. Box-shadow gives visual
+   separation even if the border color fails to render. */
 .bill-card {
     border: 1px solid #cbd5e1;
     border-radius: 0.5rem;
@@ -338,6 +376,7 @@ _RESPONSIVE_CSS = """
     margin-bottom: 0.75rem;
     background: #ffffff;
     color: #1a1a2e;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.06);
 }
 .bill-card-head {
     display: flex;
