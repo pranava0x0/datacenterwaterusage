@@ -8,6 +8,7 @@ Run with: streamlit run dashboard.py
 
 from __future__ import annotations
 
+import html
 import json
 import re
 from datetime import datetime
@@ -32,6 +33,7 @@ CSV_PATH = BASE_DIR / "data" / "output" / "results.csv"
 JSON_PATH = BASE_DIR / "data" / "output" / "results.json"
 LEGISLATION_PATH = BASE_DIR / "data" / "reference" / "legislation.json"
 COMPANY_WATER_CLAIMS_PATH = BASE_DIR / "data" / "reference" / "company_water_claims.json"
+CWA_INVESTIGATIONS_PATH = BASE_DIR / "data" / "reference" / "cwa_investigations.json"
 
 COLORS = {
     "primary": "#08519c",
@@ -106,11 +108,14 @@ def _classify_source(portal: str) -> str:
     return "Other"
 
 
+@st.cache_data(ttl=300)
 def load_legislation(path: Path = LEGISLATION_PATH) -> dict:
     """Load the data center water/energy legislation dataset.
 
     Returns a payload dict of the form {"last_updated": str, "bills": [...]}.
     Tolerates a missing file (returns an empty payload) or a bare list.
+    Cached because Streamlit reruns the whole script on every interaction;
+    the enriched legislation.json is ~57 KB and parses on every rerun otherwise.
     """
     if not Path(path).exists():
         return {"last_updated": None, "bills": []}
@@ -122,6 +127,7 @@ def load_legislation(path: Path = LEGISLATION_PATH) -> dict:
     return payload
 
 
+@st.cache_data(ttl=300)
 def load_company_water_claims(path: Path = COMPANY_WATER_CLAIMS_PATH) -> dict:
     """Load the company water-claims dataset (mirrored from datacentercommunitybenefits).
 
@@ -134,6 +140,21 @@ def load_company_water_claims(path: Path = COMPANY_WATER_CLAIMS_PATH) -> dict:
         payload = json.load(f)
     payload.setdefault("claims", [])
     payload.setdefault("companies", {})
+    return payload
+
+
+@st.cache_data(ttl=300)
+def load_cwa_investigations(path: Path = CWA_INVESTIGATIONS_PATH) -> dict:
+    """Load historic Clean Water Act enforcement / precedent dataset.
+
+    Returns {"last_updated": str, "cases": [...], "note": Optional[str]}.
+    Tolerates a missing file by returning an empty payload.
+    """
+    if not Path(path).exists():
+        return {"last_updated": None, "cases": []}
+    with open(path, encoding="utf-8") as f:
+        payload = json.load(f)
+    payload.setdefault("cases", [])
     return payload
 
 
@@ -1114,39 +1135,359 @@ def render_legislation_tracker(is_mobile: bool = False, is_tablet: bool = False)
 
 
 def _render_bill_card(bill: dict):
-    """Render one legislation entry as a bordered card with a colored status pill."""
-    bill_id = bill.get("bill_id", "")
+    """Render one legislation entry as a single HTML blob via one st.markdown call.
+
+    Streamlit reruns the whole script on every interaction, and each st.markdown
+    call ships a separate component over the WebSocket. The earlier
+    implementation used ~20 markdown calls per bill (14 bills × 20 = ~280
+    components) and `st.expander`, which renders its body eagerly. This version
+    emits one HTML string per bill (~14 components total) and uses the
+    browser-native `<details>` element so the expander state is purely
+    client-side — no re-render needed to open or close it.
+    """
+    st.markdown(_build_bill_card_html(bill), unsafe_allow_html=True)
+
+
+def _build_bill_card_html(bill: dict) -> str:
+    """Build the complete HTML for one bill card, including the collapsible details."""
+    esc = html.escape
+
+    bill_id = esc(bill.get("bill_id", ""))
     status = (bill.get("status") or "").lower()
     status_label = LEGISLATION_STATUS_LABELS.get(status, status.title() or "Unknown")
     badge_color = LEGISLATION_STATUS_BADGE_COLORS.get(status, COLORS["secondary"])
-    summary = bill.get("summary", "")
+    summary = esc(bill.get("summary", ""))
     source_url = bill.get("source_url", "")
-    sponsor = bill.get("sponsor", "")
+    sponsor = esc(bill.get("sponsor", ""))
 
-    with st.container(border=True):
-        st.markdown(
-            (
-                '<div style="display:flex; justify-content:space-between; '
-                'align-items:center; gap:0.5rem; flex-wrap:wrap; '
-                'margin-bottom:0.35rem;">'
-                f'<span style="font-weight:700; font-size:1.05rem;">{bill_id}</span>'
-                f'<span style="background:{badge_color}; color:white; '
-                'padding:0.15rem 0.7rem; border-radius:999px; '
-                'font-size:0.78rem; font-weight:600; letter-spacing:0.02em; '
-                f'white-space:nowrap;">{status_label}</span>'
-                '</div>'
-            ),
-            unsafe_allow_html=True,
+    # Header row: bill ID + colored status pill.
+    head = (
+        '<div class="bill-card-head">'
+        f'<span class="bill-card-id">{bill_id}</span>'
+        f'<span class="bill-card-pill" style="background:{badge_color}">'
+        f'{esc(status_label)}</span>'
+        '</div>'
+    )
+
+    body = f'<p class="bill-card-summary">{summary}</p>' if summary else ""
+
+    meta_bits = []
+    if sponsor:
+        meta_bits.append(sponsor)
+    if source_url:
+        meta_bits.append(
+            f'<a href="{esc(source_url)}" target="_blank" rel="noopener">Source</a>'
         )
-        if summary:
-            st.markdown(summary)
-        meta_parts = []
-        if sponsor:
-            meta_parts.append(sponsor)
-        if source_url:
-            meta_parts.append(f"[Source]({source_url})")
-        if meta_parts:
-            st.caption(" · ".join(meta_parts))
+    meta = (
+        f'<div class="bill-card-meta">{" · ".join(meta_bits)}</div>' if meta_bits else ""
+    )
+
+    details = _build_bill_details_html(bill)
+
+    return f'<div class="bill-card">{head}{body}{meta}{details}</div>'
+
+
+def _build_bill_details_html(bill: dict) -> str:
+    """Build the collapsible `<details>` block. Returns '' if nothing to show."""
+    sections = []
+    timeline_html = _build_timeline_html(bill.get("timeline", []))
+    if timeline_html:
+        sections.append(timeline_html)
+    news_html = _build_news_html(bill.get("recent_news", []))
+    if news_html:
+        sections.append(news_html)
+    sentiment_html = _build_sentiment_html(bill.get("public_sentiment", ""))
+    if sentiment_html:
+        sections.append(sentiment_html)
+    principles_html = _build_principles_html(bill.get("general_principles", []))
+    if principles_html:
+        sections.append(principles_html)
+
+    if not sections:
+        return ""
+
+    return (
+        '<details class="bill-card-details">'
+        '<summary>Details — timeline, news, sentiment, principles</summary>'
+        f'{"".join(sections)}'
+        '</details>'
+    )
+
+
+def _build_timeline_html(timeline: list[dict]) -> str:
+    if not timeline:
+        return ""
+    esc = html.escape
+    rows = []
+    for event in timeline:
+        date = esc(event.get("date", ""))
+        milestone = esc(event.get("milestone", ""))
+        detail = event.get("detail", "")
+        detail_html = (
+            f' <span class="bill-mini-detail">— {esc(detail)}</span>' if detail else ""
+        )
+        rows.append(
+            f'<div class="bill-mini-event">'
+            f'<div class="bill-mini-date">{date}</div>'
+            f'<div class="bill-mini-body"><strong>{milestone}</strong>{detail_html}</div>'
+            f'</div>'
+        )
+    return (
+        '<div class="bill-section-label">Timeline</div>' + "".join(rows)
+    )
+
+
+def _build_news_html(news: list[dict]) -> str:
+    if not news:
+        return ""
+    esc = html.escape
+    items = []
+    for item in news:
+        date = esc(item.get("date", ""))
+        title = esc(item.get("title", ""))
+        source = esc(item.get("source", ""))
+        url = item.get("url", "")
+        takeaway = esc(item.get("takeaway", ""))
+        if url:
+            headline_html = (
+                f'<a href="{esc(url)}" target="_blank" rel="noopener">{title}</a>'
+            )
+        else:
+            headline_html = title
+        meta_html = " · ".join(b for b in (date, source) if b)
+        takeaway_html = (
+            f'<div class="bill-news-takeaway">{takeaway}</div>' if takeaway else ""
+        )
+        items.append(
+            f'<div class="bill-news-item">'
+            f'<div>{headline_html}</div>'
+            f'<div class="bill-news-meta">{meta_html}</div>'
+            f'{takeaway_html}'
+            f'</div>'
+        )
+    return '<div class="bill-section-label">Recent news</div>' + "".join(items)
+
+
+def _build_sentiment_html(sentiment: str) -> str:
+    if not sentiment:
+        return ""
+    return (
+        '<div class="bill-section-label">Public sentiment</div>'
+        f'<p class="bill-sentiment">{html.escape(sentiment)}</p>'
+    )
+
+
+def _build_principles_html(principles: list[dict]) -> str:
+    if not principles:
+        return ""
+    esc = html.escape
+    rows = []
+    for p in principles:
+        tag = esc(p.get("tag", ""))
+        note = esc(p.get("note", ""))
+        rows.append(
+            f'<div class="bill-principle-row">'
+            f'<span class="bill-principle-chip">{tag}</span>{note}'
+            f'</div>'
+        )
+    return (
+        '<div class="bill-section-label">General principles</div>' + "".join(rows)
+    )
+
+
+# --- Clean Water Act Investigations Tracker ---
+
+CWA_CATEGORY_ORDER = {"datacenter": 0, "industrial": 1, "precedent": 2}
+CWA_CATEGORY_LABELS = {
+    "datacenter": "Data Center",
+    "industrial": "Industrial Water",
+    "precedent": "Landmark Precedent",
+}
+
+
+def _cwa_category_colors() -> dict:
+    """Map category → pill color, sourced from the shared COLORS palette."""
+    return {
+        "datacenter": COLORS["primary"],
+        "industrial": COLORS["warning"],
+        "precedent": COLORS["secondary"],
+    }
+
+
+def _cwa_summary(cases: list[dict]) -> str:
+    """'2 Data Center · 5 Industrial Water · 4 Landmark Precedent' summary string."""
+    counts: dict[str, int] = {}
+    for c in cases:
+        cat = c.get("category", "other")
+        counts[cat] = counts.get(cat, 0) + 1
+    ordered = sorted(counts, key=lambda k: CWA_CATEGORY_ORDER.get(k, 9))
+    return " · ".join(
+        f"{counts[c]} {CWA_CATEGORY_LABELS.get(c, c.title())}" for c in ordered
+    )
+
+
+def _cwa_year_end(year_str: str) -> int:
+    """Return the end year as int from a 'YYYY' or 'YYYY-YYYY' string. 0 on failure."""
+    if not year_str:
+        return 0
+    m = re.search(r"(\d{4})\s*$", str(year_str))
+    return int(m.group(1)) if m else 0
+
+
+def render_cwa_tracker():
+    """Render the Clean Water Act historic investigations panel.
+
+    Three categories: direct data-center cases (rare), large-industrial-user
+    enforcement (closest practical analogs), and landmark precedent cases that
+    set the legal doctrines for what CWA actually reaches. Cases are sorted
+    most-recent-first within each category so the freshest enforcement bubbles
+    to the top.
+    """
+    st.subheader("Clean Water Act Investigations")
+    st.markdown(
+        "Enforcement actions and landmark court rulings under the Clean Water "
+        "Act, organized by what they actually tell us about how the law applies "
+        "to data center water use and cooling discharges."
+    )
+
+    payload = load_cwa_investigations()
+    cases = payload.get("cases", [])
+    if not cases:
+        note = payload.get("note") or "Dataset not found or empty."
+        st.info(note)
+        return
+
+    # Filter controls — category multiselect + 2020+ toggle. Defaults show
+    # everything so first-time visitors see the full dataset.
+    filter_cols = st.columns([3, 1])
+    with filter_cols[0]:
+        selected_categories = st.multiselect(
+            "Filter by category",
+            options=list(CWA_CATEGORY_LABELS.keys()),
+            default=list(CWA_CATEGORY_LABELS.keys()),
+            format_func=lambda k: CWA_CATEGORY_LABELS.get(k, k.title()),
+            key="cwa_category_filter",
+        )
+    with filter_cols[1]:
+        recent_only = st.toggle(
+            "2020 onward only",
+            value=False,
+            key="cwa_recent_only",
+            help="Show only cases with an end year of 2020 or later.",
+        )
+
+    filtered = [c for c in cases if c.get("category") in selected_categories]
+    if recent_only:
+        filtered = [c for c in filtered if _cwa_year_end(c.get("year", "")) >= 2020]
+
+    if not filtered:
+        st.info("No cases match the current filter. Try widening the category or year selection.")
+        return
+
+    st.markdown(
+        f"**Showing {len(filtered)} of {len(cases)} cases** — {_cwa_summary(filtered)}"
+    )
+
+    # Sort: category order, then year descending (most recent first).
+    sorted_cases = sorted(
+        filtered,
+        key=lambda c: (
+            CWA_CATEGORY_ORDER.get(c.get("category"), 9),
+            -_cwa_year_end(c.get("year", "")),
+        ),
+    )
+    for case in sorted_cases:
+        st.markdown(_build_cwa_case_html(case), unsafe_allow_html=True)
+
+    last_updated = payload.get("last_updated") or "unknown"
+    note = payload.get("note", "")
+    caption = f"Dataset last updated {last_updated}."
+    if note:
+        caption += " " + note
+    st.caption(caption)
+
+
+def _build_cwa_case_html(case: dict) -> str:
+    """Build the complete HTML for one CWA case card as a single markdown blob."""
+    esc = html.escape
+    cat_colors = _cwa_category_colors()
+
+    respondent_raw = case.get("respondent", "")
+    respondent = esc(respondent_raw)
+    year_raw = str(case.get("year", ""))
+    year = esc(year_raw)
+    category = (case.get("category") or "").lower()
+    cat_label = CWA_CATEGORY_LABELS.get(category, category.title() or "Other")
+    cat_color = cat_colors.get(category, COLORS["secondary"])
+    cwa_section = esc(case.get("cwa_section", ""))
+    violation = esc(case.get("violation_summary", ""))
+    outcome = esc(case.get("outcome", ""))
+    takeaway = esc(case.get("takeaway", ""))
+    sources = case.get("sources", [])
+
+    # Skip the trailing "(YYYY)" if the year is already embedded in the
+    # respondent (e.g., precedent case captions like "Rapanos v. US (2006)").
+    year_already_in_caption = year_raw and (
+        f"({year_raw})" in respondent_raw
+        or (
+            "-" in year_raw
+            and any(part and f"({part})" in respondent_raw for part in year_raw.split("-"))
+        )
+    )
+    year_html = (
+        f' <span class="cwa-year">({year})</span>'
+        if year and not year_already_in_caption
+        else ""
+    )
+    head = (
+        '<div class="bill-card-head">'
+        f'<span class="bill-card-id">{respondent}{year_html}</span>'
+        f'<span class="bill-card-pill" style="background:{cat_color}">'
+        f'{esc(cat_label)}</span>'
+        '</div>'
+    )
+
+    section_line = (
+        f'<div class="cwa-section-line">{cwa_section}</div>' if cwa_section else ""
+    )
+
+    sections = []
+    if violation:
+        sections.append(
+            '<div class="bill-section-label">Violation</div>'
+            f'<p class="bill-sentiment">{violation}</p>'
+        )
+    if outcome:
+        sections.append(
+            '<div class="bill-section-label">Outcome</div>'
+            f'<p class="bill-sentiment">{outcome}</p>'
+        )
+    if takeaway:
+        sections.append(
+            '<div class="bill-section-label">Relevance to data centers</div>'
+            f'<p class="cwa-takeaway">{takeaway}</p>'
+        )
+    if sources:
+        items = []
+        for s in sources:
+            title = esc(s.get("title", "Source"))
+            url = s.get("url", "")
+            stype = esc(s.get("type", ""))
+            link = (
+                f'<a href="{esc(url)}" target="_blank" rel="noopener">{title}</a>'
+                if url
+                else title
+            )
+            if stype:
+                link += f' <span class="cwa-source-type">({stype})</span>'
+            items.append(link)
+        sections.append(
+            '<div class="bill-section-label">Sources</div>'
+            f'<div class="cwa-sources">{" · ".join(items)}</div>'
+        )
+
+    body = "".join(sections)
+    return f'<div class="bill-card">{head}{section_line}{body}</div>'
 
 
 # --- Company Water Claims ---
@@ -1369,8 +1710,15 @@ def main():
             "via public regulatory data."
         )
 
-    # Two tabs — Legislation is the homepage, Data is the measurements side.
-    tab_legislation, tab_data = st.tabs(["Legislation", "Data"])
+    # Three tabs — Legislation is the homepage, CWA Cases is the enforcement
+    # history, Data is the measurements side.
+    tab_legislation, tab_cwa, tab_data = st.tabs(
+        ["Legislation", "CWA Cases", "Data"]
+    )
+
+    # --- CWA Cases tab ---
+    with tab_cwa:
+        render_cwa_tracker()
 
     # --- Legislation tab (homepage) ---
     with tab_legislation:

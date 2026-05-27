@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-05-25",
-  "note": "State + federal data center water/energy disclosure legislation. Verified entries had their status confirmed against a primary source (state legislature page, Congress.gov / GovInfo, or official sponsor press release) on the listed last_verified date; unverified entries should be re-checked before being relied upon.",
+  "last_updated": "2026-05-26",
+  "note": "State + federal data center water/energy disclosure legislation. Verified entries had their status confirmed against a primary source (state legislature page, Congress.gov / GovInfo, or official sponsor press release) on the listed last_verified date; unverified entries should be re-checked before being relied upon. Each bill is enriched with recent_news (up to 3 dated items with source URLs), public_sentiment (a paragraph naming supporters/opponents), general_principles (tagged policy concepts), and a procedural timeline. These fields are best-effort as of last_updated and should be re-verified before being cited.",
   "bills": [
     {
       "bill_id": "VA HB 496 / SB 553",
@@ -9,13 +9,79 @@
       "title": "Data center water reporting",
       "sponsor": "Del. Guzman (HB 496) / Sen. Srinivasan (SB 553)",
       "summary": "Water utilities must report the monthly volume of water delivered to data centers, including reclaimed water.",
-      "scope": ["water"],
+      "scope": [
+        "water"
+      ],
       "status": "enacted",
       "status_detail": "Signed by Gov. Spanberger (2026); amends Va. Code 62.1-44.38; effective ~July 1, 2026.",
       "source_url": "https://lis.virginia.gov/bill-details/20261/SB553",
       "last_verified": "2026-05-25",
       "verified": true,
-      "confidence": "high"
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-03-30",
+          "title": "Virginia Lawmakers Pass 15 Data Center Bills as Tax Exemption Fight Looms",
+          "source": "MultiState",
+          "url": "https://www.multistate.us/insider/2026/3/30/virginia-lawmakers-pass-15-data-center-bills-as-tax-exemption-fight-looms",
+          "takeaway": "Both water reporting bills cleared the General Assembly and were sent to Gov. Spanberger with an April 13 deadline; final HB 496 requires utilities to report monthly aggregate water deliveries to data centers."
+        },
+        {
+          "date": "2026-03-17",
+          "title": "Data center bills dominated this year's General Assembly. Here's what passed.",
+          "source": "Virginia Mercury",
+          "url": "https://virginiamercury.com/2026/03/17/data-center-bills-dominated-this-years-general-assembly-heres-what-passed/",
+          "takeaway": "Conference committee produced parallel transparency tracks: HB 496 covers utility-side aggregate reporting while SB 553 lets localities require water estimates at rezoning."
+        },
+        {
+          "date": "2026-03-13",
+          "title": "Bills on data center siting and water usage remain unresolved as General Assembly session winds down",
+          "source": "Cardinal News",
+          "url": "https://cardinalnews.org/2026/03/13/bills-on-data-center-siting-and-water-usage-remain-unresolved-as-general-assembly-session-winds-down/",
+          "takeaway": "Sen. Srinivasan called both bills 'transparency bills,' framing the conference committee fight as a question of which mechanism best surfaces data center water draws to the public."
+        }
+      ],
+      "public_sentiment": "Strongly supported by the Virginia Data Center Reform Coalition (Piedmont Environmental Council, Sierra Club, National Parks Conservation Association), Chesapeake Climate Action Network, and Loudoun/Prince William/Botetourt residents worried about Google and other hyperscale projects. The Data Center Coalition lobbied against the original Guzman bill and successfully softened language during conference. The political center of gravity shifted enough that Gov. Spanberger (D) ultimately signed both, with bipartisan votes in both chambers.",
+      "general_principles": [
+        {
+          "tag": "Transparency",
+          "note": "Forces public visibility into water volumes data centers draw from municipal supplies, previously shielded as proprietary."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "Requires both utility-side aggregate reporting (HB 496) and developer-side estimates at rezoning (SB 553)."
+        },
+        {
+          "tag": "Permit oversight",
+          "note": "Lets localities weigh water consumption in special use permit and rezoning decisions for new facilities."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-01-14",
+          "milestone": "Introduced",
+          "detail": "HB 496 by Del. Elizabeth Guzman; SB 553 by Sen. Kannan Srinivasan at start of 2026 session."
+        },
+        {
+          "date": "2026-02-16",
+          "milestone": "HB 496 engrossed in House"
+        },
+        {
+          "date": "2026-03-12",
+          "milestone": "Conference committee appointed",
+          "detail": "House conferees Guzman, Lopez, Morefield to reconcile House and Senate versions."
+        },
+        {
+          "date": "2026-03-30",
+          "milestone": "Both bills sent to Governor",
+          "detail": "Cleared both chambers; Spanberger had until April 13 to act."
+        },
+        {
+          "date": "2026-04-13",
+          "milestone": "Signed into law",
+          "detail": "Gov. Spanberger signed both transparency bills (approximate date — within the April action window)."
+        }
+      ]
     },
     {
       "bill_id": "MN HF 16",
@@ -24,13 +90,80 @@
       "title": "Data center environmental, energy, and water requirements",
       "sponsor": "Rep. Greg Davids",
       "summary": "Water-appropriation permit process and DNR preapplication review for data centers expected to use >100M gal/yr; evaluates water source and conservation.",
-      "scope": ["water", "energy"],
+      "scope": [
+        "water",
+        "energy"
+      ],
       "status": "enacted",
       "status_detail": "Signed by Gov. Walz June 14, 2025 (Laws 2025, 1st Spec. Sess., Ch. 12); amends Minn. Stat. 103G.271 / 103G.265.",
       "source_url": "https://www.revisor.mn.gov/bills/94/2025/1/HF/16/",
       "last_verified": "2026-05-25",
       "verified": true,
-      "confidence": "high"
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2025-06-10",
+          "title": "House OKs legislation to regulate data centers",
+          "source": "Minnesota House Session Daily",
+          "url": "https://www.house.mn.gov/sessiondaily/Story/18838",
+          "takeaway": "House passed HF 16 85-43 during special session, coupling a 35-year sales tax exemption extension with new environmental guardrails on water and electricity."
+        },
+        {
+          "date": "2026-01-15",
+          "title": "Lessons Learned for Data Center Regulation: A Conversation with Minnesota Advocates",
+          "source": "Climate XChange",
+          "url": "https://climate-xchange.org/2026/01/lessons-learned-for-data-center-regulation-a-conversation-with-minnesota-advocates/",
+          "takeaway": "Advocates reflect that the final bill paired environmental review thresholds (100M gallons/year) and demand fees ($2-5M/yr) with tax extensions opposed by progressives."
+        },
+        {
+          "date": "2025-08-01",
+          "title": "What Minnesotans should learn about data centers",
+          "source": "Sierra Club Minnesota",
+          "url": "https://www.sierraclub.org/minnesota/blog/2025/08/what-minnesotans-should-learn-about-data-centers",
+          "takeaway": "Sierra Club critiques HF 16 as insufficient, noting the bill extended lucrative sales tax breaks while only requiring pre-application water review above a high threshold (date approximated to month)."
+        }
+      ],
+      "public_sentiment": "DFL-aligned environmental groups (Sierra Club North Star Chapter, Clean Water Action, Clean River Partners) opposed the package, arguing tax breaks for hyperscalers outweighed the environmental guardrails and that closed-loop cooling should have been mandated. Sponsor Rep. Greg Davids (R-Preston) and industry framed it as a 'jobs bill' protecting Minnesota's competitive position. Some DFL members like Rep. Acomb supported it as necessary guardrails; Rep. Hollins opposed it as 'tax breaks for billionaires.' Bipartisan deal-making in a divided legislature produced an uneasy compromise that no advocacy coalition celebrated.",
+      "general_principles": [
+        {
+          "tag": "Preemptive review",
+          "note": "Triggers pre-application evaluation for facilities using more than 100 million gallons of water per year."
+        },
+        {
+          "tag": "Cost allocation",
+          "note": "Imposes $2-5M annual fees tied to peak electricity demand to internalize grid impacts."
+        },
+        {
+          "tag": "Closed-loop cooling",
+          "note": "Advocates pushed (unsuccessfully) for mandates on water recycling; bill establishes review framework instead."
+        },
+        {
+          "tag": "Conservation",
+          "note": "Couples water-use thresholds with clean energy tariff and sustainable design requirements."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2025-06-09",
+          "milestone": "Introduced and passed House",
+          "detail": "First reading and 85-43 House vote on opening day of 1st Special Session."
+        },
+        {
+          "date": "2025-06-10",
+          "milestone": "Passed Senate",
+          "detail": "Senate vote 40-26."
+        },
+        {
+          "date": "2025-06-14",
+          "milestone": "Signed into law",
+          "detail": "Gov. Tim Walz signed HF 16."
+        },
+        {
+          "date": "2025-06-15",
+          "milestone": "Effective date",
+          "detail": "Most provisions took effect day after enactment."
+        }
+      ]
     },
     {
       "bill_id": "CA AB 93",
@@ -39,13 +172,74 @@
       "title": "Data center water-use disclosure",
       "sponsor": "",
       "summary": "Would have required annual water-use disclosure by data centers.",
-      "scope": ["water"],
+      "scope": [
+        "water"
+      ],
       "status": "failed",
       "status_detail": "Vetoed by Gov. Newsom, Oct 2024.",
       "source_url": "",
       "last_verified": "2026-05-25",
       "verified": true,
-      "confidence": "high"
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2025-10-14",
+          "title": "Governor Vetoes Papan Bill to Track Data Center Water Use",
+          "source": "Office of Assemblymember Diane Papan",
+          "url": "https://a21.asmdc.org/press-releases/20251014-governor-vetoes-papan-bill-track-data-center-water-use",
+          "takeaway": "Papan rebuked the veto, calling AB 93 a 'reasonable, transparent approach' to documenting AI-era water demand that Newsom rejected as too rigid on industry."
+        },
+        {
+          "date": "2025-10-11",
+          "title": "California Governor vetoes data center water use bill",
+          "source": "Data Center Dynamics",
+          "url": "https://www.datacenterdynamics.com/en/news/california-governor-vetos-data-center-water-use-bill-report/",
+          "takeaway": "Newsom's veto message said he was 'reluctant to impose rigid reporting requirements about operational details on this sector' without fuller impact analysis."
+        },
+        {
+          "date": "2025-12-01",
+          "title": "Efforts to Regulate California Data Centers Falter — For Now",
+          "source": "Mayer Brown",
+          "url": "https://www.mayerbrown.com/en/insights/publications/2025/12/efforts-to-regulate-california-data-centers-falter-for-now",
+          "takeaway": "Industry attorneys note AB 93 was the modest survivor of a broader regulatory push, and even its disclosure framework was too much for the governor."
+        }
+      ],
+      "public_sentiment": "Backed by environmental and water-resource advocates and Assemblymember Diane Papan (D-San Mateo) as a transparency-first compromise after stricter proposals failed. The Data Center Coalition publicly opposed the bill, and tech industry groups warned the reporting regime would chill California investment relative to Texas, Virginia, and Arizona. Newsom sided with industry; Papan and water-policy advocates expressed frustration that even a modest disclosure framework couldn't survive, signaling broader CA reluctance to constrain AI infrastructure growth.",
+      "general_principles": [
+        {
+          "tag": "Disclosure",
+          "note": "Would have required water-use estimates at business licensing and annual self-certified actual-use reports at renewal."
+        },
+        {
+          "tag": "Transparency",
+          "note": "Aimed to surface industry-wide water demand metrics that operators currently treat as proprietary."
+        },
+        {
+          "tag": "Permit oversight",
+          "note": "Tied disclosure obligations to the local business license process rather than to environmental permitting."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2024-12-02",
+          "milestone": "Introduced",
+          "detail": "AB 93 introduced by Asm. Diane Papan for the 2025-26 session."
+        },
+        {
+          "date": "2025-09-11",
+          "milestone": "Final legislative approval",
+          "detail": "Cleared the California State Legislature."
+        },
+        {
+          "date": "2025-09-15",
+          "milestone": "Enrolled and sent to Governor"
+        },
+        {
+          "date": "2025-10-11",
+          "milestone": "Vetoed",
+          "detail": "Gov. Gavin Newsom vetoed the bill, ending its progress."
+        }
+      ]
     },
     {
       "bill_id": "GA SB 421",
@@ -54,13 +248,71 @@
       "title": "Data Center Transparency Act",
       "sponsor": "Sen. RaShaun Kemp (D-38) (lead); co-sponsors Anderson, Davenport, Echols",
       "summary": "Would have barred Georgia local governments, authorities, and political subdivisions from entering NDAs concealing a data center's water or electricity usage.",
-      "scope": ["water", "energy"],
+      "scope": [
+        "water",
+        "energy"
+      ],
       "status": "failed",
       "status_detail": "Read and referred to Senate Regulated Industries 2026-01-27; died at end of 2025-2026 biennium (sine die 2026-04-02) without crossover.",
       "source_url": "https://legiscan.com/GA/bill/SB421/2025",
       "last_verified": "2026-05-25",
       "verified": true,
-      "confidence": "high"
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-04-03",
+          "title": "Georgia lawmakers' failure to act on data center concerns draws community ire",
+          "source": "The Current GA",
+          "url": "https://thecurrentga.org/2026/04/03/georgia-lawmakers-failure-to-act-on-data-center-concerns-draws-community-ire/",
+          "takeaway": "Session ended sine die with no transparency bill reaching Gov. Kemp; community groups denounced legislators for letting NDA-shielded water and power deals continue."
+        },
+        {
+          "date": "2026-04-09",
+          "title": "Bills to Protect Ratepayers From Data Centers Fail in Georgia Legislature",
+          "source": "Inside Climate News",
+          "url": "https://insideclimatenews.org/news/09042026/georgia-legislature-data-center-bills-fail/",
+          "takeaway": "SB 421 was among the transparency measures that died without a hearing, leaving Georgia with no statutory mechanism to force disclosure of data center water and electricity use."
+        },
+        {
+          "date": "2026-01-23",
+          "title": "Sen. RaShaun Kemp Introduces Legislation to Address Data Center Transparency",
+          "source": "Georgia Senate Press Office",
+          "url": "https://senatepress.net/sen-rashaun-kemp-introduces-legislation-to-address-data-center-transparency.html",
+          "takeaway": "Kemp framed the bill around blocking NDAs that prevent the public from learning data center utility consumption, calling current secrecy 'alarming.'"
+        }
+      ],
+      "public_sentiment": "Bipartisan sponsorship — Sen. RaShaun Kemp (D-Atlanta) joined by Sen. Drew Echols (R-49) — signaled rare cross-aisle alignment, with support from environmental and community groups (Science for Georgia, local residents fighting hyperscale projects in DeKalb and metro Atlanta). However, the bill never received a hearing, suggesting quiet opposition from Georgia Power, the Data Center Coalition, and Republican leadership that controls the Senate calendar. Democrats, per WRDW reporting, see the legislature's inaction as a 2026 electoral opportunity.",
+      "general_principles": [
+        {
+          "tag": "Transparency",
+          "note": "Would have forced local governments to disclose water and electricity used by data center projects."
+        },
+        {
+          "tag": "NDA prohibition",
+          "note": "Core mechanism: bars counties and municipalities from signing nondisclosure agreements that hide utility consumption figures."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "Targets the local-government side of secrecy rather than directly regulating data center operators."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-01-23",
+          "milestone": "Introduced",
+          "detail": "Sen. RaShaun Kemp (D-38) introduced SB 421 with Sen. Drew Echols (R-49) as co-sponsor."
+        },
+        {
+          "date": "2026-01-27",
+          "milestone": "Senate Read and Referred",
+          "detail": "Referred to committee; no hearing ever scheduled."
+        },
+        {
+          "date": "2026-04-02",
+          "milestone": "Died sine die",
+          "detail": "Session adjourned shortly after midnight April 3 with bill never receiving a hearing or vote."
+        }
+      ]
     },
     {
       "bill_id": "OH SB 378",
@@ -69,13 +321,65 @@
       "title": "Responsible Water Use by Data Centers Act",
       "sponsor": "Sens. Willis Blackshear Jr. (D-Dayton) and Casey Weinstein (D-Hudson); co-sponsor Sen. Kent Smith (D-Euclid)",
       "summary": "Makes data centers responsible for the water/sewer infrastructure costs they cause, requires a Division of Water Resources permit to consume water, and caps consumptive use at 5 MGD averaged over 30 days.",
-      "scope": ["water"],
+      "scope": [
+        "water"
+      ],
       "status": "introduced",
       "status_detail": "Introduced 2026-03-16; referred to Senate Public Utilities Committee.",
       "source_url": "https://www.legislature.ohio.gov/legislation/136/sb378",
       "last_verified": "2026-05-25",
       "verified": true,
-      "confidence": "high"
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-05-13",
+          "title": "Lawmakers announce Ohio Joint Data Center Committee",
+          "source": "Spectrum News 1",
+          "url": "https://spectrumnews1.com/oh/columbus/news/2026/05/13/ohio-joint-data-center-committee",
+          "takeaway": "Bipartisan legislators form joint committee to study data center impacts, signaling SB 378 is part of a broader regulatory push rather than an isolated effort."
+        },
+        {
+          "date": "2026-03-30",
+          "title": "Ohio moves to ban data center construction through constitutional amendment as legislature introduces 4 regulatory bills in one week",
+          "source": "Scioto Valley Guardian",
+          "url": "https://sciotovalleyguardian.com/2026/03/30/ohio-moves-to-ban-data-center-construction-through-constitutional-amendment-as-legislature-introduces-4-regulatory-bills-in-one-week/",
+          "takeaway": "SB 378 is grouped with three other bills (SB 374, SB 381, HB 784) as part of a coordinated legislative response to data center concerns; no hearings scheduled yet."
+        },
+        {
+          "date": "2026-03-18",
+          "title": "Another Ohio bill looks to further regulate data centers, focusing on water usage",
+          "source": "Spectrum News 1",
+          "url": "https://spectrumnews1.com/oh/columbus/news/2026/03/18/ohio-bill-data-centers-water",
+          "takeaway": "Outlines the 5 MGD/30-day cap and infrastructure cost-shift to data centers, framing the bill as protecting other ratepayers from subsidizing data center demand."
+        }
+      ],
+      "public_sentiment": "Support is concentrated among Ohio Senate Democrats (Blackshear, Weinstein, Smith, plus Minority Leader Antonio calling for bipartisan accountability) and grassroots groups like Save Ohio Parks active in opposing data center wastewater permits. Industry opposition has not yet been publicly voiced on SB 378 specifically, but the Data Center Coalition and major hyperscalers have historically resisted such caps. With Republicans controlling the Senate, the bill's path through the Public Utilities Committee is uncertain.",
+      "general_principles": [
+        {
+          "tag": "Conservation",
+          "note": "Hard 5 MGD/30-day cap on consumptive water use, with permit suspension if violated."
+        },
+        {
+          "tag": "Cost allocation",
+          "note": "Data centers must bear all water/sewer infrastructure costs they cause; protects existing ratepayers."
+        },
+        {
+          "tag": "Permit oversight",
+          "note": "Requires permit from Division of Water Resources chief before consumptive withdrawal."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-03-16",
+          "milestone": "Introduced",
+          "detail": "Sponsored by Sens. Blackshear, Weinstein, Smith (all D)."
+        },
+        {
+          "date": "2026-03-16",
+          "milestone": "Referred to committee",
+          "detail": "Senate Public Utilities Committee."
+        }
+      ]
     },
     {
       "bill_id": "OH HB 784",
@@ -84,13 +388,65 @@
       "title": "Data center water-consumption reporting",
       "sponsor": "Reps. Christine Cockley (D-Columbus) and Crystal Lett (D-Columbus)",
       "summary": "Enacts ORC 9.484 / 1521.301: requires data centers withdrawing waters of the state to file monthly and annual water-consumption reports with the Division of Water Resources and bars data-center water info from NDAs with political subdivisions.",
-      "scope": ["water"],
+      "scope": [
+        "water"
+      ],
       "status": "introduced",
       "status_detail": "Introduced in the 136th General Assembly; pending in House committee (House Technology & Innovation hearings referenced in late-2025 testimony).",
       "source_url": "https://www.legislature.ohio.gov/legislation/136/hb784",
       "last_verified": "2026-05-25",
       "verified": true,
-      "confidence": "medium"
+      "confidence": "medium",
+      "recent_news": [
+        {
+          "date": "2026-04-06",
+          "title": "Data center controversies continue in Ohio",
+          "source": "OSU Farm Office",
+          "url": "https://farmoffice.osu.edu/blog/mon-04062026-1124am/data-center-controversies-continue-ohio",
+          "takeaway": "Frames HB 784 within rural Ohio's growing pushback against data center water and land impacts, alongside Ohio EPA's contested wastewater permit."
+        },
+        {
+          "date": "2026-03-30",
+          "title": "Ohio moves to ban data center construction through constitutional amendment as legislature introduces 4 regulatory bills in one week",
+          "source": "Scioto Valley Guardian",
+          "url": "https://sciotovalleyguardian.com/2026/03/30/ohio-moves-to-ban-data-center-construction-through-constitutional-amendment-as-legislature-introduces-4-regulatory-bills-in-one-week/",
+          "takeaway": "Groups HB 784 with three Senate bills as a coordinated regulatory push; characterizes it as a basic reporting requirement compared to SB 378's hard caps."
+        },
+        {
+          "date": "2026-03-24",
+          "title": "Ohio State Representatives introduce bill to track data center water usage",
+          "source": "ABC 6 On Your Side",
+          "url": "https://abc6onyourside.com/news/local/ohio-state-representatives-introduce-bill-to-track-data-center-water-usage-enviornment-green-energy-data-power-tech-renewable-electricity",
+          "takeaway": "Cockley and Lett pitch the bill on transparency grounds, noting Ohio hosts 200+ data centers without statewide water reporting, and explicitly target NDA secrecy with municipalities."
+        }
+      ],
+      "public_sentiment": "Sponsored by two Columbus-area House Democrats (Cockley, Lett) framing it as a transparency measure rather than a restriction. The NDA prohibition aligns with watchdog and ratepayer concerns raised by groups like Save Ohio Parks and Central Ohio residents fighting opaque data center deals. No industry opposition has been publicly logged yet, but Data Center Coalition and operators historically resist mandatory granular reporting. As a House minority bill, prospects in the Republican-controlled chamber are uncertain.",
+      "general_principles": [
+        {
+          "tag": "Transparency",
+          "note": "Mandatory monthly and annual water consumption reports to Division of Water Resources."
+        },
+        {
+          "tag": "NDA prohibition",
+          "note": "Bars data centers from concealing water usage behind nondisclosure agreements with municipalities."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "Public access to standardized water data for 200+ Ohio data centers that currently report nothing."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-03-24",
+          "milestone": "Introduced",
+          "detail": "Reps. Cockley and Lett (both D-Columbus)."
+        },
+        {
+          "date": "2026-03-25",
+          "milestone": "Referred to committee",
+          "detail": "Awaiting House committee action."
+        }
+      ]
     },
     {
       "bill_id": "SC H 4583",
@@ -99,13 +455,79 @@
       "title": "South Carolina Data Center Responsibility Act",
       "sponsor": "Reps. Cromer, Gilreath, Oremus, Chumley (plus co-sponsors)",
       "summary": "Would require data centers to use closed-loop water/liquid cooling with zero net withdrawal and zero wastewater discharge, mandate annual third-party-verified certifications, and impose strict liability for environmental damage.",
-      "scope": ["water"],
+      "scope": [
+        "water"
+      ],
       "status": "introduced",
       "status_detail": "Referred to House Labor, Commerce and Industry 2026-01-13; co-sponsor Atkinson added 2026-02-18; still in committee.",
       "source_url": "https://www.scstatehouse.gov/sess126_2025-2026/bills/4583.htm",
       "last_verified": "2026-05-25",
       "verified": true,
-      "confidence": "high"
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-04-27",
+          "title": "S.C. Senate waters down data center reform",
+          "source": "SC Policy Council",
+          "url": "https://www.scpolicycouncil.org/s_c_senate_waters_down_data_center_reform",
+          "takeaway": "Argues the Senate's preferred S. 867 / budget proviso approach is far weaker than House measures like H 4583, framing the Cromer bill as the high-water mark for substantive reform."
+        },
+        {
+          "date": "2026-02-24",
+          "title": "PMPA talks data center legislation, large electric power loads",
+          "source": "Upstate Today",
+          "url": "https://upstatetoday.com/news/pmpa-talks-data-center-legislation-large-electric-power-loads/article_997f6e05-427b-42b3-8375-2d4d2a7cb067.html",
+          "takeaway": "PMPA general manager Joel Ledbetter publicly dismisses H 4583 as probably 'not going anywhere,' while Westminster's Kevin Bronson backs softer 'guardrails' instead of energy-independence mandates."
+        },
+        {
+          "date": "2026-01-13",
+          "title": "H 4583 introduced in South Carolina House",
+          "source": "South Carolina Legislature",
+          "url": "https://www.scstatehouse.gov/sess126_2025-2026/bills/4583.htm",
+          "takeaway": "Rep. April Cromer (R-Anderson) and bipartisan co-sponsors file the most aggressive data center bill in the country: closed-loop cooling, zero discharge, energy independence, and strict liability."
+        }
+      ],
+      "public_sentiment": "Sponsored by a bipartisan but ideologically heterodox group led by Republican Rep. April Cromer (R-Anderson), with eight co-sponsors. SC Policy Council backs strong reform and has criticized the Senate for diluting it. Municipal utilities (PMPA's Joel Ledbetter) and Westminster city officials publicly dismiss the bill as unworkable, and the Senate has signaled preference for S. 867's softer Tier-based permitting. The bill is widely viewed even by reform allies as a marker rather than a vehicle expected to pass.",
+      "general_principles": [
+        {
+          "tag": "Closed-loop cooling",
+          "note": "Mandates sealed cooling with zero net withdrawal and zero discharge; bans evaporative and open-loop systems."
+        },
+        {
+          "tag": "Strict liability",
+          "note": "Imposes non-transferable strict liability for environmental and public health damage; bars indemnification or shell-entity shielding."
+        },
+        {
+          "tag": "Anti-corporate-welfare",
+          "note": "Prohibits state or local taxpayer-funded incentives benefiting data centers."
+        },
+        {
+          "tag": "Conservation",
+          "note": "Bans groundwater extraction and municipal water use for cooling; requires on-site power generation."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2025-12-16",
+          "milestone": "Prefiled",
+          "detail": "Referred to House Labor, Commerce and Industry Committee."
+        },
+        {
+          "date": "2026-01-13",
+          "milestone": "Introduced",
+          "detail": "Read first time; sponsors Cromer, Gilreath, Oremus, Chumley."
+        },
+        {
+          "date": "2026-01-20",
+          "milestone": "Co-sponsor added",
+          "detail": "Rep. White."
+        },
+        {
+          "date": "2026-02-18",
+          "milestone": "Co-sponsor added",
+          "detail": "Rep. Atkinson; total co-sponsors now eight."
+        }
+      ]
     },
     {
       "bill_id": "CA AB 1577",
@@ -114,13 +536,92 @@
       "title": "Data center energy/water reporting",
       "sponsor": "Assemblymember Rebecca Bauer-Kahan",
       "summary": "Requires data-center owners to report location, size, PUE, WUE, total water consumption, and on-site fuel use to the California Energy Commission; CEC publishes annual aggregated/anonymized data and adds a data-center electrical-load assessment to the 2029 IEPR.",
-      "scope": ["water", "energy"],
+      "scope": [
+        "water",
+        "energy"
+      ],
       "status": "introduced",
       "status_detail": "Amended in Assembly 2026-05-18 (prior amendments 2026-01-12, -03-26, -04-13); still pending in the Assembly.",
       "source_url": "https://leginfo.legislature.ca.gov/faces/billNavClient.xhtml?bill_id=202520260AB1577",
       "last_verified": "2026-05-25",
       "verified": true,
-      "confidence": "high"
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-05-18",
+          "title": "AB 1577 amended on Assembly floor; ordered to third reading",
+          "source": "California Legislative Information",
+          "url": "https://leginfo.legislature.ca.gov/faces/billStatusClient.xhtml?bill_id=202520260AB1577",
+          "takeaway": "Bill survives Appropriations suspense file with amendments (11-4 vote) and is positioned for an Assembly floor vote, indicating it is moving despite past industry resistance."
+        },
+        {
+          "date": "2026-04-20",
+          "title": "AB 1577 advances out of Assembly Utilities & Energy Committee",
+          "source": "California Legislative Information",
+          "url": "https://leginfo.legislature.ca.gov/faces/billStatusClient.xhtml?bill_id=202520260AB1577",
+          "takeaway": "9-4 committee vote sends bill to Appropriations, signaling Democratic majority support but persistent Republican opposition."
+        },
+        {
+          "date": "2025-12-29",
+          "title": "Big Tech blocks California data center rules, leaving only a study requirement",
+          "source": "CalMatters",
+          "url": "https://calmatters.org/environment/2025/12/data-center-energy-study-california/",
+          "takeaway": "Bauer-Kahan's prior bill AB 222 was gutted under Big Tech pressure (Silicon Valley Leadership Group, Data Center Coalition) and a related water-reporting bill was vetoed by Newsom, setting hostile precedent for AB 1577."
+        }
+      ],
+      "public_sentiment": "Sponsor Bauer-Kahan frames AB 1577 as consumer protection ('powering data centers can't come at the cost of powering homes'), echoing The Utility Reform Network and ratepayer advocates. Big Tech and the Data Center Coalition successfully gutted her prior AB 222 and Sen. Padilla's water bill in 2025, and similar opposition is expected. Governor Newsom's 2025 veto of AB 93 (water reporting) is a warning sign even if the legislature passes AB 1577. The 11-4 and 9-4 committee splits suggest party-line dynamics.",
+      "general_principles": [
+        {
+          "tag": "Transparency",
+          "note": "Monthly CEC reporting of PUE, WUE, water and energy consumption, onsite generation, and noise."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "Anonymized aggregated data published annually; raw data shared with local permitting agencies."
+        },
+        {
+          "tag": "Permit oversight",
+          "note": "Data feeds local land-use, infrastructure, and environmental review."
+        },
+        {
+          "tag": "Federal coordination",
+          "note": "Adopts EU-style PUE/WUE metrics to align California with international reporting standards."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-01-12",
+          "milestone": "Introduced",
+          "detail": "Bauer-Kahan (Assembly)."
+        },
+        {
+          "date": "2026-03-26",
+          "milestone": "Amended in Assembly"
+        },
+        {
+          "date": "2026-04-13",
+          "milestone": "Amended in Assembly"
+        },
+        {
+          "date": "2026-04-20",
+          "milestone": "Passed Utilities & Energy",
+          "detail": "9-4 vote; re-referred to Appropriations."
+        },
+        {
+          "date": "2026-05-06",
+          "milestone": "Appropriations suspense file"
+        },
+        {
+          "date": "2026-05-14",
+          "milestone": "Passed Appropriations",
+          "detail": "11-4 vote with author's amendments."
+        },
+        {
+          "date": "2026-05-18",
+          "milestone": "Amended; second reading",
+          "detail": "Floor vote pending on Assembly 3rd Reading File."
+        }
+      ]
     },
     {
       "bill_id": "IA HF 2447",
@@ -129,13 +630,75 @@
       "title": "Data center water and energy reporting",
       "sponsor": "Rep. Cindy Golding (R-Cedar Rapids)",
       "summary": "Would have required data centers to file quarterly water-use reports (volume, source, efficiency) with Iowa DNR and quarterly energy reports with the Iowa Utilities Commission, with public posting within 30 days, and directed IUC to create a data-center-specific rate class.",
-      "scope": ["water", "energy"],
+      "scope": [
+        "water",
+        "energy"
+      ],
       "status": "failed",
       "status_detail": "Introduced in the 91st GA; survived first funnel; substantive content carried into successor committee bill HF 2690. HF 2447 itself did not advance further; 91st GA adjourned sine die.",
       "source_url": "https://www.legis.iowa.gov/legislation/BillBook?ba=HF2447&ga=91",
       "last_verified": "2026-05-25",
       "verified": true,
-      "confidence": "medium"
+      "confidence": "medium",
+      "recent_news": [
+        {
+          "date": "2026-03-21",
+          "title": "Transparency Needed for Data Centers",
+          "source": "Sierra Club Iowa Chapter",
+          "url": "https://www.sierraclub.org/iowa/blog/2026/03/transparency-needed-data-centers",
+          "takeaway": "Sierra Club Iowa endorsed the successor bill HF 2690 as 'pro-transparency, pro-fairness, pro-Iowa' and announced it failed the second funnel, ending its chances for the 91st GA."
+        },
+        {
+          "date": "2026-02-19",
+          "title": "Iowa bill would require data centers to report water and energy use",
+          "source": "Axios Des Moines",
+          "url": "https://www.axios.com/local/des-moines/2026/02/19/iowa-lawmakers-push-data-center-transparency",
+          "takeaway": "Coverage details Rep. Golding's quarterly water/energy reporting bill and notes Microsoft (West Des Moines campus) declined to comment while Iowa State Association of Counties backed it."
+        },
+        {
+          "date": "2026-02-17",
+          "title": "Lawmakers look to regulate utility use by data centers",
+          "source": "Iowa Public Radio",
+          "url": "https://www.iowapublicradio.org/state-government-news/2026-02-17/lawmakers-look-to-regulate-utility-use-by-data-centers",
+          "takeaway": "Iowa House subcommittee advanced HF 2447 with Sierra Club support; utilities warned the construction-pause-pending-tariff provision could disrupt multimillion-dollar projects."
+        }
+      ],
+      "public_sentiment": "Bipartisan reform interest paired with growing rural unease about aquifers and rate-shifting. Supporters include Sierra Club Iowa (Pam Mackey-Taylor) and Iowa State Association of Counties (Jamie Cashman); the bill was carried by a Republican (Rep. Cindy Golding) citing 'horror stories' from other states. Utilities and MidAmerican Energy were cautious or non-committal, and Microsoft declined to comment. The successor HF 2690 ultimately died at the second funnel, suggesting industry-friendly resistance prevailed.",
+      "general_principles": [
+        {
+          "tag": "Transparency",
+          "note": "Quarterly water and energy reports posted publicly within 30 days of filing."
+        },
+        {
+          "tag": "Cost allocation",
+          "note": "Mandates a separate utility rate class so grid upgrade costs are not shifted to households."
+        },
+        {
+          "tag": "Preemptive review",
+          "note": "Bars data center construction until utilities file the new data-center-specific electric tariff."
+        },
+        {
+          "tag": "Conservation",
+          "note": "Reports must include water source and efficiency metrics, signaling concern for aquifers."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-02-17",
+          "milestone": "House Commerce subcommittee advances HF 2447",
+          "detail": "Bill survived first funnel review."
+        },
+        {
+          "date": "2026-02-20",
+          "milestone": "Survives first funnel deadline",
+          "detail": "Eligible for full House debate; content rolled into HF 2690."
+        },
+        {
+          "date": "2026-03-21",
+          "milestone": "Successor HF 2690 fails second funnel",
+          "detail": "Effectively kills the package for the 91st General Assembly."
+        }
+      ]
     },
     {
       "bill_id": "MI SB 762",
@@ -144,13 +707,66 @@
       "title": "Data center water and electricity reporting",
       "sponsor": "Sen. Sue Shink (D-14) (lead); co-introduced with Sens. Rosemary Bayer and Erika Geiss",
       "summary": "Requires the Michigan Public Service Commission to publish annual public reports of each data center's water usage (by service area) and electricity consumption (in GWh) beginning in 2027.",
-      "scope": ["water", "energy"],
+      "scope": [
+        "water",
+        "energy"
+      ],
       "status": "introduced",
       "status_detail": "Introduced and referred to Senate Energy and Environment 2025-12-18; still in committee.",
       "source_url": "https://legislature.mi.gov/Bills/Bill?ObjectName=2025-SB-0762",
       "last_verified": "2026-05-25",
       "verified": true,
-      "confidence": "high"
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-04-23",
+          "title": "Public overwhelmingly opposes data centers at House committee hearing",
+          "source": "WILX News 10",
+          "url": "https://www.wilx.com/2026/04/23/public-overwhelmingly-opposes-data-centers-house-committee-hearing/",
+          "takeaway": "Over 170 Michiganders signed up to testify against data centers at a House Oversight hearing; only two registered in support and neither showed, signaling strong grassroots backing for SB 762's transparency premise."
+        },
+        {
+          "date": "2025-12-19",
+          "title": "Michigan Bills Target Data Center Water Use, Utility Costs",
+          "source": "Government Technology",
+          "url": "https://www.govtech.com/policy/michigan-bills-target-data-center-water-use-utility-costs",
+          "takeaway": "Describes SB 761-763 package introduced the prior day, including SB 762's MPSC annual reporting mandate, and ties it to opposition over the 1.4 GW OpenAI/Oracle Saline Township proposal."
+        },
+        {
+          "date": "2025-12-18",
+          "title": "Sens. Bayer, Shink, and Geiss Introduce Bills to Regulate Large-Scale Data Centers",
+          "source": "Michigan Senate Democrats",
+          "url": "https://senatedems.com/geiss/2025/12/18/data-centers/",
+          "takeaway": "Official introduction announcement framing SB 762 as a transparency measure requiring annual public MPSC reports on data center energy and water use beginning in 2027."
+        }
+      ],
+      "public_sentiment": "Strong grassroots support among Michigan residents worried about farmland loss, fresh water, and energy demand, validated by lopsided public testimony in the April 2026 House Oversight hearing. Senate Democrats (Shink, Bayer, Geiss) lead with bipartisan cosponsorship from Sen. Jon Bumstead (R). Consumers Energy pushed back, asserting data centers won't raise residential bills and could fund infrastructure, while industry has not yet mobilized visible opposition specifically against the transparency-only SB 762.",
+      "general_principles": [
+        {
+          "tag": "Transparency",
+          "note": "Requires MPSC to publish annual public reports of each data center's water use by service area and electricity use in GWh."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "Codifies a statewide reporting baseline starting in 2027 rather than capping consumption."
+        },
+        {
+          "tag": "Permit oversight",
+          "note": "Companion bills (SB 761, 763) pair disclosure with withdrawal caps and ratepayer protections."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2025-12-18",
+          "milestone": "Introduced by Sen. Sue Shink",
+          "detail": "Referred same day to Senate Committee on Energy and Environment."
+        },
+        {
+          "date": "2026-04-23",
+          "milestone": "House Oversight hears related data center testimony",
+          "detail": "Indirect momentum; SB 762 itself remained in Senate committee."
+        }
+      ]
     },
     {
       "bill_id": "KS SB 400",
@@ -159,13 +775,58 @@
       "title": "Data center closed-loop cooling",
       "sponsor": "Senate Committee on Utilities (committee bill)",
       "summary": "Would have required data centers in Kansas to use closed-loop cooling systems and authorized municipalities, county/district attorneys, and the AG to seek injunctions against non-compliant facilities.",
-      "scope": ["water"],
+      "scope": [
+        "water"
+      ],
       "status": "failed",
       "status_detail": "Introduced in the 2025-2026 session by the Senate Utilities Committee; died in committee with no floor action.",
       "source_url": "https://www.kslegislature.gov/b2025_26/bills/sb400/",
       "last_verified": "2026-05-25",
       "verified": true,
-      "confidence": "medium"
+      "confidence": "medium",
+      "recent_news": [
+        {
+          "date": "2026-03-03",
+          "title": "State Data Center Water Usage Legislation Gains Momentum in 2025",
+          "source": "MultiState",
+          "url": "https://www.multistate.us/insider/2026/3/3/state-data-center-water-usage-legislation-gains-momentum",
+          "takeaway": "Industry policy tracker flags SB 400 as Kansas's distinctive contribution requiring closed-loop cooling with enforcement via injunctions by municipalities, local DAs, and the state attorney general."
+        },
+        {
+          "date": "2026-05-15",
+          "title": "Want to pack a public meeting in Kansas? Just say it's about a 'data center'",
+          "source": "High Plains Public Radio",
+          "url": "https://www.hppr.org/hppr-news/2026-05-15/want-to-pack-a-public-meeting-in-kansas-just-say-its-about-a-data-center",
+          "takeaway": "Documents Kansas's intense local backlash against data center proposals that formed the political backdrop for SB 400, even as the bill itself died without a hearing."
+        }
+      ],
+      "public_sentiment": "Public sentiment in Kansas has turned sharply against data centers at the local level, fueling withdrawals like Gardner and a Senate Majority Leader Chase Blasi (R) request for a three-year Sedgwick County moratorium. But at the Capitol, SB 400 had no organized advocacy coalition; it was a committee-introduced bill requested by Sen. Mike Thompson (R) that died quietly, suggesting industry lobby influence after SB 98's 2025 hyperscale tax break outweighed grassroots water concerns.",
+      "general_principles": [
+        {
+          "tag": "Closed-loop cooling",
+          "note": "Would have mandated closed-loop systems statewide to minimize evaporative water loss."
+        },
+        {
+          "tag": "Strict liability",
+          "note": "Granted municipalities, local DAs, and the AG injunction power against non-compliant data centers."
+        },
+        {
+          "tag": "Conservation",
+          "note": "Framed as a direct mitigation of consumptive water draw on Kansas aquifers."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-01-01",
+          "milestone": "Introduced in Senate (approx.)",
+          "detail": "Filed in the 2025-2026 session by Senate Committee on Utilities at Sen. Thompson's request; exact intro date not published on bill page."
+        },
+        {
+          "date": "2026-05-01",
+          "milestone": "Died in committee",
+          "detail": "No floor action; bill page confirms the measure failed to advance past committee."
+        }
+      ]
     },
     {
       "bill_id": "US HR 6984",
@@ -174,13 +835,71 @@
       "title": "Data Center Transparency Act",
       "sponsor": "Rep. Rob Menendez (D-NJ-8); co-led by Rep. Greg Casar (D-TX-35)",
       "summary": "Directs EPA and EIA to collect and publish data on data centers' electricity consumption and air- and water-quality impacts, with EIA reporting every six months.",
-      "scope": ["energy", "water"],
+      "scope": [
+        "energy",
+        "water"
+      ],
       "status": "introduced",
       "status_detail": "Introduced 2026-01-08 in the 119th Congress; referred to House Energy and Commerce; no further action as of mid-May 2026.",
       "source_url": "https://www.congress.gov/bill/119th-congress/house-bill/6984",
       "last_verified": "2026-05-25",
       "verified": true,
-      "confidence": "high"
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-02-19",
+          "title": "Could a New Illinois Bill Be a Blueprint for Curbing Data Centers' Climate Impacts?",
+          "source": "Inside Climate News",
+          "url": "https://insideclimatenews.org/news/19022026/illinois-data-center-impacts-bill/",
+          "takeaway": "Frames the federal-state transparency push as a coordinated movement, with Data Center Coalition pushing back on prescriptive disclosure rules as 'impractical.'"
+        },
+        {
+          "date": "2026-01-13",
+          "title": "U.S. House Representative Robert Menendez introduces bill to regulate data center energy generation and monitor water use",
+          "source": "National Ground Water Association",
+          "url": "https://www.ngwa.org/detail/news/2026/01/13/u.s.-house-of-representative-robert-menendez-introduces-bill-to-regulate-data-center-energy-generation-and-monitor-water-use",
+          "takeaway": "Confirms the bill mandates EPA quarterly reports to Congress on data center water/energy use, reuse, pollution discharge, and local supply impacts."
+        },
+        {
+          "date": "2026-01-13",
+          "title": "Democrats target data centers' energy, water use",
+          "source": "E&E News by POLITICO",
+          "url": "https://www.eenews.net/articles/democrats-target-data-centers-energy-water-use/",
+          "takeaway": "Positions HR 6984 (paired with the PRICE Act) as the Democratic caucus's opening federal salvo on AI data center environmental impacts."
+        }
+      ],
+      "public_sentiment": "Endorsed by the National Consumers League and aligned with broader environmental advocacy (Sierra Club, NRDC, GreenLatinos active on companion state bills like Illinois's POWER Act). The Data Center Coalition has publicly characterized prescriptive disclosure mandates as 'impractical' in parallel state fights, signaling industry resistance. Coverage is partisan-skewed — Democrats frame it as ratepayer/environmental protection, while Republican leadership in House Energy and Commerce has shown no movement to advance it.",
+      "general_principles": [
+        {
+          "tag": "Transparency",
+          "note": "Requires EPA and EIA to collect and publicly report data center electricity, air, and water impacts."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "Mandates reporting of annual energy consumption, electricity provider, and power purchase agreements."
+        },
+        {
+          "tag": "Federal coordination",
+          "note": "Splits oversight between EPA (environmental impacts) and EIA (electricity data)."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-01-08",
+          "milestone": "Introduced",
+          "detail": "Introduced by Rep. Rob Menendez (D-NJ-8) with original co-lead Rep. Greg Casar (D-TX-35)."
+        },
+        {
+          "date": "2026-01-08",
+          "milestone": "Referred to committee",
+          "detail": "House Committee on Energy and Commerce."
+        },
+        {
+          "date": "2026-05-12",
+          "milestone": "Cosponsors added",
+          "detail": "Grew to ~5 Democratic cosponsors (Houlahan, Carson, Craig) through spring 2026; no markup scheduled."
+        }
+      ]
     },
     {
       "bill_id": "US HR 5332",
@@ -189,13 +908,75 @@
       "title": "Liquid Cooling for AI Act of 2025",
       "sponsor": "Rep. Jay Obernolte (R-CA-23); 10 co-sponsors",
       "summary": "Directs the Comptroller General to conduct a technology assessment of liquid-cooling systems for AI compute clusters and HPC facilities and to develop federal best-practice guidance for agencies; does NOT impose mandatory rules on private data centers.",
-      "scope": ["water"],
+      "scope": [
+        "water"
+      ],
       "status": "introduced",
       "status_detail": "Introduced 2025-09-11 in the 119th Congress; referred to House Energy and Commerce and to House Science, Space, and Technology.",
       "source_url": "https://www.congress.gov/bill/119th-congress/house-bill/5332",
       "last_verified": "2026-05-25",
       "verified": true,
-      "confidence": "high"
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-04-15",
+          "title": "Senate Energy Subcommittee holds hearing touching on liquid cooling companion bill (S. 3269)",
+          "source": "Congress.gov / U.S. Senate ENR",
+          "url": "https://www.congress.gov/bill/119th-congress/senate-bill/3269/all-info",
+          "takeaway": "Senate companion S. 3269 received subcommittee attention, signaling continued momentum even as the House bill stays in committee."
+        },
+        {
+          "date": "2025-11-25",
+          "title": "Lawmakers eye liquid cooling tech to solve AI data center problems",
+          "source": "FedScoop",
+          "url": "https://fedscoop.com/liquid-cool-technology-ai-data-centers-senate-house-bill/",
+          "takeaway": "Documents bipartisan House/Senate companion bills and industry endorsements from Schneider Electric, American Chemistry Council, AI Supply Chain Alliance, and Vertiv."
+        },
+        {
+          "date": "2025-09-11",
+          "title": "Rep. Obernolte Unveils Legislation to Strengthen U.S. Leadership in AI Infrastructure",
+          "source": "Office of Rep. Jay Obernolte",
+          "url": "https://obernolte.house.gov/media/press-releases/rep-obernolte-unveils-legislation-strengthen-us-leadership-ai-infrastructure",
+          "takeaway": "Sponsor framing emphasizes AI competitiveness and energy efficiency rather than environmental regulation."
+        }
+      ],
+      "public_sentiment": "Broadly favorable and uncontested. Endorsed by industry coalition including Schneider Electric, Vertiv, American Chemistry Council (Chris Jahn: 'smart, science-based decisions to keep the U.S. at the forefront'), AI Supply Chain Alliance, SEMI Americas, Chemours, and University of Delaware. No environmental or ratepayer group opposition documented; the bill is bipartisan (5 R / 6 D cosponsors) and framed as competitiveness-positive rather than regulatory. No Data Center Coalition or NetChoice opposition reported.",
+      "general_principles": [
+        {
+          "tag": "Best-practice guidance",
+          "note": "Directs Comptroller General assessment and federal-wide guidance on liquid cooling for AI/HPC."
+        },
+        {
+          "tag": "Federal coordination",
+          "note": "Energy Secretary partners with GAO and a designated industry organization on recommendations."
+        },
+        {
+          "tag": "Conservation",
+          "note": "Promotes liquid cooling as a water/energy efficiency strategy versus traditional air cooling."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2025-09-11",
+          "milestone": "Introduced",
+          "detail": "Rep. Jay Obernolte (R-CA-23) with lead cosponsor Rep. Josh Gottheimer (D-NJ)."
+        },
+        {
+          "date": "2025-09-11",
+          "milestone": "Referred to committee",
+          "detail": "House Energy and Commerce and House Science, Space, and Technology."
+        },
+        {
+          "date": "2025-11-20",
+          "milestone": "Senate companion introduced",
+          "detail": "S. 3269 by Sens. McCormick (R-PA) and Coons (D-DE)."
+        },
+        {
+          "date": "2026-04-15",
+          "milestone": "Senate subcommittee hearing",
+          "detail": "Senate Energy and Natural Resources subcommittee held a related hearing on companion bill."
+        }
+      ]
     },
     {
       "bill_id": "US S. — Data Center Water and Energy Transparency Act (Durbin; number TBD)",
@@ -204,13 +985,58 @@
       "title": "Data Center Water and Energy Transparency Act",
       "sponsor": "Sen. Dick Durbin (D-IL)",
       "summary": "Would require data-center operators to report actual energy and water consumption (plus five-year pre-construction estimates) to their states; states would aggregate/anonymize data for EPA, DOE, and USDA, who would issue joint regional reports and could fine non-compliance.",
-      "scope": ["water", "energy"],
+      "scope": [
+        "water",
+        "energy"
+      ],
       "status": "introduced",
       "status_detail": "Introduced ~2026-03-25 per Senator's press release. Canonical S. bill number not confirmed against Congress.gov; do not confuse with S. 4214 (AI Data Center Moratorium Act, introduced the same day).",
       "source_url": "https://www.durbin.senate.gov/newsroom/press-releases/as-utility-costs-rise-durbin-introduces-new-legislation-to-bring-transparency-to-energy-and-water-consumption-by-data-centers",
       "last_verified": "2026-05-25",
       "verified": false,
-      "confidence": "low"
+      "confidence": "low",
+      "recent_news": [
+        {
+          "date": "2026-03-26",
+          "title": "Data center boom raises water, power questions",
+          "source": "Western Water",
+          "url": "https://www.western-water.com/2026/03/26/data-center-boom-raises-water-power-questions/",
+          "takeaway": "Day-after coverage notes the bill responds to ~4,000 active and ~3,000 planned U.S. data centers and a 100-MW facility's water use roughly equaling 2,600 households."
+        },
+        {
+          "date": "2026-03-25",
+          "title": "As Utility Costs Rise, Durbin Introduces New Legislation To Bring Transparency To Energy & Water Consumption By Data Centers",
+          "source": "Office of Sen. Dick Durbin",
+          "url": "https://www.durbin.senate.gov/newsroom/press-releases/as-utility-costs-rise-durbin-introduces-new-legislation-to-bring-transparency-to-energy-and-water-consumption-by-data-centers",
+          "takeaway": "Original release: 5-year pre-construction projections, state-level reporting, EPA/DOE/USDA aggregated regional reports, and per-day fines for noncompliance."
+        }
+      ],
+      "public_sentiment": "Coverage is thin and no formal endorsements have been published in available reporting. The bill aligns with positions taken by Sierra Club Illinois, the Illinois Clean Jobs Coalition, and environmental advocates pushing parallel state-level transparency (Illinois POWER Act). No direct Data Center Coalition or NetChoice response to this specific federal bill has surfaced, though DCC has opposed similar prescriptive transparency provisions in Illinois state legislation. Durbin introduced it solo with no Senate cosponsors at launch.",
+      "general_principles": [
+        {
+          "tag": "Transparency",
+          "note": "Mandates actual + 5-year projected energy and water consumption disclosure for new and existing facilities."
+        },
+        {
+          "tag": "Preemptive review",
+          "note": "Requires pre-construction estimates so local governments can evaluate before approving facilities."
+        },
+        {
+          "tag": "Federal coordination",
+          "note": "States aggregate and anonymize data for EPA, DOE, and USDA joint regional reports."
+        },
+        {
+          "tag": "Cost allocation",
+          "note": "Frames disclosure as a response to data center demand driving up consumer utility costs."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-03-25",
+          "milestone": "Introduced",
+          "detail": "Sen. Dick Durbin (D-IL) introduced solo; Senate bill number not yet confirmed in public Congress.gov listings as of late May 2026."
+        }
+      ]
     }
   ]
 }

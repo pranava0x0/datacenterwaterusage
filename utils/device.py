@@ -328,6 +328,185 @@ _RESPONSIVE_CSS = """
     color: #555;
     font-size: 0.9rem;
 }
+/* --- Bill card (single-emit, native <details>) styling --- */
+/* Explicit colors throughout so cards remain readable during any Streamlit
+   stale-content overlay or theme variation. */
+.bill-card {
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    background: #ffffff;
+    color: #1a1a2e;
+}
+.bill-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.35rem;
+}
+.bill-card-id {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #1a1a2e;
+}
+.bill-card-pill {
+    color: #ffffff;
+    padding: 0.15rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+.bill-card-summary {
+    margin: 0 0 0.4rem 0;
+    line-height: 1.5;
+    color: #1a1a2e;
+}
+.bill-card-meta {
+    color: #4b5563;
+    font-size: 0.85rem;
+    margin-bottom: 0.4rem;
+}
+.bill-card-meta a {
+    color: #08519c;
+    text-decoration: none;
+}
+.bill-card-meta a:hover {
+    text-decoration: underline;
+}
+.bill-card-details {
+    margin-top: 0.5rem;
+    border-top: 1px dashed #e5e7eb;
+    padding-top: 0.4rem;
+}
+.bill-card-details > summary {
+    cursor: pointer;
+    color: #08519c;
+    font-weight: 600;
+    font-size: 0.88rem;
+    padding: 0.35rem 0;
+    list-style: none;
+}
+.bill-card-details > summary::marker,
+.bill-card-details > summary::-webkit-details-marker {
+    display: none;
+}
+.bill-card-details > summary::before {
+    content: "▸ ";
+    display: inline-block;
+    transition: transform 0.15s ease;
+    margin-right: 0.25rem;
+}
+.bill-card-details[open] > summary::before {
+    transform: rotate(90deg);
+}
+.bill-sentiment {
+    margin: 0.2rem 0 0.6rem 0;
+    line-height: 1.55;
+    color: #1f2937;
+}
+/* --- Bill detail (expander contents) styling --- */
+.bill-section-label {
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #08519c;
+    margin: 0.5rem 0 0.35rem 0;
+}
+.bill-mini-event {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.3rem 0;
+    border-bottom: 1px dashed #eef2f7;
+    font-size: 0.85rem;
+}
+.bill-mini-event:last-child {
+    border-bottom: none;
+}
+.bill-mini-date {
+    min-width: 5.5rem;
+    color: #08519c;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+.bill-mini-body {
+    flex: 1;
+    color: #1a1a2e;
+}
+.bill-mini-detail {
+    color: #555;
+}
+.bill-news-item {
+    padding: 0.4rem 0;
+    border-bottom: 1px dashed #eef2f7;
+    font-size: 0.88rem;
+}
+.bill-news-item:last-child {
+    border-bottom: none;
+}
+.bill-news-meta {
+    color: #666;
+    font-size: 0.78rem;
+}
+.bill-news-takeaway {
+    color: #333;
+    margin-top: 0.15rem;
+}
+.bill-principle-chip {
+    display: inline-block;
+    background: #eff3ff;
+    color: #08519c;
+    border: 1px solid #bdd7e7;
+    padding: 0.1rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-right: 0.4rem;
+}
+.bill-principle-row {
+    padding: 0.25rem 0;
+    font-size: 0.85rem;
+    color: #333;
+}
+/* --- CWA case card variant (reuses .bill-card base) --- */
+.cwa-year {
+    color: #4b5563;
+    font-weight: 400;
+    font-size: 0.95rem;
+}
+.cwa-section-line {
+    color: #08519c;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    font-style: italic;
+}
+.cwa-takeaway {
+    background: #f0fdf4;
+    border-left: 3px solid #2e8b57;
+    padding: 0.5rem 0.75rem;
+    margin: 0.2rem 0 0.6rem 0;
+    color: #1a1a2e;
+    line-height: 1.5;
+    border-radius: 0 0.25rem 0.25rem 0;
+}
+.cwa-sources {
+    font-size: 0.82rem;
+    color: #4b5563;
+    line-height: 1.6;
+}
+.cwa-sources a {
+    color: #08519c;
+}
+.cwa-source-type {
+    color: #6b7280;
+    font-size: 0.75rem;
+}
 </style>
 """
 

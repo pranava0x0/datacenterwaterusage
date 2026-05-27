@@ -11,8 +11,9 @@ Tests cover:
 
 from __future__ import annotations
 
-import sys
 import os
+import re
+import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -24,14 +25,19 @@ from dashboard import (
     compute_household_equivalent,
     load_legislation,
     load_company_water_claims,
+    load_cwa_investigations,
     _legislation_rows,
     _legislation_status_summary,
+    _cwa_summary,
+    _cwa_year_end,
+    _build_cwa_case_html,
     CONTEXT_DATA,
     MASLEY_COMPARISONS,
     PER_QUERY_ESTIMATES,
     SCORECARD_DATA,
     TRANSPARENCY_GAPS,
     TIMELINE_EVENTS,
+    CWA_CATEGORY_LABELS,
 )
 from utils.device import (
     MOBILE_MAX,
@@ -509,6 +515,149 @@ class TestLegislationTracker:
     def test_status_summary_is_string(self):
         summary = _legislation_status_summary(self._bills())
         assert isinstance(summary, str) and "Enacted" in summary
+
+    # --- Enrichment fields (recent_news, public_sentiment, general_principles, timeline) ---
+    # Enrichment is required for every bill so the expander never renders empty.
+    # If a future bill genuinely has no public coverage, set the field to an empty
+    # list/string explicitly so this test still catches accidental omissions.
+
+    def test_every_bill_has_enrichment_keys(self):
+        keys = {"recent_news", "public_sentiment", "general_principles", "timeline"}
+        for b in self._bills():
+            missing = keys - set(b)
+            assert not missing, f"{b['bill_id']} missing {missing}"
+
+    def test_recent_news_items_well_formed(self):
+        required = {"date", "title", "source", "url", "takeaway"}
+        for b in self._bills():
+            for item in b["recent_news"]:
+                missing = required - set(item)
+                assert not missing, f"{b['bill_id']} news missing {missing}"
+                # YYYY-MM-DD shape
+                assert re.match(r"^\d{4}-\d{2}-\d{2}$", item["date"]), item
+                assert item["url"].startswith("http"), item
+                assert item["title"] and item["takeaway"]
+
+    def test_general_principles_have_tag_and_note(self):
+        for b in self._bills():
+            principles = b["general_principles"]
+            assert isinstance(principles, list) and principles, b["bill_id"]
+            for p in principles:
+                assert p.get("tag"), f"{b['bill_id']} principle missing tag"
+                assert p.get("note"), f"{b['bill_id']} principle missing note"
+
+    def test_timeline_entries_dated_and_labeled(self):
+        for b in self._bills():
+            timeline = b["timeline"]
+            assert isinstance(timeline, list) and timeline, b["bill_id"]
+            for ev in timeline:
+                assert re.match(r"^\d{4}-\d{2}-\d{2}$", ev.get("date", "")), ev
+                assert ev.get("milestone"), f"{b['bill_id']} timeline missing milestone"
+
+    def test_public_sentiment_is_nontrivial_paragraph(self):
+        for b in self._bills():
+            sentiment = b["public_sentiment"]
+            assert isinstance(sentiment, str)
+            # Aim for at least a sentence of substance; anything shorter is a placeholder.
+            assert len(sentiment) > 80, f"{b['bill_id']} sentiment too short"
+
+
+# --- Tests for CWA investigations tracker ---
+
+VALID_CWA_CATEGORIES = {"datacenter", "industrial", "precedent"}
+
+
+class TestCWAInvestigations:
+    def _cases(self):
+        return load_cwa_investigations().get("cases", [])
+
+    def test_dataset_loads(self):
+        payload = load_cwa_investigations()
+        assert payload.get("last_updated")
+        # Want at least one case from each category so the tracker has
+        # representational coverage.
+        cases = payload.get("cases", [])
+        assert len(cases) >= 8
+
+    def test_missing_file_returns_empty(self):
+        payload = load_cwa_investigations("/nonexistent/cwa.json")
+        assert payload["cases"] == []
+
+    def test_required_fields_present(self):
+        required = {
+            "case_id",
+            "category",
+            "respondent",
+            "year",
+            "cwa_section",
+            "violation_summary",
+            "outcome",
+            "takeaway",
+            "sources",
+        }
+        for c in self._cases():
+            missing = required - set(c)
+            assert not missing, f"{c.get('case_id')} missing {missing}"
+
+    def test_categories_are_valid(self):
+        for c in self._cases():
+            assert c["category"] in VALID_CWA_CATEGORIES, c["case_id"]
+
+    def test_every_category_represented(self):
+        cats = {c["category"] for c in self._cases()}
+        assert cats == VALID_CWA_CATEGORIES, f"missing categories: {VALID_CWA_CATEGORIES - cats}"
+
+    def test_sources_well_formed(self):
+        for c in self._cases():
+            sources = c["sources"]
+            assert isinstance(sources, list) and sources, c["case_id"]
+            for s in sources:
+                assert s.get("title"), f"{c['case_id']} source missing title"
+                assert s.get("url", "").startswith("http"), f"{c['case_id']} bad source url"
+
+    def test_year_is_string(self):
+        # Year is a string (YYYY or YYYY-YYYY range), not int — flexible for
+        # multi-year investigations.
+        for c in self._cases():
+            assert isinstance(c["year"], str) and c["year"], c["case_id"]
+            assert re.match(r"^\d{4}(-\d{4})?$", c["year"]), c["year"]
+
+    def test_takeaways_are_substantive(self):
+        # Takeaway is the most important field for users — should be a real sentence.
+        for c in self._cases():
+            assert len(c["takeaway"]) > 80, f"{c['case_id']} takeaway too short"
+
+    def test_summary_string(self):
+        s = _cwa_summary(self._cases())
+        assert isinstance(s, str)
+        # Should mention at least one category label
+        assert any(lbl in s for lbl in CWA_CATEGORY_LABELS.values())
+
+    def test_card_html_renders_for_every_case(self):
+        # Smoke test: ensure _build_cwa_case_html returns a non-empty bill-card div
+        # for every real case in the dataset (catches HTML escape / missing-key bugs).
+        # We compare against an HTML-escaped substring since the renderer escapes
+        # respondent text (e.g., apostrophes → &#x27;).
+        import html as _html
+
+        for c in self._cases():
+            html_str = _build_cwa_case_html(c)
+            assert html_str.startswith('<div class="bill-card">')
+            prefix = c["respondent"].split(",")[0][:20]
+            assert _html.escape(prefix) in html_str, (
+                f"{c['case_id']}: respondent prefix not rendered"
+            )
+
+    def test_year_end_helper(self):
+        # The recent-only filter relies on this helper. Cover the common shapes.
+        assert _cwa_year_end("2024") == 2024
+        assert _cwa_year_end("1991-1997") == 1997
+        assert _cwa_year_end("2003-2007") == 2007
+        assert _cwa_year_end("") == 0
+        assert _cwa_year_end(None) == 0  # type: ignore[arg-type]
+        assert _cwa_year_end("not a year") == 0
+        # Trailing whitespace shouldn't break it.
+        assert _cwa_year_end("2025 ") == 2025
 
 
 # --- Tests for Andy Masley reality-check comparisons ---
