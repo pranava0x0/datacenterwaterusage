@@ -33,6 +33,7 @@ jobs:
           cp data/output/results.json _site/data/output/results.json
           cp data/reference/legislation.json _site/data/reference/legislation.json
           cp data/reference/company_water_claims.json _site/data/reference/company_water_claims.json
+          cp data/reference/cwa_investigations.json _site/data/reference/cwa_investigations.json
 
       - uses: actions/configure-pages@v5
 
