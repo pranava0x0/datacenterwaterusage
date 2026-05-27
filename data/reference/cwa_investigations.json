@@ -1,0 +1,960 @@
+{
+  "last_updated": "2026-05-26",
+  "note": "Clean Water Act enforcement actions and landmark precedent cases relevant to data center water use and cooling discharge. Three categories: 'datacenter' = direct CWA actions against named hyperscale operators or their contractors; 'industrial' = enforcement against large industrial water users that are the closest practical analogs (cooling water, pretreatment, sewer-system consent decrees, PFAS); 'precedent' = Supreme Court and federal appellate rulings that set the legal scope of the CWA. Comprehensive coverage for 2020-present, with foundational earlier cases retained as benchmarks (Smithfield 1997, Tyson 2003, Brayton Point 2003-2007, etc.). Direct hyperscaler enforcement remains thin because operators usually sit behind contractor-permittee structures and discharge to municipal sewers — the industrial cases show what enforcement looks like once that shield slips.",
+  "cases": [
+    {
+      "case_id": "Google-Stillwater-OK-stormwater-2025",
+      "category": "datacenter",
+      "respondent": "Manhattan Construction Company (general contractor for Google's $3B Stillwater, OK data center campus); Google is named as a co-defendant in related HOA civil suit but not in the DEQ enforcement action.",
+      "year": "2025",
+      "cwa_section": "Section 402 NPDES Construction General Permit (Oklahoma OKR10 construction stormwater program implementing CWA Section 402)",
+      "violation_summary": "On May 8, 2025, Oklahoma Department of Environmental Quality inspectors found that sediment-control BMPs at the Google Stillwater data center construction site had failed, allowing sediment-laden runoff to discharge off-site into a nearby creek and into a Park View Estates neighborhood pond. DEQ also found the Stormwater Pollution Prevention Plan (SWPPP) was missing required corrective-action reports. DEQ issued a Notice of Violation to Manhattan Construction Company.",
+      "outcome": "DEQ closed the NOV after the contractor submitted corrective actions on July 1, 2025 (weekly and post-storm stormwater inspections, restored erosion controls, completed SWPPP corrective-action documentation). No monetary penalty was publicly reported. Separately, Park View Estates HOA filed a state-court nuisance/property-damage lawsuit on August 22, 2025 in Payne County District Court against Google, Manhattan Construction Group, Olsson Inc. (engineer), and Emery Sapp & Sons (mass grading) — that is a civil suit, NOT a CWA citizen suit.",
+      "takeaway": "One of the very few documented stormwater enforcement actions tied to a hyperscale data center construction site. Notably, the regulatory action targeted the contractor under the construction general permit, not Google as operator — illustrating how data center operators are typically insulated from direct CWA liability by the contractor-permittee structure. Resident damages are being pursued in state court, not via federal CWA citizen suit.",
+      "sources": [
+        {
+          "title": "Stillwater HOA sues Google over data center, citing pond pollution and wildlife loss",
+          "url": "https://okcfox.com/news/local/stillwater-hoa-sues-google-over-data-center-citing-pond-pollution-and-wildlife-loss",
+          "type": "news"
+        },
+        {
+          "title": "In Depth: Stillwater homeowner's association sues Google over data center construction damages",
+          "url": "https://www.fox23.com/news/in-depth-stillwater-homeowners-association-sues-google-over-data-center-construction-damages/article_99ad9a49-f65a-4393-936d-4caf30bc1675.html",
+          "type": "news"
+        },
+        {
+          "title": "Lawsuit filed over Google data center in Stillwater",
+          "url": "https://www.okenergytoday.com/2025/08/lawsuit-filed-over-google-data-center-in-stillwater/",
+          "type": "news"
+        },
+        {
+          "title": "Stillwater HOA sues Google over alleged data center construction runoff",
+          "url": "https://www.news9.com/story/68a87d4cd79483d4597c5395/stillwater-homeowner-association-sues-google-data-center-construction",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Meta-MorganCo-GA-investigation-2026",
+      "category": "datacenter",
+      "respondent": "Meta Platforms Inc., Stanton Springs / Newton-Morgan County, Georgia data center campus",
+      "year": "2026",
+      "cwa_section": "Not yet formally cited. Potential CWA Section 402 (construction stormwater) and Safe Drinking Water Act review; EPA Office of Water has only pledged investigation, not issued an enforcement action.",
+      "violation_summary": "Residents of Morgan County, Georgia adjacent to Meta's Stanton Springs data center report well water turning brown and turbid following blasting and clearing for data center construction; appliances failing; families reliant on bottled water. Rep. Alexandria Ocasio-Cortez presented jars of discolored water at a congressional hearing in May 2026. EPA Assistant Administrator for Water Jessica Kramer publicly committed at that hearing to review whether the construction project has affected drinking water quality.",
+      "outcome": "PENDING — no formal CWA enforcement action, NOV, or consent order issued as of 2026-05-26. EPA review announced but not concluded. Meta commissioned its own independent groundwater study claiming no operational impact. No Georgia EPD enforcement action publicly documented.",
+      "takeaway": "Highest-profile potential CWA enforcement matter against a hyperscaler currently active, but at this point it is a pledged federal investigation, not an enforcement action. Distinguishing this from a closed case matters: as of late May 2026, no hyperscaler has been formally cited under CWA in this matter. The case illustrates both the regulatory attention now focused on data centers and the lag between resident complaints and formal agency action.",
+      "sources": [
+        {
+          "title": "EPA Official Agrees to Review Data Center Impacts on Water",
+          "url": "https://news.bloomberglaw.com/environment-and-energy/epa-to-investigate-meta-data-center-link-to-contaminated-water",
+          "type": "news"
+        },
+        {
+          "title": "AOC presses EPA over Morgan County drinking water concerns tied to Georgia data center development",
+          "url": "https://www.cbsnews.com/atlanta/news/aoc-presses-epa-over-morgan-county-drinking-water-concerns-tied-to-georgia-data-center-development/",
+          "type": "news"
+        },
+        {
+          "title": "Meta data center allegedly muddies Georgia town's drinking water, investigation underway",
+          "url": "https://www.tomshardware.com/tech-industry/big-tech/meta-data-center-allegedly-muddies-georgia-towns-drinking-water-investigation-underway-epa-promises-immediate-investigation-after-congresswoman-brings-dirty-jars-of-water-to-hearing",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Smithfield-Pagan-River-1997",
+      "category": "industrial",
+      "respondent": "Smithfield Foods, Inc. and subsidiaries Smithfield Packing Co. and Gwaltney of Smithfield (Smithfield, Virginia slaughterhouse and meat-processing complex)",
+      "year": "1991-1997",
+      "cwa_section": "Section 402 (NPDES permit) and Section 309 (civil penalties); violations of effluent and monitoring/reporting requirements under 33 U.S.C. 1311, 1318, 1342",
+      "violation_summary": "Smithfield's slaughterhouse and on-site wastewater plant repeatedly exceeded NPDES discharge limits for phosphorus, ammonia, cyanide, oil and grease, fecal coliform, and total Kjeldahl nitrogen into the Pagan River (a Chesapeake Bay tributary). The court found nearly 7,000 separate Clean Water Act violations between 1991 and 1997, including chronic limit exceedances, falsified Discharge Monitoring Reports, and a 5-year delay in installing required pollution-control upgrades.",
+      "outcome": "U.S. District Court (E.D. Va.) imposed a $12.6 million civil penalty in August 1997 — the largest CWA civil penalty in history at the time — affirmed by the Fourth Circuit in 1999. Required full upgrade of on-site wastewater treatment and tie-in to the Hampton Roads Sanitation District.",
+      "takeaway": "Establishes that chronic NPDES-limit exceedances and inaccurate Discharge Monitoring Reports trigger per-day, per-parameter civil penalties that can reach into the eight figures. Data centers self-reporting cooling-tower-blowdown DMRs face the same per-violation penalty exposure under 33 U.S.C. 1319(d).",
+      "sources": [
+        {
+          "title": "DOJ Press Release #331: Smithfield Foods Fined $12.6 Million, Largest Clean Water Act Fine Ever",
+          "url": "https://www.justice.gov/archive/opa/pr/1997/August97/331enr.htm",
+          "type": "DOJ press release"
+        },
+        {
+          "title": "EPA Newsroom: Appeals Court Upholds Ruling Against Smithfield Foods for Polluting Virginia River",
+          "url": "https://archive.epa.gov/epapages/newsroom_archive/newsreleases/c7a68726816ff7b3852567ef0053e790.html",
+          "type": "EPA press release"
+        },
+        {
+          "title": "Bay Journal: Smithfield gets record fine for polluting Virginia river",
+          "url": "https://www.bayjournal.com/article/smithfield_gets_record_fine_for_polluting_virginia_river",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Tyson-Sedalia-2003",
+      "category": "industrial",
+      "respondent": "Tyson Foods, Inc., Sedalia, Missouri poultry processing plant",
+      "year": "1996-2003",
+      "cwa_section": "Section 301/402 (NPDES effluent limits) and Section 309(c) criminal provisions for knowing discharge in violation of permit; 33 U.S.C. 1311, 1319(c), 1342",
+      "violation_summary": "Between 1996 and 2001 Tyson repeatedly discharged untreated or inadequately treated poultry-processing wastewater (high-BOD, high-nutrient loadings) from its Sedalia plant into a tributary of the Lamine River, exceeding NPDES limits for ammonia, BOD, fecal coliform, and total suspended solids. The company also falsified Discharge Monitoring Reports submitted to Missouri DNR.",
+      "outcome": "Federal criminal plea on June 25, 2003 in U.S. District Court (W.D. Mo.): Tyson pleaded guilty to 20 felony counts and paid $7.5 million total — $5.5 million federal criminal penalty, $1 million Missouri penalty, and $1 million to the Missouri Natural Resources Protection Fund — plus court-ordered upgrades to plant pretreatment.",
+      "takeaway": "Demonstrates that knowing discharge in violation of an NPDES permit (or knowingly falsified DMRs) can be charged as a felony under CWA 309(c), not just a civil matter. Cooling-water dischargers — including data centers — that under-report blowdown concentrations risk criminal exposure for individuals as well as the corporation.",
+      "sources": [
+        {
+          "title": "DOJ Press Release #383: Tyson Pleads Guilty to 20 Felonies and Agrees to Pay $7.5 Million for Clean Water Act Violations",
+          "url": "https://www.justice.gov/archive/opa/pr/2003/June/03_enrd_383.htm",
+          "type": "DOJ press release"
+        },
+        {
+          "title": "EHS Today: Tyson Foods Pleads Guilty to 20 Felonies, Agrees to $7.5 Million Fine",
+          "url": "https://www.ehstoday.com/news/ehs_imp_36455",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Brayton-Point-Dominion-2003-2007",
+      "category": "industrial",
+      "respondent": "USGen New England / Dominion Energy New England, Brayton Point Power Station (1,535 MW coal/oil-fired plant, Somerset, Massachusetts)",
+      "year": "2003-2007",
+      "cwa_section": "Section 316(a) (thermal-discharge variance) and Section 316(b) (cooling water intake structures), as implemented through Section 402 NPDES; 33 U.S.C. 1326, 1342",
+      "violation_summary": "Brayton Point's once-through cooling system withdrew nearly 1 billion gallons/day from Mount Hope Bay and discharged 42 trillion BTUs/year of waste heat, entraining and impinging billions of fish eggs, larvae, and juveniles. Mt. Hope Bay finfish populations collapsed ~87% after 1985 — EPA cited this as evidence the intake was not Best Technology Available (BTA) under 316(b) and the thermal discharge failed 316(a).",
+      "outcome": "October 2003 EPA Region 1 final NPDES permit required a 94% reduction in intake flow (to 56 MGD) and a 96% cut in thermal discharge (to 1.7 trillion BTU/yr). After litigation, December 17, 2007 settlement compelled Dominion to build two ~500-ft closed-cycle cooling towers (~$500M capital cost) — completed 2011. Plant ultimately retired in 2017.",
+      "takeaway": "Most important precedent for evaporative-cooled data centers: 316(b) BTA can require retrofitting once-through cooling to closed-cycle (i.e., cooling towers), making intake design a regulated variable for any facility withdrawing more than ~2 MGD. Future large data centers drawing from surface water will face the same BTA analysis.",
+      "sources": [
+        {
+          "title": "EPA: Brayton Point Station Power Plant, Somerset MA — Final NPDES Permit",
+          "url": "https://www.epa.gov/npdes-permits/brayton-point-station-power-plant-somerset-ma-final-npdes-permit",
+          "type": "EPA permit page"
+        },
+        {
+          "title": "EPA Newsroom (Oct 6, 2003): EPA Issues Final Permit to Reduce Environmental Damage to Mount Hope Bay From Brayton Point Power Plant",
+          "url": "https://archive.epa.gov/epapages/newsroom_archive/newsreleases/0b35588451a54383852573dd0003c3bd.html",
+          "type": "EPA press release"
+        }
+      ]
+    },
+    {
+      "case_id": "Swift-Beef-Grand-Island-2011",
+      "category": "industrial",
+      "respondent": "Swift Beef Company (subsidiary of JBS S.A.), Grand Island, Nebraska beef-processing plant",
+      "year": "2006-2011",
+      "cwa_section": "Section 307 (pretreatment standards / National Pretreatment Program) and Section 402 (NPDES via POTW); 33 U.S.C. 1317, 1342",
+      "violation_summary": "Between 2006 and 2011 Swift's beef plant repeatedly exceeded its industrial-user pretreatment permit limits when sending high-strength wastewater (BOD, ammonia, oil and grease, suspended solids) to the Grand Island POTW. The slug loads caused 'pass-through' and 'interference' at the POTW, and a 2008 upset killed fish across a 16-mile stretch of the Wood River and a 7.5-mile stretch of the Platte River.",
+      "outcome": "2011 federal consent decree (U.S. and Nebraska v. Swift Beef): $1.2 million federal/state civil penalty (split evenly), $100,000 state administrative-order penalty, $4,705 to Nebraska Game and Parks for fish restocking, plus more than $1 million in mandatory plant pretreatment upgrades. A second EPA enforcement followed in December 2023 ($275,000 for 50+ new exceedances 2018-2023).",
+      "takeaway": "Directly relevant model for data centers discharging cooling-tower blowdown to municipal sewers: pretreatment-program violations (interference / pass-through at the POTW) are independently enforceable under CWA 307, even when the data center itself holds no direct NPDES permit. Repeat offenders see escalating penalties.",
+      "sources": [
+        {
+          "title": "DOJ: Swift Beef Company to Pay $1.3 Million Penalty for Clean Water Act and State Law Violations at Its Grand Island, Nebraska Beef Processing Plant",
+          "url": "https://www.justice.gov/opa/pr/swift-beef-company-pay-13-million-penalty-clean-water-act-and-state-law-violations-its-grand",
+          "type": "DOJ press release"
+        },
+        {
+          "title": "EPA: EPA Fines Swift Beef Company for Alleged Clean Water Act Violations in Nebraska (Dec 2023)",
+          "url": "https://www.epa.gov/newsreleases/epa-fines-swift-beef-company-alleged-clean-water-act-violations-nebraska",
+          "type": "EPA press release"
+        }
+      ]
+    },
+    {
+      "case_id": "Yuengling-Pottsville-2016",
+      "category": "industrial",
+      "respondent": "D.G. Yuengling and Son, Inc. — Old Brewery and New Brewery, Pottsville, Pennsylvania",
+      "year": "2008-2016",
+      "cwa_section": "Section 307 (pretreatment standards) and Section 402 (industrial user permit to POTW); 33 U.S.C. 1317, 1342 and 40 CFR Part 403",
+      "violation_summary": "Yuengling's two breweries committed at least 141 industrial-user permit violations between 2008 and 2015 when discharging high-strength wastewater to the Greater Pottsville Area Sewer Authority POTW. Pollutants included BOD, phosphorus, zinc, and out-of-range pH; the company also missed required samples and submitted incomplete monitoring reports.",
+      "outcome": "June 23, 2016 federal consent decree (U.S. and Pennsylvania v. D.G. Yuengling): $2.8 million civil penalty plus approximately $7 million in mandatory injunctive relief — construction of a comprehensive biological pretreatment system at the Old Brewery, optimization of the New Brewery pretreatment, certified wastewater operators on staff, and a multi-facility environmental management system. EPA projected BOD-load cuts of >155,000 lb/yr.",
+      "takeaway": "Closest legal analog to a data-center cooling-water situation: an industrial user discharging to a municipal POTW under a local pretreatment permit. Persistent permit exceedances — even without direct surface-water discharge — generate eight-figure compliance costs. Data centers in Loudoun, Prince William, and Central Ohio that send cooling-tower blowdown to wholesale POTWs sit in the same regulatory posture.",
+      "sources": [
+        {
+          "title": "EPA: D.G. Yuengling and Son, Inc. Clean Water Act Settlement",
+          "url": "https://www.epa.gov/enforcement/dg-yuengling-and-son-inc-clean-water-act-settlement",
+          "type": "EPA enforcement page"
+        },
+        {
+          "title": "EPA Press Release: Brewer Agrees to Take Action, Pay Fine for Clean Water Act Violations",
+          "url": "https://www.epa.gov/pa/brewer-agrees-take-action-pay-fine-clean-water-act-violations",
+          "type": "EPA press release"
+        },
+        {
+          "title": "EPA Archive: Yuengling to Upgrade Environmental Measures to Settle Clean Water Act Violations at Two Pennsylvania Breweries (June 23, 2016)",
+          "url": "https://www.epa.gov/archive/epa/newsreleases/yuengling-upgrade-environmental-measures-settle-clean-water-act-violations-two.html",
+          "type": "EPA press release"
+        }
+      ]
+    },
+    {
+      "case_id": "American-Zinc-Recycling-Palmerton-2021",
+      "category": "industrial",
+      "respondent": "American Zinc Recycling Corporation (formerly Horsehead Corp.), Palmerton, Pennsylvania zinc-recycling facility",
+      "year": "2014-2021",
+      "cwa_section": "Section 402 (NPDES permit) — discharge of contact cooling water; Section 311/SPCC; concurrent RCRA and CAA violations; 33 U.S.C. 1342",
+      "violation_summary": "EPA cited the Palmerton plant for exceeding NPDES permit discharge limits for cadmium, zinc, and pH in contact cooling water discharged to Aquashicola Creek (a Lehigh River tributary); sampling and monitoring lapses; failure to keep stormwater segregated from process wastewater; and SPCC deficiencies. The cooling water that contacted zinc-bearing process equipment carried metals into surface water.",
+      "outcome": "February 9, 2021 consent decree (U.S./Pennsylvania v. American Zinc Recycling Corp.): $3.3 million civil penalty (split 50/50 federal/state) plus approximately $4.3 million in injunctive relief — leak-detection installation, equipment monitoring upgrades, segregated stormwater controls, and dust-control improvements. Concurrent resolution of RCRA and Clean Air Act counts.",
+      "takeaway": "Most direct cooling-water analog in EPA's enforcement docket: a contact-cooling-water stream that picked up metals (zinc, cadmium) from process equipment and violated NPDES limits. Data centers using closed-loop systems with copper piping or biocide additives can produce blowdown with similar metal/pH profiles — and would face the same NPDES exceedance liability if discharged directly or under a pretreatment permit.",
+      "sources": [
+        {
+          "title": "EPA: American Zinc Recycling Corp. Settlement",
+          "url": "https://www.epa.gov/enforcement/american-zinc-recycling-corp-settlement",
+          "type": "EPA enforcement page"
+        }
+      ]
+    },
+    {
+      "case_id": "Sackett-v-EPA-2023",
+      "category": "precedent",
+      "respondent": "Sackett v. Environmental Protection Agency, 598 U.S. 651 (2023)",
+      "year": "2023",
+      "cwa_section": "Section 502(7) (definition of 'waters of the United States') and Section 404 (wetlands dredge-and-fill permits)",
+      "violation_summary": "EPA ordered the Sacketts to stop backfilling their Idaho lot, classifying it as a federally regulated wetland with a 'significant nexus' to a nearby creek-and-lake system. The Sacketts sued, arguing the wetland lacked any continuous surface connection to navigable waters and therefore was not a 'water of the United States' subject to CWA jurisdiction.",
+      "outcome": "Unanimous in judgment (9-0 reversing the Ninth Circuit) but 5-4 on the controlling test. Justice Alito's majority opinion rejected Justice Kennedy's Rapanos 'significant nexus' standard and held that the CWA reaches only (1) relatively permanent bodies of water 'connected to traditional interstate navigable waters' and (2) wetlands with a 'continuous surface connection' to those waters such that they are 'indistinguishable' from them.",
+      "takeaway": "Sackett dramatically shrank federal CWA jurisdiction over wetlands, ephemeral streams, and isolated waters — the exact categories most likely to receive stormwater runoff or graywater seepage from a large data center campus. After Sackett, many data center sites that previously needed §402 NPDES or §404 permits for site drainage now fall to state-only regulation, shifting the compliance burden to state programs in Virginia and Ohio.",
+      "sources": [
+        {
+          "title": "Sackett v. EPA, 598 U.S. 651 (2023) — Supreme Court slip opinion",
+          "url": "https://www.supremecourt.gov/opinions/22pdf/21-454_4g15.pdf",
+          "type": "court ruling"
+        },
+        {
+          "title": "Sackett Decision Provides Clarity, Substantially Restricts Clean Water Act Jurisdiction Scope (Holland & Knight)",
+          "url": "https://www.hklaw.com/en/insights/publications/2023/05/sackett-decision-provides-clarity-substantially",
+          "type": "law review"
+        },
+        {
+          "title": "Supreme Court Narrows Federal Jurisdiction Under Clean Water Act (Congressional Research Service)",
+          "url": "https://www.congress.gov/crs-product/LSB10981",
+          "type": "law review"
+        }
+      ]
+    },
+    {
+      "case_id": "County-of-Maui-v-Hawaii-Wildlife-Fund-2020",
+      "category": "precedent",
+      "respondent": "County of Maui v. Hawaii Wildlife Fund, 590 U.S. 165 (2020)",
+      "year": "2020",
+      "cwa_section": "Section 402 (NPDES permit requirement) and Section 502(12) (definition of 'discharge of a pollutant' from a point source)",
+      "violation_summary": "Maui County's Lahaina wastewater facility injected 3-5 million gallons per day of treated effluent into Class V underground wells. Tracer studies showed roughly 90% of that water migrated through groundwater to the Pacific Ocean within months. Environmental groups argued the county needed an NPDES permit; the county argued groundwater conveyance breaks the §402 'from a point source' chain.",
+      "outcome": "6-3 decision (Breyer, joined by Roberts, Ginsburg, Sotomayor, Kagan, Kavanaugh). The Court held that an NPDES permit is required when a discharge through groundwater is 'the functional equivalent of a direct discharge' into navigable waters, with time and distance the most important of seven listed factors. Thomas, Gorsuch, and Alito dissented.",
+      "takeaway": "Directly relevant to data centers that send cooling tower blowdown, evaporative bleed, or treated process water to on-site leach fields, injection wells, or lined-but-permeable ponds rather than to a municipal sewer. If that water reaches a navigable water in a short distance/time, Maui says a federal §402 permit is required even with no pipe to the surface — a live issue for desert/inland Virginia and Ohio sites.",
+      "sources": [
+        {
+          "title": "County of Maui v. Hawaii Wildlife Fund, 590 U.S. 165 (2020) — Supreme Court slip opinion",
+          "url": "https://www.supremecourt.gov/opinions/19pdf/18-260_jifl.pdf",
+          "type": "court ruling"
+        },
+        {
+          "title": "County of Maui v. Hawaii Wildlife Fund (Harvard Law Review case comment)",
+          "url": "https://harvardlawreview.org/print/vol-134/county-of-maui-v-hawaii-wildlife-fund/",
+          "type": "law review"
+        },
+        {
+          "title": "County of Maui v. Hawaii Wildlife Fund (Wikipedia)",
+          "url": "https://en.wikipedia.org/wiki/County_of_Maui_v._Hawaii_Wildlife_Fund",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Entergy-v-Riverkeeper-2009",
+      "category": "precedent",
+      "respondent": "Entergy Corp. v. Riverkeeper, Inc., 556 U.S. 208 (2009)",
+      "year": "2009",
+      "cwa_section": "Section 316(b) (cooling water intake structures — 'best technology available for minimizing adverse environmental impact')",
+      "violation_summary": "EPA's 2004 Phase II rule governed cooling water intakes at ~500 existing power plants and allowed cost-benefit analysis when setting impingement/entrainment performance standards and site-specific variances. Riverkeeper and other environmental groups argued §316(b)'s 'best technology available' language forbids EPA from weighing dollar costs against ecological benefits.",
+      "outcome": "5-4 decision (Scalia for the majority, joined by Roberts, Kennedy, Thomas, Alito; Stevens dissenting with Souter and Ginsburg; Breyer concurring in part). Held that '[i]t was well within the bounds of reasonable interpretation for the EPA to conclude that cost-benefit analysis is not categorically forbidden' under §316(b), reversing the Second Circuit and largely upholding the Phase II rule.",
+      "takeaway": "Most data centers don't trigger §316(b) directly — it applies to intakes designed to withdraw more than 2 MGD from waters of the US for cooling, and the vast majority of data centers buy potable water from municipal utilities. But Entergy's broader cost-benefit doctrine carries over to EPA standard-setting under other CWA provisions, including any future effluent guidelines or §304(m) rules aimed at data center cooling discharges or PFAS-bearing immersion-cooling fluids.",
+      "sources": [
+        {
+          "title": "Entergy Corp. v. Riverkeeper, Inc. — Cornell LII syllabus",
+          "url": "https://www.law.cornell.edu/supct/html/07-588.ZS.html",
+          "type": "court ruling"
+        },
+        {
+          "title": "Entergy Corp. v. Riverkeeper Inc. (Wikipedia)",
+          "url": "https://en.wikipedia.org/wiki/Entergy_Corp._v._Riverkeeper_Inc.",
+          "type": "news"
+        },
+        {
+          "title": "DOJ ENRD case summary — Entergy Corp. v. Riverkeeper",
+          "url": "https://www.justice.gov/enrd/i-i-entergy-corp-v-riverkeeper-inc",
+          "type": "court ruling"
+        }
+      ]
+    },
+    {
+      "case_id": "Rapanos-v-United-States-2006",
+      "category": "precedent",
+      "respondent": "Rapanos v. United States, 547 U.S. 715 (2006)",
+      "year": "2006",
+      "cwa_section": "Section 502(7) (definition of 'waters of the United States') and Section 404 (wetlands dredge-and-fill permits)",
+      "violation_summary": "John Rapanos filled roughly 22 acres of Michigan wetlands without a §404 permit to develop a shopping mall; the wetlands sat near man-made drains that eventually fed traditional navigable waters. The companion Carabell case involved wetlands separated from a tributary by a man-made berm. The question was whether such hydrologically connected but physically separate wetlands counted as 'waters of the United States.'",
+      "outcome": "4-1-4 fractured ruling vacating and remanding. Justice Scalia's plurality (with Roberts, Thomas, Alito) required 'relatively permanent' waters plus a 'continuous surface connection' to navigable waters. Justice Kennedy's controlling concurrence required only a 'significant nexus' — that the wetland 'significantly affects the physical, biological, and chemical integrity' of downstream navigable waters. No single test commanded a majority, producing 17 years of regulatory whiplash.",
+      "takeaway": "Rapanos is the doctrinal precursor to Sackett: lower courts and EPA generally applied Kennedy's broader 'significant nexus' test, which kept a wide universe of wetlands and intermittent streams within federal jurisdiction. For data centers, Rapanos meant that ditches, retention ponds, and intermittent streams crossing campus sites were often federally regulated — a regime now superseded by Sackett's narrower surface-connection rule.",
+      "sources": [
+        {
+          "title": "Rapanos v. United States, 547 U.S. 715 (2006) — FindLaw",
+          "url": "https://caselaw.findlaw.com/court/us-supreme-court/547/715.html",
+          "type": "court ruling"
+        },
+        {
+          "title": "EPA — Rapanos v. United States & Carabell v. United States summary",
+          "url": "https://www.epa.gov/wotus/rapanos-v-united-states-carabell-v-united-states",
+          "type": "court ruling"
+        },
+        {
+          "title": "Rapanos v. United States (Wikipedia)",
+          "url": "https://en.wikipedia.org/wiki/Rapanos_v._United_States",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Microsoft-Boydton-VA-2023",
+      "category": "datacenter",
+      "respondent": "Walbridge Aldinger LLC (Microsoft data center contractor) — LVL Data Center 08, Ridge Road near Boydton, Mecklenburg County, Virginia",
+      "year": "2023",
+      "cwa_section": "CWA Section 402 (NPDES) via Virginia Stormwater Management Act / VPDES Construction General Permit; state-administered (VA DEQ)",
+      "violation_summary": "Formal state CWA enforcement. Following VA DEQ inspections on Jan 11, 2023 and a Feb 7, 2023 warning letter, the general contractor for Microsoft's Mecklenburg County data center was cited for failing to install or properly maintain erosion and sediment controls and stabilize denuded areas at the construction site. Sediment-laden runoff threatened Allen Creek tributaries in the Roanoke River basin. This is direct stormwater-permit enforcement, not a civil suit.",
+      "outcome": "Consent Order signed May 25, 2023 by Walbridge Aldinger. Civil charge of $13,891.50 (reduced from $19,845 max with a $5,953.50 credit for cooperation). Required corrective BMP installation within 7 days, documentation within 21 days. Public comment June 19–July 20, 2023.",
+      "takeaway": "Demonstrates that hyperscale data center construction sites are already drawing routine state-level CWA stormwater enforcement, though penalties are landed on contractors (not the hyperscaler) and fines are modest. Microsoft itself was not named on the order — a pattern likely to repeat across the industry.",
+      "sources": [
+        {
+          "title": "Data center contractor cited for stormwater violations — SoVaNOW",
+          "url": "https://www.sovanow.com/articles/data-center-contractor-cited-for-stormwater-violations/",
+          "type": "news"
+        },
+        {
+          "title": "Virginia DEQ Enforcement Actions",
+          "url": "https://www.deq.virginia.gov/news-info/shortcuts/enforcement/enforcement-actions",
+          "type": "state agency action"
+        }
+      ]
+    },
+    {
+      "case_id": "QTS-Fayetteville-GA-2024",
+      "category": "datacenter",
+      "respondent": "QTS Realty Trust — Fayette County / Fayetteville, Georgia hyperscale data center campus (Sandy Creek / Lake Bennett watershed)",
+      "year": "2024",
+      "cwa_section": "Mixed — Flint Riverkeeper invoked the U.S. Clean Water Act (Sec. 402 NPDES construction general permit) plus Georgia Erosion & Sedimentation Act sediment-control standards; engagement was through citizen monitoring and notification to Georgia EPD rather than a formal §505 citizen suit filing.",
+      "violation_summary": "Flint Riverkeeper documented repeated discharge of heavily sediment-laden water — including flocculant-treated runoff — onto neighboring private property and into Sandy Creek during rain events from summer 2023 through spring 2024, with monitoring data showing sediment 'many, many times allowable limits.' Riverkeeper escalated to the City of Fayetteville in March 2024 and to Georgia EPD that spring after city/developer remediation lagged. This is a Riverkeeper-driven CWA enforcement-style action, not a filed lawsuit.",
+      "outcome": "PENDING / partially resolved — A stop-work order plus developer-installed erosion-control upgrades resulted in at least one >2-inch rain event with 'no detectable pollution' by mid-2024. No formal NOV, consent order, or civil penalty against QTS has been publicly confirmed; monitoring is ongoing. Separately, in May 2025 QTS paid ~$147,000 in retroactive water bills for ~29M gallons of unbilled construction water (a billing dispute, not CWA enforcement).",
+      "takeaway": "QTS Fayetteville is the clearest example of an environmental NGO using CWA construction-stormwater standards to pressure a hyperscale colocation operator. Even without a filed lawsuit, citizen documentation forced site changes — a template likely to spread, especially in Georgia where data center sprawl is concentrated in sensitive Flint and Chattahoochee basins.",
+      "sources": [
+        {
+          "title": "Flint Riverkeeper Enforcement Actions Regarding QTS Data Center in Fayetteville, GA",
+          "url": "https://myemail.constantcontact.com/Flint-Riverkeeper-Enforcement-Actions-Regarding-QTS-Data-Center-in-Fayetteville--GA.html?soid=1132272468083&aid=1tyMrrbryUM",
+          "type": "citizen suit notice"
+        },
+        {
+          "title": "Georgia's data center boom leaves residents worried about environmental impacts — CBS Atlanta",
+          "url": "https://www.cbsnews.com/atlanta/news/georgias-data-center-boom-leave-residents-concerns-about-environmental-impacts/",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "QTS-CedarRapids-IA-2025",
+      "category": "datacenter",
+      "respondent": "Northern Dewatering Inc. (subcontractor of Elder Corporation, working at QTS Realty Trust's $750M Cedar Rapids, Iowa data center construction site)",
+      "year": "2025",
+      "cwa_section": "Civil suit / local administrative enforcement (not CWA) — Linn County Code of Ordinances Ch. 10, Art. V, §10-144 (water-supply and well-permitting). Implicates groundwater protection rather than CWA NPDES, but is part of the broader data-center water-compliance landscape.",
+      "violation_summary": "Linn County Public Health discovered ~40 unpermitted dewatering wells drilled May 20–June 11, 2025 by Northern Dewatering at the QTS Cedar Rapids construction site, with pumping commencing June 9 without required permits, fees, or 24-hour notice. Wells were used to depress the water table for foundation construction. Iowa DNR is separately assessing long-term aquifer impacts. This is a local groundwater-permitting case, not federal CWA enforcement.",
+      "outcome": "PENDING — Notice of violation issued July 28, 2025; Linn County formally referred a $20,000 civil penalty request to the County Attorney on Aug 5, 2025. As of latest reporting no settlement or assessed penalty has been finalized. QTS itself was not named; the action targets the dewatering subcontractor.",
+      "takeaway": "Shows water-related compliance exposure for data centers extends beyond NPDES stormwater into groundwater withdrawal permitting — a regulatory blind spot that is being discovered ad hoc by local health departments rather than systematically tracked. As construction dewatering scales with hyperscale sites, this category of action is likely to grow.",
+      "sources": [
+        {
+          "title": "Linn County seeks $20,000 civil penalty from Northern Dewatering for unpermitted wells — Linn County, IA",
+          "url": "https://www.linncountyiowa.gov/m/newsflash/home/detail/4085",
+          "type": "state agency action"
+        },
+        {
+          "title": "Linn Co. seeks $20,000 fine for unpermitted wells on data center construction site — KCRG",
+          "url": "https://www.kcrg.com/2025/08/05/linn-co-seeks-20000-civil-penalty-unpermitted-wells-data-center-construction-site/",
+          "type": "news"
+        },
+        {
+          "title": "Linn County seeks $20,000 penalty over unpermitted wells at QTS data center construction site — Corridor Business",
+          "url": "https://corridorbusiness.com/linn-county-seeks-20000-penalty-over-unpermitted-wells-at-qts-data-center-construction-site/",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Nscale-MasonCounty-WV-2026",
+      "category": "datacenter",
+      "respondent": "Nscale / Fidelis New Energy — Monarch Compute Campus, University Lane, Mason County, West Virginia (Meadowlands Estates adjacent)",
+      "year": "2026",
+      "cwa_section": "Potential CWA Section 402 (NPDES construction stormwater) — formal enforcement under West Virginia DEP authority pending. As of May 25, 2026 no NOV had been issued; a WV DEP inspection the week prior had found the site in compliance.",
+      "violation_summary": "On May 23-24, 2026, severe flooding hit Meadowlands Estates after a silt-fence section in the construction stormwater retention area at the Monarch/Nscale data center site failed during a rain event delivering roughly a month's rainfall in 48 hours under a Flash Flood Warning. Nscale acknowledged the storm 'exceeded the design capacity' of the temporary erosion controls. Civil reimbursement, not federal enforcement, is the primary current track.",
+      "outcome": "PENDING as of May 26, 2026 — No formal CWA NOV or consent order issued. Nscale committed to cover all cleanup/repair costs, hotel rooms, and meals for affected residents. West Virginia National Guard and state officials were on-site coordinating evaluation; WV DEP discussing corrective and prevention plans. No filed civil suit or class action yet reported.",
+      "takeaway": "The most recent and most visible 'construction stormwater fails catastrophically' incident in the data center sector. Even where the site was 'permit-compliant' the week before, AI-era buildout pace plus climate-intensified rainfall produced real-world property damage — exactly the failure mode that hardens citizen-suit pipelines and fuels stricter state CGP terms.",
+      "sources": [
+        {
+          "title": "Severe flooding in Mason County relating to data center construction — WSAZ",
+          "url": "https://www.wsaz.com/2026/05/24/data-center-construction-causes-severe-flooding-mason-county-residents-be-reimbursed/",
+          "type": "news"
+        },
+        {
+          "title": "Some Mason County residents experience flooding near site of Nscale development — Charleston Gazette-Mail",
+          "url": "https://www.wvgazettemail.com/news/some-mason-county-residents-experience-flooding-near-site-of-nscale-development/article_7955bb2a-ec12-4ee4-99f3-c912d6f13a98.html",
+          "type": "news"
+        },
+        {
+          "title": "Mason County community impacted by flooding from data center construction site — WV MetroNews",
+          "url": "https://wvmetronews.com/2026/05/24/mason-county-community-impacted-by-flooding-from-data-center-construction-site/",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Cleveland-Cliffs-Burns-Harbor-2022",
+      "category": "industrial",
+      "respondent": "Cleveland-Cliffs Steel LLC and Cleveland-Cliffs Burns Harbor LLC (integrated steel mill on Lake Michigan, Burns Harbor, IN)",
+      "year": "2022",
+      "cwa_section": "Section 402 NPDES (industrial wastewater effluent limit exceedances for ammonia and cyanide)",
+      "violation_summary": "In August 2019, the Burns Harbor blast-furnace closed-loop air scrubber recycle system failed, forcing the facility to draw large volumes of Lake Michigan water and discharge it through outfalls into the East Branch of the Little Calumet River. The facility exceeded its NPDES permit limits for cyanide and ammonia nitrogen, triggering fish kills and closing Ogden Dunes Beach and Indiana Dunes National Park beaches for seven days. The complaint also documented chronic exceedances of ammonia, cyanide, toxicity, phenolics, and oil and grease.",
+      "outcome": "Consent decree lodged February 14, 2022: $3 million civil penalty (split with Indiana), plus ~$47,675 in response cost reimbursement (EPA $10,025.37 + IDEM $37,650). Required installation of a new cyanide treatment system, pilot ammonia-N treatment system through completion of a permanent ammonia treatment system by May 2025, enhanced wastewater sampling and monitoring, monitoring of Lake Michigan during 2022-2023 summers, and donation of ~127 acres adjoining Indiana Dunes National Lakeshore.",
+      "takeaway": "Establishes a benchmark for million-dollar federal penalties when a cooling-loop/process-water system fails and an industrial facility is forced to discharge uncontrolled volumes through its NPDES outfalls. Data centers with closed-loop chilled-water systems face an analogous failure mode if cooling-tower blowdown or condensate exceeds POTW pretreatment or NPDES limits during an upset.",
+      "sources": [
+        {
+          "title": "Cleveland-Cliffs Agrees to Improve Environmental Compliance at Indiana Facility and Pay $3 Million Civil Penalty for Ammonia and Cyanide Violations",
+          "url": "https://www.epa.gov/newsreleases/cleveland-cliffs-agrees-improve-environmental-compliance-indiana-facility-and-pay-3",
+          "type": "EPA press release"
+        },
+        {
+          "title": "Cleveland-Cliffs Steel LLC and Cleveland-Cliffs Burns Harbor LLC Settlement",
+          "url": "https://www.epa.gov/enforcement/cleveland-cliffs-steel-llc-and-cleveland-cliffs-burns-harbor-llc-settlement",
+          "type": "EPA enforcement page"
+        },
+        {
+          "title": "Cleveland-Cliffs Agrees to Improve Environmental Compliance at Indiana Facility and Pay $3 Million Civil Penalty",
+          "url": "https://www.justice.gov/archives/opa/pr/cleveland-cliffs-agrees-improve-environmental-compliance-indiana-facility-and-pay-3-million",
+          "type": "DOJ press release"
+        }
+      ]
+    },
+    {
+      "case_id": "Norfolk-Southern-East-Palestine-2024",
+      "category": "industrial",
+      "respondent": "Norfolk Southern Railway Company and Norfolk Southern Corporation (February 3, 2023 train derailment, East Palestine, OH)",
+      "year": "2024",
+      "cwa_section": "Sections 309 and 311 (CWA spill liability) plus CERCLA Sections 107 and 113",
+      "violation_summary": "On February 3, 2023, 38 Norfolk Southern rail cars derailed in East Palestine, OH, including cars carrying vinyl chloride and other hazardous chemicals. The derailment and the subsequent controlled vent-and-burn released hazardous substances and oil into Sulphur Run, Leslie Run, Bull Creek, North Fork Little Beaver Creek, and the Ohio River watershed, contaminating surface waters and groundwater.",
+      "outcome": "Consent decree lodged May 23, 2024 in the Northern District of Ohio: $15 million Clean Water Act civil penalty (the maximum allowed under the statute for these violations), plus approximately $235 million in past and future cleanup costs, $30 million for long-term water-quality monitoring, $25 million for a 20-year community health program, $6 million for a waterways remediation plan, and ~$57 million in EPA response-cost reimbursement. Total federal settlement valued at over $310 million.",
+      "takeaway": "Establishes the statutory ceiling of $15M as the EPA/DOJ benchmark for a single catastrophic CWA spill event, while showing that the real bite comes from response-cost recovery and long-tail monitoring obligations. For data centers, the parallel risk is a single transformer-oil or PFAS-firefighting-foam release that triggers CERCLA + CWA liability layered together.",
+      "sources": [
+        {
+          "title": "United States Reaches Over $310 Million Settlement with Norfolk Southern to Address Harms Caused by East Palestine Train Derailment",
+          "url": "https://www.epa.gov/newsreleases/united-states-reaches-over-310-million-settlement-norfolk-southern-address-harms",
+          "type": "EPA press release"
+        },
+        {
+          "title": "Notice of Lodging of Proposed Consent Decree Under CERCLA and the Clean Water Act (May 30, 2024)",
+          "url": "https://www.federalregister.gov/documents/2024/05/30/2024-11862/notice-of-lodging-of-proposed-consent-decree-under-the-comprehensive-environmental-response",
+          "type": "court ruling"
+        }
+      ]
+    },
+    {
+      "case_id": "Chemours-Washington-Works-PFAS-2023",
+      "category": "industrial",
+      "respondent": "The Chemours Company FC, LLC, Washington Works fluorochemical manufacturing facility (Parkersburg, WV / Wood County)",
+      "year": "2023",
+      "cwa_section": "Section 402 NPDES (industrial process wastewater and stormwater effluent limit exceedances for PFOA and HFPO Dimer Acid/GenX)",
+      "violation_summary": "From September 2018 through March 2023, the Washington Works facility exceeded its NPDES permit numeric effluent limits for PFOA and HFPO Dimer Acid (GenX) on multiple occasions in process wastewater and stormwater discharged to the Ohio River and its tributaries. Fourteen of the documented permit exceedances were 1,000% or more above the limit. EPA also alleged Chemours failed to properly operate and maintain pollution control systems required for permit compliance.",
+      "outcome": "Administrative Compliance Order on Consent (AOC) issued April 26, 2023 — EPA's first-ever Clean Water Act enforcement action targeting PFAS discharges. The AOC required Chemours to implement an EPA-approved sampling plan for PFAS in stormwater and effluent, characterize the extent of PFAS contamination, submit and implement a treatment plan to come back into compliance with numeric PFOA and HFPO-DA effluent limits, and revise its Storm Water Pollution Prevention Plan. No civil penalty was attached to the AOC itself.",
+      "takeaway": "First federal precedent that PFAS discharges in effluent and stormwater are directly actionable under Clean Water Act NPDES authority — not just CERCLA. Data centers use PFAS-containing immersion cooling fluids and aqueous film-forming foam (AFFF) firefighting agents; once EPA's promised PFAS NPDES application rule is in place, any data-center stormwater outfall that tests positive becomes a potential enforcement target on this template.",
+      "sources": [
+        {
+          "title": "EPA takes first-ever federal Clean Water Act enforcement action to address PFAS discharges at Washington Works facility near Parkersburg, W. Va.",
+          "url": "https://www.epa.gov/newsreleases/epa-takes-first-ever-federal-clean-water-act-enforcement-action-address-pfas",
+          "type": "EPA press release"
+        },
+        {
+          "title": "EPA makes first-ever Clean Water Act enforcement for PFAS in stormwater",
+          "url": "https://www.stormwater.com/stormwater-management/press-release/53058892/epa-makes-first-ever-clean-water-act-enforcement-for-pfas-in-stormwater",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Hanover-Foods-2025",
+      "category": "industrial",
+      "respondent": "Hanover Foods Corporation (industrial food processor, Hanover/York County, PA wastewater treatment facility)",
+      "year": "2025",
+      "cwa_section": "Section 402 NPDES (industrial wastewater effluent limit exceedances)",
+      "violation_summary": "From 2016 through 2025, Hanover Foods exceeded its state-issued NPDES permit limits on more than 600 occasions at its on-site industrial wastewater treatment facility, with violations including total suspended solids, ammonia nitrogen, phosphorus, and temperature. Treated industrial wastewater discharges to Oil Creek, which flows to the Susquehanna River and the Chesapeake Bay.",
+      "outcome": "Proposed consent decree lodged November 18, 2025: $1.15 million civil penalty (split $575,000 to DOJ / $575,000 to PADEP). Required injunctive measures include installation of a permanent boiler to maintain treatment temperature, a spare-parts program to reduce equipment downtime, additional monitoring and tracking, expanded operations and maintenance program, and root-cause investigations after each violation.",
+      "takeaway": "Demonstrates that 600 individual permit exceedances — even small, chronic numerical ones — generate >$1M federal penalties when they accumulate over a decade. Data centers with on-site cooling-blowdown discharge permits (or pretreatment permits to a POTW) face the same death-by-a-thousand-cuts risk if conductivity, biocide, or nutrient limits drift over time.",
+      "sources": [
+        {
+          "title": "Hanover Foods Agrees to Pay $1.15M Penalty and Implement Actions to Address Clean Water Act Violations at Wastewater Treatment Facility",
+          "url": "https://www.epa.gov/newsreleases/hanover-foods-agrees-pay-115m-penalty-and-implement-actions-address-clean-water-act",
+          "type": "EPA press release"
+        },
+        {
+          "title": "Hanover Foods Agrees to Pay $1.15M Penalty and Implement Actions to Address Clean Water Act Violations at Wastewater Treatment Facility",
+          "url": "https://www.justice.gov/opa/pr/hanover-foods-agrees-pay-115m-penalty-and-implement-actions-address-clean-water-act",
+          "type": "DOJ press release"
+        },
+        {
+          "title": "Hanover Foods Corporation CWA Settlement Summary",
+          "url": "https://www.epa.gov/enforcement/hanover-foods-corporation-cwa-settlement-summary",
+          "type": "EPA enforcement page"
+        }
+      ]
+    },
+    {
+      "case_id": "Plains-Pipeline-Santa-Barbara-2020",
+      "category": "industrial",
+      "respondent": "Plains Pipeline, L.P. / Plains All American Pipeline (Line 901 crude-oil pipeline, Santa Barbara County, CA)",
+      "year": "2020",
+      "cwa_section": "Section 311 (oil spill liability) plus Oil Pollution Act and Pipeline Safety Laws",
+      "violation_summary": "On May 19, 2015, Plains' Line 901 pipeline ruptured near Refugio State Beach, releasing approximately 2,934 barrels (~123,000 gallons) of heavy crude oil. The crude traveled through three culverts, reached the beach, and entered the Pacific Ocean about 722 feet from the discharge point, contaminating coastline and marine habitat.",
+      "outcome": "Consent decree lodged March 2020 in the Central District of California: $24 million in total federal penalties, including a $9.45 million CWA penalty (EPA $5.925M, California Central Coast Regional Water Quality Control Board $2.5M, California Dept. of Fish and Wildlife $1.025M), plus $22.325 million in natural resource damages and >$44 million in total commitments including nationwide pipeline-safety injunctive relief.",
+      "takeaway": "Sets a benchmark of ~$24M federal penalty for an industrial oil discharge to navigable waters and shows how natural-resource damages stack on top of CWA Section 311 civil penalties. For data centers, this matters because backup-generator and transformer-oil reservoirs are CWA-regulated 'oil' under SPCC and could trigger Section 311 liability on top of NPDES penalties if discharged to a waterway.",
+      "sources": [
+        {
+          "title": "Houston-based Plains Pipeline to Spend More Than $44 Million to Resolve Clean Water Act Violations",
+          "url": "https://www.justice.gov/archives/opa/pr/houston-based-plains-pipeline-spend-more-44-million-resolve-clean-water-act-violations",
+          "type": "DOJ press release"
+        },
+        {
+          "title": "Plains Pipeline, L.P. Information Sheet",
+          "url": "https://www.epa.gov/enforcement/plains-pipeline-lp-information-sheet",
+          "type": "EPA enforcement page"
+        },
+        {
+          "title": "Notice of Lodging of Proposed Consent Decree (March 30, 2020)",
+          "url": "https://www.federalregister.gov/documents/2020/03/30/2020-06500/notice-of-lodging-of-proposed-consent-decree-under-the-clean-water-act-the-oil-pollution-act-of-1990",
+          "type": "court ruling"
+        }
+      ]
+    },
+    {
+      "case_id": "Jersey-City-MUA-2025",
+      "category": "industrial",
+      "respondent": "Jersey City Municipal Utilities Authority (JCMUA), Jersey City, NJ (combined sewer system serving the city)",
+      "year": "2025",
+      "cwa_section": "Section 402 NPDES (combined sewer overflows in violation of permit conditions); Section 301 (unpermitted discharges)",
+      "violation_summary": "JCMUA failed to properly operate and maintain its combined sewer system, causing repeated combined sewer overflows (CSOs) discharging untreated sewage and stormwater pollutants into the Hackensack River, Hudson River, Newark Bay, and Penhorn Creek without permit authorization. The 2025 consent decree modification was based on continued violations following a 2011 consent decree.",
+      "outcome": "Modified consent decree (announced 2025, modifying the 2011 decree): $375,000 civil penalty, with JCMUA committing more than $52 million in immediate infrastructure repairs and upgrades and approximately $1.099 billion in total work over 10 years. Improvements will reduce CSO discharges by 370 million gallons per year and prevent over 1 million pounds of pollutants annually. Includes replacement of over 12,000 lead drinking-water service lines as a supplemental project.",
+      "takeaway": "Sewer system consent decrees are critical context for data centers because nearly all data center cooling blowdown and process discharges go to municipal POTWs — and POTWs under federal consent decrees have strong incentives (and legal obligation) to tighten industrial pretreatment enforcement on any new high-volume industrial user.",
+      "sources": [
+        {
+          "title": "Jersey City Municipal Utilities Authority to Make Significant Improvements to Jersey City's Municipal Sewer and Drinking Water Systems",
+          "url": "https://www.epa.gov/newsreleases/jersey-city-municipal-utilities-authority-make-significant-improvements-jersey-citys-0",
+          "type": "EPA press release"
+        },
+        {
+          "title": "Jersey City Municipal Utilities Authority Settlement",
+          "url": "https://www.epa.gov/enforcement/jersey-city-municipal-utilities-authority-jcmua-settlement",
+          "type": "EPA enforcement page"
+        },
+        {
+          "title": "Jersey City Municipal Utilities Authority to Make Significant Improvements to Jersey City's Municipal Sewer and Drinking Water Systems",
+          "url": "https://www.justice.gov/opa/pr/jersey-city-municipal-utilities-authority-make-significant-improvements-jersey-city-s",
+          "type": "DOJ press release"
+        }
+      ]
+    },
+    {
+      "case_id": "Cahokia-Heights-2024",
+      "category": "industrial",
+      "respondent": "City of Cahokia Heights, IL (municipal sanitary sewer system)",
+      "year": "2024",
+      "cwa_section": "Section 301 (unpermitted discharge in violation of Section 402 NPDES program)",
+      "violation_summary": "On at least 300 occasions since November 2019, Cahokia Heights discharged sanitary sewage from cleanouts and other unauthorized points in its sewer system into local waterways without any NPDES permit. The discharges affected predominantly Black and economically disadvantaged neighborhoods, raising environmental-justice concerns.",
+      "outcome": "Consent decree lodged December 10, 2024: $30,000 civil penalty (reduced due to limited ability to pay) plus an estimated $30 million in compliance measures, including 80+ near-term capital improvement projects, system-wide repairs, sewer condition assessment reports, a sewer condition rehabilitation plan due by December 2035, real-time monitoring at known overflow points, digital sewer mapping, and emergency response planning. Co-plaintiffs included the State of Illinois.",
+      "takeaway": "Reinforces that even small/distressed POTWs can be forced into $30M+ federal compliance regimes — meaning any data center siting in an environmental-justice sewer service area should expect heavily scrutinized pretreatment terms. Also shows EPA's willingness to litigate against under-resourced systems, which raises pretreatment-permit issuance risk for new industrial users.",
+      "sources": [
+        {
+          "title": "EPA and DOJ Announce Settlement with Cahokia Heights, Illinois, for Improper Operation of the City's Sanitary Sewer System",
+          "url": "https://www.epa.gov/newsreleases/epa-and-doj-announce-settlement-cahokia-heights-illinois-improper-operation-citys-0",
+          "type": "EPA press release"
+        },
+        {
+          "title": "Justice Department and EPA Announce Settlement with Cahokia Heights, Illinois, for Improper Operation of the City's Sanitary Sewer System",
+          "url": "https://www.justice.gov/archives/opa/pr/justice-department-and-epa-announce-settlement-cahokia-heights-illinois-improper-operation",
+          "type": "DOJ press release"
+        },
+        {
+          "title": "Cahokia Heights 2024 Clean Water Act Case Summary",
+          "url": "https://www.epa.gov/enforcement/cahokia-heights-2024-clean-water-act-case-summary",
+          "type": "EPA enforcement page"
+        }
+      ]
+    },
+    {
+      "case_id": "Guam-Waterworks-2024",
+      "category": "industrial",
+      "respondent": "Guam Waterworks Authority (GWA), serving the U.S. territory of Guam",
+      "year": "2024",
+      "cwa_section": "Section 402 NPDES (permit violations including untreated sewage SSO discharges and effluent-limit exceedances at WWTPs)",
+      "violation_summary": "At least 237 sanitary sewer overflows occurred from GWA's collection system since 2018, releasing untreated sewage to waters of the United States. GWA also exceeded NPDES effluent limits at its wastewater treatment plants and failed to properly operate and maintain its collection system and treatment facilities.",
+      "outcome": "Partial consent decree lodged January 30, 2024: approximately $400 million in required sewer system improvements over 25 years, including pretreatment program enhancements, fats/oils/grease control, climate-resilient pump station upgrades, and a feasibility study for secondary treatment upgrades at the Hagatna WWTP. The decree explicitly requires 'new requirements for pretreatment of wastewater' from industrial users.",
+      "takeaway": "Especially relevant because the decree explicitly requires the POTW to tighten its industrial pretreatment program — the exact lever that municipal sewer authorities will pull when faced with high-volume new users like data centers. Demonstrates a pattern where federal sewer-system decrees translate directly into tougher pretreatment terms for industrial customers.",
+      "sources": [
+        {
+          "title": "United States Reaches Agreement with Guam Waterworks Authority Requiring Investment in Sewer System Infrastructure",
+          "url": "https://www.epa.gov/newsreleases/united-states-reaches-agreement-guam-waterworks-authority-requiring-investment-sewer",
+          "type": "EPA press release"
+        },
+        {
+          "title": "United States Reaches Agreement with Guam Waterworks Authority Requiring Investment in Sewer System Infrastructure",
+          "url": "https://www.justice.gov/archives/opa/pr/united-states-reaches-agreement-guam-waterworks-authority-requiring-investment-sewer-system",
+          "type": "DOJ press release"
+        },
+        {
+          "title": "Guam Waterworks Authority Clean Water Act Settlement Information Sheet",
+          "url": "https://www.epa.gov/enforcement/guam-waterworks-authority-clean-water-act-settlement-information-sheet",
+          "type": "EPA enforcement page"
+        }
+      ]
+    },
+    {
+      "case_id": "Denali-Water-Solutions-2024",
+      "category": "industrial",
+      "respondent": "Denali Water Solutions, LLC (national biosolids/sewage-sludge land application contractor)",
+      "year": "2024",
+      "cwa_section": "Section 405 (sewage sludge use and disposal) and Section 301 (unpermitted pollutant discharge through over-application/runoff)",
+      "violation_summary": "Since at least 2016, Denali repeatedly land-applied sewage sludge to farm fields in Arizona and southern California at rates exceeding crops' nitrogen needs and routinely failed to obtain the soil/agronomic information required to calculate proper application rates. Excess nitrogen risks leaching to groundwater and runoff to surface waters.",
+      "outcome": "Consent decree announced November 12, 2024 — the first judicial settlement involving Section 405 biosolids violations exclusively: $610,000 civil penalty and a binding Soil Sampling and Agronomic Rate Calculation Protocol if operations resume in AZ or CA within five years. EPA estimates the settlement will eliminate excess application of 5.8 million pounds of sewage sludge annually.",
+      "takeaway": "First-of-its-kind judicial precedent that EPA will litigate over biosolids/sludge management — which matters because many large data-center POTWs ultimately dispose of treatment-plant biosolids contaminated with PFAS and other industrial inputs. Data center pretreatment violations that send PFAS or metals into POTW sludge can trigger downstream Section 405 exposure for the receiving POTW.",
+      "sources": [
+        {
+          "title": "Denali Water Solutions LLC to Pay $610K for Alleged Illegal Sewage Sludge Application",
+          "url": "https://www.epa.gov/newsreleases/denali-water-solutions-llc-pay-610k-alleged-illegal-sewage-sludge-application",
+          "type": "EPA press release"
+        },
+        {
+          "title": "National Biosolids Land Applier to Pay $610,000 for Overapplication",
+          "url": "https://www.epa.gov/newsreleases/national-biosolids-land-applier-pay-610000-overapplication",
+          "type": "EPA press release"
+        },
+        {
+          "title": "Denali Water Solutions, LLC Clean Water Act Settlement Summary",
+          "url": "https://www.epa.gov/enforcement/denali-water-solutions-llc-clean-water-act-settlement-summary",
+          "type": "EPA enforcement page"
+        }
+      ]
+    },
+    {
+      "case_id": "Reading-WWTP-2024",
+      "category": "industrial",
+      "respondent": "City of Reading and Reading Area Water Authority Wastewater Treatment Plant (Fritz Island WWTP, Reading, PA)",
+      "year": "2024",
+      "cwa_section": "Section 402 NPDES (effluent limit violations) and Section 307 (industrial pretreatment program failures)",
+      "violation_summary": "Reading's Fritz Island WWTP repeatedly violated effluent limits in its NPDES permit by discharging pollutants to the Schuylkill River, and the City failed to enforce the requirements of its federally required pretreatment program for industrial users discharging to the POTW. The City also failed to properly operate and maintain the treatment plant.",
+      "outcome": "Fourth Amendment of Consent Decree lodged January 24, 2024 in the Eastern District of Pennsylvania, extending capital-improvement deadlines because of design, bidding, contracting, and construction delays. The underlying remedial framework requires completion of plant upgrades and ongoing enforcement of the pretreatment program against industrial users.",
+      "takeaway": "Squarely on-point: the decree centers on a POTW's failure to enforce its pretreatment program against industrial users — the exact regulatory mechanism that controls data-center cooling-water and process-water discharge. POTWs operating under such decrees are required to tighten industrial-user oversight, which translates into stricter pretreatment permits, monitoring, and enforcement against high-volume industrial customers like data centers.",
+      "sources": [
+        {
+          "title": "Notice of Lodging of Consent Decree Under the Clean Water Act (January 31, 2024)",
+          "url": "https://www.federalregister.gov/documents/2024/01/31/2024-01883/notice-of-lodging-of-consent-decree-under-the-clean-water-act",
+          "type": "court ruling"
+        }
+      ]
+    },
+    {
+      "case_id": "Republic-Steel-OH-2024",
+      "category": "industrial",
+      "respondent": "Republic Steel (Canton and Lorain facilities, Ohio)",
+      "year": "2017-2024",
+      "cwa_section": "Section 402 NPDES (joint federal-state action with Ohio EPA as co-plaintiff; Ohio AG separately settled related air violations)",
+      "violation_summary": "Between 2017 and 2023, Republic Steel's Canton facility self-reported 89 exceedances of its NPDES permit limits for industrial wastewater, while its idled Lorain plant reported 115 exceedances. The company also had unpermitted pollutant discharges from both facilities into the east branch of Nimishillen Creek (Canton) and the Black River (Lorain).",
+      "outcome": "$700,000 federal civil penalty under proposed settlement filed January 29, 2024 with U.S. DOJ and EPA (Ohio EPA was statutory co-plaintiff). EPA had originally sought up to ~$67,000/day per violation. Both facilities to remain permanently closed/idle. Ohio AG separately secured $360,000 in 2023 for related air violations at Canton.",
+      "takeaway": "Demonstrates that long-running industrial NPDES exceedances on small Ohio receiving streams (Nimishillen Creek) draw multi-year federal-state enforcement scrutiny. Relevant to Licking County / central Ohio data center buildout where cooling-water and stormwater discharges feed into similarly modest creeks; per-day penalty exposure ($67K/day sought) sets a Region 5 precedent that would apply to any data center NPDES non-compliance.",
+      "sources": [
+        {
+          "title": "Republic Steel agrees to $700K fine amid EPA lawsuit over water pollution violations at Canton, Lorain plants",
+          "url": "https://www.wkyc.com/article/money/business/republic-steel-700k-fine-epa-lawsuit-water-pollution-canton-lorain-plants/95-3a62f87f-c45b-4286-ae47-212fd57fbaaa",
+          "type": "news"
+        },
+        {
+          "title": "Republic Steel, DOJ and EPA in pending agreement over alleged pollution",
+          "url": "https://www.crainscleveland.com/manufacturing/republic-steel-facing-huge-fines-over-ohio-pollution",
+          "type": "news"
+        },
+        {
+          "title": "Lorain, Canton steel mills at center of EPA lawsuit against Republic Steel",
+          "url": "https://chroniclet.com/news/379921/lorain-canton-steel-mills-at-center-of-epa-lawsuit-against-republic-steel/",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Energix-VA-2024",
+      "category": "industrial",
+      "respondent": "Energix Renewables / Caden Energix (multiple Virginia solar construction sites)",
+      "year": "2022-2024",
+      "cwa_section": "Section 402 NPDES via Virginia VPDES (VAR10 construction general permit) and Virginia Erosion and Stormwater Management Act",
+      "violation_summary": "Across seven utility-scale solar construction sites in Buckingham, Henry, Sussex, and Wythe counties, Virginia DEQ documented around 40 violations of construction-stormwater requirements: improper erosion, sediment and stormwater controls, unauthorized stream crossings (Axton), improperly installed sediment basins (Wytheville), inadequate vegetative maintenance and silt fencing (Buckingham). Violations occurred at VPDES permits including VAR10R609, VAR10M363, VAR10M588, VAR10O685, VAR10K745, and VAR10M345.",
+      "outcome": "Initial $68,250 civil charge in March 2023 consent order; superseded by a May 2024 VADEQ consent order requiring Energix US to pay $158,000 ($120,150 to Virginia Stormwater Management Fund and $28,850 to Virginia Environmental Emergency Response Fund). Energix has now been fined three consecutive years (2022, 2023, 2024) totaling roughly $345,000.",
+      "takeaway": "Sets a direct VADEQ enforcement precedent for large-footprint Virginia construction projects with VAR10 stormwater general permits — exactly the regulatory regime under which Loudoun and Prince William data center campuses are built. Three consecutive years of escalating fines signal VADEQ will use repeat-violator escalation on developers who treat E&S controls as a paperwork exercise.",
+      "sources": [
+        {
+          "title": "Solar firm Energix fined again for Virginia environmental violations",
+          "url": "https://cardinalnews.org/2024/05/21/solar-firm-energix-fined-again-for-virginia-environmental-violations/",
+          "type": "news"
+        },
+        {
+          "title": "Solar farm developer cited for western Virginia environmental violations",
+          "url": "https://roanoke.com/news/local/business/solar-farm-developer-cited-for-western-virginia-environmental-violations/article_827cdf88-17b8-11ef-9c41-1322027bcd68.html",
+          "type": "news"
+        },
+        {
+          "title": "DEQ Fines Energix Renewable Energies over $150,000 for Violations",
+          "url": "https://www.friendsofbuckinghamva.org/deq-fines-energix-renewable-energies-over-150000-for-violations/",
+          "type": "news"
+        },
+        {
+          "title": "Energix DEQ consent order documentation (March 2023)",
+          "url": "https://vchr.org/pdf/energix/deq_related/deq_fines_for_7_sites_march_2023.pdf",
+          "type": "state agency action"
+        }
+      ]
+    },
+    {
+      "case_id": "Pactiv-Evergreen-Canton-NC-2023-2024",
+      "category": "industrial",
+      "respondent": "Pactiv Evergreen / Blue Ridge Paper Products LLC, Canton Paper Mill (Haywood County, North Carolina)",
+      "year": "2021-2024",
+      "cwa_section": "Section 402 NPDES via NC NPDES Permit NC0000272 (administered under federally delegated CWA authority)",
+      "violation_summary": "Over a series of NC DEQ Notices of Violation issued through 2023-2024, Pactiv Evergreen exceeded permit discharge limitations into the Pigeon River, including a September 2022 effluent exceedance, a March 2023 toxicity test result exceeding permit limits, and alleged improper dumping of unused process chemicals into the mill's wastewater treatment plant during the mill's shutdown. Additional NOVs were issued September 19, October 26, December 22 (2023), and February 2 and February 6 (2024).",
+      "outcome": "By summer 2023 the company had received 14-15 NOVs from NC DEQ since May 2021 and had paid roughly $41,819 in penalties; July 2023 NOV exposed the company to civil penalty assessment of up to $25,000/day per violation for three alleged water-quality law violations related to chemical dumping. The Canton mill formally closed in June 2023.",
+      "takeaway": "Illustrates how NC DEQ uses repeated Civil Penalty Assessments and toxicity-based exceedances to enforce against a major industrial NPDES discharger on a small mountain receiving stream. Relevant to North Carolina data center proposals (e.g., Lenoir, Maiden corridor) where cooling discharges to similar small receiving waters would face the same per-day NOV/CPA framework.",
+      "sources": [
+        {
+          "title": "Canton paper mill receives second chemical violation this summer",
+          "url": "https://www.bpr.org/bpr-news/2023-08-11/canton-paper-mill-receives-second-chemical-violation-this-summer",
+          "type": "news"
+        },
+        {
+          "title": "Pactiv Evergreen fined this week as NCDEQ meets with Canton mill over closure issues",
+          "url": "https://wlos.com/news/local/canton-paper-mill-pactiv-evergreen-fined-ncdeq-closure-water-air-quality-waste-management-stormwater-fine",
+          "type": "news"
+        },
+        {
+          "title": "Civil Penalty Assessment — Violator: Blue Ridge Paper Products LLC (NC0000272)",
+          "url": "https://www.deq.nc.gov/nc0000272nov2023lc0111rtf/open",
+          "type": "state agency action"
+        },
+        {
+          "title": "Canton Paper Mill — NC DEQ key issues page",
+          "url": "https://www.deq.nc.gov/news/key-issues/canton-paper-mill",
+          "type": "state agency action"
+        }
+      ]
+    },
+    {
+      "case_id": "Pacific-Seafood-OR-2026",
+      "category": "industrial",
+      "respondent": "Pacific Seafood (Charleston, Warrenton, and Brookings, Oregon processing plants)",
+      "year": "2017-2026",
+      "cwa_section": "Section 402 NPDES via Oregon DEQ-administered NPDES program",
+      "violation_summary": "Across three Oregon coastal processing facilities, Pacific Seafood discharged fish parts, oil, grease, ammonia, E. coli, and chlorine into the Pacific Ocean (Charleston/Coos Bay), the Columbia River (Warrenton, via BioOregon Protein subsidiary), and the Chetco River (Brookings). The Charleston facility missed an April 2023 NPDES-mandated deadline to install a wastewater treatment system and continued discharging fish processing waste; the Warrenton facility exceeded chlorine permit limits and failed to submit monitoring reports; Brookings exceeded E. coli, ammonia, and chlorine limits.",
+      "outcome": "On April 23, 2026, Oregon DEQ levied a combined $3.2 million civil penalty across the three facilities — $2.9 million against Charleston (of which $2.4 million reflects estimated economic benefit gained by not installing the treatment system), $104,800 against Warrenton, and $114,000 against Brookings. Second-largest civil penalty in Oregon DEQ history.",
+      "takeaway": "Establishes Oregon DEQ's willingness to capture economic-benefit components in industrial NPDES penalties — a methodology that scales penalties to the cost of delayed compliance. Highly relevant to The Dalles Google and Hillsboro Intel/data-center context: any operator that defers required water-quality infrastructure to save capex faces commensurately large 'avoided cost' penalty exposure, not just nominal per-day fines.",
+      "sources": [
+        {
+          "title": "Oregon DEQ fines Pacific Seafood $3.2 million for water pollution violations",
+          "url": "https://www.opb.org/article/2026/04/23/oregon-deq-pacific-seafood-3-million-fine-water-pollution/",
+          "type": "news"
+        },
+        {
+          "title": "Oregon DEQ fines Pacific Seafood $3.2 million for water pollution violations",
+          "url": "https://oregoncapitalchronicle.com/2026/04/27/oregon-deq-pacific-seafood-3-2-million-for-water-pollution-violations/",
+          "type": "news"
+        },
+        {
+          "title": "Pacific Seafood says Oregon DEQ 'out of control' after company hit with $3.2 million in fines",
+          "url": "https://www.kptv.com/2026/04/27/pacific-seafood-says-oregon-deq-out-control-after-company-hit-with-32-million-fines/",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "SpaceX-Starbase-TX-2024",
+      "category": "industrial",
+      "respondent": "Space Exploration Technologies Corp. (SpaceX), Starbase Production Site, Boca Chica, Texas",
+      "year": "2024",
+      "cwa_section": "Section 402 NPDES via Texas TPDES program (TCEQ Docket 2024-1282-IWD-E); separate federal CWA action Docket CWA-06-2024-1768",
+      "violation_summary": "SpaceX operated a launch-pad water deluge system that sprayed >100,000 gallons of water per Starship test fire, discharging the resulting industrial wastewater into saltwater wetlands adjacent to Boca Chica Beach on March 14, April 5, May 8, and July 26, 2024 — all without a required TPDES permit. After 14 complaints to TCEQ's Harlingen office, a state inspector documented the violations on July 25, 2024.",
+      "outcome": "TCEQ Agreed Order signed August 13, 2024 (Docket 2024-1282-IWD-E) assessing a $3,750 state civil penalty (portion deferred pending permit issuance) and requiring future discharge sampling with effluent limitations. Separately, EPA reached a $148,378 federal civil penalty under Docket CWA-06-2024-1768. Environmental groups subsequently sued TCEQ in December 2024 over a 300-day temporary authorization issued to SpaceX.",
+      "takeaway": "Underscores that industrial cooling/process-water discharges — even from non-traditional sources like rocket deluge systems — fall squarely under TPDES jurisdiction in Texas. Highly relevant to San Antonio and Austin-area hyperscale data centers using evaporative cooling: any unpermitted blowdown or stormwater conveyance carrying industrial water can trigger TCEQ Agreed Orders without prior NOV.",
+      "sources": [
+        {
+          "title": "SpaceX repeatedly polluted waters in Texas, TCEQ, EPA found",
+          "url": "https://www.cnbc.com/2024/08/12/spacex-repeatedly-polluted-waters-in-texas-tceq-epa-found.html",
+          "type": "news"
+        },
+        {
+          "title": "South Texas groups sue TCEQ for temporarily allowing SpaceX to discharge industrial water without a permit",
+          "url": "https://www.texastribune.org/2024/12/18/texas-space-x-lawsuit-tceq-pollution/",
+          "type": "news"
+        },
+        {
+          "title": "TCEQ Executive Summary, Enforcement Matter Case No. 66536 (Docket 2024-1282-IWD-E)",
+          "url": "https://www.tceq.texas.gov/downloads/agency/decisions/agendas/backup/2024/2024-1282-iwd-e.pdf/@@download/file/2024-1282-iwd-e.pdf",
+          "type": "state agency action"
+        },
+        {
+          "title": "EPA CAFO Docket CWA-06-2024-1768 (SpaceX)",
+          "url": "https://www.epa.gov/system/files/documents/2024-09/spacex_cafo_cwa-06-2024-1768_txu09110_090624__0.pdf",
+          "type": "EPA press release"
+        }
+      ]
+    },
+    {
+      "case_id": "Hailiang-Copper-TX-2023",
+      "category": "industrial",
+      "respondent": "Hailiang Copper Texas, Inc. (Sealy, Austin County, Texas)",
+      "year": "2023",
+      "cwa_section": "Section 402 NPDES via Texas TPDES (TCEQ Docket 2023-0715-IWD-E)",
+      "violation_summary": "Hailiang's copper-tubing manufacturing facility on Interstate 10 West in Sealy made an unauthorized discharge of approximately 288,000 gallons of industrial wastewater between Feb 2 and March 13, 2023, in violation of its TPDES permit conditions. TCEQ investigation documented the unauthorized discharge.",
+      "outcome": "TCEQ Agreed Order in Docket 2023-0715-IWD-E assessed a $28,750 administrative penalty ($5,750 deferred for expedited settlement; $23,000 paid to Texas general revenue), plus compliance requirements.",
+      "takeaway": "Direct precedent for TCEQ penalty methodology when an industrial facility releases process water beyond permit authorization. Penalties scale with discharge volume; relevant to Texas data center sites where heat-exchanger blowdown or chemical-treatment volumes could similarly exceed permitted volumes. Shows TCEQ's expedited settlement mechanism gives modest dollar penalties for one-off bulk discharges relative to ongoing exceedances.",
+      "sources": [
+        {
+          "title": "TCEQ Executive Summary, Enforcement Matter Case No. 64027 (Hailiang Copper Texas Inc.)",
+          "url": "https://www.tceq.texas.gov/downloads/agency/decisions/agendas/backup/2023/2023-0715-iwd-e.pdf",
+          "type": "state agency action"
+        }
+      ]
+    },
+    {
+      "case_id": "Agri-Star-Postville-IA-2024-2025",
+      "category": "industrial",
+      "respondent": "Agri Star Meat and Poultry, Postville, Iowa",
+      "year": "2023-2025",
+      "cwa_section": "Section 402 NPDES via Iowa DNR-administered NPDES program; pretreatment to Postville WWTP",
+      "violation_summary": "Agri Star kosher meatpacking facility exceeded its NPDES permit limits approximately 60 times across multiple years, including a September 2024 discharge of 1,149 lb/day of ammonia-nitrogen (vs. 97 lb/day limit, ~12x over) and 19,165 lb/day total suspended solids (vs. 293 lb/day daily maximum, ~65x over). In March 2024 the facility discharged over 250,000 gallons of untreated food-processing waste into Postville's municipal wastewater system, shutting down the city's WWTP for two days. Persistent violations of chloride limits, monitoring and reporting requirements; downstream impacts to Hecker Creek and the Yellow River (longest cold-water trout stream in Iowa).",
+      "outcome": "Settlement reached July 30, 2025 by Iowa Attorney General Brenna Bird on behalf of Iowa DNR: $50,000 penalty plus consent decree requiring Agri Star to come into full NPDES compliance by Dec. 31, 2026. Settlement criticized by environmental groups as a 'sweetheart deal' relative to the scale of violations and as having short-circuited a separate citizen suit filed by Driftless Water Defenders.",
+      "takeaway": "Captures how Iowa DNR + Iowa AG handle large industrial users that overload small-town POTWs — including the indirect harm of forcing a municipal WWTP offline. Directly relevant to the West Des Moines / Altoona Microsoft data center cluster: pretreatment-violation enforcement against a single large industrial customer of a city WWTP sets the template for how Iowa would respond if a data center's chemical-treatment effluent disrupted a host municipality's treatment plant.",
+      "sources": [
+        {
+          "title": "Iowa Attorney General settles DNR cases for Agri Star and Nishnabotna River pollution",
+          "url": "https://iowacapitaldispatch.com/2025/07/30/iowa-attorney-general-settles-dnr-cases-for-agri-star-and-nishnabotna-river-pollution/",
+          "type": "news"
+        },
+        {
+          "title": "Postville beef and poultry plant pays $50,000 penalty for wastewater issues",
+          "url": "https://www.radioiowa.com/2025/07/31/postville-beef-and-poultry-plant-pays-50-000-penalty-for-wastewater-issues/",
+          "type": "news"
+        },
+        {
+          "title": "Iowa meatpacking plant faces legal threat over repeated, unchecked pollution",
+          "url": "https://cbs2iowa.com/news/local/iowa-meatpacking-plant-agri-star-postville-repeated-unchecked-pollution-dnr",
+          "type": "news"
+        },
+        {
+          "title": "Agri Star's Postville plant sued for water-quality violations",
+          "url": "https://iowacapitaldispatch.com/2025/02/26/agri-stars-postville-plant-sued-for-water-quality-violations/",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Hyponex-Scotts-OH-2024",
+      "category": "industrial",
+      "respondent": "Hyponex Corporation (Scotts Miracle-Gro subsidiary), Shreve, Ohio",
+      "year": "2020-2024",
+      "cwa_section": "Section 402 NPDES (joint federal-state action with Ohio EPA delegated authority, EPA Docket CWA-05-2024-0013)",
+      "violation_summary": "Hyponex, a Scotts Miracle-Gro subsidiary operating a soil/peat processing facility in Shreve (Wayne County), discharged E. coli, total suspended solids, chlorine, and ammonia-nitrogen above NPDES permit limits into the Kiser Ditch tributary, which flows to the Lower Muddy Fork Mohican River. In May 2022 EPA (operating with Ohio EPA in Region 5) issued an administrative order requiring submission of a compliance plan; the company returned to compliance in September 2022.",
+      "outcome": "$100,000 civil penalty under proposed Consent Agreement and Final Order (Docket CWA-05-2024-0013), complaint filed July 25, 2024, settlement closed September 13, 2024.",
+      "takeaway": "Direct Region 5 + Ohio EPA precedent for industrial NPDES exceedances on small Ohio tributaries — the receiving-water profile that matches Licking County / New Albany data center stormwater outfalls and any future Ohio data center cooling-water discharges under the in-development OHD000001 general permit. Shows that even relatively modest, time-bounded exceedances at a non-data-center industrial facility draw six-figure CAFO penalties.",
+      "sources": [
+        {
+          "title": "EPA Reaches $100,000 Settlement with Hyponex Corp. for Alleged Clean Water Act Violations in Shreve, Ohio",
+          "url": "https://www.epa.gov/newsreleases/epa-reaches-100000-settlement-hyponex-corp-alleged-clean-water-act-violations-shreve",
+          "type": "EPA press release"
+        },
+        {
+          "title": "Proposed Consent Agreement and Final Order, In the Matter of Hyponex Corporation, Docket CWA-05-2024-0013",
+          "url": "https://www.epa.gov/system/files/documents/2024-05/cwa-05-2024-0013_proposedcafo_hyponexcorporation_shreveohio.pdf",
+          "type": "EPA press release"
+        }
+      ]
+    },
+    {
+      "case_id": "SF-EPA-end-result-2025",
+      "category": "precedent",
+      "respondent": "City and County of San Francisco v. Environmental Protection Agency, 604 U.S. 334 (2025)",
+      "year": "2025",
+      "cwa_section": "CWA Section 301(b)(1)(C) / 33 U.S.C. § 1311(b)(1)(C) (NPDES permit conditions)",
+      "violation_summary": "San Francisco challenged its renewed combined-sewer NPDES permit for the Oceanside facility, which contained two 'end-result' provisions: a prohibition on any discharge that would 'contribute to a violation' of receiving-water quality standards and a prohibition on discharges creating 'pollution, contamination, or nuisance' under state law. The city argued EPA had to specify the exact effluent limits required for compliance rather than make the permittee bear the risk of receiving-water exceedances it does not control.",
+      "outcome": "Decided March 4, 2025, by 5-4. Justice Alito wrote the majority opinion, joined by Chief Justice Roberts and Justices Thomas, Gorsuch, and Kavanaugh, holding that § 1311(b)(1)(C) does not authorize EPA to impose generic 'end-result' provisions making permittees liable for downstream water-quality violations without telling them what specific effluent limits to meet. Justice Barrett dissented in relevant part, joined by Justices Sotomayor, Kagan, and Jackson, agreeing the broader narrative arguments failed but contending end-result conditions are lawful under the statute.",
+      "takeaway": "Data centers whose cooling-tower blowdown or stormwater discharges run through municipal POTWs or hold direct NPDES permits can no longer be hit with open-ended 'don't violate water-quality standards' language; EPA and delegated state agencies must instead set numeric or technology-based effluent limits, increasing permit predictability but shifting the regulatory burden back to permit writers.",
+      "sources": [
+        {
+          "title": "City and County of San Francisco v. EPA, 604 U.S. 334 (2025) — Justia",
+          "url": "https://supreme.justia.com/cases/federal/us/604/23-753/",
+          "type": "court ruling"
+        },
+        {
+          "title": "Oyez — City and County of San Francisco v. EPA (No. 23-753)",
+          "url": "https://www.oyez.org/cases/2024/23-753",
+          "type": "court ruling"
+        },
+        {
+          "title": "Sidley — SCOTUS Limits EPA's CWA Authority to Impose Water Quality Standards (Mar. 2025)",
+          "url": "https://www.sidley.com/en/insights/newsupdates/2025/03/us-supreme-court-limits-epas-clean-water-act-authority-to-impose-water-quality-standards",
+          "type": "law review"
+        }
+      ]
+    },
+    {
+      "case_id": "Maui-remand-DHaw-2021",
+      "category": "precedent",
+      "respondent": "Hawai'i Wildlife Fund v. County of Maui, 550 F. Supp. 3d 871 (D. Haw. 2021) (on remand from 590 U.S. 165)",
+      "year": "2021",
+      "cwa_section": "CWA Section 402 / 33 U.S.C. § 1342 (NPDES) and § 502(12) definition of 'discharge of a pollutant'",
+      "violation_summary": "On remand from the Supreme Court's 2020 Maui ruling, the District of Hawai'i had to apply the new 'functional equivalent of a direct discharge' test to the County of Maui's Lahaina Wastewater Reclamation Facility, which injected approximately 3-5 MGD of treated effluent into deep wells from which pollutants migrated through groundwater to the Pacific Ocean. A tracer-dye study showed transit times as short as 84 days with an average of 14-16 months over distances under 1.5 miles.",
+      "outcome": "On July 26, 2021, the district court (Mollway, J.) held the injections were the functional equivalent of a direct discharge and that the County therefore required an NPDES permit. The court emphasized the short distance, modest transit time, and intact chemical character of pollutants on arrival as decisive Maui factors, rejecting the County's argument that groundwater attenuation rendered the discharge non-jurisdictional.",
+      "takeaway": "Data centers that inject cooling-tower blowdown into the subsurface, rely on percolation ponds, or send PFAS-laden effluent to land-application systems near surface water cannot assume groundwater conveyance immunizes them from NPDES requirements; short distances and traceable pollutants will trigger Maui's functional-equivalent test.",
+      "sources": [
+        {
+          "title": "Hawai'i Wildlife Fund v. County of Maui, ECF No. 468 (D. Haw. July 26, 2021)",
+          "url": "https://law.justia.com/cases/federal/district-courts/hawaii/hidce/1:2012cv00198/102885/468/",
+          "type": "court ruling"
+        },
+        {
+          "title": "County of Maui v. Hawaii Wildlife Fund, 590 U.S. 165 (2020) — Justia",
+          "url": "https://supreme.justia.com/cases/federal/us/590/18-260/",
+          "type": "court ruling"
+        },
+        {
+          "title": "Center for Agricultural Law and Taxation — Federal Court Says Maui 'Effectively Discharging' Pollutant",
+          "url": "https://www.calt.iastate.edu/post/federal-court-says-county-maui-effectively-discharging-pollutant-violation-clean-water-act",
+          "type": "law review"
+        }
+      ]
+    },
+    {
+      "case_id": "SierraClub-WVDEP-401-2023",
+      "category": "precedent",
+      "respondent": "Sierra Club v. West Virginia Department of Environmental Protection, 64 F.4th 487 (4th Cir. 2023)",
+      "year": "2023",
+      "cwa_section": "CWA Section 401 / 33 U.S.C. § 1341 (state water quality certification)",
+      "violation_summary": "Sierra Club and other environmental groups petitioned for review of West Virginia DEP's Section 401 water-quality certification authorizing Mountain Valley Pipeline to make hundreds of stream crossings in the state. Petitioners argued the certification was arbitrary because the agency failed to account for MVP's history of erosion and sedimentation violations and did not impose stream-specific conditions or anti-degradation analysis.",
+      "outcome": "On April 3, 2023, a unanimous Fourth Circuit panel (Judges Wynn, Thacker, and Heytens) vacated the WVDEP § 401 certification. The court held the agency's 'reasonable assurance' determination was arbitrary and capricious because it (1) failed to address MVP's violation history, (2) did not incorporate stormwater-permit and SWPPP conditions, (3) provided no reasoned basis for relying on EPA's upland construction general permit, and (4) skipped location-specific antidegradation review.",
+      "takeaway": "For data-center developers whose campuses involve federally permitted stream or wetland crossings (e.g., long-haul fiber, water-supply pipelines, electrical transmission corridors), state § 401 certifications must rest on documented project-specific anti-degradation review and explicit stormwater conditions — a boilerplate 'reasonable assurance' memo is now legally vulnerable in the Fourth Circuit, which covers Virginia.",
+      "sources": [
+        {
+          "title": "Sierra Club v. West Virginia DEP, No. 22-1008 (4th Cir. Apr. 3, 2023)",
+          "url": "https://law.justia.com/cases/federal/appellate-courts/ca4/22-1008/22-1008-2023-04-03.html",
+          "type": "court ruling"
+        },
+        {
+          "title": "Fourth Circuit Opinion No. 22-1008 (PDF)",
+          "url": "https://www.babstcalland.com/wp-content/uploads/2023/04/2023-04-03-Sierra-Club-v.-West-Virginia-DEP-401-certification-vacated-for-MVP.pdf",
+          "type": "court ruling"
+        },
+        {
+          "title": "Appalachian Voices — Court vacates critical West Virginia water permit for MVP",
+          "url": "https://appvoices.org/2023/04/03/mvp-wv-401/",
+          "type": "law review"
+        }
+      ]
+    }
+  ]
+}
