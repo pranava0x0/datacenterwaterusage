@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-05-26",
-  "note": "State + federal data center water/energy disclosure legislation. Verified entries had their status confirmed against a primary source (state legislature page, Congress.gov / GovInfo, or official sponsor press release) on the listed last_verified date; unverified entries should be re-checked before being relied upon. Each bill is enriched with recent_news (up to 3 dated items with source URLs), public_sentiment (a paragraph naming supporters/opponents), general_principles (tagged policy concepts), and a procedural timeline. These fields are best-effort as of last_updated and should be re-verified before being cited.",
+  "last_updated": "2026-05-28",
+  "note": "State + federal data center water/energy legislation, plus selected regulatory actions and major local zoning decisions. Verified entries had their status confirmed against a primary source (state legislature page, Congress.gov / GovInfo, official sponsor press release) on the listed last_verified date; unverified entries should be re-checked before being relied upon. Each bill is enriched with recent_news (up to 3 dated items with source URLs), public_sentiment (a paragraph naming supporters/opponents), general_principles (tagged policy concepts), and a procedural timeline. These fields are best-effort as of last_updated and should be re-verified before being cited. Scope expanded 2026-05-28 to include regulatory rulemakings (OH EPA OHD000001) and major local ordinances (Loudoun ZOAM) that function as de facto data-center policy.",
   "bills": [
     {
       "bill_id": "VA HB 496 / SB 553",
@@ -1035,6 +1035,1033 @@
           "date": "2026-03-25",
           "milestone": "Introduced",
           "detail": "Sen. Dick Durbin (D-IL) introduced solo; Senate bill number not yet confirmed in public Congress.gov listings as of late May 2026."
+        }
+      ]
+    },
+    {
+      "bill_id": "TX SB 6",
+      "jurisdiction": "Texas",
+      "level": "state",
+      "title": "Large load interconnection, ERCOT oversight, and remote-disconnect",
+      "sponsor": "Sen. Phil King (R-Weatherford) lead; bipartisan co-authors",
+      "summary": "Imposes new planning, interconnection, and cost-recovery rules on large electric loads (≥75 MW) in ERCOT, including data centers. Requires backup-generation disclosure capable of meeting a share of site demand, mandates remote-disconnect capability for emergency load shedding, and forces disclosure of duplicative interconnection requests across utilities.",
+      "scope": [
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Signed by Gov. Abbott June 20, 2025 (89th Leg.); PUCT implementing rules proposed early 2026.",
+      "source_url": "https://capitol.texas.gov/BillLookup/History.aspx?LegSess=89R&Bill=SB6",
+      "last_verified": "2026-05-28",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-03-15",
+          "title": "Texas SB 6 Update: Proposed Interconnection Standards",
+          "source": "Greenberg Traurig",
+          "url": "https://www.gtlaw.com/en/insights/2026/3/texas-senate-bill-6-update-what-data-centers-large-load-customers-should-know-about-proposed-interconnection-standards",
+          "takeaway": "PUCT proposed implementing rules early 2026; industry calls the curtailment clause the 'Kill Switch' provision."
+        },
+        {
+          "date": "2025-06-21",
+          "title": "Texas law gives grid operator power to disconnect data centers during crisis",
+          "source": "Utility Dive",
+          "url": "https://www.utilitydive.com/news/texas-law-gives-grid-operator-power-to-disconnect-data-centers-during-crisi/751587/",
+          "takeaway": "Abbott signature gives ERCOT first-in-nation authority to remotely curtail large loads during firm load shed."
+        }
+      ],
+      "public_sentiment": "Backed by Texas grid-reliability advocates, the PUCT, and a bipartisan supermajority citing Winter Storm Uri and AI-load growth. The Data Center Coalition and major hyperscalers lobbied to weaken the curtailment trigger and duplicate-request disclosure. Sierra Club Texas supported but called for parallel water rules. Texas Republican Party passed a 2026 resolution calling for further DC restrictions.",
+      "general_principles": [
+        {
+          "tag": "Disclosure",
+          "note": "Requires disclosure of duplicate interconnection requests and backup generation capacity."
+        },
+        {
+          "tag": "Cost allocation",
+          "note": "Establishes that large loads pay for incremental transmission infrastructure costs."
+        },
+        {
+          "tag": "Permit oversight",
+          "note": "PUCT gains expanded review authority over loads ≥75 MW."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2025-02-12",
+          "milestone": "Filed in Senate"
+        },
+        {
+          "date": "2025-05-26",
+          "milestone": "Passed both chambers"
+        },
+        {
+          "date": "2025-06-20",
+          "milestone": "Signed by Gov. Abbott"
+        },
+        {
+          "date": "2025-12-31",
+          "milestone": "Applies to all new large loads connecting after this date"
+        }
+      ]
+    },
+    {
+      "bill_id": "OR HB 3546",
+      "jurisdiction": "Oregon",
+      "level": "state",
+      "title": "POWER Act (Protecting Oregonians With Energy Responsibility)",
+      "sponsor": "Rep. Pam Marsh (D-Ashland), lead; bipartisan co-sponsors",
+      "summary": "Creates a new utility customer classification for data centers, cryptocurrency operations, and other large industrial energy users (>20 MW). Requires them to pay their full share of electricity costs and transmission upgrades and to sign 10-year minimum-commitment contracts.",
+      "scope": [
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Signed by Gov. Kotek June 2025; OPUC adopted PGE implementation rules in early 2026.",
+      "source_url": "https://olis.oregonlegislature.gov/liz/2025R1/Measures/Overview/HB3546",
+      "last_verified": "2026-05-28",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-05-01",
+          "title": "Oregon's POWER Act is the first of its kind to protect utility bills from data center growth",
+          "source": "Climate Solutions",
+          "url": "https://www.climatesolutions.org/article/2026-05/oregons-power-act-first-its-kind-protect-oregonians-utility-bills-data-center",
+          "takeaway": "First-in-nation cost-allocation law specifically targeting large-load classification."
+        },
+        {
+          "date": "2025-06-05",
+          "title": "Oregon Legislature passes 'POWER Act,' targeting industrial energy users like data centers",
+          "source": "OPB",
+          "url": "https://www.opb.org/article/2025/06/05/oregon-data-centers-cryptocurrency-business-environment-power-electricity/",
+          "takeaway": "Bipartisan vote; legislative findings note a 30 MW DC consumes the same power as the City of Ashland."
+        }
+      ],
+      "public_sentiment": "Oregon CUB, Oregon Environmental Council, Climate Solutions, and the AFL-CIO building trades championed the bill. Pacific Power, PGE, and the Data Center Coalition initially opposed but negotiated softened language. The Dalles, Hillsboro, and Prineville residents — home to Google and Meta DCs — were active grassroots supporters.",
+      "general_principles": [
+        {
+          "tag": "Cost allocation",
+          "note": "Forces large industrial loads (>20 MW) to bear their own grid expansion costs."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "Requires DCs to disclose long-term load and contract terms to PUC."
+        },
+        {
+          "tag": "Conservation",
+          "note": "10-year minimum commitment discourages speculative interconnection requests."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2025-01-13",
+          "milestone": "Introduced by Rep. Marsh"
+        },
+        {
+          "date": "2025-06-05",
+          "milestone": "Passed Oregon legislature"
+        },
+        {
+          "date": "2025-06-20",
+          "milestone": "Signed by Gov. Kotek (approximate)"
+        },
+        {
+          "date": "2026-03-01",
+          "milestone": "PGE implementation rules adopted by OPUC (approximate; Q1 2026)"
+        }
+      ]
+    },
+    {
+      "bill_id": "NJ S3379",
+      "jurisdiction": "New Jersey",
+      "level": "state",
+      "title": "Data Center Water and Energy Usage Reporting Act",
+      "sponsor": "Sen. M. Teresa Ruiz (D-29); Sen. Raj Mukherji (D-32); co-sponsors Diegnan (D), Beach (D)",
+      "summary": "Requires data center owners/operators to submit semi-annual water and energy usage reports to the NJ Board of Public Utilities for three years. Reports must cover total kWh, IT-equipment energy, water input (cubic meters), and source. State-incentivized facilities must also report PUE, WUE, and renewable energy factor. BPU publishes facility data within 30 days; performance metrics released only in anonymized aggregated form (n≥5).",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "introduced",
+      "status_detail": "Passed Senate March 24, 2026; pending in Assembly committee. Governor's office signaled in May 2026 a preference for harder construction limits before signing.",
+      "source_url": "https://pub.njleg.gov/Bills/2026/S3500/3379_I1.HTM",
+      "last_verified": "2026-05-28",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-03-24",
+          "title": "Legislation holding data centers accountable for water, energy use passes Senate",
+          "source": "ROI-NJ",
+          "url": "https://www.roi-nj.com/2026/03/24/industry/energy-utilities/legislation-holding-data-centers-accountable-for-water-energy-use-passes-senate/",
+          "takeaway": "S3379 cleared NJ Senate as part of a three-bill package alongside clean-power and ratepayer-protection bills."
+        },
+        {
+          "date": "2026-02-15",
+          "title": "Key Legislation to Ensure Data Center Transparency and Energy Affordability Moves Forward",
+          "source": "Sierra Club New Jersey",
+          "url": "https://www.sierraclub.org/new-jersey/blog/2026/02/key-legislation-ensure-data-center-transparency-and-energy-affordability",
+          "takeaway": "Sierra Club, NJLCV, and Food & Water Watch built coalition support; bill emerged from committee with amendments."
+        }
+      ],
+      "public_sentiment": "Strongly supported by Sierra Club NJ, NJ League of Conservation Voters, Food & Water Watch, and South Jersey residents in Vineland, East Greenwich, and West Deptford fighting proposed DC projects. The Data Center Coalition and NJ Chamber of Commerce opposed, citing trade-secret concerns. Sen. Ruiz is the lead Latina state Senate champion. The Governor's office initially asked for revisions and as of late May 2026 is pushing for stronger construction limits before signing.",
+      "general_principles": [
+        {
+          "tag": "Transparency",
+          "note": "Semi-annual BPU reporting forces public visibility into DC water and energy footprint."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "Public posting of facility-level data within 30 days of submission."
+        },
+        {
+          "tag": "Cost allocation",
+          "note": "Special PUE/WUE disclosure for state-incentivized facilities."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-02-09",
+          "milestone": "Introduced by Sen. Ruiz"
+        },
+        {
+          "date": "2026-03-24",
+          "milestone": "Passed NJ Senate"
+        },
+        {
+          "date": "2026-05-27",
+          "milestone": "Governor calls for stronger construction limits"
+        }
+      ]
+    },
+    {
+      "bill_id": "NY S6394 / A9086",
+      "jurisdiction": "New York",
+      "level": "state",
+      "title": "New York State Sustainable Data Centers Act",
+      "sponsor": "Sen. Kristen Gonzalez (D-WF, 59th); Sen. Rachel May (D, 48th) co-sponsor; Assembly companion A9086 carried by Assm. Anna Kelles (D)",
+      "summary": "Requires data centers ≥5 MW to file pre-construction disclosure reports with the PSC covering location, labor, projected energy/water usage, waste heat, and water pollution. Mandates annual sustainability updates. Sets a renewable-energy schedule: 33% by 2030, 67% by 2035, 100% by 2040. Prohibits utility fossil-fuel PPA incentives and directs PSC to create a DC surcharge funding low- and moderate-income energy assistance in host communities.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "introduced",
+      "status_detail": "Reported from Senate Energy and Telecommunications Committee in amended form (S6394A) May 19, 2025; carried over into 2026 session.",
+      "source_url": "https://www.nysenate.gov/legislation/bills/2025/S6394",
+      "last_verified": "2026-05-28",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-04-15",
+          "title": "How New York is responding to AI data center surge",
+          "source": "MultiState",
+          "url": "https://www.multistate.us/insider/2026/2/20/state-data-center-legislation-in-2026-tackles-energy-and-tax-issues",
+          "takeaway": "S6394 is one of two flagship NY data center bills alongside S9144 moratorium."
+        },
+        {
+          "date": "2025-05-19",
+          "title": "Sustainable Data Centers Act advances in NY Senate Energy Committee",
+          "source": "NY State Senate",
+          "url": "https://www.nysenate.gov/legislation/bills/2025/S6394/amendment/A",
+          "takeaway": "Amended version cleared committee on party-line vote; carried over to 2026."
+        }
+      ],
+      "public_sentiment": "Backed by NRDC, NYLCV, NY Renews Coalition, and CLCPA implementation advocates. The Empire AI public research initiative would be exempt, securing university-system support. Major opposition from Data Center Coalition, NYISO market participants, and downstate utilities arguing the renewable mandate is technically unachievable. Sen. Gonzalez is a freshman DSA-aligned senator from Queens with industrial-district constituents.",
+      "general_principles": [
+        {
+          "tag": "Transparency",
+          "note": "Pre-construction PSC disclosure of energy, water, and waste-heat projections."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "Annual sustainability progress reports filed with PSC."
+        },
+        {
+          "tag": "Conservation",
+          "note": "Progressive renewable mandate to 100% by 2040 aligned with CLCPA."
+        },
+        {
+          "tag": "Cost allocation",
+          "note": "DC surcharge funds low-income energy assistance in host communities."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2025-03-13",
+          "milestone": "Introduced by Sen. Gonzalez"
+        },
+        {
+          "date": "2025-05-19",
+          "milestone": "Amended (S6394A) and reported from committee"
+        },
+        {
+          "date": "2026-01-08",
+          "milestone": "Carried over to 2026 session"
+        }
+      ]
+    },
+    {
+      "bill_id": "NY S9144 / A10141",
+      "jurisdiction": "New York",
+      "level": "state",
+      "title": "Data Center Moratorium and PSC Rate Impact Review",
+      "sponsor": "Sen. Liz Krueger (D-28, Manhattan); Assm. Anna Kelles (D-125, Ithaca)",
+      "summary": "Imposes a moratorium of at least three years and ninety days on the issuance of permits for new private data centers ≥20 MW. Directs DEC to publish a generic environmental impact statement and PSC to issue orders minimizing rate impacts. Public-sector projects like the state's Empire AI research initiative are exempt.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "introduced",
+      "status_detail": "Introduced February 2026; A10141 companion introduced February 9, 2026; both pending in committee.",
+      "source_url": "https://www.nysenate.gov/legislation/bills/2025/S9144",
+      "last_verified": "2026-05-28",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-05-10",
+          "title": "Nearly 500 New York Small Businesses Back Moratorium Push on AI Data Centers",
+          "source": "Business2Community",
+          "url": "https://www.business2community.com/small-business/ny-small-businesses-ai-data-center-moratorium/",
+          "takeaway": "Small business coalition cites projected ~25% retail electricity price hike if hyperscale buildout proceeds without intervention."
+        },
+        {
+          "date": "2026-02-11",
+          "title": "New York State Proposes Sweeping Data Center Moratorium and Regulatory Review (S9144)",
+          "source": "Nixon Peabody",
+          "url": "https://www.nixonpeabody.com/insights/alerts/2026/02/11/new-york-state-proposes-sweeping-data-center-moratorium-and-regulatory-review-s9144",
+          "takeaway": "Bill would block major hyperscale facilities while preserving Empire AI public research initiative."
+        }
+      ],
+      "public_sentiment": "Endorsed by NY Renews, Public Power NY, Sierra Club Atlantic Chapter, and consumer-rate advocates. The Taxpayers Protection Alliance named it 'Bill of Shame' for May 2026, and Data Center Coalition, NYC Partnership, and Greater NY Chamber are organized opponents. The Empire AI exemption is a deliberate carve-out from Sen. Krueger to preserve SUNY research while pausing private buildout.",
+      "general_principles": [
+        {
+          "tag": "Moratorium",
+          "note": "Hard pause on new private DC permits ≥20 MW for 3+ years."
+        },
+        {
+          "tag": "Preemptive review",
+          "note": "DEC must issue generic EIS before moratorium lifts."
+        },
+        {
+          "tag": "Cost allocation",
+          "note": "PSC ordered to minimize rate impact on residential/commercial users."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-02-09",
+          "milestone": "S9144 / A10141 introduced"
+        },
+        {
+          "date": "2026-05-10",
+          "milestone": "500-business coalition endorsement"
+        }
+      ]
+    },
+    {
+      "bill_id": "IL SB 4016 / HB 5513",
+      "jurisdiction": "Illinois",
+      "level": "state",
+      "title": "Protecting Our Workers and Environment from Reckless Data Centers (POWER) Act",
+      "sponsor": "Sen. Ram Villivalam (D-8, Chicago); Rep. Robyn Gabel (D-18, Evanston)",
+      "summary": "Requires data centers to pay for their own energy infrastructure and invest in renewable generation, disclose annual water consumption (intake + discharge) to the Illinois DNR beginning Jan. 1, 2027, identify and monitor likely pollutants in discharges to WWTPs, ban NDAs between local governments and DC operators, and mandate transparent community-benefit agreements.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "introduced",
+      "status_detail": "Introduced February 11, 2026 (Senate companion SB 4016); reported out of Senate Energy and Public Utilities Committee with amendments April 2026.",
+      "source_url": "https://www.ilga.gov/Legislation/BillStatus?DocNum=4016&GAID=18&DocTypeID=SB&SessionID=114&GA=104",
+      "last_verified": "2026-05-28",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-04-22",
+          "title": "Testimony in Support of POWER Act to Protect Illinois Water Resources from Data Center Impacts",
+          "source": "Alliance for the Great Lakes",
+          "url": "https://greatlakes.org/2026/04/testimony-in-support-of-power-act-to-protect-illinois-water-resources-from-data-center-impacts/",
+          "takeaway": "Alliance highlighted Lake Michigan withdrawal compact obligations and the need to override NDAs hiding DC consumption."
+        },
+        {
+          "date": "2026-02-11",
+          "title": "Illinois Legislators Introduce POWER Act, Which Would Force Data Centers To Foot Energy Costs",
+          "source": "WTTW",
+          "url": "https://news.wttw.com/2026/02/11/illinois-legislators-introduce-power-act-which-would-force-data-centers-foot-energy",
+          "takeaway": "Bill makes Illinois the first state to explicitly ban municipal NDAs covering DC water and energy use."
+        }
+      ],
+      "public_sentiment": "Coalition includes Illinois Environmental Council, Sierra Club Illinois, Alliance for the Great Lakes, Citizens Utility Board, and IBEW Local 134. Strong opposition from Data Center Coalition, Illinois Manufacturers' Association, and the Greater Chicago Cluster of municipalities currently bound by NDAs (Elk Grove Village, Itasca, Mt. Prospect). State Senator Villivalam represents the Lincolnwood data center cluster.",
+      "general_principles": [
+        {
+          "tag": "Transparency",
+          "note": "Public reporting of annual water intake and discharge to IL DNR."
+        },
+        {
+          "tag": "NDA prohibition",
+          "note": "Explicitly bans municipal NDAs covering DC energy/water consumption."
+        },
+        {
+          "tag": "Cost allocation",
+          "note": "DCs must pay full cost of their energy infrastructure."
+        },
+        {
+          "tag": "Best-practice guidance",
+          "note": "Requires community benefit agreements replacing NDAs."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-02-06",
+          "milestone": "HB 5513 announced"
+        },
+        {
+          "date": "2026-02-11",
+          "milestone": "SB 4016 introduced by Sen. Villivalam"
+        },
+        {
+          "date": "2026-04-15",
+          "milestone": "Committee hearing with Alliance for the Great Lakes testimony"
+        }
+      ]
+    },
+    {
+      "bill_id": "PA HB 2246",
+      "jurisdiction": "Pennsylvania",
+      "level": "state",
+      "title": "Data Center Water Withdrawal Pre-Construction Notification",
+      "sponsor": "Rep. Joe Webster (D-150, Montgomery County)",
+      "summary": "Requires data centers planning to use more than 100,000 gallons of water per day over any 30-day period to notify the PA Department of Environmental Protection before commencing construction. Authorizes DEP review of proposed withdrawals against watershed capacity.",
+      "scope": [
+        "water"
+      ],
+      "status": "introduced",
+      "status_detail": "Passed PA House (~116-84) in May 2026 as part of a multi-bill data center package; stalled in the Republican-controlled Senate.",
+      "source_url": "https://www.palegis.us/legislation/bills/2025/hb2246",
+      "last_verified": "2026-05-28",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-05-24",
+          "title": "The data center regulation bills on the table in PA",
+          "source": "Spotlight PA / WESA",
+          "url": "https://www.wesa.fm/politics-government/2026-05-24/data-center-regulation-bills-pass-pennsylvania-house-stall-senate-capitol",
+          "takeaway": "Multi-bill data center package cleared the PA House with bipartisan votes but is blocked by Senate Republican leadership."
+        },
+        {
+          "date": "2026-03-28",
+          "title": "Lawmakers advance bill to give state additional oversight of new data center water use",
+          "source": "Pennsylvania Capital-Star",
+          "url": "https://penncapital-star.com/energy-environment/lawmakers-advance-bill-to-give-state-additional-oversight-of-new-data-center-water-use/",
+          "takeaway": "Webster's bill creates the first formal PA DEP review trigger for high-volume DC water withdrawals."
+        }
+      ],
+      "public_sentiment": "Supported by Conservation Voters of PA, PennEnvironment, Susquehanna Riverkeeper, and Delaware Riverkeeper Network. Industrial opposition from the Data Center Coalition and PA Chamber of Business. Local activists in Cumberland County (Middlesex Township) and Lancaster County, where Amazon and other proposals are advancing, formed the regional base for the bill.",
+      "general_principles": [
+        {
+          "tag": "Disclosure",
+          "note": "Pre-construction water-use notification to state DEP."
+        },
+        {
+          "tag": "Permit oversight",
+          "note": "Triggers DEP review of withdrawals above 100,000 gpd."
+        },
+        {
+          "tag": "Preemptive review",
+          "note": "Watershed capacity review required before construction starts."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-03-25",
+          "milestone": "Introduced by Rep. Webster"
+        },
+        {
+          "date": "2026-05-19",
+          "milestone": "Passed PA House"
+        },
+        {
+          "date": "2026-05-24",
+          "milestone": "Stalled by Senate Republican leadership"
+        }
+      ]
+    },
+    {
+      "bill_id": "PA HB 2150",
+      "jurisdiction": "Pennsylvania",
+      "level": "state",
+      "title": "Annual Data Center Energy and Water Reporting",
+      "sponsor": "Rep. Kyle Mullins (D-112, Lackawanna County)",
+      "summary": "Establishes annual energy and water reporting requirements for data centers in PA. Requires PA DEP and PUC to jointly issue annual reports on the cumulative impacts of data center energy and water use across the Commonwealth.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "introduced",
+      "status_detail": "Passed PA House (~133-68) in May 2026 with stronger bipartisan support than companion HB 2246; stalled in PA Senate.",
+      "source_url": "https://www.palegis.us/legislation/bills/2025/hb2150",
+      "last_verified": "2026-05-28",
+      "verified": false,
+      "confidence": "medium",
+      "recent_news": [
+        {
+          "date": "2026-05-24",
+          "title": "PA House passes two bills strengthening transparency requirements, community protections related to data centers",
+          "source": "Philadelphia Sunday Sun",
+          "url": "https://philasun.com/local/pa-house-passes-two-bills-strengthening-transparency-requirements-community-protections-related-to-data-centers/",
+          "takeaway": "HB 2150 attracted Republican crossover votes; framed as good-government transparency."
+        }
+      ],
+      "public_sentiment": "Broad transparency-focused coalition: PennEnvironment, PennFuture, Citizens for Pennsylvania's Future, and the PA AFL-CIO supported. PA Chamber of Business and Data Center Coalition opposed citing competitive harm but lost on the floor. Lackawanna County (Mullins' district) has multiple data center proposals advancing.",
+      "general_principles": [
+        {
+          "tag": "Transparency",
+          "note": "Annual joint PA DEP/PUC report on aggregate DC impacts."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "Per-facility annual energy and water reports."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-03-15",
+          "milestone": "Introduced by Rep. Mullins"
+        },
+        {
+          "date": "2026-05-19",
+          "milestone": "Passed PA House"
+        }
+      ]
+    },
+    {
+      "bill_id": "NC HB 1063",
+      "jurisdiction": "North Carolina",
+      "level": "state",
+      "title": "Ratepayer and Resource Protection Act",
+      "sponsor": "Rep. Lindsey Prather (D-115, Buncombe County)",
+      "summary": "Mandates that data centers publicly report electricity consumption, peak demand, water consumption, cooling systems, and emissions-free generation. Facilities using over 1 billion liters of water per year or peak demand >40 MW must source at least 25% of power from non-emitting generation. Repeals state sales/use tax exemption for DC construction and server replacement.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "introduced",
+      "status_detail": "Filed April 27, 2026; referred to NC House Energy and Public Utilities Committee. Bill number to be re-verified against NC General Assembly bill lookup before citation.",
+      "source_url": "https://www.ncleg.gov/BillLookUp/2025/H1063",
+      "last_verified": "2026-05-28",
+      "verified": false,
+      "confidence": "medium",
+      "recent_news": [
+        {
+          "date": "2026-04-27",
+          "title": "NC House Democrats propose data center legislation",
+          "source": "WUNC",
+          "url": "https://www.wunc.org/politics/2026-04-27/nc-house-democrats-propose-data-center-legislation",
+          "takeaway": "First comprehensive Democratic data center proposal in NC; combines mandatory clean power with full disclosure."
+        },
+        {
+          "date": "2026-05-08",
+          "title": "NC bills target data center boom, seeking tax changes, consumer protections",
+          "source": "NC Newsline",
+          "url": "https://ncnewsline.com/2026/05/08/nc-bills-target-data-center-boom-seeking-tax-changes-consumer-protections/",
+          "takeaway": "Rep. Prather's bill paired with a parallel Republican proposal; both await committee action."
+        }
+      ],
+      "public_sentiment": "Supported by NC Conservation Network, Southern Environmental Law Center, NC Justice Center, and AARP NC (rate concerns). Opposed by NC Chamber, NC TECH Association, and Duke Energy citing the renewable threshold as overly aggressive. The 25% clean-power floor is among the most aggressive renewable mandates in any current Southern-state data center bill.",
+      "general_principles": [
+        {
+          "tag": "Transparency",
+          "note": "Public reporting of consumption, peak demand, and cooling systems."
+        },
+        {
+          "tag": "Conservation",
+          "note": "25% non-emitting power requirement for largest facilities."
+        },
+        {
+          "tag": "Anti-corporate-welfare",
+          "note": "Repeals state sales/use tax exemption for DC equipment."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-04-27",
+          "milestone": "Introduced by Rep. Prather"
+        },
+        {
+          "date": "2026-05-21",
+          "milestone": "Referred to Energy and Public Utilities Committee"
+        }
+      ]
+    },
+    {
+      "bill_id": "AL SB 270",
+      "jurisdiction": "Alabama",
+      "level": "state",
+      "title": "Data Center Contract Review by Public Service Commission",
+      "sponsor": "Sen. Lance Bell (R-11, Pell City)",
+      "summary": "Directs the Alabama Public Service Commission to review utility contracts with large-scale data centers (≥150 MW) to ensure they provide for full recovery of incremental service costs and demonstrate 'positive benefits' for ratepayers statewide. Requires PSC findings before contracts take effect.",
+      "scope": [
+        "energy"
+      ],
+      "status": "introduced",
+      "status_detail": "Passed Alabama Senate March 13, 2026; approved by Alabama House committee April 2026. Bill number to be re-verified against Alabama legislature lookup before citation.",
+      "source_url": "https://legiscan.com/AL/bill/SB270/2026",
+      "last_verified": "2026-05-28",
+      "verified": false,
+      "confidence": "medium",
+      "recent_news": [
+        {
+          "date": "2026-04-10",
+          "title": "As the Alabama Legislature Adjourns, Environmentalists See a Silver Lining",
+          "source": "Inside Climate News",
+          "url": "https://insideclimatenews.org/news/10042026/alabama-legislature-adjourns/",
+          "takeaway": "Despite session ending with limited environmental wins, AL SB 270 represented bipartisan progress on ratepayer protection."
+        },
+        {
+          "date": "2026-03-13",
+          "title": "Alabama Senate passes bill to rein in data center tax incentives",
+          "source": "Alabama Reporter",
+          "url": "https://www.alreporter.com/2026/03/13/alabama-senate-passes-bill-to-rein-in-data-center-tax-incentives/",
+          "takeaway": "Sen. Bell's bill cleared Senate with bipartisan vote citing Google Bessemer and proposed DC build-out concerns."
+        }
+      ],
+      "public_sentiment": "Sen. Bell (R) leveraged anti-corporate-welfare framing to bring together rural Republicans and Black Caucus Democrats representing Bessemer/Jefferson County. Opposition from Alabama Power and Business Council of Alabama. Environmental groups (Alabama Rivers Alliance, GASP) supported but pushed unsuccessfully for water provisions.",
+      "general_principles": [
+        {
+          "tag": "Cost allocation",
+          "note": "Requires DCs to bear full incremental service costs."
+        },
+        {
+          "tag": "Permit oversight",
+          "note": "PSC pre-approval of utility-DC contracts."
+        },
+        {
+          "tag": "Anti-corporate-welfare",
+          "note": "Requires 'positive benefit' finding for ratepayers."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-02-05",
+          "milestone": "Introduced by Sen. Bell"
+        },
+        {
+          "date": "2026-03-13",
+          "milestone": "Passed Alabama Senate"
+        },
+        {
+          "date": "2026-04-10",
+          "milestone": "House committee approval"
+        }
+      ]
+    },
+    {
+      "bill_id": "OH HB 706",
+      "jurisdiction": "Ohio",
+      "level": "state",
+      "title": "Statewide Data Center Customer Minimum-Take Tariff",
+      "sponsor": "Rep. David Thomas (R-65, Jefferson) and Rep. Tristan Rader (D-13, Lakewood)",
+      "summary": "Codifies the PUCO-approved AEP Ohio data center tariff statewide. Requires new DC customers ≥25 MW to commit to paying for a minimum of 85% of subscribed electricity usage for up to 12 years, regardless of actual consumption. Bars utilities from recovering DC-driven costs by shifting them to other classes of customers.",
+      "scope": [
+        "energy"
+      ],
+      "status": "introduced",
+      "status_detail": "Introduced February 25, 2026; referred to Ohio House Energy Committee. Bill number to be re-verified before citation.",
+      "source_url": "https://www.legislature.ohio.gov/legislation/136/hb706",
+      "last_verified": "2026-05-28",
+      "verified": false,
+      "confidence": "medium",
+      "recent_news": [
+        {
+          "date": "2026-03-02",
+          "title": "Ohio House bill would extend data center tariff to rest of state",
+          "source": "Statehouse News Bureau / WOSU",
+          "url": "https://www.wosu.org/2026-03-02/ohio-house-bill-would-extend-data-center-tariff-to-rest-of-state",
+          "takeaway": "Bill builds on PUCO's July 2025 approval of AEP's contested 85%-take-or-pay structure."
+        }
+      ],
+      "public_sentiment": "Backed by Ohio Consumers' Counsel, AARP Ohio, and the Citizens Utility Board of Ohio. The Ohio Manufacturers' Association supports the cost-allocation principle. Data Center Coalition opposes, calling the 85% minimum 'punitive.' Tristan Rader (D-Lakewood) brings progressive environmental constituency; David Thomas (R-Jefferson) brings rural ratepayer concerns. Connects to the broader Save Ohio Parks petition to ban DCs.",
+      "general_principles": [
+        {
+          "tag": "Cost allocation",
+          "note": "85% minimum-take ensures DCs cover utility's stranded capacity investment."
+        },
+        {
+          "tag": "Anti-corporate-welfare",
+          "note": "Prohibits cost-shifting to residential and small commercial customers."
+        },
+        {
+          "tag": "Best-practice guidance",
+          "note": "Codifies AEP/PUCO model statewide."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2025-07-01",
+          "milestone": "PUCO approves AEP Ohio data center tariff (approximate)"
+        },
+        {
+          "date": "2026-02-25",
+          "milestone": "HB 706 introduced"
+        }
+      ]
+    },
+    {
+      "bill_id": "US S. 4214",
+      "jurisdiction": "Federal (US)",
+      "level": "federal",
+      "title": "Artificial Intelligence Data Center Moratorium Act",
+      "sponsor": "Sen. Bernie Sanders (I-VT); companion in House by Rep. Alexandria Ocasio-Cortez (D-NY-14)",
+      "summary": "Imposes a federal moratorium on construction of new AI data centers until safeguards are enacted ensuring the facilities do not increase utility bills, exacerbate climate impacts, deny community veto authority, or undermine labor standards. Also bans export of US AI computing infrastructure to countries without environmental, labor, and safety safeguards.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "introduced",
+      "status_detail": "Introduced March 25, 2026; read twice and referred to Senate Committee on Commerce, Science, and Transportation.",
+      "source_url": "https://www.congress.gov/bill/119th-congress/senate-bill/4214",
+      "last_verified": "2026-05-28",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-03-25",
+          "title": "Sanders, Ocasio-Cortez Announce AI Data Center Moratorium Act",
+          "source": "Senate.gov (Sanders press release)",
+          "url": "https://www.sanders.senate.gov/press-releases/news-sanders-ocasio-cortez-announce-ai-data-center-moratorium-act/",
+          "takeaway": "Most aggressive federal proposal; ties lifting the moratorium to community veto authority and union jobs."
+        },
+        {
+          "date": "2026-04-14",
+          "title": "State Data Center Laws vs. Federal AI Push: 2026 Tracker",
+          "source": "MultiState",
+          "url": "https://www.multistate.us/insider/2026/4/14/federal-ai-data-center-policy-meets-resistance-from-state-lawmakers",
+          "takeaway": "S 4214 named as the headline federal counterweight to the Trump permit-acceleration order."
+        }
+      ],
+      "public_sentiment": "Endorsed by AFL-CIO, Sierra Club, Sunrise Movement, Public Citizen, and the AI Now Institute. Sharply opposed by the Trump White House, Data Center Coalition, US Chamber of Commerce, and bipartisan critics who consider it an AI race-against-China risk. Symbolic value high; legislative path unlikely in the Republican Senate.",
+      "general_principles": [
+        {
+          "tag": "Moratorium",
+          "note": "Hard pause on new AI DCs pending federal safeguard legislation."
+        },
+        {
+          "tag": "Federal coordination",
+          "note": "Sets a federal floor preempting state-by-state variation."
+        },
+        {
+          "tag": "Anti-corporate-welfare",
+          "note": "Conditions lifting moratorium on labor and community standards."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-03-25",
+          "milestone": "Introduced by Sen. Sanders"
+        },
+        {
+          "date": "2026-03-25",
+          "milestone": "Referred to Senate Commerce Committee"
+        }
+      ]
+    },
+    {
+      "bill_id": "US S. 3682",
+      "jurisdiction": "Federal (US)",
+      "level": "federal",
+      "title": "Power for the People Act of 2026",
+      "sponsor": "Sen. Chris Van Hollen (D-MD); cosponsors Durbin (D-IL), Blumenthal (D-CT), Booker (D-NJ), Duckworth (D-IL), Smith (D-MN), Welch (D-VT), Alsobrooks (D-MD)",
+      "summary": "Directs FERC to require grid operators to establish 'data center load queues' allowing utilities to prioritize or delay DC interconnections based on grid reliability and affordability. Encourages every state with at least one DC to establish DC-specific rate classes ensuring DC owners bear the full cost of generation, transmission, and distribution upgrades they trigger.",
+      "scope": [
+        "energy"
+      ],
+      "status": "introduced",
+      "status_detail": "Introduced January 15, 2026; referred to Senate Committee on Energy and Natural Resources.",
+      "source_url": "https://www.congress.gov/bill/119th-congress/senate-bill/3682",
+      "last_verified": "2026-05-28",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-01-15",
+          "title": "Van Hollen Leads New Bill to Ensure Americans Aren't Footing the Bill for Big Data Centers",
+          "source": "Senate.gov (Van Hollen press release)",
+          "url": "https://www.vanhollen.senate.gov/news/press-releases/van-hollen-leads-new-bill-to-ensure-americans-arent-footing-the-bill-for-big-data-centers",
+          "takeaway": "Eight-cosponsor Democratic bill positioning FERC as the central federal lever for DC cost allocation."
+        },
+        {
+          "date": "2026-01-15",
+          "title": "LIUNA endorses Van Hollen Power for the People Act",
+          "source": "LIUNA",
+          "url": "https://www.liuna.org/news/story/statement-of-general-president-brent-booker-on-the-introduction-of-senator-van-hollens--power-for-the-people-act-of-2026",
+          "takeaway": "Building trades labor endorsement bolsters bill's Democratic-coalition support."
+        }
+      ],
+      "public_sentiment": "Supported by AARP, NRDC, Sierra Club, LIUNA, and consumer rate advocates including the Energy and Policy Institute. Skeptical: PJM Interconnection, the Electric Power Supply Association, and the Data Center Coalition. Cosponsorship spans Northeast and Midwest senators whose states bear early DC cost pressure.",
+      "general_principles": [
+        {
+          "tag": "Cost allocation",
+          "note": "DCs pay full cost of grid expansion they cause."
+        },
+        {
+          "tag": "Federal coordination",
+          "note": "FERC required to establish DC load queue framework."
+        },
+        {
+          "tag": "Permit oversight",
+          "note": "Grid operators authorized to prioritize or delay DC interconnections."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-01-15",
+          "milestone": "Introduced by Sen. Van Hollen"
+        },
+        {
+          "date": "2026-01-15",
+          "milestone": "Referred to Senate Energy & Natural Resources Committee"
+        }
+      ]
+    },
+    {
+      "bill_id": "US HR 7066",
+      "jurisdiction": "Federal (US)",
+      "level": "federal",
+      "title": "Stopping Hikes In Electricity from Large Load Demands (SHIELD) Act",
+      "sponsor": "Rep. Mike Levin (D-CA-49); Rep. Kathy Castor (D-FL-14) co-lead",
+      "summary": "Updates federal utility cost-allocation policy under PURPA so that large electricity users like data centers bear the costs of grid infrastructure they require, while incentivizing zero-emission electricity sourcing. Aims to prevent cost-shifting onto residential and small commercial ratepayers.",
+      "scope": [
+        "energy"
+      ],
+      "status": "introduced",
+      "status_detail": "Introduced February 2026; referred to House Energy and Commerce Committee. Bill number to be re-verified against Congress.gov before citation.",
+      "source_url": "https://www.congress.gov/bill/119th-congress/house-bill/7066",
+      "last_verified": "2026-05-28",
+      "verified": false,
+      "confidence": "medium",
+      "recent_news": [
+        {
+          "date": "2026-02-12",
+          "title": "Rep. Mike Levin Introduces SHIELD Act to Stop Data Centers from Driving Up Electricity Prices",
+          "source": "House.gov (Levin press release)",
+          "url": "https://levin.house.gov/media/press-releases/rep-mike-levin-introduces-new-bill-to-stop-data-centers-from-driving-up-electricity-prices-for-consumers",
+          "takeaway": "House Democratic companion track to Van Hollen Senate bill; emphasizes zero-emission sourcing."
+        }
+      ],
+      "public_sentiment": "Supported by NRDC, Earthjustice, League of Conservation Voters, and California consumer advocacy groups. The Data Center Coalition and US Chamber of Commerce oppose. Levin's district covers North County San Diego where Microsoft and Apple have facilities; Castor's covers Tampa with significant data-center build-out.",
+      "general_principles": [
+        {
+          "tag": "Cost allocation",
+          "note": "Federal PURPA update directing utilities to shield ratepayers from DC infrastructure costs."
+        },
+        {
+          "tag": "Federal coordination",
+          "note": "Standardizes large-load cost recovery rules across states."
+        },
+        {
+          "tag": "Conservation",
+          "note": "Incentivizes zero-emission electricity for large loads."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-02-12",
+          "milestone": "Introduced by Reps. Levin and Castor"
+        }
+      ]
+    },
+    {
+      "bill_id": "US HR 8488",
+      "jurisdiction": "Federal (US)",
+      "level": "federal",
+      "title": "AI Data Center Site Selection Transparency Act of 2026",
+      "sponsor": "Rep. LaMonica McIver (D-NJ-10); cosponsors Rep. Valerie Foushee (D-NC-4), Rep. Andre Carson (D-IN-7)",
+      "summary": "Requires AI data center developers to publicly disclose proposed sites at least 180 days before any definitive development step. Mandates community engagement, multilingual outreach, and disclosure of projected electricity use, water consumption, cooling demands, and environmental impacts. Restricts NDAs and treats violations as unfair or deceptive practices under the FTC Act.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "introduced",
+      "status_detail": "Introduced May 2026; referred to House Committee on Energy and Commerce.",
+      "source_url": "https://www.congress.gov/bill/119th-congress/house-bill/8488",
+      "last_verified": "2026-05-28",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-05-15",
+          "title": "McIver Introduces Bill to Stop Surprise AI Data Center Development",
+          "source": "House.gov (McIver press release)",
+          "url": "https://mciver.house.gov/media/press-releases/mciver-introduces-bill-to-stop-surprise-ai-data-center-development",
+          "takeaway": "First federal bill imposing pre-construction public disclosure with FTC enforcement teeth."
+        }
+      ],
+      "public_sentiment": "Backed by NAACP, LULAC, Public Citizen, Sierra Club, and the National Association of Counties. Industry opposition from Data Center Coalition, NetChoice, and TechNet. McIver represents Newark, NJ where industrial-zone DC proposals are advancing; Foushee covers the North Carolina Triangle region with major Microsoft/Google build-outs.",
+      "general_principles": [
+        {
+          "tag": "Transparency",
+          "note": "180-day public pre-disclosure window before any definitive development step."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "Public disclosure of energy, water, cooling, and environmental impact projections."
+        },
+        {
+          "tag": "NDA prohibition",
+          "note": "Restricts NDAs covering DC siting decisions."
+        },
+        {
+          "tag": "Strict liability",
+          "note": "Violations treated as unfair/deceptive practices under FTC Act."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-05-15",
+          "milestone": "Introduced by Rep. McIver"
+        },
+        {
+          "date": "2026-05-15",
+          "milestone": "Referred to House Energy and Commerce Committee"
+        }
+      ]
+    },
+    {
+      "bill_id": "OH EPA OHD000001 (draft general permit)",
+      "jurisdiction": "Ohio",
+      "level": "state",
+      "title": "Draft NPDES General Permit for Discharges from Data Center Facilities",
+      "sponsor": "Ohio EPA Division of Surface Water (agency rulemaking)",
+      "summary": "First-of-its-kind NPDES general permit covering data center wastewater and stormwater discharges to waters of the state. Eligible facilities could obtain coverage for non-contact cooling water, cooling tower blowdown, boiler blowdown, air compressor condensate, and industrial stormwater via Notice of Intent (NOI) rather than individual NPDES permits. Sets monitoring parameters: temperature, pH, TSS, oil and grease, phosphorus, residual chlorine/oxidants.",
+      "scope": [
+        "water"
+      ],
+      "status": "introduced",
+      "status_detail": "Regulatory rulemaking, not a bill. Draft public-noticed October 31, 2025; public hearing December 17, 2025; comment period closed January 16, 2026. Final permit pending Ohio EPA action; five-year permit term once issued.",
+      "source_url": "https://epa.ohio.gov/divisions-and-offices/surface-water/permitting/ohnpdes-general-permits",
+      "last_verified": "2026-05-28",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-03-01",
+          "title": "Ohio EPA reviewing draft permit to authorize limited increase in data center wastewater discharge",
+          "source": "Marietta Times",
+          "url": "https://www.mariettatimes.com/news/local-news/2026/03/ohio-epa-reviewing-draft-permit-to-authorize-limited-increase-in-data-center-wastewater-discharge/",
+          "takeaway": "Ohio EPA reviewing comments; opposition from environmental groups citing inadequate cumulative-impact analysis."
+        },
+        {
+          "date": "2026-01-15",
+          "title": "Tell Ohio EPA: New data center wastewater permit puts our waters at risk",
+          "source": "Alliance for the Great Lakes",
+          "url": "https://greatlakes.org/2026/01/tell-ohio-epa-new-data-center-wastewater-permit-puts-our-waters-at-risk/",
+          "takeaway": "Alliance and Save Ohio Parks led environmental opposition arguing general permitting shortcuts individual review."
+        }
+      ],
+      "public_sentiment": "Industry (Data Center Coalition, Ohio Chamber, Columbus Partnership) strongly supports the general permit as streamlining build-out. Environmental opposition (Alliance for the Great Lakes, Sierra Club Ohio, Ohio Environmental Council, Save Ohio Parks) argues general permitting circumvents site-specific cumulative-impact analysis required under the Clean Water Act. Ohio EPA is under pressure from both the Trump White House permit-acceleration order and Save Ohio Parks ballot initiative gathering signatures by July 1, 2026.",
+      "general_principles": [
+        {
+          "tag": "Permit oversight",
+          "note": "Replaces individual NPDES permits with general-permit NOI process."
+        },
+        {
+          "tag": "Best-practice guidance",
+          "note": "Standardizes monitoring parameters for DC wastewater."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "Monitoring data publicly available through DMR submissions."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2025-10-31",
+          "milestone": "Draft public-noticed"
+        },
+        {
+          "date": "2025-12-17",
+          "milestone": "Public hearing in Columbus"
+        },
+        {
+          "date": "2026-01-16",
+          "milestone": "Comment period closed"
+        },
+        {
+          "date": "2026-09-01",
+          "milestone": "Final permit decision expected (approximate; Q3 2026)"
+        }
+      ]
+    },
+    {
+      "bill_id": "Loudoun County ZOAM 2025",
+      "jurisdiction": "Local (Loudoun County, Virginia)",
+      "level": "local",
+      "title": "Zoning Ordinance Amendment Eliminating By-Right Data Center Development",
+      "sponsor": "Loudoun County Board of Supervisors (Chair Phyllis Randall, D-At-Large lead)",
+      "summary": "Comprehensive zoning ordinance amendment removing by-right (administrative) approval pathway for data centers in Loudoun County. Now requires Special Exception (SPEX) approval with stringent legislative review and public hearings before Planning Commission and Board of Supervisors. Phase 2 (expected late 2026) will further tighten compatibility, water, and noise standards.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "ZOAM/CPAM adopted March 18, 2025. Phase 2 draft to Board May 2026; Planning Commission hearings July 2026; full Board action expected December 2026.",
+      "source_url": "https://www.loudoun.gov/5990/Data-Center-Standards-Locations",
+      "last_verified": "2026-05-28",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2025-09-16",
+          "title": "Loudoun County Board approves Data Center Standards and Locations Phase 2 Project Plan",
+          "source": "Loudoun County",
+          "url": "https://www.loudoun.gov/6222/Phase-2-Data-Center-Standards-Locations",
+          "takeaway": "Phase 2 will address compatibility, noise, water use, and visual impact standards via SPEX process."
+        },
+        {
+          "date": "2025-04-01",
+          "title": "Loudoun County, Virginia, Eliminates By-Right Data Center Development",
+          "source": "Holland & Knight",
+          "url": "https://www.hklaw.com/en/insights/publications/2025/04/loudoun-county-virginia-eliminates-by-right-data-center-development",
+          "takeaway": "First major hyperscale-cluster county to eliminate by-right DC approvals; sets template for other Northern Virginia jurisdictions."
+        }
+      ],
+      "public_sentiment": "Driven by grassroots opposition led by Piedmont Environmental Council, Coalition to Protect Prince William County, Loudoun Sierra Club, and residents of Aldie, Bluemont, and rural-western Loudoun. The Data Center Coalition vigorously opposed; the bipartisan Board nonetheless voted unanimously after extensive public comment. State enabling authority is robust under Virginia's general zoning powers; a hard moratorium would require legislative authorization.",
+      "general_principles": [
+        {
+          "tag": "Permit oversight",
+          "note": "Mandatory legislative review with public hearings for every new DC."
+        },
+        {
+          "tag": "Preemptive review",
+          "note": "Eliminates administrative approval pathway."
+        },
+        {
+          "tag": "Best-practice guidance",
+          "note": "Phase 2 will standardize compatibility, noise, water use standards."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2025-02-12",
+          "milestone": "Grandfathering cutoff for in-process applications"
+        },
+        {
+          "date": "2025-03-18",
+          "milestone": "ZOAM/CPAM adopted by Board of Supervisors"
+        },
+        {
+          "date": "2025-09-16",
+          "milestone": "Phase 2 project plan approved"
+        },
+        {
+          "date": "2026-05-01",
+          "milestone": "Phase 2 draft to Board"
+        },
+        {
+          "date": "2026-12-31",
+          "milestone": "Phase 2 full Board action expected"
         }
       ]
     }
