@@ -31,6 +31,8 @@ from dashboard import (
     _cwa_summary,
     _cwa_year_end,
     _build_cwa_case_html,
+    _cwa_statute_explainer_md,
+    _build_bill_card_html,
     CONTEXT_DATA,
     MASLEY_COMPARISONS,
     PER_QUERY_ESTIMATES,
@@ -444,6 +446,7 @@ class TestTimelineData:
 VALID_LEG_STATUS = {"enacted", "introduced", "failed", "unknown"}
 VALID_LEG_CONFIDENCE = {"high", "medium", "low"}
 VALID_LEG_SCOPE = {"water", "energy"}
+VALID_LEG_LEVEL = {"state", "federal", "local"}
 
 
 class TestLegislationTracker:
@@ -483,6 +486,7 @@ class TestLegislationTracker:
             assert b["status"] in VALID_LEG_STATUS, b["bill_id"]
             assert b["confidence"] in VALID_LEG_CONFIDENCE, b["bill_id"]
             assert set(b["scope"]) <= VALID_LEG_SCOPE, b["bill_id"]
+            assert b["level"] in VALID_LEG_LEVEL, f"{b['bill_id']} bad level {b.get('level')!r}"
 
     def test_enacted_bills_are_verified(self):
         # Never assert a law is enacted without having verified it.
@@ -560,6 +564,25 @@ class TestLegislationTracker:
             assert isinstance(sentiment, str)
             # Aim for at least a sentence of substance; anything shorter is a placeholder.
             assert len(sentiment) > 80, f"{b['bill_id']} sentiment too short"
+
+    def test_bill_card_html_renders_for_every_bill(self):
+        # Smoke test for the bill-card renderer. Catches accidental schema
+        # mismatches (e.g., a new entry with status_calls typo, or a local /
+        # regulatory entry that breaks the layout) before they hit the UI.
+        import html as _html
+
+        for b in self._bills():
+            html_str = _build_bill_card_html(b)
+            assert html_str.startswith('<div class="bill-card">'), b["bill_id"]
+            # bill_id must round-trip through the renderer (HTML-escaped).
+            assert _html.escape(b["bill_id"]) in html_str, b["bill_id"]
+            # Status badge must show one of the four labelled statuses, not
+            # a stray raw value.
+            for label in ("Enacted", "Introduced", "Failed", "Unknown"):
+                if label in html_str:
+                    break
+            else:
+                raise AssertionError(f"{b['bill_id']} no status pill rendered")
 
 
 # --- Tests for CWA investigations tracker ---
@@ -658,6 +681,34 @@ class TestCWAInvestigations:
         assert _cwa_year_end("not a year") == 0
         # Trailing whitespace shouldn't break it.
         assert _cwa_year_end("2025 ") == 2025
+
+    def test_statute_explainer_includes_primary_sources(self):
+        # The explainer must lead with verbatim statute citations from
+        # Cornell LII (the canonical free primary source) and EPA's own
+        # plain-language summary. If any of these go missing, the section
+        # has lost its "primary-source-first" framing.
+        md = _cwa_statute_explainer_md()
+        # Verbatim CWA Section 101 goal language (the most-cited CWA quote).
+        assert "restore and maintain the chemical, physical, and biological" in md
+        # The four statutory anchors we want surfaced.
+        for usc in ("33 U.S.C. § 1251", "33 U.S.C. § 1319", "33 U.S.C. § 1342", "33 U.S.C. § 1365"):
+            assert usc in md, f"missing statute citation {usc}"
+        # The civil-penalty $25,000/day base figure, verbatim from § 1319(d).
+        assert "$25,000 per day" in md
+        # Cornell LII primary-source links and the EPA summary link.
+        assert "law.cornell.edu/uscode/text/33/1251" in md
+        assert "law.cornell.edu/uscode/text/33/1319" in md
+        assert "law.cornell.edu/uscode/text/33/1342" in md
+        assert "law.cornell.edu/uscode/text/33/1365" in md
+        assert "epa.gov/laws-regulations/summary-clean-water-act" in md
+
+    def test_statute_explainer_covers_required_sections(self):
+        # User asked for: what the statute is, what the authority is, why
+        # it's deployed. The expander headings must reflect that structure.
+        md = _cwa_statute_explainer_md()
+        assert "What the statute is" in md
+        assert "What authority EPA and DOJ have" in md
+        assert "Why investigations get deployed" in md
 
 
 # --- Tests for Andy Masley reality-check comparisons ---

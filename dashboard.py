@@ -1102,8 +1102,10 @@ def render_legislation_tracker(is_mobile: bool = False, is_tablet: bool = False)
 
     st.subheader("Data Center Water Legislation Tracker")
     st.markdown(
-        "State and federal bills on data center water (and energy) disclosure. "
-        "Enacted laws are the next mandatory data sources to come online."
+        "State, federal, and local action on data center water (and energy) "
+        "disclosure — bills, signed laws, agency rulemakings, and major "
+        "zoning ordinances. Enacted laws are the next mandatory data sources "
+        "to come online."
     )
 
     payload = load_legislation()
@@ -1305,6 +1307,119 @@ CWA_CATEGORY_LABELS = {
 }
 
 
+def _cwa_statute_explainer_md() -> str:
+    """Markdown body for the 'What is a CWA investigation?' expander.
+
+    Leads with verbatim statute language from the U.S. Code (via Cornell LII,
+    the canonical free primary source) and EPA's plain-language summary,
+    then layers reputable secondary context. Kept in its own function so the
+    text can be unit-tested for the presence of the primary-source citations.
+    """
+    return (
+        "#### 1. What the statute is\n\n"
+        "The Clean Water Act is the common name for the **Federal Water "
+        "Pollution Control Act**, codified at 33 U.S.C. §§ 1251–1389. Its "
+        "stated objective, in the words of the statute itself:\n\n"
+        "> \"The objective of this chapter is to restore and maintain the "
+        "chemical, physical, and biological integrity of the Nation's "
+        "waters.\" — **33 U.S.C. § 1251(a)**\n\n"
+        "EPA's own plain-language summary describes the law this way: "
+        "\"The Clean Water Act (CWA) establishes the basic structure for "
+        "regulating discharges of pollutants into the waters of the United "
+        "States and regulating quality standards for surface waters.\" "
+        "— **EPA, *Summary of the Clean Water Act***\n\n"
+        "#### 2. What authority EPA and DOJ have\n\n"
+        "Two operative sections do most of the work in the cases tracked "
+        "here:\n\n"
+        "- **Section 301 / 33 U.S.C. § 1311** makes the discharge of any "
+        "pollutant from a point source to a water of the United States "
+        "**unlawful** unless authorized by a permit.\n"
+        "- **Section 402 / 33 U.S.C. § 1342** creates the National "
+        "Pollutant Discharge Elimination System (NPDES), the permit "
+        "program that authorizes lawful discharges and sets numeric "
+        "effluent limits. Per EPA: \"The CWA made it unlawful to discharge "
+        "any pollutant from a point source into navigable waters, unless a "
+        "permit was obtained\" through the NPDES program.\n\n"
+        "When a permittee violates those limits, **Section 309 / 33 U.S.C. "
+        "§ 1319** gives EPA escalating enforcement authority — "
+        "administrative orders, civil judicial action, and criminal "
+        "referral. The statute's civil-penalty cap was originally set at:\n\n"
+        "> \"…shall be subject to a civil penalty not to exceed $25,000 per "
+        "day for each violation.\" — **33 U.S.C. § 1319(d)**\n\n"
+        "That figure is adjusted annually for inflation under the Federal "
+        "Civil Penalties Inflation Adjustment Act; the 2024-adjusted "
+        "maximum is approximately **$66,712 per day per violation**, which "
+        "is the per-day exposure referenced in EPA Region 5 cases such as "
+        "Republic Steel in this dataset.\n\n"
+        "EPA can also commence civil litigation directly: \"The "
+        "Administrator is authorized to commence a civil action for "
+        "appropriate relief, including a permanent or temporary "
+        "injunction, for any violation…\" — **33 U.S.C. § 1319(b)**\n\n"
+        "Beyond agency action, **Section 505 / 33 U.S.C. § 1365** lets "
+        "private parties sue dischargers directly when EPA and the state "
+        "do not act:\n\n"
+        "> \"…any citizen may commence a civil action on his own behalf — "
+        "(1) against any person…who is alleged to be in violation of (A) "
+        "an effluent standard or limitation under this chapter…\" "
+        "— **33 U.S.C. § 1365(a)**\n\n"
+        "Several entries in this dataset (e.g., the Atlanta R.M. Clayton "
+        "consent decree and the QTS Fayetteville matter) originated as "
+        "Section 505 citizen-suit notices from groups like Chattahoochee "
+        "Riverkeeper and Flint Riverkeeper.\n\n"
+        "#### 3. Why investigations get deployed\n\n"
+        "EPA frames day-to-day water enforcement as: \"EPA's day-to-day "
+        "enforcement actions aim at returning facilities to compliance "
+        "with existing laws…\" The agency organizes its work into six "
+        "focus areas, each of which appears in the cases we track:\n\n"
+        "1. **Wastewater management** — POTW consent decrees (Jersey "
+        "City MUA, Cahokia Heights, Guam Waterworks, Reading WWTP, "
+        "Youngstown, MDC Hartford).\n"
+        "2. **Pretreatment** — industrial users discharging to municipal "
+        "sewers (Yuengling, Swift Beef, Agri Star). This is the "
+        "regulatory regime that most directly governs data-center "
+        "cooling-tower blowdown.\n"
+        "3. **Stormwater** — construction general-permit enforcement "
+        "(Microsoft Boydton, Google Stillwater, Energix VA, Johns "
+        "Hopkins DSAI) — the primary touch point for data-center "
+        "construction sites.\n"
+        "4. **CAFOs** — concentrated animal feeding operations (Wynja "
+        "Feedlot) — useful as a per-day-violation precedent for any "
+        "unpermitted industrial discharge.\n"
+        "5. **Oil & hazardous spills** — Section 311 / SPCC (Plains "
+        "Pipeline, Norfolk Southern, Johns Hopkins diesel) — relevant "
+        "to data-center backup-generator fuel storage.\n"
+        "6. **Wetlands** — Section 404 dredge-and-fill (Sackett, "
+        "Rapanos, Lewis) — affects site-grading at large campuses.\n\n"
+        "#### 4. Why this matters for data centers\n\n"
+        "Data centers themselves rarely hold direct NPDES discharge "
+        "permits — they typically buy potable water from a utility and "
+        "discharge cooling-water blowdown to a municipal POTW. That "
+        "structure puts most of their CWA exposure into the pretreatment "
+        "program (the receiving POTW enforces locally-issued industrial-"
+        "user permits) and into the construction-stormwater program "
+        "(general contractor liability during build-out). The "
+        "\"datacenter\" category here captures the rare direct cases; the "
+        "\"industrial\" category is the closest practical analog for what "
+        "post-build enforcement looks like; \"precedent\" captures the "
+        "Supreme Court and federal appellate rulings (Sackett, Maui, "
+        "Loper Bright, SF v. EPA) that set how aggressively any of this "
+        "can be enforced against a data center going forward.\n\n"
+        "**Primary sources:** "
+        "[33 U.S.C. § 1251 (Cornell LII)]"
+        "(https://www.law.cornell.edu/uscode/text/33/1251) · "
+        "[33 U.S.C. § 1319 (Cornell LII)]"
+        "(https://www.law.cornell.edu/uscode/text/33/1319) · "
+        "[33 U.S.C. § 1342 (Cornell LII)]"
+        "(https://www.law.cornell.edu/uscode/text/33/1342) · "
+        "[33 U.S.C. § 1365 (Cornell LII)]"
+        "(https://www.law.cornell.edu/uscode/text/33/1365) · "
+        "[EPA — Summary of the Clean Water Act]"
+        "(https://www.epa.gov/laws-regulations/summary-clean-water-act) · "
+        "[EPA — Water Enforcement]"
+        "(https://www.epa.gov/enforcement/water-enforcement)"
+    )
+
+
 def _cwa_category_colors() -> dict:
     """Map category → pill color, sourced from the shared COLORS palette."""
     return {
@@ -1349,6 +1464,12 @@ def render_cwa_tracker():
         "Act, organized by what they actually tell us about how the law applies "
         "to data center water use and cooling discharges."
     )
+
+    with st.expander(
+        "What is a Clean Water Act investigation? — statute, authority, "
+        "and why it's deployed"
+    ):
+        st.markdown(_cwa_statute_explainer_md())
 
     payload = load_cwa_investigations()
     cases = payload.get("cases", [])
