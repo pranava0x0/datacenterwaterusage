@@ -95,7 +95,7 @@ Python-based scraping and data extraction pipeline that finds documents related 
 - **Logging**: structlog
 - **CLI**: click
 - **Dashboard**: streamlit + plotly (Phase 1), Observable Framework planned (Phase 2)
-- **Testing**: pytest + pytest-asyncio (387 tests)
+- **Testing**: pytest + pytest-asyncio (406 tests)
 
 ### Key Directories
 - `scrapers/` — one module per government portal, organized by state
@@ -139,7 +139,7 @@ with no flow measurements. To track actual water usage, the pipeline monitors re
 wastewater treatment plants via EPA ECHO DMR data. Target permits are configured in
 `config.py` under `epa_echo_target_permits`.
 
-### Data Source Tiers (identified Feb 2026)
+### Data Source Tiers (identified Feb 2026, updated May 2026)
 
 **Tier 1 — Direct water metrics (highest value):**
 - EPA ECHO DMR flow data from receiving WWTPs (currently implemented)
@@ -147,6 +147,7 @@ wastewater treatment plants via EPA ECHO DMR data. Target permits are configured
 - Ohio EPA General Permit OHD000001 — once finalized, requires DMR from data centers directly
 - Prince William Water Industrial User Survey — data center ERU allocations
 - ODNR Water Withdrawal Facility Viewer — annual facility-level withdrawal volumes
+- **Virginia HB 496 / SB 553 (ENACTED 2026)** — utilities must report monthly aggregate water deliveries to data centers; effective ~July 1, 2026. Reporting channel (SWCB/DEQ vs. local zoning records) to be confirmed before scraper build-out — see backlog.
 
 **Tier 2 — Permit metadata and facility discovery:**
 - EPA ECHO NAICS 518210 search — discover data center regulatory footprints
@@ -159,6 +160,20 @@ wastewater treatment plants via EPA ECHO DMR data. Target permits are configured
 - JLARC Data Centers in Virginia report (2024)
 - EIA Form 923 — power plant cooling water for indirect footprint
 - USGS county-level water use estimates (every 5 years)
-- Virginia SB 553 (2026) — if enacted, mandates monthly data center water reporting
 
-See `backlog.md` for detailed scraper plans and sample prompts for each source.
+### Reference datasets (curated JSON, served by the dashboard)
+
+The dashboard reads three curated reference files independent of the scraper pipeline:
+- `data/reference/legislation.json` — 31 state/federal/local entries: bills (introduced/enacted/failed), agency rulemakings (OH EPA OHD000001 draft general permit), and major local zoning actions (Loudoun ZOAM 2025). Each enriched with timeline, recent news, public sentiment, and tagged general principles. Verified entries are flagged `verified: true`; lower-confidence entries carry a `status_detail` note to re-verify the bill number against the legislature's bill lookup.
+- `data/reference/cwa_investigations.json` — 48 cases across three categories: `datacenter` (direct hyperscaler / contractor actions, anchored by the 2026 $20.5M Amazon Boardman nitrate settlement — the first eight-figure direct-hyperscaler water settlement), `industrial` (cooling-water, pretreatment, PFAS, POTW consent decrees), and `precedent` (Sackett, Maui, Loper Bright, SF v EPA, and the Lewis v US 5th Circuit Sackett-application).
+- `data/reference/company_water_claims.json` — 29 water-themed claims from 13 operators with delivered-vs-promised adjudication where independent assessments exist.
+
+### Legislative pressure to watch (not yet enacted)
+
+Several pending federal bills would, if enacted, become Tier 1 data sources nationally:
+- US S. 4214 (Sanders / AOC) — federal AI data center construction moratorium
+- US S. 3682 (Van Hollen Power for the People Act) — FERC-mediated cost allocation and data-center load queues
+- US HR 6984 (Menendez Data Center Transparency Act) — EPA + EIA semi-annual public reporting
+- US HR 8488 (McIver) — 180-day pre-construction site disclosure with FTC enforcement
+
+See `backlog.md` for detailed scraper plans, sample prompts for each source, and the May 2026 External Tracker Survey (10 top-priority ideas borrowed from existing trackers like WRI Aqueduct, FracTracker, PEC ArcGIS, and EIA Form 923).

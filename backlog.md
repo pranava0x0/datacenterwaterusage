@@ -2,7 +2,7 @@
 
 Items are ordered by priority (high / medium / low). Each includes a sample prompt for generating an implementation plan.
 
-Last reviewed: 2026-05-25.
+Last reviewed: 2026-05-28 (External Tracker Survey added — see section below the Low Priority list).
 
 ---
 
@@ -268,6 +268,158 @@ Small cards that reinforce *why* the project relies on ECHO DMR / ACFR / FOIA wo
 
 **Sample prompt:**
 > Add a "Why the workarounds?" callout to the Transparency Scorecard panel with 1–2 sourced quotes from Karen Hao on company stonewalling and buried data, plus a short "data-integrity" note showcasing her public correction of the Chile figure as a model for how this project flags uncertainty. Cite sources, keep it to a compact card, and add a test for the static content.
+
+---
+
+## External Tracker Survey (May 2026)
+
+Survey of ~50 existing water-use trackers, datasets, and methodologies across academic, journalistic, NGO, open-source, industry, and government sources. Each item below is a candidate idea for this project; full inventory with URLs preserved in the agent research transcript. Ordered by actionable priority for incorporation.
+
+### Top 10 actionable picks
+
+#### 1. WRI Aqueduct 4.0 water-stress overlay (HIGH)
+Add WRI Aqueduct as a base map layer behind facility markers. 13 baseline indicators + 2030/2050/2080 projections at HUC level; open data; peer-reviewed; free. Matches the layer pattern Bloomberg used in "The AI Boom Is Draining Water" (June 2025) and Ceres "Drained by Data."
+
+**URLs:** `https://www.wri.org/aqueduct` · `https://www.wri.org/data/aqueduct-global-maps-40-data` · `https://github.com/wri/Aqueduct40`
+
+**Sample prompt:**
+> Add a WRI Aqueduct 4.0 water-stress choropleth as a base layer on the facility map in `dashboard.py`. Pull the HUC-12 (or country-level fallback) baseline-water-stress GeoTIFF from Aqueduct40 GitHub, render with Folium or st_pydeck, and overlay current facility markers sized by reported gpd. Cite WRI and add a short methodology note. Tests should verify the layer loads and color scale matches Aqueduct's published bins.
+
+#### 2. EIA Form 923 Schedule 8D scraper for indirect water (HIGH)
+Already flagged in Medium Priority but not built. Plant-level monthly water withdrawal/consumption/discharge at every U.S. thermoelectric plant. Combined with electricity-supplier mapping, lets us compute Scope 2 ("indirect") water for each tracked data center. Marston (Virginia Tech) found 75-90% of DC water footprint is indirect.
+
+**URL:** `https://www.eia.gov/electricity/data/water/`
+
+**Sample prompt:**
+> Build `scrapers/federal/eia_form_923.py` following BaseScraper pattern. Download the annual EIA-923 cooling water Excel (Schedule 8D), parse the per-plant monthly withdrawal/consumption rows, store records keyed by EIA plant ID + month. Then add `extractors/indirect_water.py` that takes a facility's annual MWh consumption and its grid region (PJM RTO / MISO / etc.) and returns an indirect-water estimate using Marston's published EWIF tables. Surface as a second bar next to direct DMR flow on the dashboard.
+
+#### 3. FracTracker open data center CSV ingest (HIGH)
+FracTracker publishes 1,400+ U.S. data center sites with coordinates, MW, square footage, acreage, **cooling type/method**, EJ overlays, tribal-lands proximity, and chronic-disease overlays. CSV is freely downloadable. Cooling type is the single most-needed missing field in our records.
+
+**URL:** `https://www.fractracker.org/data-centers/`
+
+**Sample prompt:**
+> Build `scrapers/federal/fractracker_data_centers.py` that pulls the FracTracker CSV/GeoJSON, normalizes to DocumentRecord (or a new ReferenceFacility record), and joins to our existing scraped records by name+county+state. Specifically pull through the `cooling_method` field — it's the field we most need and is absent from EPA ECHO and ODNR. Add to the dashboard's facility table.
+
+#### 4. EPA FRS Registry ID cross-link utility (HIGH)
+Already on backlog; this restates the priority. FRS gives every facility a stable `registryId` joining ECHO, TRI, SDWIS, RCRA, and air databases. Without it, cross-source dedup is brittle name-matching.
+
+**URL:** `https://www.epa.gov/frs/facility-registry-service-frs-api`
+
+**Sample prompt:**
+> Build `utils/frs_lookup.py` (already in backlog as "EPA FRS Cross-Reference Module"). Replace manual name-based cross-source joins in `utils/dedup.py` with FRS registryId joins where available. Add a `frs_registry_id` field to DocumentRecord. Tests should verify joining a known data center across ECHO + TRI returns one merged record.
+
+#### 5. PJM 2026 Load Forecast large-load disclosure scraper (HIGH)
+PJM's 2026 Load Report (per its new transparency rule) discloses individual large loads ≥50 MW. This pierces some of the NDA secrecy our Transparency Scorecard flags, especially for Virginia (PJM territory).
+
+**URL:** `https://www.pjm.com/-/media/DotCom/library/reports-notices/load-forecast/2026-load-report.pdf`
+
+**Sample prompt:**
+> Build `scrapers/federal/pjm_large_loads.py` that downloads the annual PJM Load Forecast Report PDF, extracts the new large-load disclosure tables (data center loads ≥50 MW by zone), and stores per-zone projected MW. Cross-reference with EPA ECHO permit locations to map disclosed load to identified facilities. Surface on the dashboard as "Disclosed large-load (PJM)" alongside our other sources.
+
+#### 6. NOAA Drought Monitor overlay (HIGH)
+Per-facility drought-condition badge (D0–D4). Strong contextual framing: "Facility X is operating in D2 (severe drought) as of [date]." Matches Bloomberg / Bay Journal coverage style.
+
+**URL:** `https://www.drought.gov/data-download`
+
+**Sample prompt:**
+> Build `extractors/drought_status.py` that pulls the current week's U.S. Drought Monitor GeoTIFF/JSON, samples drought level at each facility's coordinates, and stores a D0–D4 badge in the facility record. Add a small badge to each facility card on the dashboard. Refresh weekly.
+
+#### 7. AI prompts → liters calculator widget (HIGH)
+Building on existing Per-Query Explainer + the planned Andy Masley reality-check. Add an interactive slider widget: "Enter queries per day [1 → 1,000,000] → estimated liters of water." Use Shaolei Ren's coefficients (UC Riverside) as defaults, with selectable model from ML.energy leaderboard.
+
+**URLs:** `https://arxiv.org/pdf/2304.03271` (Ren) · `https://ml.energy/leaderboard` (per-model energy)
+
+**Sample prompt:**
+> Add `pages/ai_calculator.py` Streamlit page with a slider for queries/day, a model dropdown sourced from ML.energy leaderboard values, and a region selector. Output the estimated daily liters using Shaolei Ren's on-site WUE × off-site EWIF formula. Show as a small comparison to a tracked facility's monthly draw. Cite all source coefficients. Tests verify the formula output for a known input matches a published example.
+
+#### 8. Per-facility disclosure-quality scorecard (HIGH)
+Adapt Center for Secure Water (Illinois) gap matrix for VA. For each facility, score whether {withdrawal volume, timing, source, return flow, cooling type, monthly reporting} are disclosed. Display as a 6-cell badge row on each facility card.
+
+**URL:** `https://securewater.illinois.edu/data-center-expansion-in-virginia-closing-critical-gaps-for-informed-water-planning-and-permitting/`
+
+**Sample prompt:**
+> Add `disclosure_score()` to `extractors/transparency.py` that takes a facility record and returns a 6-element list (volume/timing/source/return/cooling/monthly) of `True`/`False`/`Partial`. Render as a six-cell color-coded badge row on each facility card in the dashboard. Add a state-level "Disclosure Quality Index" tile that averages all facilities in the state. Tests verify that a fully-disclosing Loudoun ACFR facility scores 6/6 and an undisclosed NDA facility scores 0/6.
+
+#### 9. Household-equivalent toggle on all volume displays (HIGH)
+"This facility uses the equivalent of X households per day." Reusable on every gallons number across the dashboard. Use EPA's 300 gpd/household constant; offer pool / NYC-water-system-day toggles too.
+
+**Sample prompt:**
+> Add `utils/equivalents.py` with helpers `gpd_to_households(n, gpd_per_household=300)`, `gpd_to_olympic_pools(n)`, `gpd_to_nyc_supply_days(n)`. Add a session-state toggle in the dashboard header: "Show in [gallons | households | pools | NYC-days]". All volume metrics rewrite their label according to the toggle. Cite EPA WaterSense 300 gpd default. Tests verify rounding and unit-conversion correctness.
+
+#### 10. Piedmont Environmental Council ArcGIS ingest (HIGH)
+PEC publishes a crowd-sourced existing + proposed VA data centers ArcGIS layer that already covers VA — directly fills the "proposed but not yet built" gap our pipeline misses today.
+
+**URL:** `https://pec-geohub-piedmont.hub.arcgis.com/datasets/virginia-data-centers`
+
+**Sample prompt:**
+> Build `scrapers/virginia/pec_data_centers.py` that queries the PEC ArcGIS REST endpoint, normalizes to DocumentRecord (with `status` field: existing/proposed/under-construction), and joins to our existing scraped records by parcel/county. Surface in the dashboard map as a separate layer with distinct iconography for proposed vs existing.
+
+### Additional ideas (grouped, lower urgency)
+
+#### Academic / methodology
+- **Shaolei Ren (UC Riverside) on-site WUE + off-site EWIF formula** — adopt as our unified water metric; the canonical source for AI water accounting.
+- **Landon Marston (Virginia Tech) dual-footprint methodology** — VT is local; consider reaching out for dataset reuse. Already structurally aligned with our existing EPA ECHO + planned EIA stack.
+- **Berkeley Lab 2024 US Data Center Energy Report** — DOE-funded state-level projections for back-calculating indirect water.
+- **Carnegie Mellon WaterWise (arXiv 2501.17944)** — adds a "carbon vs. water trade-off" metric column highlighting facilities that are "carbon-clean but water-thirsty."
+- **UVA Environmental Institute Data Center Water project** — Lauren Bridges' qualitative framing; consider linking from VA case-study pages.
+- **ICPRB Potomac basin projections (WMA DC water 4 → 16 MGD, share 8% → 25%)** — directly relevant to our VA scope; pursue data exchange.
+- **IEA "Energy and AI" (April 2025)** — 100 MW DC = ~2 million L/day; cite as default conversion when only nameplate MW is disclosed.
+- **OECD "Hidden Costs of AI"** — emphasis on publishing high/low bounds, not point estimates, to reflect disclosure-gap uncertainty.
+- **Ceres / Bluerisk "Drained by Data" (Phoenix case)** — cumulative-impact-by-watershed methodology; implement HUC-8 / HUC-12 rollups on the map.
+
+#### Journalistic / framing
+- **Bloomberg "The AI Boom Is Draining Water" interactive map** — best benchmark for the visualization we want. Two-thirds-in-water-stress framing reusable.
+- **The Markup "Secret Water Footprint of AI"** — open-methodology + publish-your-data ethos; reinforce our own methodology transparency.
+- **MIT Technology Review "Power Hungry: AI and Our Energy Future"** — first to extract per-prompt Google numbers (Aug 2025); pair with our calculator.
+- **SourceMaterial + Guardian global 632-facility roster** — cross-reference their global list with our VA/OH records.
+- **Bay Journal Chesapeake DC water coverage** — seasonal/monthly water-share visualization (winter vs. summer cooling demand).
+- **OPB "Google The Dalles" coverage** — "facility-as-share-of-municipal-supply" metric pattern.
+- **ProPublica + Seattle Times "Power Hungry"** — methodology of cross-referencing tax incentives with environmental cost; add "subsidy received" column.
+
+#### NGO / advocacy
+- **FracTracker open data tracker** — already in top 10.
+- **Piedmont Environmental Council ArcGIS** — already in top 10.
+- **Sierra Club 2026 Data Centers policy guidance** — state-by-state policy recommendations as scoring rubric for our legislation tracker.
+- **NAACP "Stop Dirty Data Centers" Community Report form** — model for our own community-submission workflow; add CEJST EJ overlays to the map.
+- **Foxglove (UK) FOI-driven data acquisition** — template FOIA requests for VA/OH water utilities.
+- **Coalition to Protect Prince William County** — ground-truth our PWC data; link to their commentary on each PWC facility.
+- **Climate XChange dashboard state machine** — policy-state machine (enacted / in-progress / partial / not-enacted) for our legislation tracker.
+
+#### Open-source / dev
+- **Electricity Maps GitHub repo** — regional carbon-intensity values for grid-water conversion via published EWIF tables; could be `utils/grid_water_intensity.py`.
+- **WattTime API** — marginal (not average) emissions for "indirect water cost of the next MWh."
+- **ML.energy Leaderboard** — per-model inference energy benchmarks; powers the calculator widget.
+- **Hugging Face AI Energy Score** — per-model energy/water badges alongside company self-claims.
+- **Climate TRACE asset-level emissions API** — pull power plant emissions serving each DC to compute Scope 2 water.
+- **Epoch AI Frontier Data Centers Hub** — model for publishing our own methodology page.
+- **Cleanview US DC project explorer** — project-pipeline distinction (announced / permitted / construction / operating).
+- **OpenStreetMap `telecom=data_center` tag via Overpass API** — building polygons for square-footage estimation when not disclosed.
+
+#### Industry / operator data
+- **Google 2024 Environmental Report** — site-level WUE table (Council Bluffs IA 1B gal, etc.). Cross-reference our Columbus-area scraper.
+- **Microsoft 2024 Sustainability Report** — "% from water-stressed regions" metric paired with WRI Aqueduct.
+- **Meta Sustainability** — net water = withdrawal − restoration; pair with Loudoun reservoir restoration credits if any.
+- **AWS Water Stewardship** — AWS does not publish absolute volumes; explicitly call this out as the largest transparency gap in the sector.
+- **Uptime Institute 2024 Survey** — industry-benchmark bars: "Median operator uses X gpd; this facility reports Y."
+- **OCP Sustainability Metrics** — adopt `@geo @wue @load` tag format internally for cross-comparability.
+- **Climate Neutral Data Centre Pact** — 0.4 L/kWh WUE benchmark line on per-facility WUE charts.
+
+#### Government datasets
+- **USGS NWIS real-time API** — per-facility downstream gauge baseflow context plot.
+- **USGS National Water-Use Science Project HUC-12 totals** — denominator for "DC share of basin water use."
+- **EPA TRI** — most DCs won't qualify, but flag those with on-site water treatment chemicals.
+- **EPA SDWIS** — flag facilities whose municipal supplier has had SDWA violations (EJ signal).
+- **Chesapeake Bay Watershed Data Dashboard** — embed/iframe for VA context.
+- **Grid Status (gridstatus.io)** — Python lib `gridstatus`, real-time PJM load overlay during cooling season.
+
+#### Visualization patterns
+- **Sankey water-flow per facility** — Plotly `go.Sankey`: source → withdrawal → facility → consumption/discharge/restoration. Reference: PNNL water-energy Sankeys.
+- **Time-series withdrawal vs. drought condition** — two-axis chart per facility.
+- **Cumulative HUC-12 withdrawal heat map** — Ceres pattern for facility clusters.
+- **Watershed-share stacked bar over time** — DC slice growing as % of basin use (ICPRB 8% → 25% framing).
+- **Per-token / per-prompt slider widget** — calculator widget (in top 10).
+- **Disclosure-quality 6-cell badge** — per-facility scorecard (in top 10).
 
 ---
 
