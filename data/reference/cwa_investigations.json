@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-05-26",
-  "note": "Clean Water Act enforcement actions and landmark precedent cases relevant to data center water use and cooling discharge. Three categories: 'datacenter' = direct CWA actions against named hyperscale operators or their contractors; 'industrial' = enforcement against large industrial water users that are the closest practical analogs (cooling water, pretreatment, sewer-system consent decrees, PFAS); 'precedent' = Supreme Court and federal appellate rulings that set the legal scope of the CWA. Comprehensive coverage for 2020-present, with foundational earlier cases retained as benchmarks (Smithfield 1997, Tyson 2003, Brayton Point 2003-2007, etc.). Direct hyperscaler enforcement remains thin because operators usually sit behind contractor-permittee structures and discharge to municipal sewers — the industrial cases show what enforcement looks like once that shield slips.",
+  "last_updated": "2026-05-28",
+  "note": "Clean Water Act enforcement actions and landmark precedent cases relevant to data center water use and cooling discharge. Three categories: 'datacenter' = direct CWA actions against named hyperscale operators or their contractors (including state nuisance and groundwater-contamination civil suits, which are the closest direct hyperscaler water-liability cases on record); 'industrial' = enforcement against large industrial water users that are the closest practical analogs (cooling water, pretreatment, sewer-system consent decrees, PFAS, CAFO discharges); 'precedent' = Supreme Court and federal appellate rulings that set the legal scope of the CWA, including Loper Bright (2024) ending Chevron deference and Lewis v. US (5th Cir. 2023) applying Sackett. Comprehensive coverage for 2020-present, with foundational earlier cases retained as benchmarks (Smithfield 1997, Tyson 2003, Brayton Point 2003-2007). Direct hyperscaler enforcement remains thin because operators usually sit behind contractor-permittee structures and discharge to municipal sewers — the industrial cases show what enforcement looks like once that shield slips. The Amazon Boardman 2026 $20.5M nitrate settlement is the first eight-figure direct-hyperscaler water settlement.",
   "cases": [
     {
       "case_id": "Google-Stillwater-OK-stormwater-2025",
@@ -952,6 +952,363 @@
         {
           "title": "Appalachian Voices — Court vacates critical West Virginia water permit for MVP",
           "url": "https://appvoices.org/2023/04/03/mvp-wv-401/",
+          "type": "law review"
+        }
+      ]
+    },
+    {
+      "case_id": "Amazon-Boardman-OR-nitrate-2026",
+      "category": "datacenter",
+      "respondent": "Amazon Data Services Inc. (Boardman, Oregon data center campus at the Port of Morrow Industrial Park, Northern Morrow County, OR)",
+      "year": "2024-2026",
+      "cwa_section": "Citizen civil action / state nuisance and negligence claims tied to Oregon DEQ NPDES wastewater reuse permits at the Port of Morrow; not a federal CWA Section 505 citizen suit but the closest direct-hyperscaler water-pollution settlement to date. Discharge is via land application of industrial process water mixed with food-processor wastewater, implicating Section 402 NPDES land-application requirements and Oregon's Groundwater Management Area program.",
+      "violation_summary": "In February 2024, residents Michael Pearson, Michael & Virginia Brandt, and James & Silvia Suter filed a class-action lawsuit (Pearson v. Port of Morrow, U.S. District Court for the District of Oregon, Pendleton Division) against Amazon Data Services and 16 other defendants. Plaintiffs alleged that wastewater from Amazon's Boardman-area data centers — pooled with effluent from Lamb Weston, Threemile Canyon Farms, and other industrial users at the Port of Morrow — was land-applied across area farm fields and leached nitrate into the Lower Umatilla Basin Groundwater Management Area (LUBGWMA), a 562-square-mile area where at least 634 domestic wells already exceed the 10 mg/L federal nitrate MCL, some at nearly 100 mg/L (10x the federal limit), affecting approximately 45,000 residents.",
+      "outcome": "On March 31, 2026, Amazon Data Services agreed to pay $20.5 million to settle out, while denying any liability. Motion for preliminary approval filed in U.S. District Court for the District of Oregon. Settlement funds will support private well replacement and public infrastructure projects. Sixteen co-defendants (Port of Morrow, Lamb Weston, Madison Ranches, Threemile Canyon Farms, Portland General Electric, Columbia River Processing, etc.) remain in active litigation; class certification has not yet been granted.",
+      "takeaway": "First and largest direct-hyperscaler water-pollution settlement in U.S. history and the only documented case where a major data center operator paid eight figures over groundwater contamination from cooling/process-water disposal. Critical precedent: hyperscalers can be held liable not just for their own discharge but for the cumulative groundwater impacts of industrial-park co-disposal arrangements — even when the actual permittee is the port authority. Dramatically expands the data-center water-liability frontier from stormwater into nitrate/nutrient land application.",
+      "sources": [
+        {
+          "title": "Amazon to pay $20.5 million settlement over northeast Oregon nitrate pollution",
+          "url": "https://www.opb.org/article/2026/03/31/amazon-fine-northeast-oregon-boardman-nitrate-pollution-well/",
+          "type": "news"
+        },
+        {
+          "title": "$20.5M Settlement Reached with Amazon Data Services, Inc. Over Alleged Nitrate Groundwater Contamination in Oregon's LUBGWMA",
+          "url": "https://www.hbsslaw.com/press/oregon-groundwater-contamination/205m-settlement-reached-with-amazon-data-services-inc-over-alleged-nitrate-groundwater-contamination-in-oregons-lubgwma",
+          "type": "law firm announcement"
+        },
+        {
+          "title": "Amazon to pay $20.5 million settlement over northeast Oregon nitrate pollution — Oregon Capital Chronicle",
+          "url": "https://oregoncapitalchronicle.com/2026/03/31/amazon-to-pay-20-5-million-settlement-over-northeast-oregon-nitrate-pollution/",
+          "type": "news"
+        },
+        {
+          "title": "Amazon will pay $20.5M to settle Oregon groundwater contamination case — KOIN 6",
+          "url": "https://www.koin.com/news/oregon/amazon-will-pay-20-5m-to-settle-oregon-groundwater-contamination-case/",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "ProjectBlue-Tucson-AMES-2026",
+      "category": "datacenter",
+      "respondent": "AMES Construction (general contractor for Beale Infrastructure / Project Blue hyperscale data center, South Houghton Road, Pima County, Arizona — believed to be an Amazon Web Services site, though Beale has not confirmed end-user)",
+      "year": "2026",
+      "cwa_section": "Pima County DEQ fugitive-dust permit (Arizona implementation of CAA), tied directly to the project's water-supply dispute — City of Tucson revoked AMES's hydrant meter permit in May 2026, triggering construction water-use changes that caused the dust violation. Not a direct CWA NPDES action, but illustrates the water-permit / CWA-stormwater crossover at hyperscale sites.",
+      "violation_summary": "On May 8 and May 11, 2026, Pima County DEQ inspectors documented excess fugitive dust crossing property boundary lines from the Project Blue construction site, with no dust-control measures in use. Pima County issued a Notice of Violation to AMES Construction on or about May 13, 2026, with potential fines of up to $10,000 per day per violation under Arizona state law. Root cause: the City of Tucson's May 2026 revocation of AMES's water-meter hydrant permit (after the city declared Project Blue ineligible for any municipal resources, including water), forcing the contractor to halt dust-suppression water trucking before establishing an alternative non-potable source. Separately, ADWR approved well-drilling permits for Bobcat Tucson Water LLC (a Beale Infrastructure SPV) for two on-site wells authorized to withdraw up to 96.5 acre-feet (~31.4 million gallons) per year.",
+      "outcome": "PENDING — AMES had until May 17, 2026 to respond to the NOV. Beale Infrastructure paused site work while the contractor formalized a non-potable water source. No penalty finalized as of late May 2026. City of Tucson has refused to provide any water service for the project; the project's permanent water supply will rely on on-site groundwater wells under ADWR permits.",
+      "takeaway": "Highlights the convergence of CWA-adjacent stormwater/dust control, municipal water-permit politics, and groundwater extraction permitting at a single hyperscale site. Tucson is the first major U.S. city to formally deny municipal water service to a data center on policy grounds — a precedent that may shift hyperscale projects toward private groundwater wells subject to state withdrawal permits rather than CWA-regulated discharges.",
+      "sources": [
+        {
+          "title": "Contractor working on Project Blue data center issued Notice of Violation",
+          "url": "https://www.kgun9.com/news/local-news/contractor-working-on-project-blue-data-center-issued-notice-of-violation",
+          "type": "news"
+        },
+        {
+          "title": "Pima County cites Project Blue contractor for air quality violation — Tucson.com",
+          "url": "https://tucson.com/news/local/government-politics/article_6736e4f6-58d8-4138-ad99-2dd592388189.html",
+          "type": "news"
+        },
+        {
+          "title": "City says Project Blue must stop using Tucson Water for data center construction — Tucson Sentinel",
+          "url": "https://www.tucsonsentinel.com/local/report/050526_project_blue_water/city-says-project-blue-must-stop-using-tucson-water-data-center-construction/",
+          "type": "news"
+        },
+        {
+          "title": "Project Blue's 2 new Tucson wells could draw up to 31 million gallons of water annually — Tucson Sentinel",
+          "url": "https://www.tucsonsentinel.com/local/report/051826_project_blue_wells/project-blues-2-new-tucson-wells-could-draw-up-31-million-gallons-water-annually/",
+          "type": "news"
+        },
+        {
+          "title": "Project Blue FAQ — Pima County, AZ",
+          "url": "https://www.pima.gov/3552/Project-Blue-FAQ",
+          "type": "state agency action"
+        }
+      ]
+    },
+    {
+      "case_id": "JohnsHopkins-DSAI-Baltimore-2025",
+      "category": "datacenter",
+      "respondent": "Consigli Construction (general contractor) and Johns Hopkins University (operator) — SNF Agora Institute / Data Science and AI Institute construction site, Baltimore, Maryland. JHU has publicly disputed that DSAI is a 'data center,' but the site is the institutional AI compute facility most directly comparable to a hyperscale build in Maryland.",
+      "year": "2025",
+      "cwa_section": "Maryland NPDES Construction General Permit (state implementation of CWA Section 402); CWA Section 311 (Inner Harbor diesel discharge)",
+      "violation_summary": "Maryland Department of the Environment (MDE) inspectors documented sediment discharge violations from the Hopkins Agora/DSAI construction site to Wyman Park Drive, Remington Avenue, and Stony Run between February 2025 and August 2025. Neighbors photographed sediment-laden runoff cascading from the site during rain events. MDE found Hopkins 'could be subject to significant penalties' and offered a no-liability settlement of $8,648. Separately, on June 4, 2025, nearly 2,000 gallons (initially reported as 5,000 gallons) of diesel fuel overflowed from emergency-generator storage tanks at the adjacent Johns Hopkins Hospital campus, entered the stormwater system, and discharged into the Inner Harbor / Patapsco River — a CWA Section 311 oil-spill event.",
+      "outcome": "For the sediment violations, MDE offered a $8,648 administrative settlement. The Chesapeake Bay Foundation petitioned Baltimore in April 2026 to deny Hopkins' requested stormwater-permit waiver for the DSAI project on grounds of demonstrated noncompliance. Baltimore City Council and Department of Public Works approved the project in December 2025 despite the objections. The diesel spill triggered separate MDE safety-requirement directives to Hopkins.",
+      "takeaway": "Demonstrates that 'research-campus' AI compute facilities can replicate the same construction-stormwater compliance failures as commercial hyperscale builds and that aging campus utility systems (fuel storage for emergency power) create CWA Section 311 oil-discharge risk parallel to data-center diesel generator infrastructure. Confirms a pattern where contractor-level NOVs precede operator-level permitting decisions.",
+      "sources": [
+        {
+          "title": "Citing a history of stormwater violations, Chesapeake Bay Foundation urges city to deny waiver for Hopkins DSAI — Baltimore Brew",
+          "url": "https://baltimorebrew.com/2026/04/03/citing-a-history-of-stormwater-violations-chesapeake-bay-foundation-urges-city-to-deny-waiver-for-hopkins-dsai/",
+          "type": "news"
+        },
+        {
+          "title": "Neighbors call on Johns Hopkins to control construction site's river of runoff — Baltimore Brew",
+          "url": "https://baltimorebrew.com/2025/07/18/neighbors-call-on-johns-hopkins-to-control-construction-sites-river-of-runoff/",
+          "type": "news"
+        },
+        {
+          "title": "Maryland issues safety requirements to Johns Hopkins after Baltimore harbor oil spill — Fox Baltimore",
+          "url": "https://foxbaltimore.com/news/local/maryland-issues-safety-requirements-johns-hopkins-baltimore-harbor-oil-spill",
+          "type": "news"
+        },
+        {
+          "title": "Diesel spill in Baltimore Harbor came from Johns Hopkins Hospital campus, officials say — Maryland Matters",
+          "url": "https://marylandmatters.org/2025/06/05/diesel-spill-baltimore-harbor-east-hopkins/",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Atlanta-RMClayton-CRK-2024-2026",
+      "category": "industrial",
+      "respondent": "City of Atlanta, Georgia — R.M. Clayton Water Reclamation Center (Georgia's largest POTW, ~100 MGD design capacity)",
+      "year": "2024-2026",
+      "cwa_section": "CWA Section 505 citizen suit; alleged violations of Section 301 (effluent limit exceedances) and Section 402 NPDES permit conditions (E. coli, suspended solids, ammonia)",
+      "violation_summary": "In March 2024, Chattahoochee Riverkeeper (CRK) detected E. coli levels averaging 340 times the EPA-recommended safe-recreation threshold at the R.M. Clayton outfall. CRK documented at least 79 NPDES permit limit violations at R.M. Clayton between July 2023 and July 2024. CRK and the Southern Environmental Law Center filed a CWA citizen suit in September 2024 — Chattahoochee Riverkeeper, Inc. v. City of Atlanta, Georgia, Civil Action No. 1:24-cv-03989-SDG, N.D. Ga.",
+      "outcome": "On February 4, 2026, CRK and the City of Atlanta executed a consent decree. Atlanta committed to a 60-month capital-improvement program at R.M. Clayton estimated at $55 million. For three years following entry, Atlanta must copy CRK on every spill notice or violation report sent to state regulators. CRK monitoring detected no further E. coli exceedances at the outfall after September 2024.",
+      "takeaway": "Demonstrates that Section 505 citizen-suit liability for POTW operators continues at full force even after City of San Francisco v. EPA (March 2025) curtailed end-result NPDES limits — because the violations here were direct numeric effluent-limit exceedances, not narrative or downstream-condition limits. For data-center operators discharging cooling/process water indirectly through a POTW, this is the worst-case enforcement scenario: the receiving POTW gets sued, its capital costs rise, and pretreatment requirements on industrial users tighten.",
+      "sources": [
+        {
+          "title": "Chattahoochee Riverkeeper, SELC file suit against city of Atlanta for violating Clean Water Act — SELC",
+          "url": "https://www.selc.org/press-release/chattahoochee-riverkeeper-selc-file-suit-against-city-of-atlanta-for-violating-clean-water-act/",
+          "type": "press release"
+        },
+        {
+          "title": "Complaint: CRK v. City of Atlanta, N.D. Ga. (Sep. 5, 2024)",
+          "url": "https://www.selc.org/wp-content/uploads/2024/09/2024.09.05_RM-Clayton-Complaint.pdf",
+          "type": "court filing"
+        },
+        {
+          "title": "Atlanta and Chattahoochee Riverkeeper settle lawsuit over wastewater pollution — Chattahoochee Riverkeeper",
+          "url": "https://chattahoochee.org/blog/atlanta-and-chattahoochee-riverkeeper-settle-lawsuit-over-wastewater-pollution/",
+          "type": "advocacy organization"
+        },
+        {
+          "title": "2026 Consent Decree, CRK v. City of Atlanta (PDF)",
+          "url": "https://chattahoochee.org/wp-content/uploads/2026/02/ATL-CRK-2026-Consent-Decree.pdf",
+          "type": "court filing"
+        }
+      ]
+    },
+    {
+      "case_id": "Youngstown-OH-CSO-2025",
+      "category": "industrial",
+      "respondent": "City of Youngstown, Ohio (combined sewer system serving an older industrial city in EPA Region 5)",
+      "year": "2002-2025",
+      "cwa_section": "CWA Section 301 (unauthorized discharges), Section 402 NPDES permit; Long-Term Control Plan obligations under EPA's CSO Control Policy",
+      "violation_summary": "The original 2002 federal consent decree resolved CWA violations tied to ongoing releases of raw sewage and stormwater from Youngstown's combined sewer system into the Mahoning River. Despite a 2015 Long-Term Control Plan, the city was unable to fund the planned 'Wet Weather Facility Project' at the originally negotiated cost (estimated to balloon to ~$240 million). On June 6, 2025, DOJ lodged a proposed Consent Decree Amendment with the U.S. District Court for the Northern District of Ohio; Judge Christopher Boyko signed the order. The amendment replaces the Wet Weather Facility Project with a CSO 6057 Control Measure Project — a proposed 80 MGD high-rate treatment facility using cloth-disk filter media — and a West-Division Interceptor Sewer Replacement.",
+      "outcome": "Court-approved $43 million revised compliance plan (downsized from $240M). Modified schedule for completion of CSO 6057 Control Measure Project. Case remains under federal court supervision.",
+      "takeaway": "Older Midwestern combined-sewer cities cannot meet original CSO long-term control schedules without modification — and Section 301 liability continues to attach during the renegotiation. For data centers locating in older industrial cities (e.g., Youngstown, Hartford, Columbus' equivalents), the POTW operator is already under federal supervision, which means new industrial users face accelerated pretreatment scrutiny and likely capital surcharges.",
+      "sources": [
+        {
+          "title": "Consent Decree: City of Youngstown, Ohio, Sewer Overflows Settlement — US EPA",
+          "url": "https://www.epa.gov/enforcement/consent-decree-city-youngstown-ohio-sewer-overflows-settlement",
+          "type": "EPA enforcement page"
+        },
+        {
+          "title": "Federal Register: Notice of Lodging of Proposed Consent Decree Amendment Under the Clean Water Act (Youngstown)",
+          "url": "https://www.federalregister.gov/documents/2025/06/12/2025-10680/notice-of-lodging-of-proposed-consent-decree-amendment-under-the-clean-water-act",
+          "type": "Federal Register"
+        },
+        {
+          "title": "Court approves revised $43M Youngstown sewage cleanup plan — WFMJ",
+          "url": "https://www.wfmj.com/story/53153178/court-approves-revised-dollar43m-youngstown-sewage-cleanup-plan",
+          "type": "news"
+        },
+        {
+          "title": "Youngstown wastewater deal kicks infrastructure upgrade down the road — Water Daily",
+          "url": "https://waterdaily.com/youngstown-consent-decree-deal-us-epa/",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "MDC-Hartford-CT-CSO-2025",
+      "category": "industrial",
+      "respondent": "Metropolitan District Commission of Hartford, Connecticut (regional wastewater utility operating Hartford Water Pollution Control Facility and combined sewer system)",
+      "year": "2006-2025",
+      "cwa_section": "CWA Section 301 (discharge of pollutants), Section 402 NPDES; sanitary sewer overflow (SSO) outfall elimination requirements",
+      "violation_summary": "The original 2006 federal consent decree, U.S. v. Metropolitan District (D. Conn.), required MDC to eliminate all SSO outfalls by date certain and implement inflow/infiltration controls under 'The Clean Water Project' — a >$2 billion infrastructure program. MDC had closed five of eight SSO outfalls but the remaining three (discharging to the South Branch Park River and the Connecticut River) required additional storage tunnel construction. On January 16, 2025, DOJ lodged a proposed First Material Modification to the 2006 Consent Decree with the U.S. District Court for the District of Connecticut.",
+      "outcome": "First material modification (lodged January 16, 2025) extends compliance milestones for the South Hartford storage tunnel project. The Clean Water Project as a whole remains a multi-billion-dollar federally supervised obligation.",
+      "takeaway": "Reinforces a now-well-established federal-court pattern in older Northeastern cities: CSO consent decrees stretch >25 years and require multi-billion-dollar capital outlays. Any large new industrial user (including data centers) discharging to such a system adds cost pressure on an already-strained system, making POTW pretreatment programs tighter.",
+      "sources": [
+        {
+          "title": "Federal Register: Notice of Lodging of Proposed First Amended Consent Decree Under the Clean Water Act (MDC Hartford)",
+          "url": "https://www.federalregister.gov/documents/2025/01/23/2025-01559/notice-of-lodging-of-proposed-first-amended-consent-decree-under-the-clean-water-act",
+          "type": "Federal Register"
+        },
+        {
+          "title": "EPA Efforts in North Hartford to Address Sewer Backups",
+          "url": "https://www.epa.gov/ct/epa-efforts-north-hartford-address-sewer-backups",
+          "type": "EPA"
+        },
+        {
+          "title": "Greater Hartford (MDC) Sewage Overflows — Save the Sound",
+          "url": "https://www.savethesound.org/our-toolbox/legal-docket/greater-hartford-mdc-sewage-overflows/",
+          "type": "advocacy organization"
+        },
+        {
+          "title": "The Clean Water Project — The MDC",
+          "url": "https://themdc.org/wastewater-treatment/the-clean-water-project/",
+          "type": "utility website"
+        }
+      ]
+    },
+    {
+      "case_id": "Wynja-Feedlot-IA-CAFO-2025",
+      "category": "industrial",
+      "respondent": "Wynja Feedlot, Inc. (1,998-head beef CAFO, Orange City, Sioux County, northwest Iowa)",
+      "year": "2021-2025",
+      "cwa_section": "CWA Section 301(a) (unauthorized discharge), Section 402 NPDES (large CAFO permit requirements); 40 C.F.R. Part 122",
+      "violation_summary": "In March 2021, EPA inspectors observed process wastewater from Wynja's beef CAFO (capacity 999 head in open lots + 999 head in deep-pit confinement barn) discharging through an unpermitted drainage pipe into a tributary of the Floyd River. Effluent sampling showed elevated ammonia, bacteria, chlorides, and organic matter. Wynja operated without an NPDES permit.",
+      "outcome": "On November 17, 2025, DOJ and EPA lodged a proposed consent decree in U.S. District Court for the Northern District of Iowa. Wynja pays a $20,000 civil penalty (mitigated by documented limited ability to pay). Under the consent decree, Wynja must apply for an NPDES permit, construct a lined containment basin sized for a 25-year, 24-hour storm, and conduct ongoing sampling for ammonia, nitrate-nitrite, chlorides, and bacteria. EPA estimates the consent decree prevents 4.5 million gallons of unpermitted wastewater per year from entering the Floyd River and tributaries.",
+      "takeaway": "Demonstrates that operating any industrial facility without an NPDES permit when discharges occur is independently actionable under Section 301(a), regardless of pollutant concentrations — a small-penalty but precedent-establishing CAFO case. The parallel for data centers: cooling tower blowdown to surface water or land application without an active NPDES permit (or coverage under a general permit like Ohio's draft OHD000001) is the same per-day violation.",
+      "sources": [
+        {
+          "title": "Wynja Feedlot Settlement Information Sheet — US EPA",
+          "url": "https://www.epa.gov/enforcement/wynja-feedlot-settlement-information-sheet",
+          "type": "EPA enforcement page"
+        },
+        {
+          "title": "Wynja Feedlot Consent Decree (PDF)",
+          "url": "https://www.epa.gov/system/files/documents/2025-11/2-1-proposed-consent-decree.pdf",
+          "type": "court filing"
+        },
+        {
+          "title": "Federal Register: Notice of Lodging of Proposed Consent Decree Under the Clean Water Act (CWA)",
+          "url": "https://www.federalregister.gov/documents/2025/11/20/2025-20383/notice-of-lodging-of-proposed-consent-decree-under-the-clean-water-act-cwa",
+          "type": "Federal Register"
+        },
+        {
+          "title": "EPA agrees to $20K settlement with northwest Iowa feedlot for water violations — Iowa Capital Dispatch",
+          "url": "https://iowacapitaldispatch.com/briefs/epa-agrees-to-20k-settlement-with-northwest-iowa-feedlot-for-water-violations/",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Oklahoma-v-Tyson-IRW-2005-2025",
+      "category": "industrial",
+      "respondent": "Tyson Foods Inc., Cargill Inc., George's Inc., Simmons Foods, Cal-Maine Foods, Peterson Farms — Illinois River Watershed (Oklahoma/Arkansas border)",
+      "year": "2005-2025",
+      "cwa_section": "Not a federal CWA enforcement action — Oklahoma state public-nuisance and trespass claims combined with Oklahoma Environmental Quality Code violations tied to land-applied poultry litter and phosphorus runoff. Closest CWA analog: NPDES exclusion of agricultural stormwater (33 U.S.C. § 1362(14)) — the case demonstrates how state nuisance claims fill the agricultural-exemption gap.",
+      "violation_summary": "Oklahoma AG sued the major poultry integrators in 2005, alleging that land application of poultry litter on phosphorus-saturated soils in the Illinois River Watershed (IRW) — straddling Oklahoma and Arkansas — caused eutrophication of Lake Tenkiller and degraded recreational and aesthetic uses of the river. On December 18, 2025, after a six-day evidentiary hearing, Judge Gregory K. Frizzell of the U.S. District Court for the Northern District of Oklahoma entered judgment finding the integrators liable for public nuisance and trespass. He imposed a 30-year remediation plan including an injunction prohibiting application of poultry waste on land with Soil Test Phosphorus ≥ 120 lbs/acre and capping application at 2 tons/acre. On April 8, 2026, Judge Frizzell rejected proposed settlements (negotiated by AG Drummond) as providing insufficient funding for watershed remediation.",
+      "outcome": "30-year remediation plan with special-master oversight imposed by federal court December 2025. Settlement rejected April 2026 — case continues with court-supervised remedy. Liability findings stand.",
+      "takeaway": "Lands a landmark long-tail public-nuisance precedent on land-applied industrial waste that escapes NPDES coverage via the agricultural-stormwater exemption — directly relevant to data centers whose cooling-tower blowdown is land-applied through municipal reuse programs (e.g., Loudoun Water reclaimed water deliveries). State common-law nuisance can fill the federal CWA gap when EPA enforcement is unavailable.",
+      "sources": [
+        {
+          "title": "Court Orders Tyson Foods and Poultry Giants to Fund 30-Year Illinois River Watershed Cleanup — Oklahoma Farm Report",
+          "url": "https://www.oklahomafarmreport.com/okfr/2025/12/20/federal-judge-orders-poultry-integrators-to-fund-30-year-remediation-of-illinois-river-watershed/",
+          "type": "news"
+        },
+        {
+          "title": "After decades, federal judge issues cleanup plan in Oklahoma poultry pollution lawsuit — KOSU",
+          "url": "https://www.kosu.org/local-news/2025-12-19/after-decades-federal-judge-issues-cleanup-plan-in-oklahoma-poultry-pollution-lawsuit",
+          "type": "news"
+        },
+        {
+          "title": "Federal judge denies settlements in Oklahoma's decades-long poultry pollution lawsuit — Oklahoma Voice",
+          "url": "https://oklahomavoice.com/2026/04/09/federal-judge-denies-settlements-in-oklahomas-decades-long-poultry-pollution-lawsuit/",
+          "type": "news"
+        },
+        {
+          "title": "Drummond calls out Tyson's misinformation campaign over poultry lawsuit — Oklahoma AG",
+          "url": "https://oklahoma.gov/oag/news/newsroom/2025/november/drummond-calls-out-tyson-s-misinformation-campaign-over-poultry-lawsuit.html",
+          "type": "state agency action"
+        }
+      ]
+    },
+    {
+      "case_id": "Tyco-BASF-PFAS-AFFF-PWS-2024",
+      "category": "industrial",
+      "respondent": "Tyco Fire Products LP (subsidiary of Johnson Controls International) and BASF Corporation; defendants in AFFF (aqueous film-forming foam) Products Liability Litigation MDL 2873, S.D.S.C. before Judge Richard M. Gergel",
+      "year": "2024-2025",
+      "cwa_section": "Not direct CWA enforcement — mass-tort drinking-water class settlements addressing PFAS contamination caused by AFFF use at firefighting training facilities, military bases, and airports, with PFAS ultimately reaching public water systems and drinking-water sources. Parallel to CWA Section 311 (hazardous substance) framework but proceeded under state-law products-liability/nuisance theories. Settlement funds are paid to active public water systems for PFAS treatment.",
+      "violation_summary": "Plaintiffs (a class of every active public water system in the U.S. with PFAS detections in at least one water source as of May 15, 2024) alleged that Tyco/Chemguard manufactured AFFF foam products containing PFOA, PFOS, and other PFAS that contaminated drinking-water sources at thousands of training, military, and airport sites. Tyco settled on June 13, 2024, for $750 million. BASF settled on May 20, 2024, for $316.5 million ($312.5M to resolve claims + $4M for administration). U.S. District Court (D.S.C.) granted preliminary approval to both settlements in summer 2024; final fairness hearing November 1, 2024.",
+      "outcome": "Tyco/BASF settlements approved late 2024; payments scheduled 2025. Combined with prior 3M ($10.3B) and DuPont/Chemours/Corteva ($1.185B) settlements, total publicly known PFAS public-water-system mass-tort settlements exceed $12.5 billion.",
+      "takeaway": "PFAS dischargers face product-liability exposure that dwarfs typical CWA civil penalties — particularly relevant if data center cooling-water additives or fire-suppression systems (many use AFFF or AFFF-substitute foams) become tied to PFAS contamination findings. Data centers using PFAS-containing fluorochemical fire suppression face latent decades-long mass-tort exposure on the Tyco/BASF model.",
+      "sources": [
+        {
+          "title": "BASF Corporation enters class settlement with U.S. public water systems",
+          "url": "https://www.basf.com/us/en/media/news-releases/2024/05/basf-corporation-enters-class-settlement-with-u-s--public-water-",
+          "type": "corporate press release"
+        },
+        {
+          "title": "$750 Million Tyco PFAS Settlement Approved — Stag Liuzza",
+          "url": "https://stagliuzza.com/news/750-million-tyco-pfas-settlement-approved/",
+          "type": "law firm announcement"
+        },
+        {
+          "title": "Tyco Reaches Nationwide PFAS Settlement with Water Providers — Marten Law",
+          "url": "https://martenlaw.com/news/tyco-reaches-nationwide-pfas-settlement-with-water-providers",
+          "type": "law firm analysis"
+        },
+        {
+          "title": "Frequently Asked Questions (Tyco) — PFAS Water Settlement (MDL 2873)",
+          "url": "https://www.pfaswatersettlement.com/frequently-asked-questions-tyco/",
+          "type": "official settlement website"
+        }
+      ]
+    },
+    {
+      "case_id": "Loper-Bright-Enterprises-v-Raimondo-2024",
+      "category": "precedent",
+      "respondent": "Loper Bright Enterprises et al. v. Raimondo, 603 U.S. 369 (2024), No. 22-451 (consolidated with Relentless, Inc. v. Department of Commerce, No. 22-1219)",
+      "year": "2024",
+      "cwa_section": "Administrative Procedure Act § 706 review of all federal agency action — overrules Chevron v. NRDC (1984) and Auer v. Robbins (1997) deference. Directly reshapes how every CWA NPDES permitting decision, effluent guideline, and 'waters of the United States' interpretation by EPA is reviewed in court.",
+      "violation_summary": "Atlantic herring fishermen challenged a National Marine Fisheries Service rule requiring them to pay for on-board federal monitors. The case was used as a vehicle to challenge the Chevron doctrine — the 40-year-old rule that courts defer to reasonable agency interpretations of ambiguous statutes. The Supreme Court held that the Administrative Procedure Act requires courts reviewing agency action to exercise independent judgment on questions of law and that agency interpretations are entitled only to Skidmore-style respect (persuasive weight), not binding deference.",
+      "outcome": "6-3 decision (Roberts for majority; Sotomayor, Kagan, Jackson dissenting), June 28, 2024. Chevron deference overruled. The decision was applied within months by the Supreme Court in City and County of San Francisco v. EPA (March 2025) to strike down EPA's use of end-result NPDES limits, demonstrating its real-world bite on CWA implementation.",
+      "takeaway": "Direct relevance to data-center water tracking: every EPA interpretation of Section 402 (NPDES), Section 401 (state certification), Section 404 (dredge-and-fill), and the post-Sackett WOTUS rule is now reviewable de novo. EPA cannot rely on agency-deference to defend novel cooling-water effluent guidelines or technology-based limits for data centers — any future rulemaking targeting hyperscale cooling water (Ohio's draft OHD000001, Virginia's data-center reporting bills, EPA's MSGP 2026) faces a heightened judicial-review standard.",
+      "sources": [
+        {
+          "title": "Loper Bright Enterprises v. Raimondo, 603 U.S. 369 (2024) — Supreme Court Opinion (PDF)",
+          "url": "https://www.supremecourt.gov/opinions/23pdf/22-451_7m58.pdf",
+          "type": "court ruling"
+        },
+        {
+          "title": "Environmental Law Implications of Loper Bright and the End of Chevron Deference — Sidley",
+          "url": "https://environmentalhealthsafetybrief.sidley.com/2024/07/02/environmental-law-implications-of-loper-bright-and-the-end-of-chevron-deference/",
+          "type": "law firm analysis"
+        },
+        {
+          "title": "U.S. Supreme Court Overturns Chevron Deference — WateReuse Association",
+          "url": "https://watereuse.org/u-s-supreme-court-overturns-chevron-deference-and-issues-two-additional-decisions-that-could-reshape-federal-environmental-enforcement-and-litigation/",
+          "type": "trade association analysis"
+        },
+        {
+          "title": "After Loper Bright: Weakening the Power of the Environmental Protection Agency — JHULR",
+          "url": "https://jhulr.org/2025/06/14/after-loper-bright-weakening-the-power-of-the-environmental-protection-agency/",
+          "type": "law review"
+        }
+      ]
+    },
+    {
+      "case_id": "Lewis-v-United-States-5th-Cir-2023",
+      "category": "precedent",
+      "respondent": "Garry L. Lewis and G. Lewis-Louisiana, L.L.C. v. United States, 88 F.4th 1073 (5th Cir. 2023), No. 21-30163",
+      "year": "2023",
+      "cwa_section": "CWA Section 404 (dredge-and-fill permits) / 33 U.S.C. § 1344; 'waters of the United States' jurisdiction under 33 U.S.C. § 1362(7)",
+      "violation_summary": "Louisiana timber-plantation owner Garry Lewis requested a jurisdictional determination from the Army Corps of Engineers in 2013 to develop property used as a pine timber plantation. The Corps concluded in 2016 that portions of the property contained wetlands subject to CWA jurisdiction under the post-Rapanos significant-nexus test. Lewis filed suit; the case took ten years through the district court and the Fifth Circuit.",
+      "outcome": "On December 18, 2023, the Fifth Circuit (panel of Judges Edith H. Jones, Stuart Kyle Duncan, and Jacques L. Wiener) unanimously applied the Supreme Court's May 2023 Sackett decision and held that the Lewis property was not within CWA jurisdiction. The court refused to remand to the Corps for further proceedings, instead directing the district court to enter judgment that the property does not contain WOTUS. In a striking footnote, Judges Jones and Duncan warned that further Corps attempts to assert jurisdiction over Lewis's property could be sanctioned under the Equal Access to Justice Act's bad-faith provision.",
+      "takeaway": "First federal appellate application of Sackett to a real-world Section 404 wetlands jurisdictional dispute. The Fifth Circuit's refusal to remand sets a precedent that lower courts can apply Sackett's continuous-surface-connection test directly without Corps deference — accelerating the practical contraction of CWA jurisdiction. For data center sites that were previously subject to Section 404 wetlands mitigation (a routine cost item for Northern Virginia and Loudoun County sites), Lewis confirms the post-Sackett framework where many isolated and headwater wetlands now fall outside CWA jurisdiction and outside developer mitigation obligations.",
+      "sources": [
+        {
+          "title": "Lewis v. USA, No. 21-30163 (5th Cir. 2023) — Justia",
+          "url": "https://law.justia.com/cases/federal/appellate-courts/ca5/21-30163/21-30163-2023-12-18.html",
+          "type": "court ruling"
+        },
+        {
+          "title": "United States Court of Appeals for the Fifth Circuit — Opinion 21-30163-CV0 (PDF)",
+          "url": "https://www.ca5.uscourts.gov/opinions/pub/21/21-30163-CV0.pdf",
+          "type": "court ruling"
+        },
+        {
+          "title": "Fifth Circuit Applies U.S. Supreme Court's Sackett Decision to End Long-Standing WOTUS Dispute — Energy Law Blog",
+          "url": "https://www.theenergylawblog.com/2024/01/articles/environmental/fifth-circuit-applies-sackett-to-end-long-standing-wotus-conflict/",
+          "type": "law firm analysis"
+        },
+        {
+          "title": "An early Christmas present from three Fifth Circuit Judges who concluded a Louisiana property is not subject to Federal Clean Water Act Jurisdiction — ACOEL",
+          "url": "https://acoel.org/an-early-christmas-present-from-three-fifth-circuit-judges-who-concluded-a-louisiana-property-is-not-subject-to-federal-clean-water-act-jurisdiction/",
           "type": "law review"
         }
       ]
