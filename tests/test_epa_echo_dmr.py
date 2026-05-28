@@ -201,7 +201,7 @@ class TestScraperProperties:
 
     def test_fetch_document_returns_none(self, scraper):
         import asyncio
-        result = asyncio.get_event_loop().run_until_complete(
+        result = asyncio.run(
             scraper.fetch_document({"url": "https://example.com"})
         )
         assert result is None
