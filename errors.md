@@ -95,3 +95,10 @@ Format:
 - **Context**: Initial EPA ECHO scraper used the primary REST API endpoints documented at echo.epa.gov/tools/web-services. These main endpoints appear to have reliability issues or require parameters not documented in the public API.
 - **Root cause**: API limitation — the primary ECHO REST endpoints (`get_effluent`, `get_facility_info`, `get_qid`) are unreliable. However, the chart/download endpoints work consistently.
 - **Resolution**: Fixed — switched to `eff_rest_services.get_summary_chart` (for facility info) and `eff_rest_services.download_effluent_chart` (for DMR CSV data). These endpoints return complete data reliably. The CSV contains 64 columns per record with full DMR values, limits, and violation data.
+
+### [2026-06-01] EPA ECHO NAICS facility search returns HTTP error for VA and OH
+- **Module**: scrapers/epa_echo_naics.py
+- **Error**: `RetryError[<Future ... raised HTTPStatusError>]` from the ECHO facility-search call for both `state=VA` and `state=OH` (NAICS 518210). After tenacity retries, the search returns 0 facilities and the scraper writes no records (`total_facilities=0`).
+- **Context**: Live data-fetch attempt during the 2026-06-01 maintenance pass (`python main.py --scraper epa_echo_naics --limit 3`). Each state search ran ~12–16s before exhausting retries.
+- **Root cause**: Infrastructure issue — same family of ECHO REST reliability problems documented in the 2026-02-24 entry (primary ECHO endpoints intermittently return 5xx). Not a code regression; the scraper's retry/backoff behaved correctly and degraded to an empty result.
+- **Resolution**: Open (transient upstream). Retry later; if it persists, mirror the DMR-scraper workaround and move NAICS discovery onto a chart/download-style endpoint, or fall back to the EPA Envirofacts FRS_NAICS REST API (already noted in backlog as the FRS Cross-Reference module). The same-day `va_deq_arcgis` run succeeded (3 Amazon VPDES outfall records), so the VA DEQ ArcGIS host was unaffected.

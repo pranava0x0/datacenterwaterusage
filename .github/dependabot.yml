@@ -1,0 +1,25 @@
+# Keeps the SHA-pinned actions (SEC-3) and the ==-pinned Python deps (SEC-5)
+# from silently aging: Dependabot opens review-able update PRs instead, so
+# pinning stays safe *and* patched. Grouped so it's at most one PR per
+# ecosystem per week, not one per dependency.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: "ci"
+
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      python:
+        patterns: ["*"]
+    commit-message:
+      prefix: "deps"

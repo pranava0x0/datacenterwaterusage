@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import html
 import json
+import os
 import re
 from datetime import datetime
 from pathlib import Path
@@ -53,9 +54,28 @@ COLOR_SEQUENCE = ["#08519c", "#3182bd", "#6baed6", "#9ecae1", "#c6dbef"]
 # --- Data Loading ---
 
 
-@st.cache_data(ttl=300)
-def load_data() -> pd.DataFrame:
-    """Load and clean results data from CSV."""
+def _file_signature(path) -> tuple:
+    """A cheap change-detector for a file: ``(mtime_ns, size)``.
+
+    Passed into the cached loaders below so ``st.cache_data`` re-reads a file
+    only when it actually changes, rather than expiring on a fixed clock. The
+    reference JSON and the results CSV change only when a scraper or an edit
+    runs, so a fixed ``ttl`` just forced needless re-parsing every few minutes
+    during an active session (and on every stlite/WASM cold interaction).
+    Returns ``(0, 0)`` for a missing file so a later create still busts the
+    cache. Kept module-level and Streamlit-free so it's unit-testable.
+    """
+    try:
+        s = os.stat(path)
+        return (s.st_mtime_ns, s.st_size)
+    except OSError:
+        return (0, 0)
+
+
+@st.cache_data
+def _load_data_cached(signature: tuple) -> pd.DataFrame:
+    """Parse and clean results.csv. Keyed on the file signature so the cache
+    busts on change (the ``signature`` arg is part of the cache key)."""
     if not CSV_PATH.exists():
         return pd.DataFrame()
 
@@ -63,7 +83,16 @@ def load_data() -> pd.DataFrame:
 
     df["document_date"] = pd.to_datetime(df["document_date"], errors="coerce")
     df["scraped_at"] = pd.to_datetime(df["scraped_at"], errors="coerce")
-    df["flow_mgd"] = df["extracted_water_metric"].apply(_extract_flow_mgd)
+    # Vectorized MGD extraction — one regex pass over the whole column instead
+    # of a per-row Python call. Mirrors _extract_flow_mgd (kept as the scalar
+    # helper for tests): non-matches and unparseable captures coerce to NaN,
+    # exactly what the row-wise version returns as None.
+    df["flow_mgd"] = pd.to_numeric(
+        df["extracted_water_metric"]
+        .astype(str)
+        .str.extract(r"([\d.]+)\s*MGD", flags=re.IGNORECASE, expand=False),
+        errors="coerce",
+    )
 
     date_mask = df["document_date"].notna()
     df["monitoring_month"] = ""
@@ -73,6 +102,11 @@ def load_data() -> pd.DataFrame:
 
     df["record_type"] = df["source_portal"].apply(_classify_source)
     return df
+
+
+def load_data() -> pd.DataFrame:
+    """Load and clean results data from CSV (cached; re-reads only on change)."""
+    return _load_data_cached(_file_signature(CSV_PATH))
 
 
 def _extract_flow_mgd(metric_str: str) -> float | None:
@@ -108,18 +142,12 @@ def _classify_source(portal: str) -> str:
     return "Other"
 
 
-@st.cache_data(ttl=300)
-def load_legislation(path: Path = LEGISLATION_PATH) -> dict:
-    """Load the data center water/energy legislation dataset.
-
-    Returns a payload dict of the form {"last_updated": str, "bills": [...]}.
-    Tolerates a missing file (returns an empty payload) or a bare list.
-    Cached because Streamlit reruns the whole script on every interaction;
-    the enriched legislation.json is ~57 KB and parses on every rerun otherwise.
-    """
-    if not Path(path).exists():
+@st.cache_data
+def _load_legislation_cached(path_str: str, signature: tuple) -> dict:
+    p = Path(path_str)
+    if not p.exists():
         return {"last_updated": None, "bills": []}
-    with open(path, encoding="utf-8") as f:
+    with open(p, encoding="utf-8") as f:
         payload = json.load(f)
     if isinstance(payload, list):
         return {"last_updated": None, "bills": payload}
@@ -127,35 +155,59 @@ def load_legislation(path: Path = LEGISLATION_PATH) -> dict:
     return payload
 
 
-@st.cache_data(ttl=300)
-def load_company_water_claims(path: Path = COMPANY_WATER_CLAIMS_PATH) -> dict:
-    """Load the company water-claims dataset (mirrored from datacentercommunitybenefits).
+def load_legislation(path: Path = LEGISLATION_PATH) -> dict:
+    """Load the data center water/energy legislation dataset.
 
-    Returns a payload dict {"last_updated", "companies", "claims", ...}.
-    Tolerates a missing file by returning an empty payload.
+    Returns a payload dict of the form {"last_updated": str, "bills": [...]}.
+    Tolerates a missing file (returns an empty payload) or a bare list.
+    Cached because Streamlit reruns the whole script on every interaction;
+    the enriched legislation.json is ~57 KB and parses on every rerun otherwise.
+    The cache busts on file change (mtime/size) rather than a fixed TTL.
     """
-    if not Path(path).exists():
+    return _load_legislation_cached(str(path), _file_signature(path))
+
+
+@st.cache_data
+def _load_company_water_claims_cached(path_str: str, signature: tuple) -> dict:
+    p = Path(path_str)
+    if not p.exists():
         return {"last_updated": None, "companies": {}, "claims": []}
-    with open(path, encoding="utf-8") as f:
+    with open(p, encoding="utf-8") as f:
         payload = json.load(f)
     payload.setdefault("claims", [])
     payload.setdefault("companies", {})
     return payload
 
 
-@st.cache_data(ttl=300)
+def load_company_water_claims(path: Path = COMPANY_WATER_CLAIMS_PATH) -> dict:
+    """Load the company water-claims dataset (mirrored from datacentercommunitybenefits).
+
+    Returns a payload dict {"last_updated", "companies", "claims", ...}.
+    Tolerates a missing file by returning an empty payload. Cache busts on
+    file change (mtime/size) rather than a fixed TTL.
+    """
+    return _load_company_water_claims_cached(str(path), _file_signature(path))
+
+
+@st.cache_data
+def _load_cwa_investigations_cached(path_str: str, signature: tuple) -> dict:
+    p = Path(path_str)
+    if not p.exists():
+        return {"last_updated": None, "cases": []}
+    with open(p, encoding="utf-8") as f:
+        payload = json.load(f)
+    payload.setdefault("cases", [])
+    return payload
+
+
 def load_cwa_investigations(path: Path = CWA_INVESTIGATIONS_PATH) -> dict:
     """Load historic Clean Water Act enforcement / precedent dataset.
 
     Returns {"last_updated": str, "cases": [...], "note": Optional[str]}.
-    Tolerates a missing file by returning an empty payload.
+    Tolerates a missing file by returning an empty payload. Cache busts on
+    file change (mtime/size) rather than a fixed TTL.
     """
-    if not Path(path).exists():
-        return {"last_updated": None, "cases": []}
-    with open(path, encoding="utf-8") as f:
-        payload = json.load(f)
-    payload.setdefault("cases", [])
-    return payload
+    return _load_cwa_investigations_cached(str(path), _file_signature(path))
 
 
 # --- Page Config ---
@@ -1125,8 +1177,16 @@ def render_legislation_tracker(is_mobile: bool = False, is_tablet: bool = False)
             b.get("jurisdiction", ""),
         ),
     )
-    for bill in sorted_bills:
-        _render_bill_card(bill)
+    # Emit ALL bill cards as a single markdown blob — one component instead of
+    # one per bill (31 → 1). Streamlit reruns the whole script on every
+    # interaction and ships each st.markdown as a separate component; each card
+    # is already a self-contained <div class="bill-card"> with a browser-native
+    # <details> toggle, so concatenating them is visually identical while
+    # slashing the component count the frontend reconciles every rerun.
+    st.markdown(
+        "".join(_build_bill_card_html(bill) for bill in sorted_bills),
+        unsafe_allow_html=True,
+    )
 
     last_updated = payload.get("last_updated") or "unknown"
     st.caption(
@@ -1134,20 +1194,6 @@ def render_legislation_tracker(is_mobile: bool = False, is_tablet: bool = False)
         "entry is tracked in the underlying JSON; treat any not flagged "
         "verified=true there as secondary-sourced."
     )
-
-
-def _render_bill_card(bill: dict):
-    """Render one legislation entry as a single HTML blob via one st.markdown call.
-
-    Streamlit reruns the whole script on every interaction, and each st.markdown
-    call ships a separate component over the WebSocket. The earlier
-    implementation used ~20 markdown calls per bill (14 bills × 20 = ~280
-    components) and `st.expander`, which renders its body eagerly. This version
-    emits one HTML string per bill (~14 components total) and uses the
-    browser-native `<details>` element so the expander state is purely
-    client-side — no re-render needed to open or close it.
-    """
-    st.markdown(_build_bill_card_html(bill), unsafe_allow_html=True)
 
 
 def _build_bill_card_html(bill: dict) -> str:
@@ -1299,9 +1345,15 @@ def _build_principles_html(principles: list[dict]) -> str:
 
 # --- Clean Water Act Investigations Tracker ---
 
-CWA_CATEGORY_ORDER = {"datacenter": 0, "industrial": 1, "precedent": 2}
+CWA_CATEGORY_ORDER = {
+    "datacenter": 0,
+    "adjacent": 1,
+    "industrial": 2,
+    "precedent": 3,
+}
 CWA_CATEGORY_LABELS = {
     "datacenter": "Data Center",
+    "adjacent": "Data-Center Adjacent",
     "industrial": "Industrial Water",
     "precedent": "Landmark Precedent",
 }
@@ -1424,6 +1476,7 @@ def _cwa_category_colors() -> dict:
     """Map category → pill color, sourced from the shared COLORS palette."""
     return {
         "datacenter": COLORS["primary"],
+        "adjacent": COLORS["tertiary"],
         "industrial": COLORS["warning"],
         "precedent": COLORS["secondary"],
     }
@@ -1449,6 +1502,106 @@ def _cwa_year_end(year_str: str) -> int:
     return int(m.group(1)) if m else 0
 
 
+# Heuristics for the computed data-center insight panel. Kept module-level so
+# the pure helper below stays testable without Streamlit.
+_CWA_HYPERSCALERS = ("amazon", "google", "microsoft", "meta", "xai")
+_CWA_CONTRACTOR_KW = (
+    "construction",
+    "contractor",
+    "subcontractor",
+    "dewatering",
+    "aldinger",
+    "consigli",
+)
+# True construction-stormwater signals — kept strict so the count reflects
+# CWA §402 erosion/sediment touchpoints, not any mention of "construction".
+_CWA_CONSTRUCTION_KW = ("stormwater", "sediment", "erosion", "silt")
+
+
+def _cwa_datacenter_insights(cases: list[dict]) -> dict:
+    """Compute structural patterns across the *data-center* CWA cases.
+
+    These are the "so what" the tracker exists to surface: who actually holds
+    the permit (the operator usually sits one entity removed) and what triggers
+    CWA scrutiny in the first place (overwhelmingly construction stormwater,
+    not operational cooling discharge). Pure function over the dataset so the
+    numbers stay correct as cases are added and it can be unit-tested without
+    Streamlit.
+    """
+    dc = [c for c in cases if c.get("category") == "datacenter"]
+    total = len(dc)
+
+    def _is_contractor_led(c: dict) -> bool:
+        # Test the *leading* name (before the first comma), not a substring —
+        # a contractor's parenthetical often mentions the hyperscaler it works
+        # for (e.g. "Walbridge Aldinger LLC (Microsoft contractor)"), so an
+        # "in" check would wrongly read that as operator-led. Shielded == the
+        # respondent leads with a contractor, not the operator.
+        lead = c.get("respondent", "").split(",")[0].lower().strip()
+        if any(lead.startswith(h) for h in _CWA_HYPERSCALERS):
+            return False
+        return any(k in lead for k in _CWA_CONTRACTOR_KW)
+
+    def _is_construction_stormwater(c: dict) -> bool:
+        blob = (
+            c.get("cwa_section", "") + " " + c.get("violation_summary", "")
+        ).lower()
+        return any(k in blob for k in _CWA_CONSTRUCTION_KW)
+
+    return {
+        "total": total,
+        "contractor_permittee": sum(1 for c in dc if _is_contractor_led(c)),
+        "construction_stormwater": sum(
+            1 for c in dc if _is_construction_stormwater(c)
+        ),
+    }
+
+
+def render_cwa_datacenter_insights():
+    """Headline 'what this record tells data centers' panel.
+
+    Computed live from the dataset so the counts move with the cases, then
+    framed around the tracker's mission: the operational CWA exposure for a
+    data center lands on the *receiving* WWTP permit — which is exactly what
+    this project monitors via EPA ECHO DMR.
+    """
+    payload = load_cwa_investigations()
+    stats = _cwa_datacenter_insights(payload.get("cases", []))
+    total = stats["total"]
+    if not total:
+        return
+    with st.container(border=True):
+        st.markdown("#### What this record tells data centers")
+        st.markdown(
+            f"- **The permittee shield.** {stats['contractor_permittee']} of "
+            f"{total} direct data-center cases name a construction contractor "
+            "or subcontractor — not the hyperscaler — as the party on the "
+            "permit. Operators routinely sit one entity removed from the "
+            "permittee, which is why direct enforcement against them is thin."
+        )
+        st.markdown(
+            f"- **CWA risk is front-loaded into construction.** Construction "
+            "stormwater, sediment, and erosion under the §402 Construction "
+            f"General Permit is the most common touchpoint — it appears in "
+            f"{stats['construction_stormwater']} of {total} cases, far more "
+            "than operational cooling-water discharge."
+        )
+        st.markdown(
+            "- **The liability frontier is moving.** The 2026 Amazon Boardman "
+            "settlement ($20.5M, Oregon nitrate) is the first eight-figure "
+            "direct-hyperscaler water settlement — pushing exposure beyond "
+            "stormwater into groundwater and nutrient contamination."
+        )
+        st.markdown(
+            "- **Why this tracker watches the WWTP, not the data center.** "
+            "Cooling-water blowdown goes to the municipal sewer, so the "
+            "operational CWA exposure rides on the *receiving* treatment "
+            "plant's NPDES permit — the very permits this project tracks via "
+            "EPA ECHO. Watch the POTW's compliance status, not the data "
+            "center's near-empty stormwater permit."
+        )
+
+
 def render_cwa_tracker():
     """Render the Clean Water Act historic investigations panel.
 
@@ -1465,18 +1618,21 @@ def render_cwa_tracker():
         "to data center water use and cooling discharges."
     )
 
-    with st.expander(
-        "What is a Clean Water Act investigation? — statute, authority, "
-        "and why it's deployed"
-    ):
-        st.markdown(_cwa_statute_explainer_md())
-
     payload = load_cwa_investigations()
     cases = payload.get("cases", [])
     if not cases:
         note = payload.get("note") or "Dataset not found or empty."
         st.info(note)
         return
+
+    # Headline synthesis — the computed "so what" before the case list.
+    render_cwa_datacenter_insights()
+
+    with st.expander(
+        "What is a Clean Water Act investigation? — statute, authority, "
+        "and why it's deployed"
+    ):
+        st.markdown(_cwa_statute_explainer_md())
 
     # Filter controls — category multiselect + 2020+ toggle. Defaults show
     # everything so first-time visitors see the full dataset.
@@ -1517,8 +1673,13 @@ def render_cwa_tracker():
             -_cwa_year_end(c.get("year", "")),
         ),
     )
-    for case in sorted_cases:
-        st.markdown(_build_cwa_case_html(case), unsafe_allow_html=True)
+    # One markdown blob for all case cards (49 → 1 component) — same
+    # consolidation as render_legislation_tracker; each card is a self-contained
+    # <div class="bill-card">, so the joined output renders identically.
+    st.markdown(
+        "".join(_build_cwa_case_html(case) for case in sorted_cases),
+        unsafe_allow_html=True,
+    )
 
     last_updated = payload.get("last_updated") or "unknown"
     note = payload.get("note", "")

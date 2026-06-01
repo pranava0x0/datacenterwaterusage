@@ -22,6 +22,10 @@ import streamlit as st
 MOBILE_MAX = 768
 TABLET_MAX = 1024
 
+# session_state key under which the resolved DeviceInfo is memoized for the
+# rest of the session (see get_device_type).
+_DEVICE_CACHE_KEY = "_resolved_device_info"
+
 
 class DeviceType(str, Enum):
     MOBILE = "mobile"
@@ -75,14 +79,13 @@ def get_viewport_width() -> int | None:
     return None
 
 
-def get_device_type() -> DeviceInfo:
-    """Classify client device based on viewport width.
+def _classify_width(width: int | None) -> DeviceInfo:
+    """Pure viewport-width → DeviceInfo classification.
 
-    Defaults to DESKTOP when width is unavailable (first render).
-    CSS media queries handle styling until JS reports back.
+    Defaults to DESKTOP when width is unavailable (first render); CSS media
+    queries handle styling until JS reports back. Kept JS- and
+    session_state-free so the breakpoint logic is directly unit-testable.
     """
-    width = get_viewport_width()
-
     if width is None:
         return DeviceInfo(DeviceType.DESKTOP, None)
     if width < MOBILE_MAX:
@@ -90,6 +93,38 @@ def get_device_type() -> DeviceInfo:
     if width < TABLET_MAX:
         return DeviceInfo(DeviceType.TABLET, width)
     return DeviceInfo(DeviceType.DESKTOP, width)
+
+
+def get_device_type() -> DeviceInfo:
+    """Classify the client device, memoizing the result for the session.
+
+    Streamlit reruns the whole script on every interaction, and each run
+    otherwise re-issues the ``streamlit-js-eval`` component round-trip to read
+    the viewport width. Once a real width has resolved we cache the resulting
+    DeviceInfo in ``st.session_state`` and reuse it, so routine interactions
+    (filter changes, tab switches, toggles) skip the JS round-trip entirely.
+
+    We deliberately do NOT cache the cold-start ``None`` frame, so detection
+    keeps retrying until a real width arrives. A browser resize takes effect on
+    reload, which starts a fresh session and clears this cache, so the device
+    is re-detected then — consistent with the prior behavior.
+    """
+    try:
+        cached = st.session_state.get(_DEVICE_CACHE_KEY)
+    except Exception:
+        cached = None
+    if isinstance(cached, DeviceInfo):
+        return cached
+
+    info = _classify_width(get_viewport_width())
+
+    # Only memoize once a real width resolved — never lock in the cold default.
+    if info.viewport_width is not None:
+        try:
+            st.session_state[_DEVICE_CACHE_KEY] = info
+        except Exception:
+            pass
+    return info
 
 
 def get_chart_config(device_type: DeviceType) -> dict:

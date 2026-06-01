@@ -4,6 +4,26 @@ from pathlib import Path
 from models.document import DocumentRecord
 
 
+# Leading characters that make a spreadsheet treat a cell as a formula on open.
+# Per OWASP "CSV Injection" — includes tab and carriage return, which some
+# clients also honor as formula starters.
+_CSV_INJECTION_PREFIXES = ("=", "+", "-", "@", "\t", "\r")
+
+
+def _neutralize_formula(value):
+    """Defuse spreadsheet formula injection in a CSV cell.
+
+    Scraped free text (document titles, company names, quotes) can begin with
+    ``=``, ``+``, ``-``, ``@`` (or tab/CR), which Excel and Google Sheets
+    interpret as a live formula when the export is opened — a code-execution
+    vector. Prefix any such *string* cell with a single quote so the client
+    treats it as literal text. Non-string values pass through unchanged.
+    """
+    if isinstance(value, str) and value.startswith(_CSV_INJECTION_PREFIXES):
+        return "'" + value
+    return value
+
+
 FIELDNAMES = [
     "state",
     "municipality_agency",
@@ -41,4 +61,7 @@ class CSVWriter:
             if not file_exists:
                 writer.writeheader()
             for rec in records:
-                writer.writerow(rec.to_dict())
+                row = rec.to_dict()
+                writer.writerow(
+                    {k: _neutralize_formula(v) for k, v in row.items()}
+                )

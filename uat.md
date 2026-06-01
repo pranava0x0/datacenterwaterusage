@@ -1,11 +1,11 @@
 # UAT Baseline — Data Center Water Use Tracker
 
 _Created: 2026-05-26_
-_Last run: 2026-05-26_
+_Last run: 2026-06-01_
 
 ## Project Info
 - **Stack**: Streamlit dashboard (Python), `streamlit>=1.33`, plotly, pandas
-- **Dev server**: `python3 -m streamlit run dashboard.py --server.port 8501 --server.headless true --browser.gatherUsageStats false` (configured in `.claude/launch.json` for the Preview MCP)
+- **Dev server**: `python3 -m streamlit run dashboard.py --server.port 8501 --server.headless true --browser.gatherUsageStats false`. As of 2026-06-01 a `.claude/launch.json` ("dashboard" config, port 8501) exists, so the Preview MCP can boot/reuse the server directly — free port 8501 of any Bash-launched instance first, since the launch.json pins the port.
 - **Entry point**: `dashboard.py` (~1370 LOC, single-file Streamlit app)
 - **Live URL**: <https://pranava0x0.github.io/datacenterwaterusage/> (stlite/WASM, slow cold start)
 - **Key tabs / sections**:
@@ -42,8 +42,9 @@ _Last run: 2026-05-26_
 - GitHub Pages deploy pipeline + CI workflow.
 
 ## Known Flaky / Unstable Areas
-- **Device classification** — `streamlit-js-eval` reports the iframe's own width, not the host viewport. Tablet (768px) misclassifies as MOBILE; mobile still works because the iframe is even smaller. Brief flicker on cold render at desktop (UAT-001, UAT-006).
-- **Legislation tracker mobile rendering** — horizontal-scroll dataframe is not the right primitive for narrow viewports (UAT-007).
+- **Device classification** — fixed in UAT-006 (`window.parent.innerWidth`); round 4 (2026-06-01) re-confirmed 375→mobile, 768→tablet, 1280→desktop after reload. Still the most reload-sensitive area: a resize needs a page reload before the class updates.
+- **Plotly flow chart first paint** — on a freshly-switched Data tab the chart SVG mounts a frame before Plotly draws its traces, so the *first* screenshot can look blank. This is a screenshot-timing artifact, **not** a bug — verify by eval'ing for trace geometry (`path.js-line`, `path.point`) rather than trusting the first capture. Confirmed real geometry present at 375px in round 4.
+- **Legislation tracker** — RESOLVED: now bordered HTML cards at every viewport (desktop included), not a dataframe. No horizontal scroll at any width (UAT-007, UAT-017).
 - **Company Water Claims rendering** — custom HTML cards are dense and lack visual hierarchy (UAT-008..011).
 
 ## Exploration Notes

@@ -7,15 +7,24 @@ on:
     branches: [main]
   workflow_dispatch: {}
 
+# Least privilege: this workflow only checks out the repo and runs tests — it
+# needs read access to contents and nothing else. An explicit top-level block
+# also overrides any permissive repo/org default GITHUB_TOKEN scope.
+permissions:
+  contents: read
+
 jobs:
   test:
     name: pytest
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # Actions are pinned to full commit SHAs (not moving tags) so a
+      # retag/compromise of a tag can't inject code into CI. Comment tracks the
+      # human-readable version; re-pin with `gh api repos/<a>/commits/<tag>`.
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
           cache: pip

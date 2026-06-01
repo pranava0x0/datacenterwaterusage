@@ -423,6 +423,118 @@ PEC publishes a crowd-sourced existing + proposed VA data centers ArcGIS layer t
 
 ---
 
+## Performance & Infrastructure
+
+Added 2026-06-01 after a dashboard performance pass + cross-viewport UAT. The dashboard is a single ~1900-line Streamlit file that reruns top-to-bottom on every interaction; these items target redundant work on that hot path and the slow stlite/WASM cold start on GitHub Pages. Ordered high → low impact.
+
+### ✅ Perf-1: mtime-based cache invalidation instead of fixed `ttl=300` (HIGH, low effort) — DONE 2026-06-01
+**Done.** Added `_file_signature(path) -> (mtime_ns, size)` and split each of the four `load_*` functions into a private `@st.cache_data` worker keyed on `(path, signature)` plus a thin public wrapper that recomputes the signature each call (one cheap `os.stat`). The cache now busts the instant a file changes and otherwise serves from cache forever — no more 5-minute re-parse churn. Tests: `TestFileSignature` (missing→(0,0), changes on edit, stable when unchanged).
+
+~~Replace the fixed `ttl=300` on the four `load_*` cache_data functions…~~
+
+### ✅ Perf-2: vectorize `_extract_flow_mgd` extraction in `load_data` (HIGH, low effort) — DONE 2026-06-01
+**Done.** `load_data` now derives `flow_mgd` with a single `Series.str.extract(r"([\d.]+)\s*MGD", flags=re.IGNORECASE)` + `pd.to_numeric(errors="coerce")` pass instead of `.apply(_extract_flow_mgd)`. `_extract_flow_mgd` stays as the scalar helper (still used by tests). Regression test `test_vectorized_extraction_matches_rowwise` asserts exact parity across 11 input shapes (NaN/None/empty/no-match/unparseable "3.2.1 MGD"/case-insensitive/whitespace). Verified live: metrics unchanged (6.7 avg / 7.5 peak).
+
+~~Rewrite the flow-MGD derivation in `load_data` to use a vectorized `str.extract`…~~
+
+### ✅ Perf-3: memoize device type in `st.session_state` (MEDIUM, low effort) — DONE 2026-06-01
+**Done (with a deliberate scope call).** Extracted the breakpoint logic into a pure, unit-tested `_classify_width(width) -> DeviceInfo`, and `get_device_type()` now memoizes the resolved `DeviceInfo` in `st.session_state` after the first real width read, returning it on later reruns **without** re-issuing the `streamlit-js-eval` round-trip. The cold-start `None` frame is intentionally never cached, so detection keeps retrying until a real width arrives.
+
+The original "keep listening so a rotate/resize still reclassifies" caveat was **dropped on purpose**: `uat.md` documents that a resize already requires a reload to reclassify today, and a reload starts a fresh session that clears the cache and re-detects — so skipping the JS on cached reruns preserves current behavior exactly while saving the round-trip on every interaction. Tests: `test_get_device_type_memoizes_after_resolution` (second call skips the width read), `test_get_device_type_does_not_cache_cold_none_frame`, `test_classify_width_breakpoints`.
+
+~~In `utils/device.py`, after the first successful `streamlit-js-eval` width read, store the resolved width…~~
+
+### ✅ Perf-4: collapse per-card markdown into one blob per panel (MEDIUM) — DONE 2026-06-01
+**Done — reinterpreted toward the real cost.** The original framing (defer per-tab loads) is largely moot now that Perf-1 made the `load_*` cheap (cached on file signature), and it isn't cleanly achievable anyway: `st.tabs` renders all three bodies every run and exposes no server-side active-tab signal, so true per-tab deferral would require swapping the tab widget for a stateful selector (a user-visible UX change with its own switch-latency tradeoff on WASM — see the "Streamlit Top Navigation" low-pri item).
+
+Instead I addressed the actual recurring cost: the Legislation and CWA panels each emitted **one `st.markdown` component per card** (31 + 49 ≈ 80 components rebuilt and reconciled on every rerun, for all tabs). Both now join their per-card HTML into a **single** `st.markdown` blob — **~80 components → 2**, verified live (`querySelectorAll('[data-testid="stMarkdown"]')` holding cards dropped to 2, one holding all 49 CWA cards). Output is byte-identical (each card is a self-contained `<div class="bill-card">`), the browser-native `<details>` toggles still work, and this helps the *active* tab too, not just inactive ones. Removed the now-redundant `_render_bill_card` wrapper.
+
+### Perf-5: ~~shrink the stlite/WASM data bundle~~ — DEFERRED 2026-06-01 (measured negligible)
+**Measured, not worth it.** Minifying all four shipped JSON files saves **40,142 bytes total (~8–18% each)** — but that is **0.27% of the ~15 MB cold-start download**, which is dominated by the pandas + plotly wheels, not the data. GitHub Pages already serves these with gzip, which compresses the pretty-print whitespace away over the wire, so the real saving is smaller still. Adding a build-time minification transform (and the pretty↔minified divergence between repo and deploy) is complexity for a sub-percent, mostly-already-captured gain. Revisit only if the data files grow by an order of magnitude or the runtime download shrinks.
+
+### Perf-6: split monolithic `dashboard.py` into modules (LOW) — DEFERRED 2026-06-01 (risk > value)
+**Held.** Value is maintainability / editor responsiveness / a modest WASM parse win — but the WASM deploy hardcodes the file manifest in **two** places (`pages/index.html` `files:{}` map **and** `.github/workflows/pages.yml` `cp` list), so a package split means maintaining a multi-file manifest in both, with a silent-deploy-break failure mode. LOW priority + runtime-neutral + real deploy fragility ⇒ not now. If pursued, first add a CI guard asserting the two manifests agree with what `dashboard.py` actually imports/reads. (Perf-4's consolidation already trimmed some of the render bulk that motivated this.)
+
+### Perf-7: UAT automation harness via Preview MCP + launch.json (LOW)
+A `.claude/launch.json` (added 2026-06-01) now lets the Preview MCP boot the dashboard and drive cross-viewport screenshots/DOM asserts. Codify the recurring UAT (the five critical flows in `uat.md`) as a repeatable checklist/script so each pass is consistent and regressions in the flow chart paint, device classification, and no-horizontal-scroll invariants are caught automatically.
+
+**Sample prompt:**
+> Write a small UAT runbook (or pytest-playwright script) that, for desktop/tablet/mobile, asserts: no horizontal scroll (`scrollWidth === innerWidth`), the Plotly flow chart draws ≥1 trace line and ≥1 point, no "new text" placeholder string is present, and the device-correct title renders. Wire it to the `.claude/launch.json` "dashboard" server.
+
+---
+
+## Security & Supply-Chain Hygiene (added 2026-06-01)
+
+From an external cross-repo security review (re-run periodically — see CLAUDE.md §10). Items 4/5/6 below were fixed on 2026-06-01; the rest are follow-ups.
+
+### ✅ SEC-4: SRI on stlite CDN assets (DONE 2026-06-01)
+`pages/index.html` now pins `sha384` integrity for the stlite CSS (`<link integrity>`) and the stlite loader module (import-map `integrity`). Verified by assembling a local replica of the deployed `_site/` and booting it in a real browser — no console/SRI errors, the WASM app fully renders. **Residual follow-up:** the loader is a 107-byte re-export stub that pulls the ~15 MB Pyodide/Streamlit runtime chunks from the CDN at runtime; those are version-pinned (`@1.7.3`, immutable) but not SRI-covered. Full coverage = **self-host the entire stlite bundle** under `_site/vendor/` and point `mount({... })` / the runtime loader at the local copies.
+
+> Sample prompt: Self-host the stlite 1.7.3 browser bundle — download the loader + all runtime chunks + the Pyodide/Streamlit wheels it fetches, commit under `pages/vendor/` (or fetch them in the Pages build), and configure stlite to load everything same-origin so no third-party CDN is in the trust path. Verify cold boot still works offline-from-CDN.
+
+### ✅ SEC-5: pin Python deps with `==` (DONE 2026-06-01)
+`requirements.txt` pinned to exact installed/tested versions. **Follow-up (SEC-5b): hash-pinning.** `==` still can't detect a same-version re-publish on PyPI; generate a fully-resolved, hashed lockfile and install with `--require-hashes`.
+
+> Sample prompt: Add `pip-compile --generate-hashes` (or `uv lock`) to produce `requirements.lock` with transitive deps + sha256 hashes, update the CI install step to `pip install --require-hashes -r requirements.lock`, and document the regen workflow in CLAUDE.md.
+
+### ✅ SEC-6: CSV formula-injection defense (DONE 2026-06-01)
+`storage/csv_writer.py:_neutralize_formula` prefixes any string cell starting with `= + - @ \t \r` with `'`. 12 regression tests in `tests/test_csv_writer.py`.
+
+### ✅ SEC-3: SHA-pin GitHub Actions + least-privilege permissions (DONE 2026-06-01)
+All six `uses:` across `ci.yml` + `pages.yml` pinned from moving `@vN` tags to full commit SHAs (checkout v4.3.1, setup-python v5.6.0, configure-pages v5.0.0, upload-pages-artifact v3.0.1, deploy-pages v4.0.5), each with a `# vX.Y.Z` comment. SHAs resolved + independently re-verified against `gh api` (the tag *and* the version-comment tag both point to the pinned SHA). Added explicit `permissions: contents: read` to `ci.yml` (was missing); `pages.yml` already least-privilege.
+
+### ✅ SEC-3b: Dependabot to keep pins fresh (DONE 2026-06-01)
+`.github/dependabot.yml` watches both `github-actions` and `pip` ecosystems (weekly, grouped to ≤1 PR each), so the SHA-pinned actions *and* the `==`-pinned Python deps get review-able update PRs instead of silently aging — closing the staleness downside of pinning for both SEC-3 and SEC-5. **Optional further hardening:** a `pinned-actions` lint (e.g. `zizmor`, or a grep CI check) that fails if any `uses:` references a non-SHA ref.
+
+### SEC-7: dependency vulnerability + license scanning in CI (MEDIUM, follow-up)
+Now that deps are pinned, add automated scanning so a pinned-but-vulnerable version is flagged. Wire `pip-audit` (CVE scan against the pinned set) into `.github/workflows/ci.yml`, failing on high-severity advisories.
+
+> Sample prompt: Add a `pip-audit` step to ci.yml that runs against requirements.txt (and the hashed lockfile once SEC-5b lands), and a scheduled weekly run so new CVEs against already-pinned versions surface without a code change.
+
+---
+
+## New Data Sources (added 2026-06-01)
+
+### Dominion Energy IRP + Virginia SCC large-load filings (MEDIUM)
+Distinct from the PJM large-load scraper already in the External Tracker Survey: Dominion's Integrated Resource Plan and its data-center interconnection-queue / large-load tariff filings at the Virginia State Corporation Commission (SCC) carry VA-specific data center load forecasts and named interconnection requests that PJM's RTO-level report aggregates away. Load forecasts are a strong proxy for cooling-water demand when paired with a WUE assumption.
+
+**Data status:** Not verified — confirm the SCC docket search endpoint and whether large-load filings are machine-readable (likely PDF) before building.
+
+**Sample prompt:**
+> Investigate the Virginia SCC docket search (scc.virginia.gov) for Dominion Energy IRP and data-center large-load / GT-class tariff filings. If a stable docket/document endpoint exists, build `scrapers/virginia/scc_dominion_irp.py` following BaseScraper: pull the filing PDFs, extract data-center MW load forecasts by year, and store as context records. Cross-reference disclosed MW with a published WUE to estimate indirect cooling-water demand.
+
+### EPA ECHO receiving-WWTP auto-discovery (MEDIUM)
+`config.py` hard-codes 8 `epa_echo_target_permits` (the WWTPs that receive data-center cooling-water blowdown). New data center clusters discharge to plants not in that list. Use the EPA ECHO/FRS geospatial APIs to auto-discover which POTW each known NAICS 518210 facility (from `epa_echo_naics`) is in the service area of, and feed those permits back into the ECHO DMR target list — closing the loop between facility discovery and flow measurement.
+
+**Data status:** Confirmed APIs exist (ECHO + FRS, both already used in the codebase). The join (facility → receiving POTW) is the unproven piece — service-area boundaries may need a sewershed/UTILITY layer.
+
+**Sample prompt:**
+> Build a step that takes the facilities discovered by `epa_echo_naics`, finds the nearest/serving POTW NPDES permit (via ECHO geospatial search or a sewershed layer), and appends new receiving-plant permits to `epa_echo_target_permits` automatically (with a confidence flag). Surface newly-discovered receiving plants in the Transparency Scorecard. Add tests with a known facility→POTW pair (e.g., a Loudoun DC → Broad Run WRF VA0091383).
+
+---
+
+## CWA Enforcement Integration (added 2026-06-01)
+
+Came out of the June 2026 CWA-investigations research pass. The CWA tab now leads with a computed "What this record tells data centers" panel whose closing point is *watch the receiving WWTP's compliance, not the data center's*. These items make that point live and add the highest-value missing watch targets.
+
+### EPA ECHO CWA enforcement/compliance for tracked WWTP permits (HIGH)
+The pipeline already pulls **DMR flow** from EPA ECHO for the 8 `epa_echo_target_permits`. ECHO's ICIS-NPDES layer also exposes the *enforcement/compliance* dimension for those same permits: Significant Non-Compliance (SNC) status, quarters in noncompliance, formal enforcement actions, and assessed penalties. Surfacing that turns the CWA tab from a national case list into a live answer to "are the plants receiving data-center cooling water actually in CWA compliance?" — directly operationalizing the insight panel's fourth bullet. (National context: EPA cut the NPDES SNC rate from 20.3% in FY2018 to 9.3% in FY2023, so a plant flagged SNC is a real outlier worth surfacing.)
+
+**Data status:** Confirmed — ECHO/ICIS-NPDES compliance fields are documented (`echo.epa.gov`, Detailed Facility Report / `get_facilities` + compliance endpoints). Caveat: the same ECHO REST reliability issues logged in `errors.md` (intermittent 5xx) apply; mirror the DMR scraper's chart/download-endpoint workaround and cache results.
+
+**Sample prompt:**
+> Extend the EPA ECHO integration to pull CWA compliance/enforcement status for each permit in `epa_echo_target_permits`: current SNC flag, quarters in noncompliance (last 12), count of formal actions, and total assessed penalties (ICIS-NPDES via ECHO). Store on the facility record and render a compact "CWA compliance" strip on the dashboard CWA tab (green/amber/red per permit), with a link to each plant's ECHO Detailed Facility Report. Cache aggressively and degrade gracefully on ECHO 5xx. Tests: a known-compliant plant renders green; a synthetic SNC record renders red.
+
+### Watch-items surfaced by the research (MEDIUM/LOW — monitor, not yet enforcement)
+These are large data-center water stories with no formal CWA enforcement action *yet*; worth a lightweight monitor so they convert to `datacenter` cases the moment an NOV/consent order/settlement lands.
+- **Meta Richland Parish, LA (Hyperion campus)** — Meta's largest global build (~4M sq ft, $10B+); pledged 100% water restoration to the Boeuf/Tensas/Lower Mississippi watersheds and $300M+ for local water/wastewater infrastructure. Operational discharges will need LDEQ LPDES permits. No enforcement yet; journalists (WWNO) are monitoring air/water. *Monitor LDEQ public notices + LPDES for the campus.*
+- **xAI Colossus greywater plant / T.E. Maxson WWTP, Memphis (TDEC)** — now a `datacenter` case (permitted-but-paused). Watch for (a) the recycling plant un-pausing / coming online, or (b) any TDEC water enforcement, or (c) movement in the parallel CAA gas-turbine citizen suit. *Monitor TDEC Division of Water Resources + Earthjustice case page.*
+
+**Sample prompt:**
+> Add a lightweight `scrapers/` watch-monitor that polls LDEQ public notices (Meta Richland Parish) and TDEC Division of Water Resources (xAI Colossus greywater plant) for new permits, NOVs, or consent orders, and flags candidates for promotion into `cwa_investigations.json` (category `datacenter`). Keep it append-only and rate-limited; surface new hits in the dataset's `last_updated` note.
+
+---
+
 ## Reference: Data Source Landscape
 
 ### Key findings from research (Feb 2026)
