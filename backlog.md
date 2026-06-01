@@ -427,23 +427,22 @@ PEC publishes a crowd-sourced existing + proposed VA data centers ArcGIS layer t
 
 Added 2026-06-01 after a dashboard performance pass + cross-viewport UAT. The dashboard is a single ~1900-line Streamlit file that reruns top-to-bottom on every interaction; these items target redundant work on that hot path and the slow stlite/WASM cold start on GitHub Pages. Ordered high → low impact.
 
-### Perf-1: mtime-based cache invalidation instead of fixed `ttl=300` (HIGH, low effort)
-`load_data`, `load_legislation`, `load_company_water_claims`, `load_cwa_investigations` all use `@st.cache_data(ttl=300)`. The 300 s TTL forces a full CSV/JSON re-parse every 5 minutes even though these files change only when a scraper runs. During an active session that is pure waste, and on the WASM build re-parsing the reference JSON is measurably slow.
+### ✅ Perf-1: mtime-based cache invalidation instead of fixed `ttl=300` (HIGH, low effort) — DONE 2026-06-01
+**Done.** Added `_file_signature(path) -> (mtime_ns, size)` and split each of the four `load_*` functions into a private `@st.cache_data` worker keyed on `(path, signature)` plus a thin public wrapper that recomputes the signature each call (one cheap `os.stat`). The cache now busts the instant a file changes and otherwise serves from cache forever — no more 5-minute re-parse churn. Tests: `TestFileSignature` (missing→(0,0), changes on edit, stable when unchanged).
 
-**Sample prompt:**
-> Replace the fixed `ttl=300` on the four `load_*` cache_data functions in `dashboard.py` with file-signature-based invalidation: pass the file's `(path, st_mtime, st_size)` into the cached function as part of the cache key (or use `hash_funcs`) so the parse only re-runs when the file actually changes. Keep a long TTL as a safety net. Add a test that mutating the file busts the cache and an unchanged file is served from cache.
+~~Replace the fixed `ttl=300` on the four `load_*` cache_data functions…~~
 
-### Perf-2: vectorize `_extract_flow_mgd` extraction in `load_data` (HIGH, low effort)
-`load_data` currently derives `flow_mgd` per row with a Python-level regex call (`_extract_flow_mgd`). At 63 rows it's invisible; once HB 496 / EPA ECHO data lands and the table grows to thousands of rows it becomes an O(n) Python loop on every cold load. Replace with a single vectorized `Series.str.extract` pass.
+### ✅ Perf-2: vectorize `_extract_flow_mgd` extraction in `load_data` (HIGH, low effort) — DONE 2026-06-01
+**Done.** `load_data` now derives `flow_mgd` with a single `Series.str.extract(r"([\d.]+)\s*MGD", flags=re.IGNORECASE)` + `pd.to_numeric(errors="coerce")` pass instead of `.apply(_extract_flow_mgd)`. `_extract_flow_mgd` stays as the scalar helper (still used by tests). Regression test `test_vectorized_extraction_matches_rowwise` asserts exact parity across 11 input shapes (NaN/None/empty/no-match/unparseable "3.2.1 MGD"/case-insensitive/whitespace). Verified live: metrics unchanged (6.7 avg / 7.5 peak).
 
-**Sample prompt:**
-> Rewrite the flow-MGD derivation in `load_data` to use a vectorized `df["extracted_water_metric"].str.extract(r"...")` regex instead of `.apply(_extract_flow_mgd)`. Keep `_extract_flow_mgd` as the single-value helper (still used by tests), but build the column in one pass. Benchmark on a synthetic 10k-row frame and assert parity with the row-wise result.
+~~Rewrite the flow-MGD derivation in `load_data` to use a vectorized `str.extract`…~~
 
-### Perf-3: memoize device type in `st.session_state` (MEDIUM, low effort)
-`get_device_type()` round-trips through the `streamlit-js-eval` component on cold start to read `window.parent.innerWidth`. That JS round-trip costs a render cycle and is the root of the documented cold-start title flicker (UAT-001). Once resolved, the viewport rarely changes within a session — cache the resolved `DeviceType` in `st.session_state` and only re-query on an explicit width change.
+### ✅ Perf-3: memoize device type in `st.session_state` (MEDIUM, low effort) — DONE 2026-06-01
+**Done (with a deliberate scope call).** Extracted the breakpoint logic into a pure, unit-tested `_classify_width(width) -> DeviceInfo`, and `get_device_type()` now memoizes the resolved `DeviceInfo` in `st.session_state` after the first real width read, returning it on later reruns **without** re-issuing the `streamlit-js-eval` round-trip. The cold-start `None` frame is intentionally never cached, so detection keeps retrying until a real width arrives.
 
-**Sample prompt:**
-> In `utils/device.py`, after the first successful `streamlit-js-eval` width read, store the resolved width + `DeviceType` in `st.session_state`. On subsequent reruns return the cached value without re-issuing the JS expression, but keep listening for width changes so a rotate/resize still reclassifies. Verify the cold-start flicker is gone and tablet/mobile/desktop still classify correctly.
+The original "keep listening so a rotate/resize still reclassifies" caveat was **dropped on purpose**: `uat.md` documents that a resize already requires a reload to reclassify today, and a reload starts a fresh session that clears the cache and re-detects — so skipping the JS on cached reruns preserves current behavior exactly while saving the round-trip on every interaction. Tests: `test_get_device_type_memoizes_after_resolution` (second call skips the width read), `test_get_device_type_does_not_cache_cold_none_frame`, `test_classify_width_breakpoints`.
+
+~~In `utils/device.py`, after the first successful `streamlit-js-eval` width read, store the resolved width…~~
 
 ### Perf-4: defer reference-JSON loads into their tab bodies (MEDIUM, low effort)
 The CWA tab calls `load_cwa_investigations()` (48 cases) and the Legislation tab eagerly builds 31 bill cards even when a visitor only ever looks at the Data tab. `st.tabs` renders all three tab bodies on every run. Move each tab's heavy `load_*` + card construction behind a cheap guard so only the active tab pays for its data.

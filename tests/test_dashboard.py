@@ -21,6 +21,7 @@ import pytest
 
 from dashboard import (
     _extract_flow_mgd,
+    _file_signature,
     _classify_source,
     compute_household_equivalent,
     load_legislation,
@@ -42,12 +43,15 @@ from dashboard import (
     TIMELINE_EVENTS,
     CWA_CATEGORY_LABELS,
 )
+import utils.device as device_mod
 from utils.device import (
     MOBILE_MAX,
     TABLET_MAX,
     DeviceInfo,
     DeviceType,
+    _classify_width,
     get_chart_config,
+    get_device_type,
 )
 
 
@@ -89,6 +93,70 @@ class TestExtractFlowMGD:
         result = _extract_flow_mgd(metric)
         assert result is not None
         assert result == 6.4
+
+    def test_vectorized_extraction_matches_rowwise(self):
+        # load_data() now derives flow_mgd with a single vectorized regex pass
+        # instead of .apply(_extract_flow_mgd). This guards parity: the column
+        # math must equal the scalar helper for every input shape, incl. NaN,
+        # None, no-match, and unparseable captures like "3.2.1 MGD".
+        import math
+        import numpy as np
+        import pandas as pd
+
+        samples = [
+            "Flow: 6.7 MGD",
+            "12 mgd avg",
+            "no metric here",
+            "3.2.1 MGD",          # unparseable -> None / NaN
+            "0.26 MGD peak",
+            "",
+            None,
+            float("nan"),
+            "MGD only",            # keyword but no number
+            "1000 gallons",        # number but no MGD
+            "  9.9  MGD ",
+        ]
+        col = pd.Series(samples, dtype="object")
+        vectorized = pd.to_numeric(
+            col.astype(str).str.extract(
+                r"([\d.]+)\s*MGD", flags=re.IGNORECASE, expand=False
+            ),
+            errors="coerce",
+        )
+        for raw, vec_val in zip(samples, vectorized.tolist()):
+            scalar = _extract_flow_mgd(raw)
+            vec_none = vec_val is None or (
+                isinstance(vec_val, float) and math.isnan(vec_val)
+            )
+            if scalar is None:
+                assert vec_none, f"{raw!r}: scalar None but vectorized {vec_val}"
+            else:
+                assert not vec_none and float(vec_val) == float(scalar), (
+                    f"{raw!r}: vectorized {vec_val} != scalar {scalar}"
+                )
+
+
+# --- Tests for the file-signature cache key (mtime-based invalidation) ---
+
+
+class TestFileSignature:
+    def test_missing_file_is_zero(self):
+        assert _file_signature("/nonexistent/definitely/not/here.json") == (0, 0)
+
+    def test_signature_changes_when_file_changes(self, tmp_path):
+        p = tmp_path / "data.json"
+        p.write_text('{"a": 1}', encoding="utf-8")
+        sig1 = _file_signature(p)
+        assert sig1 != (0, 0)
+        # Growing the file changes the size component immediately.
+        p.write_text('{"a": 1, "b": 2, "c": 3}', encoding="utf-8")
+        sig2 = _file_signature(p)
+        assert sig2 != sig1, "signature must change when the file content changes"
+
+    def test_signature_stable_for_unchanged_file(self, tmp_path):
+        p = tmp_path / "data.json"
+        p.write_text('{"a": 1}', encoding="utf-8")
+        assert _file_signature(p) == _file_signature(p)
 
 
 # --- Tests for _classify_source ---
@@ -182,6 +250,55 @@ class TestDeviceDetection:
         assert DeviceType.MOBILE == "mobile"
         assert DeviceType.TABLET == "tablet"
         assert DeviceType.DESKTOP == "desktop"
+
+    def test_classify_width_breakpoints(self):
+        # Pure classifier — covers every breakpoint boundary exactly.
+        assert _classify_width(None) == DeviceInfo(DeviceType.DESKTOP, None)
+        assert _classify_width(375).device_type == DeviceType.MOBILE
+        assert _classify_width(767).device_type == DeviceType.MOBILE
+        assert _classify_width(768).device_type == DeviceType.TABLET  # not < 768
+        assert _classify_width(1023).device_type == DeviceType.TABLET
+        assert _classify_width(1024).device_type == DeviceType.DESKTOP  # not < 1024
+        assert _classify_width(1280).device_type == DeviceType.DESKTOP
+
+    def test_get_device_type_memoizes_after_resolution(self, monkeypatch):
+        # Once a real width resolves, get_device_type caches the DeviceInfo and
+        # reuses it without re-issuing the JS round-trip on later reruns.
+        class FakeState(dict):
+            pass
+
+        state = FakeState()
+        monkeypatch.setattr(device_mod.st, "session_state", state, raising=False)
+
+        calls = {"n": 0}
+
+        def fake_width():
+            calls["n"] += 1
+            return 375
+
+        monkeypatch.setattr(device_mod, "get_viewport_width", fake_width)
+
+        first = get_device_type()
+        assert first.device_type == DeviceType.MOBILE
+        assert calls["n"] == 1
+        assert device_mod._DEVICE_CACHE_KEY in state
+
+        # Second call returns the cached value WITHOUT calling get_viewport_width.
+        second = get_device_type()
+        assert second == first
+        assert calls["n"] == 1, "cached path must skip the JS width read"
+
+    def test_get_device_type_does_not_cache_cold_none_frame(self, monkeypatch):
+        # The cold-start None frame must NOT be memoized, so detection keeps
+        # retrying until a real width arrives.
+        state = dict()
+        monkeypatch.setattr(device_mod.st, "session_state", state, raising=False)
+        monkeypatch.setattr(device_mod, "get_viewport_width", lambda: None)
+
+        info = get_device_type()
+        assert info.device_type == DeviceType.DESKTOP
+        assert info.viewport_width is None
+        assert device_mod._DEVICE_CACHE_KEY not in state, "cold None must not cache"
 
 
 class TestChartConfig:

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import html
 import json
+import os
 import re
 from datetime import datetime
 from pathlib import Path
@@ -53,9 +54,28 @@ COLOR_SEQUENCE = ["#08519c", "#3182bd", "#6baed6", "#9ecae1", "#c6dbef"]
 # --- Data Loading ---
 
 
-@st.cache_data(ttl=300)
-def load_data() -> pd.DataFrame:
-    """Load and clean results data from CSV."""
+def _file_signature(path) -> tuple:
+    """A cheap change-detector for a file: ``(mtime_ns, size)``.
+
+    Passed into the cached loaders below so ``st.cache_data`` re-reads a file
+    only when it actually changes, rather than expiring on a fixed clock. The
+    reference JSON and the results CSV change only when a scraper or an edit
+    runs, so a fixed ``ttl`` just forced needless re-parsing every few minutes
+    during an active session (and on every stlite/WASM cold interaction).
+    Returns ``(0, 0)`` for a missing file so a later create still busts the
+    cache. Kept module-level and Streamlit-free so it's unit-testable.
+    """
+    try:
+        s = os.stat(path)
+        return (s.st_mtime_ns, s.st_size)
+    except OSError:
+        return (0, 0)
+
+
+@st.cache_data
+def _load_data_cached(signature: tuple) -> pd.DataFrame:
+    """Parse and clean results.csv. Keyed on the file signature so the cache
+    busts on change (the ``signature`` arg is part of the cache key)."""
     if not CSV_PATH.exists():
         return pd.DataFrame()
 
@@ -63,7 +83,16 @@ def load_data() -> pd.DataFrame:
 
     df["document_date"] = pd.to_datetime(df["document_date"], errors="coerce")
     df["scraped_at"] = pd.to_datetime(df["scraped_at"], errors="coerce")
-    df["flow_mgd"] = df["extracted_water_metric"].apply(_extract_flow_mgd)
+    # Vectorized MGD extraction — one regex pass over the whole column instead
+    # of a per-row Python call. Mirrors _extract_flow_mgd (kept as the scalar
+    # helper for tests): non-matches and unparseable captures coerce to NaN,
+    # exactly what the row-wise version returns as None.
+    df["flow_mgd"] = pd.to_numeric(
+        df["extracted_water_metric"]
+        .astype(str)
+        .str.extract(r"([\d.]+)\s*MGD", flags=re.IGNORECASE, expand=False),
+        errors="coerce",
+    )
 
     date_mask = df["document_date"].notna()
     df["monitoring_month"] = ""
@@ -73,6 +102,11 @@ def load_data() -> pd.DataFrame:
 
     df["record_type"] = df["source_portal"].apply(_classify_source)
     return df
+
+
+def load_data() -> pd.DataFrame:
+    """Load and clean results data from CSV (cached; re-reads only on change)."""
+    return _load_data_cached(_file_signature(CSV_PATH))
 
 
 def _extract_flow_mgd(metric_str: str) -> float | None:
@@ -108,18 +142,12 @@ def _classify_source(portal: str) -> str:
     return "Other"
 
 
-@st.cache_data(ttl=300)
-def load_legislation(path: Path = LEGISLATION_PATH) -> dict:
-    """Load the data center water/energy legislation dataset.
-
-    Returns a payload dict of the form {"last_updated": str, "bills": [...]}.
-    Tolerates a missing file (returns an empty payload) or a bare list.
-    Cached because Streamlit reruns the whole script on every interaction;
-    the enriched legislation.json is ~57 KB and parses on every rerun otherwise.
-    """
-    if not Path(path).exists():
+@st.cache_data
+def _load_legislation_cached(path_str: str, signature: tuple) -> dict:
+    p = Path(path_str)
+    if not p.exists():
         return {"last_updated": None, "bills": []}
-    with open(path, encoding="utf-8") as f:
+    with open(p, encoding="utf-8") as f:
         payload = json.load(f)
     if isinstance(payload, list):
         return {"last_updated": None, "bills": payload}
@@ -127,35 +155,59 @@ def load_legislation(path: Path = LEGISLATION_PATH) -> dict:
     return payload
 
 
-@st.cache_data(ttl=300)
-def load_company_water_claims(path: Path = COMPANY_WATER_CLAIMS_PATH) -> dict:
-    """Load the company water-claims dataset (mirrored from datacentercommunitybenefits).
+def load_legislation(path: Path = LEGISLATION_PATH) -> dict:
+    """Load the data center water/energy legislation dataset.
 
-    Returns a payload dict {"last_updated", "companies", "claims", ...}.
-    Tolerates a missing file by returning an empty payload.
+    Returns a payload dict of the form {"last_updated": str, "bills": [...]}.
+    Tolerates a missing file (returns an empty payload) or a bare list.
+    Cached because Streamlit reruns the whole script on every interaction;
+    the enriched legislation.json is ~57 KB and parses on every rerun otherwise.
+    The cache busts on file change (mtime/size) rather than a fixed TTL.
     """
-    if not Path(path).exists():
+    return _load_legislation_cached(str(path), _file_signature(path))
+
+
+@st.cache_data
+def _load_company_water_claims_cached(path_str: str, signature: tuple) -> dict:
+    p = Path(path_str)
+    if not p.exists():
         return {"last_updated": None, "companies": {}, "claims": []}
-    with open(path, encoding="utf-8") as f:
+    with open(p, encoding="utf-8") as f:
         payload = json.load(f)
     payload.setdefault("claims", [])
     payload.setdefault("companies", {})
     return payload
 
 
-@st.cache_data(ttl=300)
+def load_company_water_claims(path: Path = COMPANY_WATER_CLAIMS_PATH) -> dict:
+    """Load the company water-claims dataset (mirrored from datacentercommunitybenefits).
+
+    Returns a payload dict {"last_updated", "companies", "claims", ...}.
+    Tolerates a missing file by returning an empty payload. Cache busts on
+    file change (mtime/size) rather than a fixed TTL.
+    """
+    return _load_company_water_claims_cached(str(path), _file_signature(path))
+
+
+@st.cache_data
+def _load_cwa_investigations_cached(path_str: str, signature: tuple) -> dict:
+    p = Path(path_str)
+    if not p.exists():
+        return {"last_updated": None, "cases": []}
+    with open(p, encoding="utf-8") as f:
+        payload = json.load(f)
+    payload.setdefault("cases", [])
+    return payload
+
+
 def load_cwa_investigations(path: Path = CWA_INVESTIGATIONS_PATH) -> dict:
     """Load historic Clean Water Act enforcement / precedent dataset.
 
     Returns {"last_updated": str, "cases": [...], "note": Optional[str]}.
-    Tolerates a missing file by returning an empty payload.
+    Tolerates a missing file by returning an empty payload. Cache busts on
+    file change (mtime/size) rather than a fixed TTL.
     """
-    if not Path(path).exists():
-        return {"last_updated": None, "cases": []}
-    with open(path, encoding="utf-8") as f:
-        payload = json.load(f)
-    payload.setdefault("cases", [])
-    return payload
+    return _load_cwa_investigations_cached(str(path), _file_signature(path))
 
 
 # --- Page Config ---
