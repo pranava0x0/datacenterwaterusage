@@ -81,6 +81,15 @@ Python-based scraping and data extraction pipeline that finds documents related 
   - Document any changed conventions or patterns
   - Record key decisions and their rationale
 
+### 10. Security & Supply-Chain Hygiene
+- **An external cross-repo security review is run periodically** (findings come from a separate audit repo and are pasted in as numbered items). **Check it frequently** — re-run/re-request it before any release and whenever dependencies, the Pages build, or data-writing code changes. Triage each finding, fix or log it, and record the disposition here.
+- **Standing rules (don't regress these):**
+  - **Pin dependencies with `==`** in `requirements.txt` (never float `>=` — that auto-pulls whatever patch is on PyPI at the next install, a supply-chain entry point). Follow-up: hash-locked installs (`pip-compile --generate-hashes` / `uv lock` + `--require-hashes`) to also catch same-version re-publishes — tracked in `backlog.md`.
+  - **Subresource Integrity (SRI) on every third-party CDN asset.** `pages/index.html` pins `sha384` hashes for the stlite CSS (`<link integrity>`) and the stlite loader module (import-map `integrity`, enforced on Chromium 127+, gracefully ignored elsewhere). Caveat: the stlite loader is a small stub that pulls the ~15 MB Pyodide/Streamlit runtime from the CDN at runtime — those chunks are version-pinned (`@1.7.3`, immutable) but not yet SRI-covered; full coverage means self-hosting (backlog). To regenerate a hash: `curl -sL <url> | openssl dgst -sha384 -binary | openssl base64 -A`, then re-verify it twice (a partial download yields a wrong hash that fails closed and blanks the live site).
+  - **Neutralize CSV formula injection.** `storage/csv_writer.py` prefixes any string cell starting with `= + - @ \t \r` with `'` (`_neutralize_formula`) so a scraped value can't execute when the export is opened in Excel/Sheets.
+  - **No secrets or PII in committed data.** `local_file_path` is stored repo-relative (see SEC-001 in `issues.md`); never commit absolute home paths, tokens, or credentials.
+- When a security item is fixed, add a regression test (e.g., `tests/test_csv_writer.py`) and note it in `errors.md`/`issues.md` so it can't silently regress.
+
 ---
 
 ## Architecture

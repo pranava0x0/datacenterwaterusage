@@ -10,9 +10,14 @@
     <title>Data Center Water Use Tracker</title>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+    <!-- Subresource Integrity: the browser refuses to apply this stylesheet
+         unless its bytes hash to the pinned sha384 below, so a compromised CDN
+         can't swap it. Hash is for the immutable @1.7.3 build. -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@stlite/browser@1.7.3/build/stlite.css"
+      integrity="sha384-I+PeJ+SKh9dT47UTnpFS3wwOJGq6cN1TlWNBeGLux9QNqVKwoR4FQ/eQPAj+JBs5"
+      crossorigin="anonymous"
     />
     <style>
       html,
@@ -57,8 +62,26 @@
         </div>
       </div>
     </div>
+    <!-- Import map pins an SRI hash to the stlite loader module. On browsers
+         that support import-map integrity (Chromium 127+) the loader is
+         hash-verified and fails closed if a compromised CDN serves different
+         bytes; older browsers ignore the integrity key and load as before
+         (no regression). NB: stlite.js is a small re-export stub that then
+         pulls the ~15 MB Pyodide/Streamlit runtime from the CDN at runtime —
+         those chunks are version-pinned (@1.7.3, immutable) but not yet SRI-
+         covered; full coverage means self-hosting (see backlog). -->
+    <script type="importmap">
+      {
+        "imports": {
+          "@stlite/browser": "https://cdn.jsdelivr.net/npm/@stlite/browser@1.7.3/build/stlite.js"
+        },
+        "integrity": {
+          "https://cdn.jsdelivr.net/npm/@stlite/browser@1.7.3/build/stlite.js": "sha384-AxUZHjW44zDAK1GBkA9Edcq56gQhvtdJsDHvRvgXvth/4U91YrMX2SXoJrFmaWH0"
+        }
+      }
+    </script>
     <script type="module">
-      import { mount } from "https://cdn.jsdelivr.net/npm/@stlite/browser@1.7.3/build/stlite.js";
+      import { mount } from "@stlite/browser";
 
       mount(
         {

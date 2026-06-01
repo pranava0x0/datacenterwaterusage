@@ -463,6 +463,30 @@ A `.claude/launch.json` (added 2026-06-01) now lets the Preview MCP boot the das
 
 ---
 
+## Security & Supply-Chain Hygiene (added 2026-06-01)
+
+From an external cross-repo security review (re-run periodically — see CLAUDE.md §10). Items 4/5/6 below were fixed on 2026-06-01; the rest are follow-ups.
+
+### ✅ SEC-4: SRI on stlite CDN assets (DONE 2026-06-01)
+`pages/index.html` now pins `sha384` integrity for the stlite CSS (`<link integrity>`) and the stlite loader module (import-map `integrity`). Verified by assembling a local replica of the deployed `_site/` and booting it in a real browser — no console/SRI errors, the WASM app fully renders. **Residual follow-up:** the loader is a 107-byte re-export stub that pulls the ~15 MB Pyodide/Streamlit runtime chunks from the CDN at runtime; those are version-pinned (`@1.7.3`, immutable) but not SRI-covered. Full coverage = **self-host the entire stlite bundle** under `_site/vendor/` and point `mount({... })` / the runtime loader at the local copies.
+
+> Sample prompt: Self-host the stlite 1.7.3 browser bundle — download the loader + all runtime chunks + the Pyodide/Streamlit wheels it fetches, commit under `pages/vendor/` (or fetch them in the Pages build), and configure stlite to load everything same-origin so no third-party CDN is in the trust path. Verify cold boot still works offline-from-CDN.
+
+### ✅ SEC-5: pin Python deps with `==` (DONE 2026-06-01)
+`requirements.txt` pinned to exact installed/tested versions. **Follow-up (SEC-5b): hash-pinning.** `==` still can't detect a same-version re-publish on PyPI; generate a fully-resolved, hashed lockfile and install with `--require-hashes`.
+
+> Sample prompt: Add `pip-compile --generate-hashes` (or `uv lock`) to produce `requirements.lock` with transitive deps + sha256 hashes, update the CI install step to `pip install --require-hashes -r requirements.lock`, and document the regen workflow in CLAUDE.md.
+
+### ✅ SEC-6: CSV formula-injection defense (DONE 2026-06-01)
+`storage/csv_writer.py:_neutralize_formula` prefixes any string cell starting with `= + - @ \t \r` with `'`. 12 regression tests in `tests/test_csv_writer.py`.
+
+### SEC-7: dependency vulnerability + license scanning in CI (MEDIUM, follow-up)
+Now that deps are pinned, add automated scanning so a pinned-but-vulnerable version is flagged. Wire `pip-audit` (CVE scan against the pinned set) into `.github/workflows/ci.yml`, failing on high-severity advisories.
+
+> Sample prompt: Add a `pip-audit` step to ci.yml that runs against requirements.txt (and the hashed lockfile once SEC-5b lands), and a scheduled weekly run so new CVEs against already-pinned versions surface without a code change.
+
+---
+
 ## New Data Sources (added 2026-06-01)
 
 ### Dominion Energy IRP + Virginia SCC large-load filings (MEDIUM)
