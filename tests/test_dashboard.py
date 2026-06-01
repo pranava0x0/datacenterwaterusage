@@ -588,7 +588,7 @@ class TestLegislationTracker:
 
 # --- Tests for CWA investigations tracker ---
 
-VALID_CWA_CATEGORIES = {"datacenter", "industrial", "precedent"}
+VALID_CWA_CATEGORIES = {"datacenter", "adjacent", "industrial", "precedent"}
 
 
 class TestCWAInvestigations:
@@ -718,7 +718,10 @@ class TestCWAInvestigations:
         cases = {c["case_id"]: c for c in self._cases()}
         assert "xAI-Colossus-Memphis-TN-2026" in cases
         c = cases["xAI-Colossus-Memphis-TN-2026"]
-        assert c["category"] == "datacenter"
+        # Adjacent, not datacenter: the binding federal action is Clean Air Act
+        # (gas turbines) and the water piece is a paused voluntary commitment —
+        # no CWA enforcement attaches.
+        assert c["category"] == "adjacent"
         # The water angle (greywater reuse / aquifer), not just the air-permit suit.
         blob = (c["violation_summary"] + c["takeaway"]).lower()
         assert "aquifer" in blob and "greywater" in blob

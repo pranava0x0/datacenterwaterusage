@@ -1299,9 +1299,15 @@ def _build_principles_html(principles: list[dict]) -> str:
 
 # --- Clean Water Act Investigations Tracker ---
 
-CWA_CATEGORY_ORDER = {"datacenter": 0, "industrial": 1, "precedent": 2}
+CWA_CATEGORY_ORDER = {
+    "datacenter": 0,
+    "adjacent": 1,
+    "industrial": 2,
+    "precedent": 3,
+}
 CWA_CATEGORY_LABELS = {
     "datacenter": "Data Center",
+    "adjacent": "Data-Center Adjacent",
     "industrial": "Industrial Water",
     "precedent": "Landmark Precedent",
 }
@@ -1424,6 +1430,7 @@ def _cwa_category_colors() -> dict:
     """Map category → pill color, sourced from the shared COLORS palette."""
     return {
         "datacenter": COLORS["primary"],
+        "adjacent": COLORS["tertiary"],
         "industrial": COLORS["warning"],
         "precedent": COLORS["secondary"],
     }
