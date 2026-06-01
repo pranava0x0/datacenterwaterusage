@@ -444,23 +444,16 @@ The original "keep listening so a rotate/resize still reclassifies" caveat was *
 
 ~~In `utils/device.py`, after the first successful `streamlit-js-eval` width read, store the resolved width…~~
 
-### Perf-4: defer reference-JSON loads into their tab bodies (MEDIUM, low effort)
-The CWA tab calls `load_cwa_investigations()` (48 cases) and the Legislation tab eagerly builds 31 bill cards even when a visitor only ever looks at the Data tab. `st.tabs` renders all three tab bodies on every run. Move each tab's heavy `load_*` + card construction behind a cheap guard so only the active tab pays for its data.
+### ✅ Perf-4: collapse per-card markdown into one blob per panel (MEDIUM) — DONE 2026-06-01
+**Done — reinterpreted toward the real cost.** The original framing (defer per-tab loads) is largely moot now that Perf-1 made the `load_*` cheap (cached on file signature), and it isn't cleanly achievable anyway: `st.tabs` renders all three bodies every run and exposes no server-side active-tab signal, so true per-tab deferral would require swapping the tab widget for a stateful selector (a user-visible UX change with its own switch-latency tradeoff on WASM — see the "Streamlit Top Navigation" low-pri item).
 
-**Sample prompt:**
-> Profile which of the three `st.tabs` bodies dominate cold-start render. Defer `load_cwa_investigations` and the CWA case-card HTML construction so they only execute when the CWA tab is the active tab (e.g., track active tab in session_state or gate on a lightweight sentinel). Confirm via a DOM/eval check that switching tabs still works and first paint of the default Legislation tab drops a measurable number of components.
+Instead I addressed the actual recurring cost: the Legislation and CWA panels each emitted **one `st.markdown` component per card** (31 + 49 ≈ 80 components rebuilt and reconciled on every rerun, for all tabs). Both now join their per-card HTML into a **single** `st.markdown` blob — **~80 components → 2**, verified live (`querySelectorAll('[data-testid="stMarkdown"]')` holding cards dropped to 2, one holding all 49 CWA cards). Output is byte-identical (each card is a self-contained `<div class="bill-card">`), the browser-native `<details>` toggles still work, and this helps the *active* tab too, not just inactive ones. Removed the now-redundant `_render_bill_card` wrapper.
 
-### Perf-5: shrink the stlite/WASM data bundle for GitHub Pages cold start (MEDIUM)
-The public deploy is stlite/WASM with a slow cold start (noted in `uat.md`). The three reference JSON files ship verbatim. Minify them (strip whitespace, drop fields the dashboard never reads) into a build-time `*.min.json` so the WASM runtime downloads and parses less on first paint.
+### Perf-5: ~~shrink the stlite/WASM data bundle~~ — DEFERRED 2026-06-01 (measured negligible)
+**Measured, not worth it.** Minifying all four shipped JSON files saves **40,142 bytes total (~8–18% each)** — but that is **0.27% of the ~15 MB cold-start download**, which is dominated by the pandas + plotly wheels, not the data. GitHub Pages already serves these with gzip, which compresses the pretty-print whitespace away over the wire, so the real saving is smaller still. Adding a build-time minification transform (and the pretty↔minified divergence between repo and deploy) is complexity for a sub-percent, mostly-already-captured gain. Revisit only if the data files grow by an order of magnitude or the runtime download shrinks.
 
-**Sample prompt:**
-> Add a build step (extend the Pages workflow) that emits minified copies of the three `data/reference/*.json` files with only the fields the dashboard reads, and point the stlite build at the minified bundle. Measure cold-start time-to-interactive before/after on the deployed Pages URL.
-
-### Perf-6: split monolithic `dashboard.py` into modules (LOW, maintainability + WASM parse)
-`dashboard.py` is ~1900 lines; `render_seasonal_heatmap` alone is ~330 lines. Splitting into `dashboard/panels/*.py` + `dashboard/loaders.py` improves editor responsiveness, test isolation, and shaves WASM parse/compile time on the Pages build. Pure refactor — keep public function names so tests don't churn.
-
-**Sample prompt:**
-> Refactor `dashboard.py` into a package: `loaders.py` (the cached `load_*`), `panels/legislation.py`, `panels/cwa.py`, `panels/data.py`, `panels/shared.py`. Keep every currently-tested function importable from its old name (re-export) so `test_dashboard.py` passes unchanged. Run the full suite after each move.
+### Perf-6: split monolithic `dashboard.py` into modules (LOW) — DEFERRED 2026-06-01 (risk > value)
+**Held.** Value is maintainability / editor responsiveness / a modest WASM parse win — but the WASM deploy hardcodes the file manifest in **two** places (`pages/index.html` `files:{}` map **and** `.github/workflows/pages.yml` `cp` list), so a package split means maintaining a multi-file manifest in both, with a silent-deploy-break failure mode. LOW priority + runtime-neutral + real deploy fragility ⇒ not now. If pursued, first add a CI guard asserting the two manifests agree with what `dashboard.py` actually imports/reads. (Perf-4's consolidation already trimmed some of the render bulk that motivated this.)
 
 ### Perf-7: UAT automation harness via Preview MCP + launch.json (LOW)
 A `.claude/launch.json` (added 2026-06-01) now lets the Preview MCP boot the dashboard and drive cross-viewport screenshots/DOM asserts. Codify the recurring UAT (the five critical flows in `uat.md`) as a repeatable checklist/script so each pass is consistent and regressions in the flow chart paint, device classification, and no-horizontal-scroll invariants are caught automatically.

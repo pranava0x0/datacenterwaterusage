@@ -1177,8 +1177,16 @@ def render_legislation_tracker(is_mobile: bool = False, is_tablet: bool = False)
             b.get("jurisdiction", ""),
         ),
     )
-    for bill in sorted_bills:
-        _render_bill_card(bill)
+    # Emit ALL bill cards as a single markdown blob — one component instead of
+    # one per bill (31 → 1). Streamlit reruns the whole script on every
+    # interaction and ships each st.markdown as a separate component; each card
+    # is already a self-contained <div class="bill-card"> with a browser-native
+    # <details> toggle, so concatenating them is visually identical while
+    # slashing the component count the frontend reconciles every rerun.
+    st.markdown(
+        "".join(_build_bill_card_html(bill) for bill in sorted_bills),
+        unsafe_allow_html=True,
+    )
 
     last_updated = payload.get("last_updated") or "unknown"
     st.caption(
@@ -1186,20 +1194,6 @@ def render_legislation_tracker(is_mobile: bool = False, is_tablet: bool = False)
         "entry is tracked in the underlying JSON; treat any not flagged "
         "verified=true there as secondary-sourced."
     )
-
-
-def _render_bill_card(bill: dict):
-    """Render one legislation entry as a single HTML blob via one st.markdown call.
-
-    Streamlit reruns the whole script on every interaction, and each st.markdown
-    call ships a separate component over the WebSocket. The earlier
-    implementation used ~20 markdown calls per bill (14 bills × 20 = ~280
-    components) and `st.expander`, which renders its body eagerly. This version
-    emits one HTML string per bill (~14 components total) and uses the
-    browser-native `<details>` element so the expander state is purely
-    client-side — no re-render needed to open or close it.
-    """
-    st.markdown(_build_bill_card_html(bill), unsafe_allow_html=True)
 
 
 def _build_bill_card_html(bill: dict) -> str:
@@ -1679,8 +1673,13 @@ def render_cwa_tracker():
             -_cwa_year_end(c.get("year", "")),
         ),
     )
-    for case in sorted_cases:
-        st.markdown(_build_cwa_case_html(case), unsafe_allow_html=True)
+    # One markdown blob for all case cards (49 → 1 component) — same
+    # consolidation as render_legislation_tracker; each card is a self-contained
+    # <div class="bill-card">, so the joined output renders identically.
+    st.markdown(
+        "".join(_build_cwa_case_html(case) for case in sorted_cases),
+        unsafe_allow_html=True,
+    )
 
     last_updated = payload.get("last_updated") or "unknown"
     note = payload.get("note", "")
