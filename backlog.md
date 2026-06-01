@@ -491,6 +491,28 @@ Distinct from the PJM large-load scraper already in the External Tracker Survey:
 
 ---
 
+## CWA Enforcement Integration (added 2026-06-01)
+
+Came out of the June 2026 CWA-investigations research pass. The CWA tab now leads with a computed "What this record tells data centers" panel whose closing point is *watch the receiving WWTP's compliance, not the data center's*. These items make that point live and add the highest-value missing watch targets.
+
+### EPA ECHO CWA enforcement/compliance for tracked WWTP permits (HIGH)
+The pipeline already pulls **DMR flow** from EPA ECHO for the 8 `epa_echo_target_permits`. ECHO's ICIS-NPDES layer also exposes the *enforcement/compliance* dimension for those same permits: Significant Non-Compliance (SNC) status, quarters in noncompliance, formal enforcement actions, and assessed penalties. Surfacing that turns the CWA tab from a national case list into a live answer to "are the plants receiving data-center cooling water actually in CWA compliance?" — directly operationalizing the insight panel's fourth bullet. (National context: EPA cut the NPDES SNC rate from 20.3% in FY2018 to 9.3% in FY2023, so a plant flagged SNC is a real outlier worth surfacing.)
+
+**Data status:** Confirmed — ECHO/ICIS-NPDES compliance fields are documented (`echo.epa.gov`, Detailed Facility Report / `get_facilities` + compliance endpoints). Caveat: the same ECHO REST reliability issues logged in `errors.md` (intermittent 5xx) apply; mirror the DMR scraper's chart/download-endpoint workaround and cache results.
+
+**Sample prompt:**
+> Extend the EPA ECHO integration to pull CWA compliance/enforcement status for each permit in `epa_echo_target_permits`: current SNC flag, quarters in noncompliance (last 12), count of formal actions, and total assessed penalties (ICIS-NPDES via ECHO). Store on the facility record and render a compact "CWA compliance" strip on the dashboard CWA tab (green/amber/red per permit), with a link to each plant's ECHO Detailed Facility Report. Cache aggressively and degrade gracefully on ECHO 5xx. Tests: a known-compliant plant renders green; a synthetic SNC record renders red.
+
+### Watch-items surfaced by the research (MEDIUM/LOW — monitor, not yet enforcement)
+These are large data-center water stories with no formal CWA enforcement action *yet*; worth a lightweight monitor so they convert to `datacenter` cases the moment an NOV/consent order/settlement lands.
+- **Meta Richland Parish, LA (Hyperion campus)** — Meta's largest global build (~4M sq ft, $10B+); pledged 100% water restoration to the Boeuf/Tensas/Lower Mississippi watersheds and $300M+ for local water/wastewater infrastructure. Operational discharges will need LDEQ LPDES permits. No enforcement yet; journalists (WWNO) are monitoring air/water. *Monitor LDEQ public notices + LPDES for the campus.*
+- **xAI Colossus greywater plant / T.E. Maxson WWTP, Memphis (TDEC)** — now a `datacenter` case (permitted-but-paused). Watch for (a) the recycling plant un-pausing / coming online, or (b) any TDEC water enforcement, or (c) movement in the parallel CAA gas-turbine citizen suit. *Monitor TDEC Division of Water Resources + Earthjustice case page.*
+
+**Sample prompt:**
+> Add a lightweight `scrapers/` watch-monitor that polls LDEQ public notices (Meta Richland Parish) and TDEC Division of Water Resources (xAI Colossus greywater plant) for new permits, NOVs, or consent orders, and flags candidates for promotion into `cwa_investigations.json` (category `datacenter`). Keep it append-only and rate-limited; surface new hits in the dataset's `last_updated` note.
+
+---
+
 ## Reference: Data Source Landscape
 
 ### Key findings from research (Feb 2026)

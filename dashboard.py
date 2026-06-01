@@ -1449,6 +1449,106 @@ def _cwa_year_end(year_str: str) -> int:
     return int(m.group(1)) if m else 0
 
 
+# Heuristics for the computed data-center insight panel. Kept module-level so
+# the pure helper below stays testable without Streamlit.
+_CWA_HYPERSCALERS = ("amazon", "google", "microsoft", "meta", "xai")
+_CWA_CONTRACTOR_KW = (
+    "construction",
+    "contractor",
+    "subcontractor",
+    "dewatering",
+    "aldinger",
+    "consigli",
+)
+# True construction-stormwater signals — kept strict so the count reflects
+# CWA §402 erosion/sediment touchpoints, not any mention of "construction".
+_CWA_CONSTRUCTION_KW = ("stormwater", "sediment", "erosion", "silt")
+
+
+def _cwa_datacenter_insights(cases: list[dict]) -> dict:
+    """Compute structural patterns across the *data-center* CWA cases.
+
+    These are the "so what" the tracker exists to surface: who actually holds
+    the permit (the operator usually sits one entity removed) and what triggers
+    CWA scrutiny in the first place (overwhelmingly construction stormwater,
+    not operational cooling discharge). Pure function over the dataset so the
+    numbers stay correct as cases are added and it can be unit-tested without
+    Streamlit.
+    """
+    dc = [c for c in cases if c.get("category") == "datacenter"]
+    total = len(dc)
+
+    def _is_contractor_led(c: dict) -> bool:
+        # Test the *leading* name (before the first comma), not a substring —
+        # a contractor's parenthetical often mentions the hyperscaler it works
+        # for (e.g. "Walbridge Aldinger LLC (Microsoft contractor)"), so an
+        # "in" check would wrongly read that as operator-led. Shielded == the
+        # respondent leads with a contractor, not the operator.
+        lead = c.get("respondent", "").split(",")[0].lower().strip()
+        if any(lead.startswith(h) for h in _CWA_HYPERSCALERS):
+            return False
+        return any(k in lead for k in _CWA_CONTRACTOR_KW)
+
+    def _is_construction_stormwater(c: dict) -> bool:
+        blob = (
+            c.get("cwa_section", "") + " " + c.get("violation_summary", "")
+        ).lower()
+        return any(k in blob for k in _CWA_CONSTRUCTION_KW)
+
+    return {
+        "total": total,
+        "contractor_permittee": sum(1 for c in dc if _is_contractor_led(c)),
+        "construction_stormwater": sum(
+            1 for c in dc if _is_construction_stormwater(c)
+        ),
+    }
+
+
+def render_cwa_datacenter_insights():
+    """Headline 'what this record tells data centers' panel.
+
+    Computed live from the dataset so the counts move with the cases, then
+    framed around the tracker's mission: the operational CWA exposure for a
+    data center lands on the *receiving* WWTP permit — which is exactly what
+    this project monitors via EPA ECHO DMR.
+    """
+    payload = load_cwa_investigations()
+    stats = _cwa_datacenter_insights(payload.get("cases", []))
+    total = stats["total"]
+    if not total:
+        return
+    with st.container(border=True):
+        st.markdown("#### What this record tells data centers")
+        st.markdown(
+            f"- **The permittee shield.** {stats['contractor_permittee']} of "
+            f"{total} direct data-center cases name a construction contractor "
+            "or subcontractor — not the hyperscaler — as the party on the "
+            "permit. Operators routinely sit one entity removed from the "
+            "permittee, which is why direct enforcement against them is thin."
+        )
+        st.markdown(
+            f"- **CWA risk is front-loaded into construction.** Construction "
+            "stormwater, sediment, and erosion under the §402 Construction "
+            f"General Permit is the most common touchpoint — it appears in "
+            f"{stats['construction_stormwater']} of {total} cases, far more "
+            "than operational cooling-water discharge."
+        )
+        st.markdown(
+            "- **The liability frontier is moving.** The 2026 Amazon Boardman "
+            "settlement ($20.5M, Oregon nitrate) is the first eight-figure "
+            "direct-hyperscaler water settlement — pushing exposure beyond "
+            "stormwater into groundwater and nutrient contamination."
+        )
+        st.markdown(
+            "- **Why this tracker watches the WWTP, not the data center.** "
+            "Cooling-water blowdown goes to the municipal sewer, so the "
+            "operational CWA exposure rides on the *receiving* treatment "
+            "plant's NPDES permit — the very permits this project tracks via "
+            "EPA ECHO. Watch the POTW's compliance status, not the data "
+            "center's near-empty stormwater permit."
+        )
+
+
 def render_cwa_tracker():
     """Render the Clean Water Act historic investigations panel.
 
@@ -1465,18 +1565,21 @@ def render_cwa_tracker():
         "to data center water use and cooling discharges."
     )
 
-    with st.expander(
-        "What is a Clean Water Act investigation? — statute, authority, "
-        "and why it's deployed"
-    ):
-        st.markdown(_cwa_statute_explainer_md())
-
     payload = load_cwa_investigations()
     cases = payload.get("cases", [])
     if not cases:
         note = payload.get("note") or "Dataset not found or empty."
         st.info(note)
         return
+
+    # Headline synthesis — the computed "so what" before the case list.
+    render_cwa_datacenter_insights()
+
+    with st.expander(
+        "What is a Clean Water Act investigation? — statute, authority, "
+        "and why it's deployed"
+    ):
+        st.markdown(_cwa_statute_explainer_md())
 
     # Filter controls — category multiselect + 2020+ toggle. Defaults show
     # everything so first-time visitors see the full dataset.

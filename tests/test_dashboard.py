@@ -30,6 +30,7 @@ from dashboard import (
     _legislation_status_summary,
     _cwa_summary,
     _cwa_year_end,
+    _cwa_datacenter_insights,
     _build_cwa_case_html,
     _cwa_statute_explainer_md,
     _build_bill_card_html,
@@ -709,6 +710,39 @@ class TestCWAInvestigations:
         assert "What the statute is" in md
         assert "What authority EPA and DOJ have" in md
         assert "Why investigations get deployed" in md
+
+    def test_xai_memphis_case_present(self):
+        # The xAI Colossus / Memphis greywater-plant case is the most prominent
+        # AI-data-center water story; it must be in the datacenter category and
+        # carry the aquifer-recycling framing.
+        cases = {c["case_id"]: c for c in self._cases()}
+        assert "xAI-Colossus-Memphis-TN-2026" in cases
+        c = cases["xAI-Colossus-Memphis-TN-2026"]
+        assert c["category"] == "datacenter"
+        # The water angle (greywater reuse / aquifer), not just the air-permit suit.
+        blob = (c["violation_summary"] + c["takeaway"]).lower()
+        assert "aquifer" in blob and "greywater" in blob
+
+    def test_datacenter_insights_shape_and_invariants(self):
+        stats = _cwa_datacenter_insights(self._cases())
+        # Keys the renderer depends on.
+        for key in ("total", "contractor_permittee", "construction_stormwater"):
+            assert key in stats, f"missing insight key {key}"
+        dc_count = sum(1 for c in self._cases() if c["category"] == "datacenter")
+        assert stats["total"] == dc_count
+        # Every sub-count is a sane fraction of the total.
+        for key in ("contractor_permittee", "construction_stormwater"):
+            assert 0 <= stats[key] <= stats["total"], key
+        # Both are real, non-trivial patterns in the current dataset: the
+        # permittee shield and construction-stormwater dominance.
+        assert stats["contractor_permittee"] >= 3
+        assert stats["construction_stormwater"] >= 3
+
+    def test_datacenter_insights_empty(self):
+        # Degrades cleanly when there are no datacenter cases.
+        stats = _cwa_datacenter_insights([{"category": "precedent"}])
+        assert stats["total"] == 0
+        assert stats["contractor_permittee"] == 0
 
 
 # --- Tests for Andy Masley reality-check comparisons ---
