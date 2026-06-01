@@ -481,9 +481,10 @@ From an external cross-repo security review (re-run periodically — see CLAUDE.
 `storage/csv_writer.py:_neutralize_formula` prefixes any string cell starting with `= + - @ \t \r` with `'`. 12 regression tests in `tests/test_csv_writer.py`.
 
 ### ✅ SEC-3: SHA-pin GitHub Actions + least-privilege permissions (DONE 2026-06-01)
-All six `uses:` across `ci.yml` + `pages.yml` pinned from moving `@vN` tags to full commit SHAs (checkout v4.3.1, setup-python v5.6.0, configure-pages v5.0.0, upload-pages-artifact v3.0.1, deploy-pages v4.0.5), each with a `# vX.Y.Z` comment. SHAs resolved + independently re-verified against `gh api` (the tag *and* the version-comment tag both point to the pinned SHA). Added explicit `permissions: contents: read` to `ci.yml` (was missing); `pages.yml` already least-privilege. **Follow-up (SEC-3b): keep pins fresh** — add Dependabot (`.github/dependabot.yml`, `package-ecosystem: github-actions`) so SHA pins get automated update PRs instead of silently aging.
+All six `uses:` across `ci.yml` + `pages.yml` pinned from moving `@vN` tags to full commit SHAs (checkout v4.3.1, setup-python v5.6.0, configure-pages v5.0.0, upload-pages-artifact v3.0.1, deploy-pages v4.0.5), each with a `# vX.Y.Z` comment. SHAs resolved + independently re-verified against `gh api` (the tag *and* the version-comment tag both point to the pinned SHA). Added explicit `permissions: contents: read` to `ci.yml` (was missing); `pages.yml` already least-privilege.
 
-> Sample prompt: Add `.github/dependabot.yml` with a `github-actions` ecosystem entry (weekly) so pinned action SHAs receive update PRs with changelogs; optionally add a `pinned-actions` lint (e.g. zizmor or a grep CI check) that fails if any `uses:` references a non-SHA ref.
+### ✅ SEC-3b: Dependabot to keep pins fresh (DONE 2026-06-01)
+`.github/dependabot.yml` watches both `github-actions` and `pip` ecosystems (weekly, grouped to ≤1 PR each), so the SHA-pinned actions *and* the `==`-pinned Python deps get review-able update PRs instead of silently aging — closing the staleness downside of pinning for both SEC-3 and SEC-5. **Optional further hardening:** a `pinned-actions` lint (e.g. `zizmor`, or a grep CI check) that fails if any `uses:` references a non-SHA ref.
 
 ### SEC-7: dependency vulnerability + license scanning in CI (MEDIUM, follow-up)
 Now that deps are pinned, add automated scanning so a pinned-but-vulnerable version is flagged. Wire `pip-audit` (CVE scan against the pinned set) into `.github/workflows/ci.yml`, failing on high-severity advisories.
