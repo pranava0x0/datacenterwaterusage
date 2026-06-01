@@ -1,8 +1,8 @@
 # Issues Log
 
-_Last updated: 2026-05-26_
+_Last updated: 2026-06-01_
 
-UAT round 1 (2026-05-26) covered desktop / tablet / mobile and found UAT-001..UAT-012. UAT round 2 (2026-05-26) focused on the Data tab and surfaced UAT-013 / UAT-014. UAT round 3 (2026-05-26) tested interactions and mobile depth, surfacing UAT-015 / UAT-016. All 16 issues are resolved.
+UAT round 1 (2026-05-26) covered desktop / tablet / mobile and found UAT-001..UAT-012. UAT round 2 (2026-05-26) focused on the Data tab and surfaced UAT-013 / UAT-014. UAT round 3 (2026-05-26) tested interactions and mobile depth, surfacing UAT-015 / UAT-016. UAT round 4 (2026-06-01) re-ran all three viewports via the Preview MCP and found **no new functional bugs** — Legislation (cards at every viewport), Data (hero + flow chart), and the three tabs all render cleanly with no horizontal scroll at 375 / 768 / 1280 px. One documentation drift (UAT-017) was corrected. All 17 issues are resolved.
 
 ---
 
@@ -13,6 +13,15 @@ _None at HEAD._ But see SEC-001 below — the leaked PII is still present in the
 ---
 
 ## Resolved Issues
+
+### [UAT-017] uat.md baseline stale — claimed desktop legislation renders a dataframe
+- **Severity**: low (documentation drift, not a user-facing bug)
+- **Page/Section**: `uat.md` baseline vs. `dashboard.py:render_legislation_tracker`
+- **Discovered**: 2026-06-01 (round 4)
+- **Resolved**: 2026-06-01
+- **Status**: resolved
+- **Description**: `uat.md` described the Legislation Tracker as a horizontal-scroll `st.dataframe` on desktop with card layout only on mobile/tablet. The code was since unified — `render_legislation_tracker` does `del is_mobile, is_tablet` and renders bordered HTML `<details>` cards at **every** viewport. A round-4 eval confirmed no `stDataFrame` element on the Legislation tab at 1280 px and no horizontal scroll at any width. Risk was a future UAT run "expecting" a dataframe and flagging a false regression.
+- **Fix**: Updated `uat.md` to describe the unified card layout, added the Plotly async-paint screenshot caveat (a freshly-switched Data tab can screenshot blank for one frame before Plotly draws — verify trace geometry via eval, not the first screenshot), and recorded that `.claude/launch.json` now exists so the Preview MCP can boot the dashboard for UAT.
 
 ### [SEC-001] Developer home-directory path leaked into committed dataset
 - **Severity**: medium (no credentials; mild PII — exposes macOS username + iCloud Drive layout)

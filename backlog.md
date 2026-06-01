@@ -423,6 +423,74 @@ PEC publishes a crowd-sourced existing + proposed VA data centers ArcGIS layer t
 
 ---
 
+## Performance & Infrastructure
+
+Added 2026-06-01 after a dashboard performance pass + cross-viewport UAT. The dashboard is a single ~1900-line Streamlit file that reruns top-to-bottom on every interaction; these items target redundant work on that hot path and the slow stlite/WASM cold start on GitHub Pages. Ordered high → low impact.
+
+### Perf-1: mtime-based cache invalidation instead of fixed `ttl=300` (HIGH, low effort)
+`load_data`, `load_legislation`, `load_company_water_claims`, `load_cwa_investigations` all use `@st.cache_data(ttl=300)`. The 300 s TTL forces a full CSV/JSON re-parse every 5 minutes even though these files change only when a scraper runs. During an active session that is pure waste, and on the WASM build re-parsing the reference JSON is measurably slow.
+
+**Sample prompt:**
+> Replace the fixed `ttl=300` on the four `load_*` cache_data functions in `dashboard.py` with file-signature-based invalidation: pass the file's `(path, st_mtime, st_size)` into the cached function as part of the cache key (or use `hash_funcs`) so the parse only re-runs when the file actually changes. Keep a long TTL as a safety net. Add a test that mutating the file busts the cache and an unchanged file is served from cache.
+
+### Perf-2: vectorize `_extract_flow_mgd` extraction in `load_data` (HIGH, low effort)
+`load_data` currently derives `flow_mgd` per row with a Python-level regex call (`_extract_flow_mgd`). At 63 rows it's invisible; once HB 496 / EPA ECHO data lands and the table grows to thousands of rows it becomes an O(n) Python loop on every cold load. Replace with a single vectorized `Series.str.extract` pass.
+
+**Sample prompt:**
+> Rewrite the flow-MGD derivation in `load_data` to use a vectorized `df["extracted_water_metric"].str.extract(r"...")` regex instead of `.apply(_extract_flow_mgd)`. Keep `_extract_flow_mgd` as the single-value helper (still used by tests), but build the column in one pass. Benchmark on a synthetic 10k-row frame and assert parity with the row-wise result.
+
+### Perf-3: memoize device type in `st.session_state` (MEDIUM, low effort)
+`get_device_type()` round-trips through the `streamlit-js-eval` component on cold start to read `window.parent.innerWidth`. That JS round-trip costs a render cycle and is the root of the documented cold-start title flicker (UAT-001). Once resolved, the viewport rarely changes within a session — cache the resolved `DeviceType` in `st.session_state` and only re-query on an explicit width change.
+
+**Sample prompt:**
+> In `utils/device.py`, after the first successful `streamlit-js-eval` width read, store the resolved width + `DeviceType` in `st.session_state`. On subsequent reruns return the cached value without re-issuing the JS expression, but keep listening for width changes so a rotate/resize still reclassifies. Verify the cold-start flicker is gone and tablet/mobile/desktop still classify correctly.
+
+### Perf-4: defer reference-JSON loads into their tab bodies (MEDIUM, low effort)
+The CWA tab calls `load_cwa_investigations()` (48 cases) and the Legislation tab eagerly builds 31 bill cards even when a visitor only ever looks at the Data tab. `st.tabs` renders all three tab bodies on every run. Move each tab's heavy `load_*` + card construction behind a cheap guard so only the active tab pays for its data.
+
+**Sample prompt:**
+> Profile which of the three `st.tabs` bodies dominate cold-start render. Defer `load_cwa_investigations` and the CWA case-card HTML construction so they only execute when the CWA tab is the active tab (e.g., track active tab in session_state or gate on a lightweight sentinel). Confirm via a DOM/eval check that switching tabs still works and first paint of the default Legislation tab drops a measurable number of components.
+
+### Perf-5: shrink the stlite/WASM data bundle for GitHub Pages cold start (MEDIUM)
+The public deploy is stlite/WASM with a slow cold start (noted in `uat.md`). The three reference JSON files ship verbatim. Minify them (strip whitespace, drop fields the dashboard never reads) into a build-time `*.min.json` so the WASM runtime downloads and parses less on first paint.
+
+**Sample prompt:**
+> Add a build step (extend the Pages workflow) that emits minified copies of the three `data/reference/*.json` files with only the fields the dashboard reads, and point the stlite build at the minified bundle. Measure cold-start time-to-interactive before/after on the deployed Pages URL.
+
+### Perf-6: split monolithic `dashboard.py` into modules (LOW, maintainability + WASM parse)
+`dashboard.py` is ~1900 lines; `render_seasonal_heatmap` alone is ~330 lines. Splitting into `dashboard/panels/*.py` + `dashboard/loaders.py` improves editor responsiveness, test isolation, and shaves WASM parse/compile time on the Pages build. Pure refactor — keep public function names so tests don't churn.
+
+**Sample prompt:**
+> Refactor `dashboard.py` into a package: `loaders.py` (the cached `load_*`), `panels/legislation.py`, `panels/cwa.py`, `panels/data.py`, `panels/shared.py`. Keep every currently-tested function importable from its old name (re-export) so `test_dashboard.py` passes unchanged. Run the full suite after each move.
+
+### Perf-7: UAT automation harness via Preview MCP + launch.json (LOW)
+A `.claude/launch.json` (added 2026-06-01) now lets the Preview MCP boot the dashboard and drive cross-viewport screenshots/DOM asserts. Codify the recurring UAT (the five critical flows in `uat.md`) as a repeatable checklist/script so each pass is consistent and regressions in the flow chart paint, device classification, and no-horizontal-scroll invariants are caught automatically.
+
+**Sample prompt:**
+> Write a small UAT runbook (or pytest-playwright script) that, for desktop/tablet/mobile, asserts: no horizontal scroll (`scrollWidth === innerWidth`), the Plotly flow chart draws ≥1 trace line and ≥1 point, no "new text" placeholder string is present, and the device-correct title renders. Wire it to the `.claude/launch.json` "dashboard" server.
+
+---
+
+## New Data Sources (added 2026-06-01)
+
+### Dominion Energy IRP + Virginia SCC large-load filings (MEDIUM)
+Distinct from the PJM large-load scraper already in the External Tracker Survey: Dominion's Integrated Resource Plan and its data-center interconnection-queue / large-load tariff filings at the Virginia State Corporation Commission (SCC) carry VA-specific data center load forecasts and named interconnection requests that PJM's RTO-level report aggregates away. Load forecasts are a strong proxy for cooling-water demand when paired with a WUE assumption.
+
+**Data status:** Not verified — confirm the SCC docket search endpoint and whether large-load filings are machine-readable (likely PDF) before building.
+
+**Sample prompt:**
+> Investigate the Virginia SCC docket search (scc.virginia.gov) for Dominion Energy IRP and data-center large-load / GT-class tariff filings. If a stable docket/document endpoint exists, build `scrapers/virginia/scc_dominion_irp.py` following BaseScraper: pull the filing PDFs, extract data-center MW load forecasts by year, and store as context records. Cross-reference disclosed MW with a published WUE to estimate indirect cooling-water demand.
+
+### EPA ECHO receiving-WWTP auto-discovery (MEDIUM)
+`config.py` hard-codes 8 `epa_echo_target_permits` (the WWTPs that receive data-center cooling-water blowdown). New data center clusters discharge to plants not in that list. Use the EPA ECHO/FRS geospatial APIs to auto-discover which POTW each known NAICS 518210 facility (from `epa_echo_naics`) is in the service area of, and feed those permits back into the ECHO DMR target list — closing the loop between facility discovery and flow measurement.
+
+**Data status:** Confirmed APIs exist (ECHO + FRS, both already used in the codebase). The join (facility → receiving POTW) is the unproven piece — service-area boundaries may need a sewershed/UTILITY layer.
+
+**Sample prompt:**
+> Build a step that takes the facilities discovered by `epa_echo_naics`, finds the nearest/serving POTW NPDES permit (via ECHO geospatial search or a sewershed layer), and appends new receiving-plant permits to `epa_echo_target_permits` automatically (with a confidence flag). Surface newly-discovered receiving plants in the Transparency Scorecard. Add tests with a known facility→POTW pair (e.g., a Loudoun DC → Broad Run WRF VA0091383).
+
+---
+
 ## Reference: Data Source Landscape
 
 ### Key findings from research (Feb 2026)
