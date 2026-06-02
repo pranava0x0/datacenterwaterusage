@@ -7,7 +7,7 @@ _Last run: 2026-06-02_
 - **Stack**: Streamlit dashboard (Python), `streamlit>=1.33`, plotly, pandas
 - **Dev server**: `python3 -m streamlit run dashboard.py --server.port 8501 --server.headless true --browser.gatherUsageStats false`. As of 2026-06-01 a `.claude/launch.json` ("dashboard" config, port 8501) exists, so the Preview MCP can boot/reuse the server directly — free port 8501 of any Bash-launched instance first, since the launch.json pins the port.
 - **Entry point**: `dashboard.py` (~1370 LOC, single-file Streamlit app)
-- **Live URL**: <https://pranava0x0.github.io/datacenterwaterusage/> (stlite/WASM, slow cold start)
+- **Live URL**: <https://pranava0x0.github.io/datacenterwaterusage/> (pre-rendered **static HTML** via `build_site.py` since June 2026 — ~35 ms first paint; the old stlite/WASM ~25–40 s cold start is gone). To preview the static build locally: `python build_site.py` then serve `pages/` (launch.json config `static-site`, port 8502).
 - **Key tabs / sections**:
   - **Legislation** (homepage / default tab)
     - Eager: Data Center Water Legislation Tracker (`st.dataframe`, 14 bills)

@@ -17,6 +17,18 @@
         "false"
       ],
       "port": 8501
+    },
+    {
+      "name": "static-site",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8502",
+        "--directory",
+        "pages"
+      ],
+      "port": 8502
     }
   ]
 }
