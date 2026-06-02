@@ -224,6 +224,13 @@ Automate periodic re-scraping.
 ### Additional States (Option E)
 Expand beyond Virginia and Ohio to other data center hub states. Texas, Oregon, and Georgia are the next biggest data center markets. Lower priority since the VA/OH pipeline isn't fully exploited yet, but this is the path to a national-scale dataset.
 
+### CWA "watch list" — pre-enforcement data-center water permits (June 2026 research surfaced)
+The June 2026 research pass found data-center water matters that are real and document-numbered but NOT yet enforcement actions, so they were deliberately kept out of `cwa_investigations.json` (which is an enforcement/legal tracker). Re-check these periodically; promote to a case if a violation, NOV, or suit attaches:
+- **Oracle/OpenAI "Stargate" — Saline Township, Washtenaw County, MI.** Michigan EGLE wetlands permit WRP047686 (~9.12 ac wetland + temporary Saline River tributary impact) with a named cooling-water outfall to the Saline River (discharge may contain glycol); EGLE issued an Oct 17, 2025 pre-permit construction "waiver." Air permit issued Jan 13, 2026; wetlands permit Jan 16, 2026. Active suits are land-use/Open-Meetings, not water-pollution. (Sources: planetdetroit.org Feb 2026; fortune.com May 2026.)
+
+**Sample prompt:**
+> Re-verify the Saline Township MI Oracle/OpenAI data center water status: has Michigan EGLE issued any NOV or water-quality enforcement tied to permit WRP047686 or the Saline River glycol outfall since Jan 2026? If yes, add it to `data/reference/cwa_investigations.json` (category `datacenter` if EGLE cites a discharge violation, else `adjacent`) with verified sources and a regression test pinning the case_id.
+
 **Target states and agencies:**
 - Texas: TCEQ permits, TCEQ ArcGIS data, PUC water availability studies
 - Oregon: DEQ permits, Portland Water Bureau data

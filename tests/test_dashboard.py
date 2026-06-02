@@ -843,6 +843,42 @@ class TestCWAInvestigations:
         blob = (c["violation_summary"] + c["takeaway"]).lower()
         assert "aquifer" in blob and "greywater" in blob
 
+    def test_june_2026_research_additions_present(self):
+        # Regression guard for the 2026-06-02 research pass: eight verified
+        # cases were added (1 datacenter, 4 adjacent, 2 precedent, 1 industrial).
+        # Pin the anchor case_ids and their categories so a future reshuffle
+        # can't silently drop them.
+        cases = {c["case_id"]: c for c in self._cases()}
+        expected = {
+            "Amazon-NewCarlisle-IN-wetlands-2025": "datacenter",
+            "Atlas-ProjectSail-Coweta-GA-2026": "adjacent",
+            "Google-Berkeley-SC-Middendorf-aquifer-2019": "adjacent",
+            "Rowan-ProjectCinco-Medina-TX-2025": "adjacent",
+            "QTS-Fayette-GA-unbilled-water-2026": "adjacent",
+            "PortOfTacoma-v-PugetSoundkeeper-9thCir-2024": "precedent",
+            "CERF-v-Naples-9thCir-2024": "precedent",
+            "FortSmith-AR-sewer-CD-mod-2026": "industrial",
+        }
+        for cid, cat in expected.items():
+            assert cid in cases, f"missing newly-added case {cid}"
+            assert cases[cid]["category"] == cat, cid
+
+    def test_adjacent_cases_disclaim_cwa_enforcement(self):
+        # The 'adjacent' category exists precisely because the binding action
+        # sits OUTSIDE the CWA. Every adjacent case must say so in its
+        # cwa_section so the framing can't drift into implying CWA enforcement.
+        adjacent = [c for c in self._cases() if c["category"] == "adjacent"]
+        assert len(adjacent) >= 5, "expected the expanded adjacent set"
+        for c in adjacent:
+            section = c["cwa_section"].lower()
+            assert (
+                "no cwa" in section
+                or "not" in section
+                or "outside" in section
+                or "paused" in section
+                or "clean air act" in section
+            ), f"{c['case_id']} adjacent case should disclaim CWA enforcement"
+
     def test_datacenter_insights_shape_and_invariants(self):
         stats = _cwa_datacenter_insights(self._cases())
         # Keys the renderer depends on.

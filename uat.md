@@ -1,7 +1,7 @@
 # UAT Baseline — Data Center Water Use Tracker
 
 _Created: 2026-05-26_
-_Last run: 2026-06-01_
+_Last run: 2026-06-02_
 
 ## Project Info
 - **Stack**: Streamlit dashboard (Python), `streamlit>=1.33`, plotly, pandas
@@ -13,6 +13,8 @@ _Last run: 2026-06-01_
     - Eager: Data Center Water Legislation Tracker (`st.dataframe`, 14 bills)
     - Lazy toggle: Policy & Disclosure Timeline (10 events)
     - Lazy toggle: Company Water Claims (29 verbatim quotes, 13 companies)
+  - **CWA Cases**
+    - Eager: "What this record tells data centers" insights panel (computed: permittee-shield + construction-stormwater counts), statute explainer expander, category filter + "2020 onward only" toggle, then bordered case cards (57 cases as of 2026-06-02: 10 datacenter / 5 adjacent / 31 industrial / 11 precedent)
   - **Data**
     - Eager: data freshness, inline filter popover, hero metrics, flow chart (Plotly), Local Context cards
     - Lazy toggle: Records by Source chart, Seasonal Heatmap, Transparency Scorecard, Per-Query Explainer, Records table
@@ -22,7 +24,9 @@ _Last run: 2026-06-01_
 2. **Toggle Timeline + Claims** → both panels render below the tracker.
 3. **Switch to Data tab** → hero metrics + flow chart visible immediately; Local Context cards render eagerly.
 4. **Toggle a Data tab lazy panel** (e.g., Transparency Scorecard) → content materializes; subsequent reruns (filter change) keep it visible.
-5. **Resize to mobile/tablet** → reload; layout adapts without horizontal scroll.
+5. **Switch to CWA Cases tab** → insights panel shows "N of M direct data-center cases…" counts matching `_cwa_datacenter_insights`; summary line shows the per-category breakdown; all cases render as bordered cards.
+6. **Toggle "2020 onward only" on the CWA tab** → count drops to recent cases; per-category breakdown updates (pre-2020 cases like Smithfield 1997 and Google/Berkeley SC 2016-2019 drop out). NOTE: toggling a widget reruns the app and resets the active tab to Legislation — re-click the CWA tab to see the filtered result (Streamlit tab-state quirk, not a bug).
+7. **Resize to mobile/tablet** → reload; layout adapts without horizontal scroll.
 
 ## Sections & Last Tested
 | Section | Last Tested | Notes |
@@ -30,9 +34,18 @@ _Last run: 2026-06-01_
 | Legislation Tracker | 2026-05-26 | High-priority cleanup needed — columns / mobile cards (UAT-002..005, UAT-007) |
 | Policy & Disclosure Timeline | 2026-05-26 | Renders cleanly when toggled on |
 | Company Water Claims | 2026-05-26 | Cards bleed together (UAT-008..011) |
-| Data tab Hero + Flow Chart | 2026-05-26 | Renders cleanly at desktop; verify mobile |
+| CWA Cases tab | 2026-06-02 | Round 5: 57 cases render; insights panel counts (5/10 permittee-shield, 7/10 construction-stormwater) match the pure helper; "2020 onward only" filters to 49/57 with correct per-category math; clean at desktop (680px) and mobile (375px), no horizontal scroll; no stException |
+| Data tab Hero + Flow Chart | 2026-06-02 | Hero metrics + Plotly render on tab-switch, no exception (re-confirmed round 5) |
 | Local Context cards | 2026-05-26 | Renders well at all viewports |
 | Lazy toggles (general) | 2026-05-26 | Working as designed — eval confirms zero-render-until-toggled |
+
+## Performance (data layer, round 5 — 2026-06-02)
+Measured by calling the dashboard helpers directly (outside the Streamlit runtime):
+- `import dashboard`: ~1.3 s (one-time module import, Plotly/pandas dominated)
+- `load_cwa_investigations()` cold: ~87 ms (file read + JSON parse, 57 cases / 135 KB)
+- `load_cwa_investigations()` cached: ~0.35 ms (signature-based `@st.cache_data` working)
+- Render all 57 CWA cards via `_build_cwa_case_html`: ~1.9 ms total (~0.03 ms/card)
+No perf regression from the 49 → 57 case growth; rendering is negligible versus first-paint/WASM cold start.
 
 ## Known Stable Areas
 - Lazy-loading machinery (`st.toggle` gating) — confirmed via DOM diff before/after toggle.

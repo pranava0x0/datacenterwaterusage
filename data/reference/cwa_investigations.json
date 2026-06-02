@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-06-01",
-  "note": "Clean Water Act enforcement actions and landmark precedent cases relevant to data center water use and cooling discharge. Four categories: 'datacenter' = direct CWA actions against named hyperscale operators or their contractors (including state nuisance and groundwater-contamination civil suits that establish direct water liability, e.g. the Amazon Boardman nitrate settlement); 'adjacent' = water-relevant actions at data-center sites where the binding or active enforcement sits OUTSIDE the CWA — a Clean Air Act suit, a local well-permitting action, or a permitted-but-paused voluntary water commitment — included because the water story matters even though no CWA action attaches (e.g. the xAI Colossus / Memphis greywater plant); 'industrial' = enforcement against large industrial water users that are the closest practical analogs (cooling water, pretreatment, sewer-system consent decrees, PFAS, CAFO discharges); 'precedent' = Supreme Court and federal appellate rulings that set the legal scope of the CWA, including Loper Bright (2024) ending Chevron deference and Lewis v. US (5th Cir. 2023) applying Sackett. Comprehensive coverage for 2020-present, with foundational earlier cases retained as benchmarks (Smithfield 1997, Tyson 2003, Brayton Point 2003-2007). Direct hyperscaler enforcement remains thin because operators usually sit behind contractor-permittee structures and discharge to municipal sewers — the industrial cases show what enforcement looks like once that shield slips. The Amazon Boardman 2026 $20.5M nitrate settlement is the first eight-figure direct-hyperscaler water settlement.",
+  "last_updated": "2026-06-02",
+  "note": "Clean Water Act enforcement actions and landmark precedent cases relevant to data center water use and cooling discharge. Four categories: 'datacenter' = direct CWA actions against named hyperscale operators or their contractors (including state nuisance and groundwater-contamination civil suits that establish direct water liability, e.g. the Amazon Boardman nitrate settlement); 'adjacent' = water-relevant actions at data-center sites where the binding or active enforcement sits OUTSIDE the CWA — a Clean Air Act suit, a local well-permitting action, or a permitted-but-paused voluntary water commitment — included because the water story matters even though no CWA action attaches (e.g. the xAI Colossus / Memphis greywater plant, plus state groundwater-withdrawal and zoning/recharge-area fights at Google's Berkeley County SC, Rowan's Medina County TX, and Atlas's Coweta County GA sites); 'industrial' = enforcement against large industrial water users that are the closest practical analogs (cooling water, pretreatment, sewer-system consent decrees, PFAS, CAFO discharges); 'precedent' = Supreme Court and federal appellate rulings that set the legal scope of the CWA, including Loper Bright (2024) ending Chevron deference and Lewis v. US (5th Cir. 2023) applying Sackett. Comprehensive coverage for 2020-present, with foundational earlier cases retained as benchmarks (Smithfield 1997, Tyson 2003, Brayton Point 2003-2007). Direct hyperscaler enforcement remains thin because operators usually sit behind contractor-permittee structures and discharge to municipal sewers — the industrial cases show what enforcement looks like once that shield slips. The Amazon Boardman 2026 $20.5M nitrate settlement is the first eight-figure direct-hyperscaler water settlement.",
   "cases": [
     {
       "case_id": "Google-Stillwater-OK-stormwater-2025",
@@ -1342,6 +1342,217 @@
           "title": "Illegal Pollution from Data Center Power Plants Shouldn't Harm Our Communities. We're Suing xAI. — Earthjustice",
           "url": "https://earthjustice.org/case/xai-illegal-gas-power-plant-data-center-colossus",
           "type": "advocacy / litigation"
+        }
+      ]
+    },
+    {
+      "case_id": "Amazon-NewCarlisle-IN-wetlands-2025",
+      "category": "datacenter",
+      "respondent": "Amazon Web Services / Amazon Data Services Inc. (~$11B New Carlisle data center campus, St. Joseph County, Indiana) and its general contractor Walbridge — IDEM's cease-work letter named both.",
+      "year": "2024-2025",
+      "cwa_section": "CWA Section 404 (dredge-and-fill of jurisdictional wetlands) and the companion Section 401 Water Quality Certification, administered jointly by the Indiana Department of Environmental Management (IDEM) and the U.S. Army Corps of Engineers under Indiana's water-pollution-control statutes.",
+      "violation_summary": "Walbridge, the general contractor building Amazon's New Carlisle campus, impacted just under one acre of emergent wetland north of the project area without authorization in late summer 2024; Amazon self-reported to IDEM in late May 2025. On August 13, 2025 IDEM instructed Amazon and Walbridge to 'cease all construction activities in waters of the state until they obtain the necessary authorization.' Amazon's pending Section 401 application (dated January 15, 2025) had proposed impacts to more than nine acres of wetlands.",
+      "outcome": "Amazon withdrew its original Section 401 application on August 13, 2025; IDEM and the Army Corps gave it roughly 30 days to resubmit with additional mitigation accounting for the unauthorized impact, or risk denial. Wetland work was halted while other site work continued. No monetary penalty was reported in the coverage.",
+      "takeaway": "A rare §404/§401 wetlands enforcement action that named the hyperscaler directly alongside its contractor — a 'permittee shield in reverse,' since Amazon held the §401 application and self-reported even though Walbridge did the physical fill. Reinforces that the construction phase (wetland fill and stormwater), not operational cooling discharge, is where data-center CWA exposure is materializing, and pairs with the Microsoft/Walbridge Boydton entry as a same-contractor read-across.",
+      "sources": [
+        {
+          "title": "Amazon data center in New Carlisle cited by IDEM for impacting wetlands without authorization",
+          "url": "https://www.abc57.com/news/new-carlisle-amazon-data-center-cited-by-idem-for-impacting-wetlands-without-authorization",
+          "type": "news"
+        },
+        {
+          "title": "Amazon looking to resubmit IDEM application after contractor's unauthorized wetland impact",
+          "url": "https://www.wvpe.org/wvpe-news/2025-08-14/amazon-looking-to-resubmit-idem-application-after-contractors-unauthorized-wetland-impact",
+          "type": "news"
+        },
+        {
+          "title": "IDEM sends letter, halts some work over Amazon's data center construction impact on wetlands",
+          "url": "https://wsbt.com/news/local/wetland-impact-idem-sends-letter-halts-some-work-over-amazons-data-center-construction-impact-indiana-department-environmental-management-application-process-unauthorized-impact-st-joseph-county",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Atlas-ProjectSail-Coweta-GA-2026",
+      "category": "adjacent",
+      "respondent": "Atlas Development, LLC ('Project Sail', ~830-acre, ~$17B hyperscale campus, Coweta County, Georgia; end-user operator undisclosed); Coweta County government; ~17 resident petitioners.",
+      "year": "2026",
+      "cwa_section": "No CWA action — a state-court rezoning challenge (declaratory-judgment / certiorari appeal) in Coweta County Superior Court under Georgia land-use law. Plaintiffs invoke the site's status as a Georgia DNR-designated 'Most Significant Groundwater Recharge Area' in the Middle Chattahoochee River basin and allege undisclosed wetlands.",
+      "violation_summary": "On May 7, 2026, seventeen residents filed suit asking a judge to void the county's rezoning and permanently block the campus, arguing the approval understated water and power needs, omitted wetlands, and ignored that the parcel sits atop a designated major groundwater-recharge area. A peer-reviewed study cited in the coverage projects a ~$118M decline in residential property values across ~1,215 parcels within 1.25 miles of the site.",
+      "outcome": "Pending in Coweta County Superior Court (appeal filed May 7, 2026, within 30 days of the rezoning decision).",
+      "takeaway": "A model 'adjacent' case where the only live legal lever over a data center's water risk is local zoning plus a state groundwater-recharge-area designation — the CWA offers no handle on siting a campus over a drinking-water aquifer, so residents must litigate the rezoning itself to reach the water question.",
+      "sources": [
+        {
+          "title": "Coweta County residents file appeal to stop massive data center on protected rural land",
+          "url": "https://www.cbsnews.com/atlanta/news/coweta-county-residents-file-appeal-to-stop-massive-data-center-on-protected-rural-land/",
+          "type": "news"
+        },
+        {
+          "title": "Residents sue county government, developer over $17B data center construction",
+          "url": "https://www.wsbtv.com/news/local/residents-sue-county-government-developer-over-17b-data-center-construction/FJP7PCHLCNCYBGQ6HGGQJWABSE/",
+          "type": "news"
+        },
+        {
+          "title": "Residents sue over $17 billion Georgia data center slated for major groundwater recharge area",
+          "url": "https://www.thecooldown.com/green-business/data-center-lawsuit-coweta-county-residents/",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Google-Berkeley-SC-Middendorf-aquifer-2019",
+      "category": "adjacent",
+      "respondent": "Google (Berkeley County data-center campus near Moncks Corner, South Carolina); South Carolina DHEC; Southern Environmental Law Center / Coastal Conservation League.",
+      "year": "2016-2019",
+      "cwa_section": "No CWA action — a state groundwater-withdrawal permit under SC DHEC plus a negotiated settlement with SELC/CCL governing the ~83-million-year-old Middendorf Aquifer. Groundwater allocation is state law, not federal CWA discharge regulation.",
+      "violation_summary": "Google sought to roughly triple its permitted withdrawal to about 1.5 million gallons per day (~547 million gallons/year) from the Middendorf Aquifer to cool an expanded server farm, even as DHEC was separately asking the town of Mount Pleasant to cut its aquifer use. After public opposition, the December 16, 2019 settlement restricts Google to using groundwater only 'as a last resort when all other water supplies are exhausted,' requires it to develop alternative supplies (surface water from Charleston Water System), and mandates public quarterly use reporting instead of the annual reporting otherwise required by law.",
+      "outcome": "Settlement in force since December 2019; Google was steered toward surface water and capped its routine groundwater draw. Subsequent withdrawal upticks have drawn renewed local scrutiny over aquifer depletion.",
+      "takeaway": "A flagship example of a negotiated, voluntary-leaning groundwater commitment governed entirely by a state permit and a private settlement — no CWA discharge permit ever bounded the withdrawal — showing how data-center water limits in the Southeast rest on state allocation law and advocacy settlements rather than federal enforcement.",
+      "sources": [
+        {
+          "title": "Groundwater Withdrawal: Google and Southern Environmental Law Center Enter into Agreement Addressing South Carolina Aquifer",
+          "url": "https://www.jdsupra.com/legalnews/groundwater-withdrawal-google-and-28877/",
+          "type": "legal analysis"
+        },
+        {
+          "title": "Google agrees to limit groundwater use from S.C. aquifer",
+          "url": "https://www.selc.org/news/google-agrees-to-limit-groundwater-use-from-s-c-aquifer/",
+          "type": "advocacy/legal"
+        },
+        {
+          "title": "Google Groundwater Permit (project page)",
+          "url": "https://coastalconservationleague.org/projects/google-groundwater-permit/",
+          "type": "advocacy"
+        }
+      ]
+    },
+    {
+      "case_id": "Rowan-ProjectCinco-Medina-TX-2025",
+      "category": "adjacent",
+      "respondent": "Rowan Digital Infrastructure ('Project Cinco', 440-acre data-center campus, Medina County, Texas; end-user undisclosed); Edwards Aquifer Authority (EAA); local suppliers including Yancey Water Supply.",
+      "year": "2025",
+      "cwa_section": "No CWA action — Texas groundwater law: the Edwards Aquifer Authority's statutory pumping cap layered over Texas's common-law 'Rule of Capture,' plus a voluntary water-conservation arrangement. No NPDES discharge permit is involved.",
+      "violation_summary": "A 440-acre data-center campus proposed to draw on the heavily stressed Edwards Aquifer during exceptional drought. Rather than a binding permit denial, the response has been negotiated and voluntary: a local water supplier demanded collaborative design and Rowan agreed to fund aquifer-conservation measures (helping shift farmers off flood irrigation), which the EAA framed as 'a reallocation of the existing water rights to these new purposes.' Multiple data centers are reportedly in development in the county.",
+      "outcome": "No permit denial; voluntary conservation investment and water-supply negotiation ongoing as of late 2025.",
+      "takeaway": "Captures the Texas pattern where the Rule of Capture and a state aquifer authority — not the CWA — govern a data center's water, and mitigation takes the form of voluntary offsets rather than enforceable discharge or withdrawal limits, leaving the public little regulatory leverage over consumption.",
+      "sources": [
+        {
+          "title": "The impact of billion-dollar data centers in water-stressed Medina County",
+          "url": "https://www.ksat.com/news/local/2025/10/03/the-impact-of-billion-dollar-data-centers-in-water-stressed-medina-county/",
+          "type": "news"
+        },
+        {
+          "title": "How One Texas County Struck a Deal With Its Data Centers",
+          "url": "https://www.texasmonthly.com/news-politics/data-center-water-shortage-medina-county/",
+          "type": "news"
+        },
+        {
+          "title": "Rowan Digital to invest in water conservation program in Medina County, Texas",
+          "url": "https://www.datacenterdynamics.com/en/news/rowan-digital-to-invest-in-water-conservation-program-in-medina-county-texas/",
+          "type": "trade press"
+        }
+      ]
+    },
+    {
+      "case_id": "QTS-Fayette-GA-unbilled-water-2026",
+      "category": "adjacent",
+      "respondent": "Quality Technology Services (QTS Realty Trust) data-center construction site, Fayette County, Georgia; Fayette County Water System.",
+      "year": "2025-2026",
+      "cwa_section": "No CWA action — a county water-utility metering and billing dispute. One construction meter went un-captured during the county's switch to Advanced Metering Infrastructure (AMI); the county explicitly declined to fine QTS, characterizing it as a missed read, not unauthorized use.",
+      "violation_summary": "Roughly 13–15 million gallons of water used at the QTS site went unbilled over about six months while nearby Annelise Park residents reported low pressure during a Georgia drought. The county issued an ~$147,000 retroactive bill (a single six-month meter read accounting for ~$100,000) after discovering the meter was not being read electronically as assumed. County officials reported finding no evidence of widespread pressure problems after installing monitoring equipment.",
+      "outcome": "Resolved on billing — QTS paid the retroactive charges; no fine and no environmental enforcement. The county now meets regularly with QTS to monitor projected demand through the multi-year build.",
+      "takeaway": "Shows data-center water accountability failing at the municipal-metering layer: millions of gallons can vanish from billing with no environmental statute, CWA permit, or penalty ever in play — a transparency gap distinct from pollution enforcement but central to the project's mission of tracking real data-center water use.",
+      "sources": [
+        {
+          "title": "Behind Fayette's QTS Water Controversy: A Missed Meter, 8,000 Workers and a Massive Construction Project",
+          "url": "https://thecitizen.com/2026/05/11/behind-fayettes-qts-water-controversy-a-missed-meter-8000-workers-and-a-massive-construction-project/",
+          "type": "news"
+        },
+        {
+          "title": "A data center used 29 million gallons of water without a bill, while residents complained about low water pressure",
+          "url": "https://www.techspot.com/news/112356-data-center-used-29-million-gallons-water-without/",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "PortOfTacoma-v-PugetSoundkeeper-9thCir-2024",
+      "category": "precedent",
+      "respondent": "Puget Soundkeeper Alliance v. Port of Tacoma, No. 21-35881 (9th Cir. 2024); cert. denied sub nom. Port of Tacoma v. Puget Soundkeeper Alliance, No. 24-350 (U.S. June 30, 2025).",
+      "year": "2024-2025",
+      "cwa_section": "CWA Section 505 citizen-suit scope and its interaction with the permit shield — whether citizens may enforce, in federal court, state-law NPDES permit conditions that are broader or stricter than the federal CWA floor.",
+      "violation_summary": "The Ninth Circuit held that CWA citizen suits can enforce the entirety of a state-issued NPDES permit, including conditions exceeding federal minimums (here, Washington's Industrial Stormwater General Permit). The U.S. Solicitor General filed an amicus brief urging the Supreme Court to grant review and reverse, arguing the ruling 'contravenes the CWA's text, structure, and context.'",
+      "outcome": "The Supreme Court denied certiorari on June 30, 2025, leaving the Ninth Circuit ruling intact. The Fourth and Eleventh Circuits align with it; the Second Circuit disagrees, so the circuit split — and non-uniform citizen-suit exposure nationally — persists.",
+      "takeaway": "Confirms environmental groups can sue in federal court to enforce state NPDES permit terms stricter than federal law — directly raising citizen-suit exposure for the receiving WWTPs whose state-issued permits this pipeline already tracks, and for any facility operating under a state discharge permit.",
+      "sources": [
+        {
+          "title": "Supreme Court Declines to Hear Cases Seeking to Narrow Citizen Suit Enforcement, Leaving Doors Wide Open",
+          "url": "https://www.crowell.com/en/insights/client-alerts/supreme-court-declines-to-hear-cases-seeking-to-narrow-citizen-suit-enforcement-in-federal-environmental-case-leaving-doors-wide-open",
+          "type": "law firm analysis"
+        },
+        {
+          "title": "Clean Water Act Citizen Suits in the Spotlight: Solicitor General Calls for Supreme Court Review",
+          "url": "https://www.bdlaw.com/publications/clean-water-act-citizen-suits-in-the-spotlight-solicitor-general-calls-for-supreme-court-review/",
+          "type": "law firm analysis"
+        },
+        {
+          "title": "Supreme Court's Cert Denials Pave Way for Surge in Environmental Citizen Suits",
+          "url": "https://www.americanbar.org/groups/business_law/resources/business-law-today/2025-august/supreme-courts-cert-denials-pave-way-surge-environmental-citizen-suits/",
+          "type": "bar association article"
+        }
+      ]
+    },
+    {
+      "case_id": "CERF-v-Naples-9thCir-2024",
+      "category": "precedent",
+      "respondent": "Coastal Environmental Rights Foundation v. Naples Restaurant Group, LLC, No. 23-55469 (9th Cir.); opinion filed Sept. 18, 2024, amended Nov. 5, 2025.",
+      "year": "2024-2025",
+      "cwa_section": "CWA Section 505 citizen-suit mootness and the survival of civil-penalty claims — whether a penalty claim keeps a citizen suit alive after the discharger comes into permit compliance.",
+      "violation_summary": "A nonprofit sued over unpermitted Fourth-of-July fireworks discharges into Alamitos Bay (Long Beach, CA). After the defendant obtained an NPDES permit authorizing the discharge, the Ninth Circuit held the suit constitutionally moot — including the civil-penalty claim — because it was 'absolutely clear that the allegedly wrongful behavior could not reasonably be expected to recur,' so penalties lost their deterrent function (applying Friends of the Earth v. Laidlaw).",
+      "outcome": "Suit dismissed as moot. The Ninth Circuit aligned with the Eighth Circuit; the Second, Third, Fourth, Seventh, and Eleventh Circuits hold that civil-penalty claims survive mootness — deepening the circuit split.",
+      "takeaway": "Narrows when CWA citizen suits can proceed: once a discharger obtains a permit or otherwise cures a violation, the Ninth Circuit treats penalty-only claims as moot — a permit-shield-style defense a data center or its receiving WWTP could invoke after coming into compliance, blunting citizen-suit deterrence.",
+      "sources": [
+        {
+          "title": "Coastal Environmental Rights Foundation v. Naples Restaurant Group, LLC — opinion (9th Cir.)",
+          "url": "https://cdn.ca9.uscourts.gov/datastore/opinions/2025/11/05/23-55469.pdf",
+          "type": "court opinion"
+        },
+        {
+          "title": "Coastal Environmental Rights Foundation v. Naples Restaurant Group, LLC (9th Cir. 2024)",
+          "url": "https://law.justia.com/cases/federal/appellate-courts/ca9/23-55469/23-55469-2024-09-18.html",
+          "type": "court opinion (Justia)"
+        },
+        {
+          "title": "Ninth Circuit Finds Clean Water Act Suit Seeking Only Civil Penalties Becomes Moot Once Wrongful Conduct Ceased",
+          "url": "https://www.mgkflitigationblog.com/ninth-circuit--clean-water-act-suit-civil-penalties-moot",
+          "type": "litigation blog analysis"
+        }
+      ]
+    },
+    {
+      "case_id": "FortSmith-AR-sewer-CD-mod-2026",
+      "category": "industrial",
+      "respondent": "City of Fort Smith, Arkansas — United States and State of Arkansas v. City of Fort Smith, No. 2:14-cv-02266-PKH (W.D. Ark.).",
+      "year": "2015-2026",
+      "cwa_section": "CWA Section 301(a) prohibition on unpermitted discharges plus NPDES operation-and-maintenance failures — chronic sanitary sewer overflows (SSOs) of untreated sewage from the city's collection system.",
+      "violation_summary": "The United States and Arkansas sued Fort Smith on January 2, 2015 over illegal SSO discharges in violation of CWA §301(a); the resulting consent decree required a multi-decade, multi-hundred-million-dollar rehabilitation of the sewer system. On May 19, 2026 DOJ lodged a proposed modification (Federal Register notice 2026-10252, published May 22, 2026) extending the decree term by 11.5 years to a total of 23.5 years (to 2038) and revising interim milestones, while requiring the city to ensure adequate funding for the work.",
+      "outcome": "Long-running federal-state sewer consent decree, actively being modified in 2026 with a 30-day public-comment period; the rehabilitation obligation and funding requirements remain in force.",
+      "takeaway": "Shows how a receiving municipal sewer system bears decades-long, federal-court-supervised CWA liability for overflows — exactly the public sewer infrastructure that data-center cooling and process water is discharged into, making the host POTW's NPDES/SSO exposure the operator's indirect exposure.",
+      "sources": [
+        {
+          "title": "Notice of Lodging of Proposed Modification to Consent Decree Under the Clean Water Act",
+          "url": "https://www.federalregister.gov/documents/2026/05/22/2026-10252/notice-of-lodging-of-proposed-modification-to-consent-decree-under-the-clean-water-act",
+          "type": "Federal Register notice"
+        },
+        {
+          "title": "City of Fort Smith, Arkansas Settlement",
+          "url": "https://www.epa.gov/enforcement/city-fort-smith-arkansas-settlement",
+          "type": "EPA case page"
+        },
+        {
+          "title": "Fort Smith board encouraged to approve modified federal consent decree",
+          "url": "https://talkbusiness.net/2026/02/fort-smith-board-encouraged-to-approve-modified-federal-consent-decree/",
+          "type": "news"
         }
       ]
     }
