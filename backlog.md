@@ -8,6 +8,10 @@ Last reviewed: 2026-05-28 (External Tracker Survey added — see section below t
 
 ## Completed (March 2026)
 
+### ✅ CWA Enforcement Reference + Data-Center Read-Across (June 2026)
+**Status**: Added — `docs/cwa-enforcement-and-data-centers.md`. Primary-sourced (EPA/DOJ/CRS) catalog of energy/utility Clean Water Act enforcement (2015→present) mapped to data-center water/discharge exposure (§402 NPDES cooling-water blowdown, §311 on-site fuel storage, §404/§401 construction, *Sackett* jurisdiction). No data-center CWA case exists yet — the read-across is forward-looking. (Relocated from the FERC Audit Explorer project, where it was filed by mistake.)
+**Follow-ups**: (1) monitor EPA ECHO by NAICS **518210** (data processing/hosting) to flag the first data-center CWA action automatically — extends `scrapers/epa_echo_naics.py`; (2) verify the 4 unconfirmed leads (Energy Transfer, ATP Infrastructure, Trans Energy, Xplor) against primary `.gov` pages; (3) optional all-sectors CWA sweep beyond energy/utility.
+
 ### ✅ Company Water Claims Panel (May 2026)
 **Status**: Built — `data/reference/company_water_claims.json` (29 water-themed claims across 13 data-center operators, mirrored from `pranava0x0/datacentercommunitybenefits`) + `render_company_water_claims()` panel. Each claim is a verbatim first-party quote with source link; 5 have independent delivered-vs-promised assessments (Partial/Contested/etc.) with their own assessment source. 8 tests.
 **Follow-ups**: scheduled refresh script that pulls the latest `docs/data/claims.json` from the sibling repo and re-filters theme=water (today the snapshot is manual). Optional: surface non-water themes (energy, infrastructure) the same way.
