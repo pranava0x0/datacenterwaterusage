@@ -85,7 +85,7 @@ Python-based scraping and data extraction pipeline that finds documents related 
 - **An external cross-repo security review is run periodically** (findings come from a separate audit repo and are pasted in as numbered items). **Check it frequently** — re-run/re-request it before any release and whenever dependencies, the Pages build, or data-writing code changes. Triage each finding, fix or log it, and record the disposition here.
 - **Standing rules (don't regress these):**
   - **Pin dependencies with `==`** in `requirements.txt` (never float `>=` — that auto-pulls whatever patch is on PyPI at the next install, a supply-chain entry point). Follow-up: hash-locked installs (`pip-compile --generate-hashes` / `uv lock` + `--require-hashes`) to also catch same-version re-publishes — tracked in `backlog.md`.
-  - **Subresource Integrity (SRI) on every third-party CDN asset.** `pages/index.html` pins `sha384` hashes for the stlite CSS (`<link integrity>`) and the stlite loader module (import-map `integrity`, enforced on Chromium 127+, gracefully ignored elsewhere). Caveat: the stlite loader is a small stub that pulls the ~15 MB Pyodide/Streamlit runtime from the CDN at runtime — those chunks are version-pinned (`@1.7.3`, immutable) but not yet SRI-covered; full coverage means self-hosting (backlog). To regenerate a hash: `curl -sL <url> | openssl dgst -sha384 -binary | openssl base64 -A`, then re-verify it twice (a partial download yields a wrong hash that fails closed and blanks the live site).
+  - **Subresource Integrity (SRI) on every third-party CDN asset.** As of June 2026 the live site is a **pre-rendered static page** (`build_site.py` → `pages/index.html`); the stlite/Pyodide WASM runtime is gone, so the only third-party CDN asset is **Chart.js**, pinned to `@4.4.6` with a `sha384` `integrity` on its `<script>` tag (the hash is `build_site.CHARTJS_SRI`). To regenerate a hash: `curl -sL <url> | openssl dgst -sha384 -binary | openssl base64 -A`, then re-verify it twice (a partial download yields a wrong hash that fails closed). NB: removing stlite also closed the old "15 MB Pyodide runtime not SRI-covered" gap — there is no longer any large third-party runtime in the trust path.
   - **Pin GitHub Actions to full commit SHAs + least privilege.** Every `uses:` in `.github/workflows/` is pinned to a 40-char commit SHA (not a moving `@vN` tag) with a `# vX.Y.Z` comment, so a retag/compromise of a tag can't inject code — critical for any workflow with `contents: write`/`pull-requests: write` or a cron schedule. Every workflow declares an explicit least-privilege top-level `permissions:` block. Re-pin with `gh api repos/<action>/commits/<tag> --jq .sha` and verify it twice.
   - **Neutralize CSV formula injection.** `storage/csv_writer.py` prefixes any string cell starting with `= + - @ \t \r` with `'` (`_neutralize_formula`) so a scraped value can't execute when the export is opened in Excel/Sheets.
   - **No secrets or PII in committed data.** `local_file_path` is stored repo-relative (see SEC-001 in `issues.md`); never commit absolute home paths, tokens, or credentials.
@@ -104,8 +104,9 @@ Python-based scraping and data extraction pipeline that finds documents related 
 - **State/resumability**: aiosqlite
 - **Logging**: structlog
 - **CLI**: click
-- **Dashboard**: streamlit + plotly (Phase 1), Observable Framework planned (Phase 2)
-- **Testing**: pytest + pytest-asyncio (406 tests)
+- **Dashboard (authoring)**: streamlit + plotly — `dashboard.py` is the local-dev / source-of-truth app (`streamlit run dashboard.py`).
+- **Dashboard (deployed)**: a **pre-rendered static site**. `build_site.py` imports `dashboard`'s pure `_build_*_html` builders + data constants and emits a single self-contained `pages/index.html` (vanilla-JS tabs/filters/collapsibles, Chart.js for the 2 quantitative charts, CSS-grid heatmap). This replaced the old stlite/Pyodide WASM deploy in June 2026 — first paint went from ~25–40 s to ~35 ms. Edit a card builder or the data and both the Streamlit app and the static site change together; regenerate with `python build_site.py`.
+- **Testing**: pytest + pytest-asyncio (442 tests)
 
 ### Key Directories
 - `scrapers/` — one module per government portal, organized by state
@@ -116,6 +117,9 @@ Python-based scraping and data extraction pipeline that finds documents related 
 - `data/downloads/` — raw downloaded files (gitignored)
 - `data/output/` — structured CSV/JSON results
 - `data/state/` — SQLite database for scraper state
+- `dashboard.py` — Streamlit app for local authoring (source of truth for render logic)
+- `build_site.py` — static-site generator; pre-renders `dashboard.py`'s output to `pages/index.html` for GitHub Pages (the deployed artifact)
+- `pages/index.html` — the generated static dashboard served by Pages (regenerated, committed)
 
 ### Scraper Status
 | Scraper | Portal | Status | Notes |
