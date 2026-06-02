@@ -25,19 +25,26 @@ jobs:
       # `gh api repos/<action>/commits/<tag> --jq .sha`.
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
-      - name: Assemble _site/
+      - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          python-version: "3.12"
+
+      - name: Install build dependencies
         run: |
           set -eux
-          mkdir -p _site/utils _site/data/output _site/data/reference
+          # Only the deps build_site.py needs to import dashboard.py and render
+          # markdown — not the full scraper stack — kept version-matched to
+          # requirements.txt. The static HTML is self-contained (data embedded),
+          # so nothing else is copied into _site/.
+          python -m pip install --upgrade pip
+          pip install streamlit==1.50.0 plotly==6.6.0 pandas==2.3.3 markdown==3.9
+
+      - name: Build static site
+        run: |
+          set -eux
+          python build_site.py
+          mkdir -p _site
           cp pages/index.html _site/index.html
-          cp dashboard.py _site/dashboard.py
-          cp utils/__init__.py _site/utils/__init__.py
-          cp utils/device.py _site/utils/device.py
-          cp data/output/results.csv _site/data/output/results.csv
-          cp data/output/results.json _site/data/output/results.json
-          cp data/reference/legislation.json _site/data/reference/legislation.json
-          cp data/reference/company_water_claims.json _site/data/reference/company_water_claims.json
-          cp data/reference/cwa_investigations.json _site/data/reference/cwa_investigations.json
 
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
 
