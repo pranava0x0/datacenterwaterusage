@@ -263,7 +263,11 @@ class TestRunPipeline:
                 "filename": "pwc_ius_2024.pdf",
             }
 
+        async def fake_fetch(metadata):
+            return None
+
         scraper.discover = fake_discover
+        scraper.fetch_document = fake_fetch
         results = await scraper.run(limit=10)
         assert len(results) == 1
 
@@ -331,6 +335,10 @@ class TestRunPipeline:
                     "filename": f"ius_{i}.pdf",
                 }
 
+        async def fake_fetch(metadata):
+            return None
+
         scraper.discover = fake_discover
+        scraper.fetch_document = fake_fetch
         results = await scraper.run(limit=3)
         assert len(results) == 3

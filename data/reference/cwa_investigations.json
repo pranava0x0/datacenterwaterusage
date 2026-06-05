@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-06-02",
-  "note": "Clean Water Act enforcement actions and landmark precedent cases relevant to data center water use and cooling discharge. Four categories: 'datacenter' = direct CWA actions against named hyperscale operators or their contractors (including state nuisance and groundwater-contamination civil suits that establish direct water liability, e.g. the Amazon Boardman nitrate settlement); 'adjacent' = water-relevant actions at data-center sites where the binding or active enforcement sits OUTSIDE the CWA — a Clean Air Act suit, a local well-permitting action, or a permitted-but-paused voluntary water commitment — included because the water story matters even though no CWA action attaches (e.g. the xAI Colossus / Memphis greywater plant, plus state groundwater-withdrawal and zoning/recharge-area fights at Google's Berkeley County SC, Rowan's Medina County TX, and Atlas's Coweta County GA sites); 'industrial' = enforcement against large industrial water users that are the closest practical analogs (cooling water, pretreatment, sewer-system consent decrees, PFAS, CAFO discharges); 'precedent' = Supreme Court and federal appellate rulings that set the legal scope of the CWA, including Loper Bright (2024) ending Chevron deference and Lewis v. US (5th Cir. 2023) applying Sackett. Comprehensive coverage for 2020-present, with foundational earlier cases retained as benchmarks (Smithfield 1997, Tyson 2003, Brayton Point 2003-2007). Direct hyperscaler enforcement remains thin because operators usually sit behind contractor-permittee structures and discharge to municipal sewers — the industrial cases show what enforcement looks like once that shield slips. The Amazon Boardman 2026 $20.5M nitrate settlement is the first eight-figure direct-hyperscaler water settlement.",
+  "last_updated": "2026-06-04",
+  "note": "Clean Water Act enforcement actions and landmark precedent cases relevant to data center water use and cooling discharge. Four categories: 'datacenter' = direct CWA actions against named hyperscale operators or their contractors, including state permit enforcement and §404 permit applications with significant wetland/stream impacts (e.g. Amazon Boardman nitrate settlement, Google §404 applications in VA and AR); 'adjacent' = water-relevant actions at data-center sites where the binding or active enforcement sits OUTSIDE the CWA — a Clean Air Act suit, a local well-permitting action, a §404 citizen suit over data-center power infrastructure, or a permitted-but-paused voluntary water commitment; 'industrial' = enforcement against large industrial water users that are the closest practical analogs (cooling water §316(a)/(b), pretreatment, sewer-system consent decrees, PFAS, CAFO discharges); 'precedent' = Supreme Court and federal appellate rulings that set the legal scope of the CWA, including Loper Bright (2024) ending Chevron deference and Lewis v. US (5th Cir. 2023) applying Sackett. Comprehensive coverage for 2020-present, with foundational earlier cases retained as benchmarks (Smithfield 1997, Tyson 2003, Brayton Point 2003-2007). Direct hyperscaler enforcement remains thin because operators usually sit behind contractor-permittee structures and discharge to municipal sewers — the industrial cases show what enforcement looks like once that shield slips. The Amazon Boardman 2026 $20.5M nitrate settlement is the first eight-figure direct-hyperscaler water settlement. The Port of Morrow OR DEQ enforcement ($727K, 2024) is the largest state-level penalty at a WWTP explicitly identified as receiving data center wastewater. Google's concurrent §404 applications in VA (Project Raspberry, Project Loch) and AR (Port of Little Rock, 16.8 ac wetlands) mark a new wave of federal permitting scrutiny on data center construction in sensitive watersheds.",
   "cases": [
     {
       "case_id": "Google-Stillwater-OK-stormwater-2025",
@@ -1552,6 +1552,158 @@
         {
           "title": "Fort Smith board encouraged to approve modified federal consent decree",
           "url": "https://talkbusiness.net/2026/02/fort-smith-board-encouraged-to-approve-modified-federal-consent-decree/",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "PortOfMorrow-DEQ-OR-2024",
+      "category": "datacenter",
+      "respondent": "Port of Morrow (Morrow County, Oregon) — industrial wastewater treatment facility receiving effluent from Amazon data centers and food processors in the Port of Morrow Industrial Park",
+      "year": "2024-2025",
+      "cwa_section": "Oregon NPDES delegated §402 program — WPCF permit governing land application of nitrogen-rich wastewater; Oregon is a CWA §402-delegated state",
+      "violation_summary": "Oregon DEQ issued two separate penalty actions against the Port of Morrow WWTP, which explicitly processes wastewater from 'local food processors, manufacturers and data centers,' including Amazon Boardman data centers. (1) April 2024: $727,000 civil penalty for 880 permit violations (November 2023–February 2024) — prohibited non-growing-season land application of nitrate-laden wastewater to farm fields when soils are saturated and runoff carries nitrate to groundwater. (2) September 2025: $11,700 fine for six additional violations (May 2024–January 2025) including off-season land application, pipeline leaks, and irrigation runoff. Since 2011 DEQ has issued over 2,000 violations and $3M+ in cumulative fines at this facility. Separately, Governor Kotek signed an emergency order in January 2026 temporarily allowing the Port to exceed land-application limits due to full lagoon storage capacity — underscoring the structural capacity shortfall.",
+      "outcome": "Fines paid. Port committed to no more non-growing-season land application and is completing two new storage lagoons (1.5 billion gallon combined capacity) by November 2025. The Port simultaneously operates under a separate $2.4M state settlement for the broader Boardman-area nitrate groundwater crisis. Amazon's parallel $20.5M private class-action settlement (already in this dataset as Amazon-Boardman-OR-nitrate-2026) is a distinct legal track from this DEQ state enforcement action against the receiving WWTP.",
+      "takeaway": "The Port of Morrow enforcement demonstrates that when a data center's industrial effluent is commingled at a POTW or industrial WWTP, the *receiving facility* bears the primary NPDES enforcement exposure — not the data center directly. The $727K fine is the largest state penalty at any facility explicitly identified as receiving data center wastewater. This is the state-enforcement counterpart to the Amazon Boardman private settlement already in this dataset.",
+      "sources": [
+        {
+          "title": "Oregon DEQ: Port of Morrow fined $727,000 for wastewater permit violations (April 2024)",
+          "url": "https://www.opb.org/article/2024/06/12/port-morrow-wastewater-violation-fines/",
+          "type": "news"
+        },
+        {
+          "title": "Oregon DEQ imposes additional $11,700 fine on Port of Morrow (September 2025)",
+          "url": "https://www.opb.org/article/2025/09/30/oregon-port-of-morrow-deq-department-environmental-quality-wastewater-nitrate-nitrates/",
+          "type": "news"
+        },
+        {
+          "title": "Gov. Kotek issues emergency order allowing Port of Morrow to exceed water pollution permit (January 2026)",
+          "url": "https://oregoncapitalchronicle.com/2025/01/13/gov-kotek-issues-emergency-order-allowing-port-of-morrow-to-violate-water-pollution-permit/",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Google-ProjectRaspberry-VA-2026",
+      "category": "datacenter",
+      "respondent": "Google LLC (applicant via 'Project Raspberry'), Greenfield Industrial Park, Daleville, Botetourt County, Virginia — three 300,000 sq ft data center buildings on 343.6 acres",
+      "year": "2025-2026",
+      "cwa_section": "Section 404 individual permit (Army Corps Norfolk District NAO-2025-01857); Virginia §401 Water Quality Certification from DEQ required; Botetourt County zoning approval independent track",
+      "violation_summary": "Not an enforcement action — a §404 individual permit application in active federal review. Google's Project Raspberry data center campus in Botetourt County would impact approximately 3.24 acres of non-tidal wetlands and 6,715 linear feet of stream channels in unnamed tributaries to Tinker Creek and Rulman Branch (Roanoke River basin). Public notice issued March 10, 2026; comment period closed April 9, 2026. Separately, Google litigated through December 2025 to suppress its projected water use under Virginia FOIA; a judge ordered disclosure on November 5, 2025 — the disclosed figure was 8 million gallons per day at full campus buildout.",
+      "outcome": "PENDING — Army Corps environmental review ongoing as of June 2026. Virginia §401 WQC not yet issued. Google has offered to purchase wetland mitigation bank credits. The FOIA disclosure of 8 MGD projected water use drew public attention to the scale of data center water demand in the Roanoke Valley water shed.",
+      "takeaway": "One of the largest §404 individual permit applications for a single data center campus currently in the federal pipeline in Virginia. The FOIA fight over water-use projections (8 MGD/day at full buildout) is itself precedent-setting: Virginia courts confirmed that data center water-use records held by public utilities are public records, not proprietary business information — a significant transparency ruling for the tracker's data-collection strategy.",
+      "sources": [
+        {
+          "title": "Army Corps of Engineers Public Notice NAO-2025-01857 — Project Raspberry, Botetourt County VA",
+          "url": "https://www.nao.usace.army.mil/Media/Public-Notices/Article/4428952/nao-2025-01857-project-raspberry-botetourt-virginia/",
+          "type": "regulatory filing"
+        },
+        {
+          "title": "Corps of Engineers solicits public comments on proposed Google data centers' effect on water sources (Cardinal News)",
+          "url": "https://cardinalnews.org/2026/03/18/tech-briefs-corps-of-engineers-solicits-public-comments-on-proposed-google-data-centers-effect-on-water-sources/",
+          "type": "news"
+        },
+        {
+          "title": "Water authority releases Google data center records ahead of contempt hearing (Roanoke Rambler)",
+          "url": "https://www.roanokerambler.com/water-authority-releases-google-data-center-records-ahead-scheduled-contempt-hearing/",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Google-ProjectLoch-VA-2026",
+      "category": "datacenter",
+      "respondent": "Google LLC (applicant via 'Project Loch'), near Route 288 and Watkins Center Parkway, Chesterfield County, Virginia — three-building data center campus on approximately 350 acres",
+      "year": "2026",
+      "cwa_section": "Section 404 individual permit (Army Corps Norfolk District NAO-2026-00182); Virginia §401 Water Quality Certification required",
+      "violation_summary": "Not an enforcement action — a §404 individual permit application filed in 2026. Google's Project Loch data center campus in Chesterfield County would impact approximately 4.8 acres of wetlands and 2,828 linear feet of stream channels. Part of Google's announced $9 billion Virginia data center expansion program. Public notice issued May 2026.",
+      "outcome": "PENDING — Army Corps environmental review and public comment phase ongoing as of June 2026. Virginia §401 WQC not yet issued.",
+      "takeaway": "Together with Project Raspberry (NAO-2025-01857) and the Little Rock AR application, Google's concurrent §404 permit applications in Virginia show that hyperscaler data center construction is generating a wave of individual §404 permits in the federal pipeline — each with multi-acre wetland and multi-thousand-foot stream impacts. The cumulative wetland/stream impact of Virginia's data center build-out is now large enough to warrant cumulative-impact analysis under NEPA.",
+      "sources": [
+        {
+          "title": "Army Corps of Engineers Public Notice NAO-2026-00182 — Project Loch, Chesterfield County VA",
+          "url": "https://www.nao.usace.army.mil/Media/Public-Notices/Article/4484789/nao-2026-00182-vmrc-project-loch-chesterfield-county-virginia-wauford-prm-site/",
+          "type": "regulatory filing"
+        },
+        {
+          "title": "Google data center in Chesterfield: Army Corps permit filing (Axios Richmond)",
+          "url": "https://www.axios.com/local/richmond/2026/05/19/google-data-center-chesterfield-army-corps-permit",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Google-LittleRock-AR-2026",
+      "category": "datacenter",
+      "respondent": "Willowbend Capital LLC (Google front company), Port of Little Rock, Pulaski County, Arkansas — $1 billion, 5-building, 1.43 million sq ft data center campus",
+      "year": "2026",
+      "cwa_section": "Section 404 individual permit (Army Corps Little Rock District SWL-2026-00038); Arkansas §401 Water Quality Certification from ADEQ required",
+      "violation_summary": "Not an enforcement action — the largest §404 wetland-impact permit application for a data center currently in the federal pipeline (as of June 2026). Google's proposed Port of Little Rock campus would fill approximately 16.8 acres of wetlands and more than 6,000 feet of stream channels, the largest single-site wetland footprint of any data center application in the Army Corps public-notice database. Public demonstrations were held outside the Army Corps Little Rock District building. Google is proposing to purchase wetland mitigation bank credits.",
+      "outcome": "PENDING — Corps accepting public comments; environmental review ongoing as of June 2026. No permit issued or denied.",
+      "takeaway": "The largest single §404 wetland impact in any active data center permit application, illustrating that hyperscale campuses can generate wetland and stream impacts an order of magnitude larger than construction stormwater GPs alone address. The 16.8-acre/6,000-foot footprint is a credible trigger for individual permit review rather than nationwide permits, giving the Corps and state §401 certifying authority substantial leverage over project design.",
+      "sources": [
+        {
+          "title": "Army Corps SWL-2026-00038 public notice — Willowbend Capital / Port of Little Rock",
+          "url": "https://www.swl.usace.army.mil/Missions/Regulatory/Public-Notices/Article/4447433/swl-2026-00038/",
+          "type": "regulatory filing"
+        },
+        {
+          "title": "Google's $1B Port of Little Rock data center (Arkansas Online)",
+          "url": "https://www.arkansasonline.com/news/2026/mar/31/googles-1b-port-of-little-rock-data-center/",
+          "type": "news"
+        },
+        {
+          "title": "Little Rock protesters rally over Google data center, citing water and wetland risks (KATV)",
+          "url": "https://katv.com/news/local/little-rock-protesters-rally-over-google-data-center-citing-water-and-wetland-risks",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Greenidge-SenecaLake-NY-2025",
+      "category": "industrial",
+      "respondent": "Greenidge Generation LLC — combined bitcoin-mining and natural-gas peaking power plant at Dresden, Yates County, New York, on the shore of Seneca Lake",
+      "year": "2021-2025",
+      "cwa_section": "Section 316(a) (thermal discharge variance — exceeds state temperature limits), Section 316(b) (cooling water intake structure compliance — CWWS intake screens not installed), and SPDES permit NY-0001325 (New York's CWA §402 delegated program)",
+      "violation_summary": "New York DEC documented that Greenidge's once-through cooling water discharges exceeded state temperature limits in all 8 temperature monitoring surveys conducted between June 2021 and April 2022, reaching 86°F — approximately 10°F above ambient Seneca Lake temperature and 7°F above the state water-quality limit. The facility withdraws up to 139 million gallons per day from Seneca Lake, returning it at elevated temperatures. SPDES permit NY-0001325 expired September 30, 2022; renewal remains unresolved as of 2025. Greenidge has not installed required §316(b) closed-cycle wet surface aerisol cooling system (CWWS) intake screens. DEC denied air permit renewal three times (2022, 2023, 2024); a New York Supreme Court overturned the third denial in November 2024.",
+      "outcome": "PARTIAL resolution: A November 2025 settlement between Greenidge and DEC addressed greenhouse-gas emissions only (44% cut by 2030), leaving the SPDES water permit renewal and §316(b) intake compliance fully unresolved. No formal CWA consent order or monetary water penalty has been publicly reported. The thermal exceedances documented 2021–2022 remain the factual predicate for ongoing permit conditions.",
+      "takeaway": "The only documented case where a digital-infrastructure operator (bitcoin mining / high-density compute) faces formal §316(a) thermal-discharge exceedance findings and unresolved §316(b) intake noncompliance. The 139 MGD intake volume is comparable to a large industrial cooling system. Data centers using once-through or open-loop cooling on surface-water intakes face the same §316(b) best-technology-available and §316(a) thermal-variance obligations — Greenidge illustrates what enforcement looks like when those obligations are not met.",
+      "sources": [
+        {
+          "title": "Greenidge's warm-water discharges heated Seneca Lake beyond state limits, but DEC waiver excuses violations",
+          "url": "https://waterfrontonline.blog/2022/10/07/greenidges-warm-water-discharges-heated-seneca-lake-beyond-state-limits-but-dec-wavier-excuses-violations/",
+          "type": "news"
+        },
+        {
+          "title": "DEC signs agreement with Greenidge, ends legal battle (Rochester Beacon, November 2025)",
+          "url": "https://rochesterbeacon.com/2025/11/11/dec-signs-agreement-with-greenidge-ends-legal-battle/",
+          "type": "news"
+        },
+        {
+          "title": "Greenidge Generation — SPDES permit renewal documentation and DEC proceedings (Treichler Law)",
+          "url": "https://treichlerlawoffice.com/water/greenidge/index.html",
+          "type": "advocacy / litigation"
+        }
+      ]
+    },
+    {
+      "case_id": "TransGas-AdamsFork-WV-2025",
+      "category": "adjacent",
+      "respondent": "TransGas Development Systems (New York-based); Adams Fork Energy Project — natural-gas-fueled ammonia plant and two data center facilities at Twisted Gun Golf Course (Wharncliffe) and Harless Industrial Park (Holden), Mingo County, West Virginia",
+      "year": "2025-2026",
+      "cwa_section": "Section 404 (alleged lack of Army Corps dredge-and-fill permit for project requiring stream/wetland disturbance in West Virginia). ESA Section 7 consultation, NEPA review, and NGA pipeline certificate also cited. No active agency enforcement order has been issued — this is a citizen suit alleging §404 violations; the Army Corps has not independently issued a NOV, cease-and-desist, or penalty.",
+      "violation_summary": "On December 3, 2025, ten Mingo County residents filed a federal citizen suit in the U.S. District Court for the Southern District of West Virginia, alleging TransGas has begun advancing ground-disturbing activities for the Adams Fork Energy Project — which would power two data center campuses — without obtaining required CWA §404 dredge-and-fill permits, ESA consultation, NEPA review, or FERC gas-pipeline approval. Plaintiffs named the Army Corps Huntington District, U.S. Fish & Wildlife Service, and FERC as defendants for failing to initiate required regulatory reviews of a project affecting streams and wetlands in the Tug Fork watershed.",
+      "outcome": "Judge denied plaintiffs' motion for a temporary restraining order and preliminary injunction. Litigation continuing as of June 2026. No Army Corps enforcement action, NOV, or permit denial has been independently issued.",
+      "takeaway": "The first documented CWA §404 citizen suit targeting unpermitted stream/wetland disturbance at a data-center power-supply project. The framing — plaintiffs suing both the developer AND the Army Corps for regulatory inaction — is a template for future citizen enforcement where the Corps fails to require permits for data center construction in sensitive watersheds. The TRO denial does not preclude full merits review or injunctive relief after the administrative record is developed.",
+      "sources": [
+        {
+          "title": "Mingo County residents file federal lawsuit against company building power plants, data center in WV",
+          "url": "https://westvirginiawatch.com/2025/12/05/mingo-county-residents-file-federal-lawsuit-against-company-building-power-plants-data-center-in-wv/",
+          "type": "news"
+        },
+        {
+          "title": "West Virginia residents file lawsuit against ammonia plant / data centre project (QC Intel)",
+          "url": "https://www.qcintel.com/ammonia/article/west-virginia-residents-file-lawsuit-against-ammonia-plant-data-centre-project-54475.html",
           "type": "news"
         }
       ]
