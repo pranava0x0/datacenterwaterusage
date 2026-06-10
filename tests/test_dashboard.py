@@ -744,6 +744,48 @@ class TestCWAInvestigations:
         for c in self._cases():
             assert c["category"] in VALID_CWA_CATEGORIES, c["case_id"]
 
+    def test_case_type_classification(self):
+        # Every case carries the project-type taxonomy used by the filters; a
+        # value outside CWA_CASE_TYPE_LABELS would silently vanish from the
+        # static site's checkbox filter.
+        from dashboard import CWA_CASE_TYPE_LABELS, CWA_STATUS_LABELS
+
+        for c in self._cases():
+            assert c.get("case_type") in CWA_CASE_TYPE_LABELS, c["case_id"]
+            assert c.get("cwa_applied") in CWA_STATUS_LABELS, c["case_id"]
+            assert c.get("cwa_instrument"), f"{c['case_id']} missing cwa_instrument"
+
+    def test_non_applied_cases_have_pathway_and_analogs(self):
+        # The whole point of tracking pending / not-applied cases: each must
+        # explain how the CWA *could* reach the fact pattern and point at
+        # historic examples that resolve to real cases in this dataset.
+        ids = {c["case_id"] for c in self._cases()}
+        for c in self._cases():
+            if c["cwa_applied"] in ("pending", "not-applied"):
+                assert len(c.get("cwa_pathway", "")) > 60, (
+                    f"{c['case_id']} needs a substantive cwa_pathway"
+                )
+                analogs = c.get("analogous_cases", [])
+                assert analogs, f"{c['case_id']} needs analogous_cases"
+                for a in analogs:
+                    assert a in ids, f"{c['case_id']}: unknown analog {a}"
+                assert c["case_id"] not in analogs, (
+                    f"{c['case_id']} cannot be its own analog"
+                )
+
+    def test_card_renders_classification_and_pathway(self):
+        # The card must answer (1) what type of case + did the CWA apply, and
+        # (2) for non-applied cases, how it could apply with analog links.
+        ids = {c["case_id"] for c in self._cases()}
+        for c in self._cases():
+            html_str = _build_cwa_case_html(c, ids)
+            assert 'class="cwa-type-pill"' in html_str, c["case_id"]
+            assert 'class="cwa-status-pill"' in html_str, c["case_id"]
+            if c["cwa_applied"] in ("pending", "not-applied"):
+                assert "How the CWA could apply" in html_str, c["case_id"]
+                first_analog = c["analogous_cases"][0]
+                assert f'href="#cwa-{first_analog}"' in html_str, c["case_id"]
+
     def test_every_category_represented(self):
         cats = {c["category"] for c in self._cases()}
         assert cats == VALID_CWA_CATEGORIES, f"missing categories: {VALID_CWA_CATEGORIES - cats}"
@@ -783,7 +825,10 @@ class TestCWAInvestigations:
 
         for c in self._cases():
             html_str = _build_cwa_case_html(c)
-            assert html_str.startswith('<div class="bill-card">')
+            # Each card carries an id anchor so analog cross-links can target it.
+            assert html_str.startswith(
+                f'<div class="bill-card" id="cwa-{c["case_id"]}">'
+            )
             prefix = c["respondent"].split(",")[0][:20]
             assert _html.escape(prefix) in html_str, (
                 f"{c['case_id']}: respondent prefix not rendered"

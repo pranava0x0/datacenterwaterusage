@@ -1358,6 +1358,35 @@ CWA_CATEGORY_LABELS = {
     "precedent": "Landmark Precedent",
 }
 
+# Project-type ("what kind of water issue is this?") taxonomy — the primary
+# filter axis. Every case carries exactly one case_type from this dict; a
+# schema test enforces it so a typo in the JSON can't silently drop a case
+# from the filters.
+CWA_CASE_TYPE_LABELS = {
+    "construction-stormwater": "Construction stormwater",
+    "wetlands-streams": "Wetlands & streams (§404/§401)",
+    "cooling-water": "Cooling water & thermal (§316)",
+    "industrial-discharge": "Industrial discharge (§402)",
+    "pretreatment": "Sewer pretreatment (§307)",
+    "potw-sewer": "Treatment plants & sewers (POTW)",
+    "groundwater": "Groundwater & aquifers",
+    "spills-contamination": "Spills, PFAS & contamination",
+    "water-supply": "Water supply & billing",
+    "legal-doctrine": "Citizen suits & court doctrine",
+}
+
+# Did the Clean Water Act actually get used in this case?
+CWA_STATUS_LABELS = {
+    "applied": "CWA applied",
+    "pending": "CWA potential",
+    "not-applied": "No CWA action",
+}
+CWA_STATUS_COLORS = {
+    "applied": COLORS["success"],
+    "pending": "#b45309",  # amber — between applied and not-applied
+    "not-applied": "#6b7280",  # neutral gray — explicitly not a failure state
+}
+
 
 def _cwa_statute_explainer_md() -> str:
     """Markdown body for the 'What is a CWA investigation?' expander.
@@ -1634,12 +1663,20 @@ def render_cwa_tracker():
     ):
         st.markdown(_cwa_statute_explainer_md())
 
-    # Filter controls — category multiselect + 2020+ toggle. Defaults show
+    # Filter controls. Primary axis: project type (what kind of water issue);
+    # secondary: case group (who it involves) + 2020+ toggle. Defaults show
     # everything so first-time visitors see the full dataset.
+    selected_types = st.multiselect(
+        "Filter by project type",
+        options=list(CWA_CASE_TYPE_LABELS.keys()),
+        default=list(CWA_CASE_TYPE_LABELS.keys()),
+        format_func=lambda k: CWA_CASE_TYPE_LABELS.get(k, k.title()),
+        key="cwa_case_type_filter",
+    )
     filter_cols = st.columns([3, 1])
     with filter_cols[0]:
         selected_categories = st.multiselect(
-            "Filter by category",
+            "Filter by case group",
             options=list(CWA_CATEGORY_LABELS.keys()),
             default=list(CWA_CATEGORY_LABELS.keys()),
             format_func=lambda k: CWA_CATEGORY_LABELS.get(k, k.title()),
@@ -1653,7 +1690,12 @@ def render_cwa_tracker():
             help="Show only cases with an end year of 2020 or later.",
         )
 
-    filtered = [c for c in cases if c.get("category") in selected_categories]
+    filtered = [
+        c
+        for c in cases
+        if c.get("category") in selected_categories
+        and c.get("case_type") in selected_types
+    ]
     if recent_only:
         filtered = [c for c in filtered if _cwa_year_end(c.get("year", "")) >= 2020]
 
@@ -1676,8 +1718,9 @@ def render_cwa_tracker():
     # One markdown blob for all case cards (49 → 1 component) — same
     # consolidation as render_legislation_tracker; each card is a self-contained
     # <div class="bill-card">, so the joined output renders identically.
+    all_ids = {c.get("case_id") for c in cases}
     st.markdown(
-        "".join(_build_cwa_case_html(case) for case in sorted_cases),
+        "".join(_build_cwa_case_html(case, all_ids) for case in sorted_cases),
         unsafe_allow_html=True,
     )
 
@@ -1689,8 +1732,26 @@ def render_cwa_tracker():
     st.caption(caption)
 
 
-def _build_cwa_case_html(case: dict) -> str:
-    """Build the complete HTML for one CWA case card as a single markdown blob."""
+def _cwa_case_caption(case_id: str) -> str:
+    """Human-readable caption derived from a case_id, for analog cross-links.
+
+    'County-of-Maui-v-Hawaii-Wildlife-Fund-2020' → 'County of Maui v Hawaii
+    Wildlife Fund (2020)'. Derived rather than curated so analog links never
+    go stale when a case's respondent text is edited.
+    """
+    m = re.match(r"^(.*?)-(\d{4}(?:-\d{4})?)$", case_id)
+    name, year = (m.group(1), m.group(2)) if m else (case_id, "")
+    caption = name.replace("-", " ")
+    return f"{caption} ({year})" if year else caption
+
+
+def _build_cwa_case_html(case: dict, case_ids: set[str] | None = None) -> str:
+    """Build the complete HTML for one CWA case card as a single markdown blob.
+
+    case_ids, when given, is the set of all case_ids in the dataset — used to
+    render analogous_cases as in-page anchors (#cwa-<id>) only when the target
+    card actually exists.
+    """
     esc = html.escape
     cat_colors = _cwa_category_colors()
 
@@ -1729,6 +1790,28 @@ def _build_cwa_case_html(case: dict) -> str:
         '</div>'
     )
 
+    # Classification row — the at-a-glance answer to "what kind of case is
+    # this, and did the CWA actually get used?"
+    case_type = (case.get("case_type") or "").lower()
+    type_label = CWA_CASE_TYPE_LABELS.get(case_type, "")
+    status = (case.get("cwa_applied") or "").lower()
+    status_label = CWA_STATUS_LABELS.get(status, "")
+    status_color = CWA_STATUS_COLORS.get(status, COLORS["secondary"])
+    instrument = esc(case.get("cwa_instrument", ""))
+    class_bits = []
+    if type_label:
+        class_bits.append(f'<span class="cwa-type-pill">{esc(type_label)}</span>')
+    if status_label:
+        class_bits.append(
+            f'<span class="cwa-status-pill" style="background:{status_color}">'
+            f'{esc(status_label)}</span>'
+        )
+    if instrument:
+        class_bits.append(f'<span class="cwa-instrument">{instrument}</span>')
+    class_row = (
+        f'<div class="cwa-class-row">{"".join(class_bits)}</div>' if class_bits else ""
+    )
+
     section_line = (
         f'<div class="cwa-section-line">{cwa_section}</div>' if cwa_section else ""
     )
@@ -1748,6 +1831,28 @@ def _build_cwa_case_html(case: dict) -> str:
         sections.append(
             '<div class="bill-section-label">Relevance to data centers</div>'
             f'<p class="cwa-takeaway">{takeaway}</p>'
+        )
+    # For cases where the CWA was NOT applied (or is only potential): how it
+    # could apply, with cross-links to the historic cases that show the path.
+    pathway = case.get("cwa_pathway", "")
+    if pathway:
+        analog_html = ""
+        analogs = case.get("analogous_cases", [])
+        if analogs:
+            links = []
+            for a in analogs:
+                caption = esc(_cwa_case_caption(a))
+                if case_ids is not None and a in case_ids:
+                    links.append(f'<a href="#cwa-{esc(a)}">{caption}</a>')
+                else:
+                    links.append(caption)
+            analog_html = (
+                '<div class="cwa-analogs">Historic examples in this record: '
+                f'{" · ".join(links)}</div>'
+            )
+        sections.append(
+            '<div class="bill-section-label">How the CWA could apply</div>'
+            f'<div class="cwa-pathway">{esc(pathway)}{analog_html}</div>'
         )
     if sources:
         items = []
@@ -1769,7 +1874,11 @@ def _build_cwa_case_html(case: dict) -> str:
         )
 
     body = "".join(sections)
-    return f'<div class="bill-card">{head}{section_line}{body}</div>'
+    anchor = esc(case.get("case_id", ""))
+    return (
+        f'<div class="bill-card" id="cwa-{anchor}">'
+        f'{head}{class_row}{section_line}{body}</div>'
+    )
 
 
 # --- Company Water Claims ---

@@ -553,6 +553,50 @@ _RESPONSIVE_CSS = """
     font-weight: 400;
     font-size: 0.95rem;
 }
+.cwa-class-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: center;
+    margin: 0.15rem 0 0.45rem;
+}
+.cwa-type-pill {
+    background: #eff3ff;
+    color: #08519c;
+    border: 1px solid #bdd7e7;
+    border-radius: 999px;
+    padding: 0.1rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+.cwa-status-pill {
+    border-radius: 999px;
+    padding: 0.1rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+}
+.cwa-instrument {
+    font-size: 0.8rem;
+    color: #374151;
+    font-weight: 600;
+}
+.cwa-pathway {
+    background: #fffbeb;
+    border-left: 3px solid #b45309;
+    padding: 0.5rem 0.75rem;
+    margin: 0.2rem 0 0.6rem 0;
+    color: #1a1a2e;
+    line-height: 1.5;
+    border-radius: 0 0.25rem 0.25rem 0;
+}
+.cwa-analogs {
+    margin-top: 0.35rem;
+    font-size: 0.85rem;
+}
+.cwa-analogs a {
+    color: #08519c;
+}
 .cwa-section-line {
     color: #08519c;
     font-weight: 600;

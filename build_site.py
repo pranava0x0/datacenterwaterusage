@@ -265,7 +265,13 @@ def build_cwa_tab() -> str:
 
     explainer = md(dash._cwa_statute_explainer_md())
 
-    # Category filter checkboxes (all on by default).
+    # Filter checkboxes (all on by default). Primary axis: project type;
+    # secondary: case group (category).
+    type_boxes = "".join(
+        f'<label class="chip-check"><input type="checkbox" class="cwa-type" '
+        f'value="{k}" checked> {esc(v)}</label>'
+        for k, v in dash.CWA_CASE_TYPE_LABELS.items()
+    )
     cat_boxes = "".join(
         f'<label class="chip-check"><input type="checkbox" class="cwa-cat" '
         f'value="{k}" checked> {esc(v)}</label>'
@@ -273,7 +279,7 @@ def build_cwa_tab() -> str:
     )
 
     # Sort like the app: category order, then year descending; wrap each card in
-    # a div carrying machine-readable category + end-year for client-side filtering.
+    # a div carrying machine-readable category + type + end-year for filtering.
     sorted_cases = sorted(
         cases,
         key=lambda c: (
@@ -281,10 +287,12 @@ def build_cwa_tab() -> str:
             -dash._cwa_year_end(c.get("year", "")),
         ),
     )
+    all_ids = {c.get("case_id") for c in cases}
     case_cards = "".join(
         f'<div class="cwa-case" data-category="{esc(c.get("category",""))}" '
+        f'data-casetype="{esc(c.get("case_type",""))}" '
         f'data-yearend="{dash._cwa_year_end(c.get("year",""))}">'
-        f'{dash._build_cwa_case_html(c)}</div>'
+        f'{dash._build_cwa_case_html(c, all_ids)}</div>'
         for c in sorted_cases
     )
 
@@ -303,6 +311,11 @@ def build_cwa_tab() -> str:
     <div class="explainer-md">{explainer}</div>
   </details>
   <div class="cwa-filters">
+    <span class="filter-label">Project type:</span>
+    <div class="cwa-types">{type_boxes}</div>
+  </div>
+  <div class="cwa-filters">
+    <span class="filter-label">Case group:</span>
     <div class="cwa-cats">{cat_boxes}</div>
     <label class="chip-check"><input type="checkbox" id="cwa-recent"> 2020 onward only</label>
   </div>
@@ -693,6 +706,7 @@ details.lazy .panel{margin:0}
 
 /* Filters */
 .cwa-filters{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;margin:.6rem 0}
+.cwa-types,.cwa-cats{display:flex;flex-wrap:wrap;gap:.4rem .6rem;align-items:center}
 .chip-check{display:inline-flex;align-items:center;gap:.35rem;font-size:.9rem;
   background:#eff3ff;border:1px solid #bdd7e7;border-radius:999px;padding:.25rem .7rem;cursor:pointer}
 .chip-check input{accent-color:var(--blue)}
@@ -760,13 +774,14 @@ tabs.forEach(t => t.addEventListener('click', () => {
 const cwaCount = document.getElementById('cwa-count');
 function applyCwaFilter(){
   const cats = new Set([...document.querySelectorAll('.cwa-cat:checked')].map(c => c.value));
+  const types = new Set([...document.querySelectorAll('.cwa-type:checked')].map(c => c.value));
   const recent = document.getElementById('cwa-recent').checked;
   const counts = {};
   let shown = 0;
   document.querySelectorAll('.cwa-case').forEach(el => {
     const cat = el.dataset.category;
     const ye = parseInt(el.dataset.yearend, 10) || 0;
-    const ok = cats.has(cat) && (!recent || ye >= 2020);
+    const ok = cats.has(cat) && types.has(el.dataset.casetype) && (!recent || ye >= 2020);
     el.hidden = !ok;
     if (ok){ shown++; counts[cat] = (counts[cat]||0)+1; }
   });
@@ -778,7 +793,7 @@ function applyCwaFilter(){
   cwaCount.innerHTML = '<strong>Showing ' + shown + ' of ' + window.CWA_TOTAL +
     ' cases</strong>' + (summary ? ' — ' + summary : '');
 }
-document.querySelectorAll('.cwa-cat, #cwa-recent').forEach(c =>
+document.querySelectorAll('.cwa-cat, .cwa-type, #cwa-recent').forEach(c =>
   c.addEventListener('change', applyCwaFilter));
 if (cwaCount) applyCwaFilter();
 
