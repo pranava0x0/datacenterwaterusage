@@ -2317,6 +2317,168 @@
           "type": "news"
         }
       ]
+    },
+    {
+      "case_id": "USACE-NWP39-DataCenters-2026",
+      "category": "datacenter",
+      "respondent": "U.S. Army Corps of Engineers (Nationwide Permit 39 reissuance covering data center developers nationwide)",
+      "year": "2025-2026",
+      "cwa_section": "CWA §404 — Nationwide Permit 39 (commercial and institutional developments), 2026 reissuance.",
+      "violation_summary": "Not an enforcement action — a permitting-framework change. On June 18, 2025 the Army Corps proposed reissuing and modifying its §404 nationwide permits, and on January 8, 2026 published the final reissuance in the Federal Register. The 2026 version of Nationwide Permit 39 expressly clarifies that 'data centers, artificial intelligence and machine learning facilities' qualify as commercial developments eligible for general (streamlined) §404 permitting for wetland and stream fills, rather than requiring individual permits. Legal commentators flag the change as lowering the federal wetlands-permitting bar for data center construction while litigation risk around such approvals rises.",
+      "outcome": "Final nationwide permits issued January 2026 and in effect; data center projects with qualifying wetland/stream impacts (generally ≤1/2 acre) can now proceed under NWP 39 with preconstruction notification instead of individual §404 review.",
+      "takeaway": "The Corps has formally routed most data center wetland fills onto the fastest §404 track — small-footprint campus impacts now avoid individual-permit scrutiny, but projects exceeding NWP thresholds (like Google's and SDC's individual applications) remain the high-visibility exception, and streamlined approvals are an emerging target for NGO litigation.",
+      "case_type": "wetlands-streams",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§404 Nationwide Permit 39 (2026 reissuance) — data centers expressly enumerated",
+      "sources": [
+        {
+          "title": "Federal Register: Reissuance and Modification of Nationwide Permits (Jan 8, 2026)",
+          "url": "https://www.federalregister.gov/documents/2026/01/08/2026-00121/reissuance-and-modification-of-nationwide-permits",
+          "type": "agency"
+        },
+        {
+          "title": "USACE announces finalization of nationwide permits",
+          "url": "https://www.usace.army.mil/Media/News-Releases/News-Release-Article-View/Article/4372486/us-army-corps-of-engineers-announces-finalization-of-nationwide-permits/",
+          "type": "agency"
+        },
+        {
+          "title": "The Rise of Data Centers Brings Environmental Permitting Challenges and Litigation Risk (Hunton)",
+          "url": "https://www.hunton.com/insights/publications/the-rise-of-data-centers-brings-environmental-permitting-challenges-and-litigation-risk",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "SDC-ATLA-DouglasCounty-GA-404-401-2025",
+      "category": "datacenter",
+      "respondent": "SDC ATLA, LLC (Stream Data Centers), Winston, Douglas County, GA",
+      "year": "2025-2026",
+      "cwa_section": "§404 individual permit (USACE Savannah District) + §401 water quality certification (GA EPD, 401-SAS-2025-00336).",
+      "violation_summary": "Not an enforcement action — permitting for a 1.3M sq ft, nine-building data center campus with two substations on a 215.61-acre site in Winston, Douglas County, GA. The project requires a USACE §404 permit for filling 0.583 acres of wetland plus 128 linear feet of ephemeral, 2,586 LF of intermittent, and 2,573 LF of perennial stream — roughly a mile of jurisdictional stream impacts. GA EPD public-noticed and issued the §401 water quality certification (file 401-SAS-2025-00336, with a corrected certification letter posted by EPD), while Winston residents voiced opposition to a second large data center in the area.",
+      "outcome": "Georgia §401 certification issued (2025); §404 permitting with the Corps proceeding as of mid-2026; local opposition continues but no litigation identified.",
+      "takeaway": "One of the larger stream-impact footprints in any active data center §404 matter (~5,300 linear feet across three stream classes), showing that as campuses move onto unfragmented greenfield sites, stream channels — not just wetland acreage — are becoming the binding CWA constraint and the trigger for individual rather than nationwide permits.",
+      "case_type": "wetlands-streams",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§404 individual permit application + §401 state certification issued",
+      "sources": [
+        {
+          "title": "GA EPD Public Notice — Sec. 401 Water Quality Certification, SDC ATLA Data Centers",
+          "url": "https://epd.georgia.gov/document/document/public-notice-sec-401-water-quality-certification-sdc-atla-data-centers/download",
+          "type": "agency"
+        },
+        {
+          "title": "GA EPD — 401-SAS-2025-00336 SDC ATLA WQC (corrected certification letter)",
+          "url": "https://epd.georgia.gov/document/document/401-sas-2025-00336-sdc-atla-wqc-yccorrected/download",
+          "type": "agency"
+        },
+        {
+          "title": "Winston residents feeling touch of data center deja vu (Douglas County Sentinel)",
+          "url": "https://www.douglascountysentinel.com/douglasville_sentinel/winston-residents-feeling-touch-of-data-center-deja-vu/article_d4be1876-9b83-5655-915d-64c6cc7eb141.html",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "HomerCity-IndianaCounty-PA-NPDES-2026",
+      "category": "adjacent",
+      "respondent": "Homer City Redevelopment / Homer City Generation LP (4.4 GW gas plant powering on-site AI data center campus), Indiana County, PA",
+      "year": "2025-2026",
+      "cwa_section": "§402 NPDES industrial/cooling-water discharge — PA DEP draft permit PAD320011 (plus pending Ch. 105 wetland/stream encroachment permit).",
+      "violation_summary": "The shuttered Homer City coal plant is being converted into the country's largest gas-fired data center campus (seven turbines, 4.4 GW, target 2027). PA DEP's permitting docket shows an NPDES renewal application filed May 1, 2026, an amendment for Outfall 027 modification filed Feb 20, 2026, and a draft NPDES permit (PAD320011) publicly noticed May 12, 2026; a separate pending permit would impact several acres of wetlands and hundreds of feet of stream. In January 2026, Clean Air Council, PennFuture, and Sierra Club appealed the plant's air plan approval to the Environmental Hearing Board, arguing DEP must review the entire project comprehensively, including its water use.",
+      "outcome": "Draft NPDES permit out for comment as of May 2026; wetland/stream encroachment permit and roughly a dozen other approvals still pending; environmental groups' EHB appeal of the air permit is active and signals likely challenges to the water permits.",
+      "takeaway": "Behind-the-meter power plants built for data centers carry the classic steam-electric CWA exposure (cooling-water outfalls, thermal limits, §316) that the data center buildings themselves avoid — and NGOs are using each individual permit, including water permits, as a sequential chokepoint against the integrated campus.",
+      "case_type": "cooling-water",
+      "cwa_applied": "pending",
+      "cwa_instrument": "§402 NPDES draft permit (PAD320011) — cooling outfalls at DC power plant",
+      "cwa_pathway": "The repowered plant's cooling and process outfalls require a renewed/amended NPDES permit with thermal and effluent limits (§402/§316), and campus build-out needs §404/state Ch. 105 authorization for wetland and stream impacts; either permit can be appealed to the PA Environmental Hearing Board — the path opponents have already used on the air side.",
+      "analogous_cases": [
+        "Brayton-Point-Dominion-2003-2007",
+        "Greenidge-SenecaLake-NY-2025",
+        "TransGas-AdamsFork-WV-2025"
+      ],
+      "sources": [
+        {
+          "title": "PA DEP — Homer City Generation Site Redevelopment permitting page",
+          "url": "https://www.pa.gov/agencies/dep/about-dep/regional-office-locations/northwest-regional-office/northwest-community-information/homer-city-generation-redevelopment",
+          "type": "agency"
+        },
+        {
+          "title": "Pa. groups appeal permit for Homer City gas power plant meant to fuel data center (The Allegheny Front, Jan 2026)",
+          "url": "https://www.alleghenyfront.org/pennsylvania-homer-city-data-center-power-plant-permit-appeal/",
+          "type": "news"
+        },
+        {
+          "title": "PA OKs air permit for Homer City gas plant fueling data centers (Technical.ly)",
+          "url": "https://technical.ly/civics/homer-city-indiana-county-pennsylvania-data-center-permit-approval/",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Meta-RichlandParish-LA-WaterSupply-2025",
+      "category": "adjacent",
+      "respondent": "Meta Platforms (Hyperion data center), Richland Parish, LA",
+      "year": "2024-2026",
+      "cwa_section": "No CWA action — state groundwater/surface-water withdrawal authorizations with no monitoring regime; Sparta-area aquifer stress concerns.",
+      "violation_summary": "Meta's $27B+, 2,250-acre Hyperion campus (announced Dec 2024, operational target 2028) is authorized under Louisiana records to use up to 23 million gallons per day (~8.4B gal/yr), though Meta says steady-state use will be 500-600M gal/yr (~1.5 MGD). LSU and Tulane water researchers publicized in 2025-2026 that no Louisiana regulatory body is tasked with monitoring Meta's actual withdrawals or tracking aquifer condition over time. Meta has responded with voluntary watershed-restoration commitments (RES, Ducks Unlimited) pledging to 'restore' 100% of consumption to the Boeuf, Tensas, and Lower Mississippi watersheds.",
+      "outcome": "No enforcement action or permit denial as of June 2026 — the dispute is over the absence of any binding water-use oversight; Sierra Club and academic researchers continue pressing for monitoring requirements while construction proceeds.",
+      "takeaway": "The largest permitted water envelope of any US data center (23 MGD) sits in a state with effectively no groundwater-withdrawal regulator — a regulatory-gap pattern (like post-Sackett wetlands gaps) where the CWA's discharge-focused architecture leaves consumptive use governed only by voluntary corporate replenishment pledges.",
+      "case_type": "water-supply",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "No CWA instrument — unmonitored state withdrawal authorization (23 MGD max)",
+      "cwa_pathway": "CWA hooks exist only at the margins: §404 permitting for wetland impacts on the 2,250-acre former-farmland site, future NPDES coverage if cooling blowdown or treated process water is discharged to surface waters, and a Maui-style functional-equivalent theory if wastewater reaches surface waters via groundwater. The consumptive withdrawals themselves are outside the CWA entirely.",
+      "analogous_cases": [
+        "Google-Berkeley-SC-Middendorf-aquifer-2019",
+        "County-of-Maui-v-Hawaii-Wildlife-Fund-2020",
+        "Amazon-Boardman-OR-nitrate-2026"
+      ],
+      "sources": [
+        {
+          "title": "How much water will Meta's Louisiana data center use? New details unveiled for first time (NOLA.com)",
+          "url": "https://www.nola.com/news/environment/meta-louisiana-data-center-water-ai/article_d27dea17-d571-453c-b5a5-0deb571ea272.html",
+          "type": "news"
+        },
+        {
+          "title": "In Rural Louisiana, Meta's New Data Center Promises Growth—But at What Cost? (Sierra Club)",
+          "url": "https://www.sierraclub.org/sierra/rural-louisiana-meta-s-new-data-center-promises-growth-what-cost",
+          "type": "ngo"
+        }
+      ]
+    },
+    {
+      "case_id": "Bessemer-AL-Hyperscale-WaterSupply-2025",
+      "category": "adjacent",
+      "respondent": "Unnamed hyperscale developer (~$14.5B campus) / City of Bessemer; Warrior River Water Authority, Jefferson County, AL",
+      "year": "2025-2026",
+      "cwa_section": "No CWA action — water-supply capacity dispute, receiving-stream concerns (Little Blue, Five Mile, Blue Creeks → Black Warrior River), and ESA overlay (Birmingham darter).",
+      "violation_summary": "A proposed ~$14.5B hyperscale campus in Bessemer, AL would demand about 2 million gallons of water per day — roughly the usage of 6,700 households, two-thirds of the city's population. In July 2025 the Warrior River Water Authority stated it cannot supply the requested 2 MGD without 'significant upgrades to the existing water system.' Black Warrior Riverkeeper warned the project would be 'a massive water user… and a massive wastewater user' affecting Little Blue, Five Mile, and Blue Creeks downstream, and in November 2025 the newly documented Birmingham darter fish was found just downstream of the site. The Bessemer City Council nonetheless approved the rezoning 5-2 on November 18-19, 2025.",
+      "outcome": "Rezoning approved Nov 2025 over public objection; water-supply upgrades, wastewater arrangements, and any §404/NPDES construction permitting unresolved as of June 2026; Riverkeeper monitoring continues and the darter creates potential ESA leverage.",
+      "takeaway": "Shows the now-standard pre-CWA pressure points — utility capacity letters and newly described endangered species — being used to contest a campus before any discharge exists, and flags the receiving creeks where construction-stormwater and WWTP NPDES exposure will concentrate once ground breaks.",
+      "case_type": "water-supply",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "No CWA instrument yet — utility capacity dispute ahead of permitting",
+      "cwa_pathway": "Construction of the multi-hundred-acre site draining to Little Blue/Five Mile/Blue Creeks will require Alabama's NPDES construction general permit, any stream or wetland crossings will need §404/§401 authorization, and the wastewater load lands on a POTW whose NPDES permit becomes the operational compliance point; the Birmingham darter adds an ESA consultation overlay to any federal permit.",
+      "analogous_cases": [
+        "Charlotte-NC-drought-datacenter-moratorium-2026",
+        "QTS-Fayetteville-GA-2024"
+      ],
+      "sources": [
+        {
+          "title": "Water Utility Says It Can't Meet Demand for Alabama Data Center Without 'Significant Upgrades' (Inside Climate News)",
+          "url": "https://insideclimatenews.org/news/12072025/bessemer-alabama-water-utility-data-center-upgrades/",
+          "type": "news"
+        },
+        {
+          "title": "Bessemer officials approve data center construction despite environmental concerns (Alabama Reflector)",
+          "url": "https://alabamareflector.com/2025/11/19/bessemer-officials-approve-data-center-construction-despite-environmental-concerns/",
+          "type": "news"
+        },
+        {
+          "title": "A Proposed Alabama Data Center Faces New Hurdles: A 'Road to Nowhere' and the Birmingham Darter (Inside Climate News)",
+          "url": "https://insideclimatenews.org/news/13112025/proposed-alabama-data-center-clashes-with-northern-beltline-birmingham-darter/",
+          "type": "news"
+        }
+      ]
     }
   ]
 }

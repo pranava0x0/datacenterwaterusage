@@ -571,6 +571,24 @@ class TestLegislationTracker:
     def _bills(self):
         return load_legislation().get("bills", [])
 
+    def test_june_10_2026_bill_additions_present(self):
+        # Regression guard for the 2026-06-10 research pass (7 entries),
+        # including the first enacted state water-cooling law outside the
+        # original set (Idaho) and the first local moratorium besides Loudoun.
+        bills = {b["bill_id"]: b for b in self._bills()}
+        expected = {
+            "ID H 895": "enacted",
+            "CO SB26-102": "failed",
+            "NY S10642 / A11560": "introduced",
+            "WI AB 840 / SB 843": "failed",
+            "ME LD 307": "failed",
+            "Denver CB 26-0431": "enacted",
+            "VA SB 417": "introduced",
+        }
+        for bid, status in expected.items():
+            assert bid in bills, f"missing newly-added bill {bid}"
+            assert bills[bid]["status"] == status, bid
+
     def test_principle_tags_are_canonical(self):
         # Every general_principles tag must be in the canonical taxonomy that
         # powers the summary panel and the principle filter — a typo'd tag
@@ -987,11 +1005,33 @@ class TestCWAInvestigations:
             assert cases[cid]["category"] == cat, cid
             assert cases[cid]["cwa_applied"] == status, cid
 
+    def test_june_10_2026_second_research_pass_present(self):
+        # Regression guard for the second 2026-06-10 research pass (5 cases).
+        cases = {c["case_id"]: c for c in self._cases()}
+        expected = {
+            "USACE-NWP39-DataCenters-2026": ("datacenter", "applied"),
+            "SDC-ATLA-DouglasCounty-GA-404-401-2025": ("datacenter", "applied"),
+            "HomerCity-IndianaCounty-PA-NPDES-2026": ("adjacent", "pending"),
+            "Meta-RichlandParish-LA-WaterSupply-2025": ("adjacent", "not-applied"),
+            "Bessemer-AL-Hyperscale-WaterSupply-2025": ("adjacent", "not-applied"),
+        }
+        for cid, (cat, status) in expected.items():
+            assert cid in cases, f"missing newly-added case {cid}"
+            assert cases[cid]["category"] == cat, cid
+            assert cases[cid]["cwa_applied"] == status, cid
+
     def test_adjacent_cases_disclaim_cwa_enforcement(self):
-        # The 'adjacent' category exists precisely because the binding action
-        # sits OUTSIDE the CWA. Every adjacent case must say so in its
-        # cwa_section so the framing can't drift into implying CWA enforcement.
-        adjacent = [c for c in self._cases() if c["category"] == "adjacent"]
+        # The 'adjacent' category mostly exists because the binding action
+        # sits OUTSIDE the CWA — those cases must say so in cwa_section so
+        # the framing can't drift into implying CWA enforcement. Since the
+        # 2026-06-10 schema, cwa_applied is the canonical signal: adjacent
+        # cases marked applied/pending (e.g. a data-center power plant with
+        # a live NPDES draft permit) legitimately skip the disclaimer.
+        adjacent = [
+            c
+            for c in self._cases()
+            if c["category"] == "adjacent" and c["cwa_applied"] == "not-applied"
+        ]
         assert len(adjacent) >= 5, "expected the expanded adjacent set"
         for c in adjacent:
             section = c["cwa_section"].lower()
