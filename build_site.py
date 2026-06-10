@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import html
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -67,6 +68,10 @@ def md(text: str) -> str:
 # --------------------------------------------------------------------------
 
 
+def _principle_slug(tag: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", tag.lower()).strip("-")
+
+
 def build_legislation_tab() -> str:
     payload = dash.load_legislation()
     bills = payload.get("bills", [])
@@ -77,9 +82,43 @@ def build_legislation_tab() -> str:
             b.get("jurisdiction", ""),
         ),
     )
-    cards = "".join(dash._build_bill_card_html(b) for b in sorted_bills)
-    summary = dash._legislation_status_summary(bills)
+    # Wrap each card with machine-readable attrs for client-side filtering.
+    cards = "".join(
+        f'<div class="leg-bill" data-status="{esc(b.get("status",""))}" '
+        f'data-level="{esc(b.get("level",""))}" '
+        f'data-scope="{esc(" ".join(b.get("scope", [])))}" '
+        f'data-principles="{esc(" ".join(sorted({_principle_slug(p.get("tag","")) for p in b.get("general_principles", [])})))}">'
+        f'{dash._build_bill_card_html(b)}</div>'
+        for b in sorted_bills
+    )
     last_updated = payload.get("last_updated") or "unknown"
+    principles_panel = dash._build_principles_summary_html(bills)
+    explainer = md(dash._legislation_explainer_md())
+
+    tag_rows = dash._legislation_principles_summary(bills)
+    principle_boxes = "".join(
+        f'<label class="chip-check"><input type="checkbox" class="leg-principle" '
+        f'value="{_principle_slug(r["tag"])}" checked> {esc(r["tag"])}</label>'
+        for r in tag_rows
+    )
+    status_boxes = "".join(
+        f'<label class="chip-check"><input type="checkbox" class="leg-status" '
+        f'value="{k}" checked> {esc(v)}</label>'
+        for k, v in dash.LEGISLATION_STATUS_LABELS.items()
+        if k != "unknown"
+    )
+    level_boxes = "".join(
+        f'<label class="chip-check"><input type="checkbox" class="leg-level" '
+        f'value="{k}" checked> {esc(v)}</label>'
+        for k, v in dash.LEGISLATION_LEVEL_LABELS.items()
+    )
+    scope_boxes = "".join(
+        f'<label class="chip-check"><input type="checkbox" class="leg-scope" '
+        f'value="{k}" checked> {esc(v)}</label>'
+        for k, v in dash.LEGISLATION_SCOPE_LABELS.items()
+    )
+    status_labels_json = json.dumps(dash.LEGISLATION_STATUS_LABELS)
+    status_order_json = json.dumps(dash.LEGISLATION_STATUS_ORDER)
 
     return f"""
 <section class="panel">
@@ -87,12 +126,31 @@ def build_legislation_tab() -> str:
   <p class="lead">State, federal, and local action on data center water (and energy)
   disclosure — bills, signed laws, agency rulemakings, and major zoning ordinances.
   Enacted laws are the next mandatory data sources to come online.</p>
-  <p class="count-line"><strong>{len(bills)} bills tracked</strong> — {esc(summary)}</p>
-  {cards}
+  {principles_panel}
+  <details class="lazy">
+    <summary>How to read this tracker — statuses, levels, principles</summary>
+    <div class="explainer-md">{explainer}</div>
+  </details>
+  <div class="cwa-filters">
+    <span class="filter-label">Principle:</span>
+    <div class="cwa-types">{principle_boxes}</div>
+  </div>
+  <div class="cwa-filters">
+    <span class="filter-label">Status:</span>{status_boxes}
+    <span class="filter-label">Level:</span>{level_boxes}
+    <span class="filter-label">Scope:</span>{scope_boxes}
+  </div>
+  <p class="count-line" id="leg-count"></p>
+  <div id="leg-bills">{cards}</div>
   <p class="src-note">Dataset last updated {esc(last_updated)}. Verification status for
   each entry is tracked in the underlying JSON; treat any not flagged verified=true
   there as secondary-sourced.</p>
 </section>
+<script>
+  window.LEG_STATUS_LABELS = {status_labels_json};
+  window.LEG_STATUS_ORDER = {status_order_json};
+  window.LEG_TOTAL = {len(bills)};
+</script>
 
 <details class="lazy">
   <summary>Show Policy &amp; Disclosure Timeline</summary>
@@ -755,6 +813,16 @@ details.lazy .panel{margin:0}
   h1{font-size:1.35rem}
   .hero{grid-template-columns:repeat(2,1fr)}
   .chart-wrap{height:300px}
+  /* Tighter cards + chips so 70+ cards stay scannable on a phone. */
+  .bill-card{padding:.65rem .75rem}
+  .chip-check{font-size:.78rem;padding:.18rem .55rem}
+  .cwa-filters{gap:.35rem .6rem}
+  .principle-sum-row{font-size:.82rem}
+  .principles-panel{padding:.7rem .8rem}
+  .cwa-instrument{font-size:.75rem}
+  /* Collapse long filter chip rows behind a scrollable strip instead of a
+     half-screen wall of checkboxes. */
+  .cwa-types{max-height:7.5rem;overflow-y:auto}
 }
 """
 
@@ -769,6 +837,33 @@ tabs.forEach(t => t.addEventListener('click', () => {
   panels.forEach(p => p.hidden = (p.id !== 'panel-' + t.dataset.tab));
   if (t.dataset.tab === 'data') initCharts();
 }));
+
+// --- Legislation filtering ---
+const legCount = document.getElementById('leg-count');
+function applyLegFilter(){
+  const statuses = new Set([...document.querySelectorAll('.leg-status:checked')].map(c => c.value));
+  const levels = new Set([...document.querySelectorAll('.leg-level:checked')].map(c => c.value));
+  const scopes = new Set([...document.querySelectorAll('.leg-scope:checked')].map(c => c.value));
+  const prins = new Set([...document.querySelectorAll('.leg-principle:checked')].map(c => c.value));
+  const counts = {};
+  let shown = 0;
+  document.querySelectorAll('.leg-bill').forEach(el => {
+    const sc = (el.dataset.scope || '').split(' ').filter(Boolean);
+    const pr = (el.dataset.principles || '').split(' ').filter(Boolean);
+    const ok = statuses.has(el.dataset.status) && levels.has(el.dataset.level) &&
+      sc.some(s => scopes.has(s)) && pr.some(p => prins.has(p));
+    el.hidden = !ok;
+    if (ok){ shown++; counts[el.dataset.status] = (counts[el.dataset.status]||0)+1; }
+  });
+  const lOrder = window.LEG_STATUS_ORDER || {}, lLabels = window.LEG_STATUS_LABELS || {};
+  const lSummary = Object.keys(counts).sort((a,b)=>(lOrder[a]??9)-(lOrder[b]??9))
+    .map(k => counts[k] + ' ' + (lLabels[k]||k)).join(' · ');
+  legCount.innerHTML = '<strong>Showing ' + shown + ' of ' + window.LEG_TOTAL +
+    ' bills</strong>' + (lSummary ? ' — ' + lSummary : '');
+}
+document.querySelectorAll('.leg-status, .leg-level, .leg-scope, .leg-principle').forEach(c =>
+  c.addEventListener('change', applyLegFilter));
+if (legCount) applyLegFilter();
 
 // --- CWA filtering ---
 const cwaCount = document.getElementById('cwa-count');
@@ -854,6 +949,102 @@ document.querySelectorAll('details.lazy').forEach(d =>
 """.replace("__CHART_DATA__", json.dumps(chart_data))
 
 
+LLMS_TXT_PATH = BASE_DIR / "pages" / "llms.txt"
+SITE_URL = "https://pranava0x0.github.io/datacenterwaterusage/"
+REPO_URL = "https://github.com/pranava0x0/datacenterwaterusage"
+
+
+def build_llms_txt() -> str:
+    """llms.txt — an LLM-friendly plain-markdown mirror of the site.
+
+    Follows the llms.txt convention (llmstxt.org): H1 + blockquote summary,
+    then sections. Regenerated by every build so it can never drift from the
+    page; a test asserts every bill_id and case_id appears.
+    """
+    leg = dash.load_legislation()
+    bills = leg.get("bills", [])
+    cwa = dash.load_cwa_investigations()
+    cases = cwa.get("cases", [])
+    built = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    lines = [
+        "# Data Center Water Use Tracker",
+        "",
+        "> Tracking data center water consumption in Virginia & Ohio via public "
+        "regulatory data (EPA ECHO DMR flow at receiving wastewater treatment "
+        "plants, state permit portals, utility financial reports), plus three "
+        "curated national datasets: data-center water legislation, Clean Water "
+        "Act cases relevant to data centers, and company water claims.",
+        "",
+        f"Static build {built}. Dashboard: {SITE_URL} · Source: {REPO_URL}",
+        "",
+        "## Key numbers",
+        "",
+        f"- {len(bills)} bills tracked — {dash._legislation_status_summary(bills)}",
+        f"- {len(cases)} Clean Water Act cases — {dash._cwa_summary(cases)}",
+        "- Core finding: data centers rarely hold their own discharge permits; "
+        "operational water shows up at the receiving municipal treatment plant, "
+        "so the pipeline tracks WWTP NPDES permits via EPA ECHO.",
+        "",
+        "## Key principles across tracked legislation",
+        "",
+    ]
+    for r in dash._legislation_principles_summary(bills):
+        enacted = f", {r['enacted']} enacted" if r["enacted"] else ""
+        examples = ", ".join(bid for bid, _ in r["example_bills"])
+        lines.append(
+            f"- **{r['tag']}** ({r['count']} bills{enacted}): {r['description']} "
+            f"Examples: {examples}."
+        )
+
+    lines += ["", "## Legislation tracker", ""]
+    for b in sorted(
+        bills,
+        key=lambda b: (
+            dash.LEGISLATION_STATUS_ORDER.get(b.get("status"), 9),
+            b.get("jurisdiction", ""),
+        ),
+    ):
+        status = dash.LEGISLATION_STATUS_LABELS.get(b.get("status"), "?")
+        lines.append(
+            f"- {b.get('bill_id')} ({b.get('jurisdiction')}) — {status} — "
+            f"{b.get('summary')} Source: {b.get('source_url')}"
+        )
+
+    lines += ["", "## Clean Water Act cases", ""]
+    for c in sorted(
+        cases,
+        key=lambda c: (
+            dash.CWA_CATEGORY_ORDER.get(c.get("category"), 9),
+            -dash._cwa_year_end(c.get("year", "")),
+        ),
+    ):
+        cat = dash.CWA_CATEGORY_LABELS.get(c.get("category"), "?")
+        ctype = dash.CWA_CASE_TYPE_LABELS.get(c.get("case_type"), "?")
+        status = dash.CWA_STATUS_LABELS.get(c.get("cwa_applied"), "?")
+        src = (c.get("sources") or [{}])[0].get("url", "")
+        line = (
+            f"- {c.get('case_id')} ({c.get('year')}) — {cat} / {ctype} / {status} "
+            f"— {c.get('cwa_instrument', '')}. {c.get('takeaway', '')}"
+        )
+        if c.get("cwa_pathway"):
+            line += f" How the CWA could apply: {c['cwa_pathway']}"
+        if src:
+            line += f" Source: {src}"
+        lines.append(line)
+
+    lines += [
+        "",
+        "## Data files",
+        "",
+        f"- Legislation dataset: {REPO_URL}/blob/main/data/reference/legislation.json",
+        f"- CWA cases dataset: {REPO_URL}/blob/main/data/reference/cwa_investigations.json",
+        f"- Company water claims: {REPO_URL}/blob/main/data/reference/company_water_claims.json",
+        "",
+    ]
+    return "\n".join(lines)
+
+
 def build_html() -> str:
     legislation = build_legislation_tab()
     cwa = build_cwa_tab()
@@ -869,6 +1060,7 @@ def build_html() -> str:
 <title>Data Center Water Use Tracker</title>
 <meta name="description" content="Tracking data center water consumption in Virginia &amp; Ohio via public regulatory data.">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="alternate" type="text/plain" href="llms.txt" title="LLM-friendly summary">
 <style>{COMPONENT_CSS}{CSS}</style>
 </head>
 <body>
@@ -888,7 +1080,9 @@ def build_html() -> str:
   <div class="tabpanel" id="panel-data" role="tabpanel" hidden>{data_html}</div>
 
   <p class="src-note">Static build {built} · Sources: EPA ECHO DMR, VA DEQ, Ohio EPA,
-  Loudoun Water. Data center cooling water tracked via receiving WWTP flow.</p>
+  Loudoun Water. Data center cooling water tracked via receiving WWTP flow ·
+  <a href="llms.txt">llms.txt</a> (LLM-friendly summary) ·
+  <a href="{REPO_URL}" target="_blank" rel="noopener">source</a></p>
 </div>
 <script src="{CHARTJS_URL}" integrity="{CHARTJS_SRI}" crossorigin="anonymous"></script>
 <script>{js}</script>
@@ -902,6 +1096,8 @@ def main() -> None:
     OUT_PATH.write_text(build_html(), encoding="utf-8")
     size_kb = OUT_PATH.stat().st_size / 1024
     print(f"Wrote {OUT_PATH} ({size_kb:.0f} KB)")
+    LLMS_TXT_PATH.write_text(build_llms_txt(), encoding="utf-8")
+    print(f"Wrote {LLMS_TXT_PATH} ({LLMS_TXT_PATH.stat().st_size / 1024:.0f} KB)")
 
 
 if __name__ == "__main__":

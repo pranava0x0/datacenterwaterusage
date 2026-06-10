@@ -547,6 +547,59 @@ _RESPONSIVE_CSS = """
     font-size: 0.85rem;
     color: #333;
 }
+/* --- Legislation extras (scope pills + cross-bill principles panel) --- */
+.bill-scope-pill {
+    background: #e0f2fe;
+    color: #075985;
+    border: 1px solid #7dd3fc;
+    border-radius: 999px;
+    padding: 0.1rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+.principles-panel {
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    background: #fff;
+    padding: 0.9rem 1.1rem;
+    margin: 0.5rem 0 1rem;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+.principles-panel-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #1a1a2e;
+    margin-bottom: 0.15rem;
+}
+.principles-panel-sub {
+    color: #4b5563;
+    font-size: 0.85rem;
+    margin: 0 0 0.5rem;
+}
+.principle-sum-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.5rem;
+    align-items: baseline;
+    padding: 0.3rem 0;
+    border-top: 1px solid #f1f5f9;
+    font-size: 0.88rem;
+}
+.principle-sum-count {
+    font-weight: 700;
+    color: #08519c;
+    white-space: nowrap;
+}
+.principle-sum-desc {
+    color: #1a1a2e;
+}
+.principle-sum-examples {
+    color: #4b5563;
+    font-size: 0.82rem;
+}
+.principle-sum-examples a {
+    color: #08519c;
+}
 /* --- CWA case card variant (reuses .bill-card base) --- */
 .cwa-year {
     color: #4b5563;

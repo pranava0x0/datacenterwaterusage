@@ -571,6 +571,57 @@ class TestLegislationTracker:
     def _bills(self):
         return load_legislation().get("bills", [])
 
+    def test_principle_tags_are_canonical(self):
+        # Every general_principles tag must be in the canonical taxonomy that
+        # powers the summary panel and the principle filter — a typo'd tag
+        # would silently vanish from both.
+        from dashboard import LEGISLATION_PRINCIPLE_DESCRIPTIONS
+
+        for b in self._bills():
+            for p in b.get("general_principles", []):
+                assert p.get("tag") in LEGISLATION_PRINCIPLE_DESCRIPTIONS, (
+                    f"{b['bill_id']}: unknown principle tag {p.get('tag')!r}"
+                )
+
+    def test_principles_summary_invariants(self):
+        from dashboard import _legislation_principles_summary
+
+        bills = self._bills()
+        rows = _legislation_principles_summary(bills)
+        assert rows, "expected a non-empty principles summary"
+        ids = {b["bill_id"] for b in bills}
+        # Ordered by count desc; every row carries a description and resolvable examples.
+        counts = [r["count"] for r in rows]
+        assert counts == sorted(counts, reverse=True)
+        for r in rows:
+            assert r["description"], f"{r['tag']} missing description"
+            assert 0 <= r["enacted"] <= r["count"]
+            assert 1 <= len(r["example_bills"]) <= 3
+            for bid, _status in r["example_bills"]:
+                assert bid in ids, f"{r['tag']}: unknown example bill {bid}"
+        # A bill tagged N times with the same tag counts once.
+        assert max(counts) <= len(bills)
+
+    def test_principles_summary_panel_html(self):
+        from dashboard import _build_principles_summary_html, _bill_anchor
+
+        bills = self._bills()
+        panel = _build_principles_summary_html(bills)
+        assert "Key principles across all bills" in panel
+        # Example links are in-page anchors that resolve to real card ids.
+        anchors = set(re.findall(r'href="#(bill-[a-z0-9-]+)"', panel))
+        assert anchors, "expected example-bill anchor links"
+        card_ids = {_bill_anchor(b["bill_id"]) for b in bills}
+        assert anchors <= card_ids
+
+    def test_legislation_explainer_covers_vocabulary(self):
+        from dashboard import _legislation_explainer_md
+
+        md = _legislation_explainer_md()
+        for term in ("Enacted", "Introduced", "Failed", "Federal", "Water",
+                     "Principles", "verified"):
+            assert term in md, f"explainer missing {term}"
+
     def test_dataset_loads(self):
         payload = load_legislation()
         assert payload.get("last_updated")
@@ -691,7 +742,13 @@ class TestLegislationTracker:
 
         for b in self._bills():
             html_str = _build_bill_card_html(b)
-            assert html_str.startswith('<div class="bill-card">'), b["bill_id"]
+            # Each card carries a stable anchor id so the principles panel's
+            # example-bill links can target it.
+            from dashboard import _bill_anchor
+
+            assert html_str.startswith(
+                f'<div class="bill-card" id="{_bill_anchor(b["bill_id"])}">'
+            ), b["bill_id"]
             # bill_id must round-trip through the renderer (HTML-escaped).
             assert _html.escape(b["bill_id"]) in html_str, b["bill_id"]
             # Status badge must show one of the four labelled statuses, not

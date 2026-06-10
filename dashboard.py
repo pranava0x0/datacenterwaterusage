@@ -1138,6 +1138,146 @@ LEGISLATION_STATUS_BADGE_COLORS = {
     "unknown": COLORS["secondary"],
 }
 
+LEGISLATION_LEVEL_LABELS = {
+    "federal": "Federal",
+    "state": "State",
+    "local": "Local",
+}
+LEGISLATION_SCOPE_LABELS = {
+    "water": "Water",
+    "energy": "Energy",
+}
+
+# Canonical principle taxonomy — every general_principles tag in the dataset
+# must be one of these (a test enforces it, same pattern as the CWA
+# case_type vocabulary). The one-liners power the cross-bill summary panel.
+LEGISLATION_PRINCIPLE_DESCRIPTIONS = {
+    "Transparency": "Make data-center water/energy use publicly visible instead of proprietary.",
+    "Disclosure": "Require operators or utilities to file specific consumption reports.",
+    "Cost allocation": "Make data centers pay the infrastructure and rate costs they cause.",
+    "Permit oversight": "Give regulators or localities approval leverage over siting and use.",
+    "Conservation": "Mandate or incentivize lower water/energy consumption outright.",
+    "Federal coordination": "Standardize metrics and oversight across states at the federal level.",
+    "Preemptive review": "Force evaluation of impacts before construction, not after.",
+    "Anti-corporate-welfare": "Condition or repeal subsidies and tax exemptions.",
+    "Best-practice guidance": "Codify model standards and guidance rather than hard mandates.",
+    "NDA prohibition": "Ban the non-disclosure agreements that hide water deals from the public.",
+    "Closed-loop cooling": "Require sealed cooling systems with minimal net water draw.",
+    "Strict liability": "Attach direct, non-waivable liability for violations or harms.",
+    "Moratorium": "Pause new data-center development until safeguards exist.",
+}
+
+
+def _bill_anchor(bill_id: str) -> str:
+    """Stable in-page anchor slug for a bill card ('VA HB 496 / SB 553' →
+    'bill-va-hb-496-sb-553')."""
+    slug = re.sub(r"[^a-z0-9]+", "-", str(bill_id).lower()).strip("-")
+    return f"bill-{slug}"
+
+
+def _legislation_principles_summary(bills: list[dict]) -> list[dict]:
+    """Aggregate general_principles tags across all bills.
+
+    Returns one row per tag, ordered by bill count desc:
+    {tag, description, count, enacted, example_bills: [(bill_id, status), ...]}
+    Example bills prefer enacted ones (the principles that actually became
+    law matter most), then introduced, capped at 3 per tag.
+    """
+    by_tag: dict[str, list[dict]] = {}
+    for b in bills:
+        seen_tags = set()
+        for p in b.get("general_principles", []):
+            tag = p.get("tag", "")
+            if not tag or tag in seen_tags:
+                continue
+            seen_tags.add(tag)
+            by_tag.setdefault(tag, []).append(b)
+
+    rows = []
+    for tag, tagged in by_tag.items():
+        ranked = sorted(
+            tagged, key=lambda b: LEGISLATION_STATUS_ORDER.get(b.get("status"), 9)
+        )
+        rows.append(
+            {
+                "tag": tag,
+                "description": LEGISLATION_PRINCIPLE_DESCRIPTIONS.get(tag, ""),
+                "count": len(tagged),
+                "enacted": sum(1 for b in tagged if b.get("status") == "enacted"),
+                "example_bills": [
+                    (b.get("bill_id", ""), b.get("status", "")) for b in ranked[:3]
+                ],
+            }
+        )
+    rows.sort(key=lambda r: (-r["count"], r["tag"]))
+    return rows
+
+
+def _build_principles_summary_html(bills: list[dict]) -> str:
+    """Cross-bill 'what do these bills actually ask for?' panel.
+
+    Pure HTML builder shared by the Streamlit app and the static site. Each
+    row: tag chip + N bills (M enacted) + one-line description + example
+    bill links (in-page anchors to the cards below).
+    """
+    rows = _legislation_principles_summary(bills)
+    if not rows:
+        return ""
+    esc = html.escape
+    items = []
+    for r in rows:
+        examples = " · ".join(
+            f'<a href="#{_bill_anchor(bid)}">{esc(bid)}</a>'
+            + (" ✓" if status == "enacted" else "")
+            for bid, status in r["example_bills"]
+        )
+        enacted_note = f", {r['enacted']} enacted" if r["enacted"] else ""
+        items.append(
+            '<div class="principle-sum-row">'
+            f'<span class="bill-principle-chip">{esc(r["tag"])}</span>'
+            f'<span class="principle-sum-count">{r["count"]} bills{enacted_note}</span>'
+            f'<span class="principle-sum-desc">{esc(r["description"])}</span>'
+            f'<span class="principle-sum-examples">e.g. {examples}</span>'
+            '</div>'
+        )
+    return (
+        '<div class="principles-panel">'
+        '<div class="principles-panel-title">Key principles across all bills</div>'
+        '<p class="principles-panel-sub">What this wave of legislation actually '
+        'asks for, ranked by how many tracked bills carry each idea. '
+        '✓ marks an enacted example.</p>'
+        f'{"".join(items)}'
+        '</div>'
+    )
+
+
+def _legislation_explainer_md() -> str:
+    """Short 'how to read this tracker' explainer for the legislation tab."""
+    return (
+        "**Status.** *Enacted* = signed into law (these become mandatory data "
+        "sources for this project — e.g. VA HB 496's monthly water-delivery "
+        "reports). *Introduced* = filed and somewhere between first reading "
+        "and a floor vote; most die quietly in committee. *Failed / Vetoed* = "
+        "formally dead this session, but failed bills are leading indicators — "
+        "the same text routinely returns a session later with a new number.\n\n"
+        "**Levels.** *Federal* bills set national floors (EPA/EIA reporting, "
+        "FERC queue rules); *state* bills carry most of the real activity "
+        "(disclosure mandates, rate classes, permit gates); *local* entries "
+        "are zoning actions with outsized practical effect in data-center "
+        "alley (e.g. Loudoun's ZOAM).\n\n"
+        "**Scope.** *Water* and *energy* tags mark which resource a bill "
+        "regulates; many cover both because cooling water and grid load are "
+        "two faces of the same buildout.\n\n"
+        "**Principles.** Each bill is tagged with the general ideas it "
+        "embodies (transparency, cost allocation, NDA prohibition, …) — the "
+        "summary panel above ranks those ideas across the whole record, and "
+        "you can filter the cards by principle.\n\n"
+        "**Verification.** Entries flagged `verified` were checked against "
+        "the legislature's own bill-status page on the `last_verified` date; "
+        "unverified entries are secondary-sourced — confirm the bill number "
+        "before citing."
+    )
+
 
 def render_legislation_tracker(is_mobile: bool = False, is_tablet: bool = False):
     """Render the National Legislation Tracker panel.
@@ -1166,12 +1306,68 @@ def render_legislation_tracker(is_mobile: bool = False, is_tablet: bool = False)
         st.info("Legislation dataset not found or empty.")
         return
 
+    # Cross-bill principles synthesis — the "so what" before the card list,
+    # mirroring the CWA tab's insight panel.
+    st.markdown(_build_principles_summary_html(bills), unsafe_allow_html=True)
+
+    with st.expander("How to read this tracker — statuses, levels, principles"):
+        st.markdown(_legislation_explainer_md())
+
+    # Filters: principle (primary), then status / level / scope.
+    all_tags = [r["tag"] for r in _legislation_principles_summary(bills)]
+    selected_tags = st.multiselect(
+        "Filter by principle",
+        options=all_tags,
+        default=all_tags,
+        key="leg_principle_filter",
+    )
+    fcols = st.columns(3)
+    with fcols[0]:
+        selected_status = st.multiselect(
+            "Status",
+            options=list(LEGISLATION_STATUS_LABELS.keys())[:3],
+            default=list(LEGISLATION_STATUS_LABELS.keys())[:3],
+            format_func=lambda k: LEGISLATION_STATUS_LABELS.get(k, k.title()),
+            key="leg_status_filter",
+        )
+    with fcols[1]:
+        selected_levels = st.multiselect(
+            "Level",
+            options=list(LEGISLATION_LEVEL_LABELS.keys()),
+            default=list(LEGISLATION_LEVEL_LABELS.keys()),
+            format_func=lambda k: LEGISLATION_LEVEL_LABELS.get(k, k.title()),
+            key="leg_level_filter",
+        )
+    with fcols[2]:
+        selected_scopes = st.multiselect(
+            "Scope",
+            options=list(LEGISLATION_SCOPE_LABELS.keys()),
+            default=list(LEGISLATION_SCOPE_LABELS.keys()),
+            format_func=lambda k: LEGISLATION_SCOPE_LABELS.get(k, k.title()),
+            key="leg_scope_filter",
+        )
+
+    tag_set, status_set = set(selected_tags), set(selected_status)
+    level_set, scope_set = set(selected_levels), set(selected_scopes)
+    filtered = [
+        b
+        for b in bills
+        if b.get("status") in status_set
+        and b.get("level") in level_set
+        and (scope_set & set(b.get("scope", [])))
+        and (tag_set & {p.get("tag") for p in b.get("general_principles", [])})
+    ]
+    if not filtered:
+        st.info("No bills match the current filter. Try widening the selection.")
+        return
+
     st.markdown(
-        f"**{len(bills)} bills tracked** — {_legislation_status_summary(bills)}"
+        f"**Showing {len(filtered)} of {len(bills)} bills** — "
+        f"{_legislation_status_summary(filtered)}"
     )
 
     sorted_bills = sorted(
-        bills,
+        filtered,
         key=lambda b: (
             LEGISLATION_STATUS_ORDER.get(b.get("status"), 9),
             b.get("jurisdiction", ""),
@@ -1217,6 +1413,36 @@ def _build_bill_card_html(bill: dict) -> str:
         '</div>'
     )
 
+    # Classification row — jurisdiction, level, scope, and the bill's
+    # principle tags at a glance (mirrors the CWA cards' cwa-class-row).
+    level = (bill.get("level") or "").lower()
+    class_bits = []
+    jurisdiction = esc(bill.get("jurisdiction", ""))
+    if jurisdiction:
+        class_bits.append(f'<span class="cwa-type-pill">{jurisdiction}</span>')
+    if (
+        level in LEGISLATION_LEVEL_LABELS
+        and level != "state"
+        and level not in (bill.get("jurisdiction") or "").lower()
+    ):
+        # State is the default and jurisdictions like "Federal (US)" or
+        # "Local (Loudoun County)" already say it — only add the level pill
+        # when it adds information.
+        class_bits.append(
+            f'<span class="cwa-type-pill">{esc(LEGISLATION_LEVEL_LABELS[level])}</span>'
+        )
+    for s in bill.get("scope", []):
+        label = LEGISLATION_SCOPE_LABELS.get(s, s.title())
+        class_bits.append(f'<span class="bill-scope-pill">{esc(label)}</span>')
+    tags = [p.get("tag", "") for p in bill.get("general_principles", []) if p.get("tag")]
+    if tags:
+        class_bits.append(
+            f'<span class="cwa-instrument">{esc(" · ".join(dict.fromkeys(tags)))}</span>'
+        )
+    class_row = (
+        f'<div class="cwa-class-row">{"".join(class_bits)}</div>' if class_bits else ""
+    )
+
     body = f'<p class="bill-card-summary">{summary}</p>' if summary else ""
 
     meta_bits = []
@@ -1232,7 +1458,11 @@ def _build_bill_card_html(bill: dict) -> str:
 
     details = _build_bill_details_html(bill)
 
-    return f'<div class="bill-card">{head}{body}{meta}{details}</div>'
+    anchor = _bill_anchor(bill.get("bill_id", ""))
+    return (
+        f'<div class="bill-card" id="{anchor}">'
+        f'{head}{class_row}{body}{meta}{details}</div>'
+    )
 
 
 def _build_bill_details_html(bill: dict) -> str:
@@ -1812,18 +2042,22 @@ def _build_cwa_case_html(case: dict, case_ids: set[str] | None = None) -> str:
         f'<div class="cwa-class-row">{"".join(class_bits)}</div>' if class_bits else ""
     )
 
-    section_line = (
-        f'<div class="cwa-section-line">{cwa_section}</div>' if cwa_section else ""
-    )
-
+    # Visible by default: the takeaway (why this case matters here) and the
+    # CWA pathway. The longer narrative (full statute cite, violation,
+    # outcome, sources) lives in a collapsed <details> so 73 cards stay
+    # scannable, especially on mobile — the cwa_instrument pill row already
+    # summarizes the statute line.
     sections = []
+    detail_sections = []
+    if cwa_section:
+        detail_sections.append(f'<div class="cwa-section-line">{cwa_section}</div>')
     if violation:
-        sections.append(
+        detail_sections.append(
             '<div class="bill-section-label">Violation</div>'
             f'<p class="bill-sentiment">{violation}</p>'
         )
     if outcome:
-        sections.append(
+        detail_sections.append(
             '<div class="bill-section-label">Outcome</div>'
             f'<p class="bill-sentiment">{outcome}</p>'
         )
@@ -1868,16 +2102,24 @@ def _build_cwa_case_html(case: dict, case_ids: set[str] | None = None) -> str:
             if stype:
                 link += f' <span class="cwa-source-type">({stype})</span>'
             items.append(link)
-        sections.append(
+        detail_sections.append(
             '<div class="bill-section-label">Sources</div>'
             f'<div class="cwa-sources">{" · ".join(items)}</div>'
+        )
+
+    if detail_sections:
+        sections.append(
+            '<details class="bill-card-details">'
+            '<summary>Details — violation, outcome, sources</summary>'
+            f'{"".join(detail_sections)}'
+            '</details>'
         )
 
     body = "".join(sections)
     anchor = esc(case.get("case_id", ""))
     return (
         f'<div class="bill-card" id="cwa-{anchor}">'
-        f'{head}{class_row}{section_line}{body}</div>'
+        f'{head}{class_row}{body}</div>'
     )
 
 
