@@ -908,6 +908,28 @@ class TestCWAInvestigations:
             assert cid in cases, f"missing newly-added case {cid}"
             assert cases[cid]["category"] == cat, cid
 
+    def test_june_10_2026_research_additions_present(self):
+        # Regression guard for the 2026-06-10 research pass: ten verified
+        # cases (4 datacenter, 6 adjacent). Pin the anchors so a reshuffle
+        # can't silently drop them.
+        cases = {c["case_id"]: c for c in self._cases()}
+        expected = {
+            "QuantumLoophole-FrederickMD-boring-discharges-2022-2024": ("datacenter", "applied"),
+            "AWS-LakeAnnaVA-VPDES-cooling-discharge-2026": ("datacenter", "applied"),
+            "Google-FortWayneIN-isolated-wetland-permit-2025": ("datacenter", "not-applied"),
+            "Microsoft-MountPleasantWI-wetland-individual-permit-2024": ("datacenter", "pending"),
+            "Meta-NewtonCountyGA-well-failures-2018-2025": ("adjacent", "not-applied"),
+            "MilwaukeeRiverkeeper-RacineWI-water-records-suit-2025": ("adjacent", "not-applied"),
+            "CorpusChristi-SintonTX-EvangelineAquifer-wells-2026": ("adjacent", "not-applied"),
+            "Sailfish-HoodCountyTX-ComancheCircle-aquifer-moratorium-2025-2026": ("adjacent", "not-applied"),
+            "Charlotte-NC-drought-datacenter-moratorium-2026": ("adjacent", "not-applied"),
+            "Microsoft-CaledoniaWI-rezoning-withdrawal-2025": ("adjacent", "not-applied"),
+        }
+        for cid, (cat, status) in expected.items():
+            assert cid in cases, f"missing newly-added case {cid}"
+            assert cases[cid]["category"] == cat, cid
+            assert cases[cid]["cwa_applied"] == status, cid
+
     def test_adjacent_cases_disclaim_cwa_enforcement(self):
         # The 'adjacent' category exists precisely because the binding action
         # sits OUTSIDE the CWA. Every adjacent case must say so in its
