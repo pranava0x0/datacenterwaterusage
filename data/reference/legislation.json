@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-28",
+  "last_updated": "2026-06-10",
   "note": "State + federal data center water/energy legislation, plus selected regulatory actions and major local zoning decisions. Verified entries had their status confirmed against a primary source (state legislature page, Congress.gov / GovInfo, official sponsor press release) on the listed last_verified date; unverified entries should be re-checked before being relied upon. Each bill is enriched with recent_news (up to 3 dated items with source URLs), public_sentiment (a paragraph naming supporters/opponents), general_principles (tagged policy concepts), and a procedural timeline. These fields are best-effort as of last_updated and should be re-verified before being cited. Scope expanded 2026-05-28 to include regulatory rulemakings (OH EPA OHD000001) and major local ordinances (Loudoun ZOAM) that function as de facto data-center policy.",
   "bills": [
     {
@@ -1312,7 +1312,7 @@
         "energy"
       ],
       "status": "introduced",
-      "status_detail": "Introduced February 2026; A10141 companion introduced February 9, 2026; both pending in committee.",
+      "status_detail": "Introduced February 2026; both pending in committee. In the session's final days the one-year Responsible Data Center Development Act (S10642/A11560, tracked separately) passed both chambers instead of this three-year version — re-verify whether S9144 remains a live separate vehicle in 2027 or was effectively superseded.",
       "source_url": "https://www.nysenate.gov/legislation/bills/2025/S9144",
       "last_verified": "2026-05-28",
       "verified": true,
@@ -2062,6 +2062,472 @@
         {
           "date": "2026-12-31",
           "milestone": "Phase 2 full Board action expected"
+        }
+      ]
+    },
+    {
+      "bill_id": "ID H 895",
+      "jurisdiction": "Idaho",
+      "level": "state",
+      "title": "Data Centers — Limitations on Consumptive Use of Water for Cooling",
+      "sponsor": "House Ways and Means Committee (Rep. Britt Raybould, R-Rexburg, a leading proponent)",
+      "summary": "Requires data centers built after July 1, 2026 to design cooling systems for non-consumptive water use or to draw from a municipal/water-district system, and requires the Department of Water Resources director to issue findings when evaluating new water appropriations or transfers for data centers. Aimed at preserving groundwater for agriculture in Idaho's high desert.",
+      "scope": [
+        "water"
+      ],
+      "status": "enacted",
+      "status_detail": "Signed by Gov. Little April 2, 2026 (Session Law Ch. 291); effective July 1, 2026. Verified on legislature.idaho.gov.",
+      "source_url": "https://legislature.idaho.gov/sessioninfo/2026/legislation/H0895/",
+      "last_verified": "2026-06-10",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-03-30",
+          "title": "Idaho advances bill on data center water consumption",
+          "source": "Capital Press",
+          "url": "https://capitalpress.com/2026/03/30/idaho-advances-bill-on-data-center-water-consumption/",
+          "takeaway": "Bill passed the House 58-10 and won a do-pass from Senate Resources & Environment, framed as protecting agricultural water in Idaho's high desert."
+        }
+      ],
+      "public_sentiment": "Broad bipartisan support driven by agricultural water users worried about aquifer depletion; passed both chambers by lopsided margins (58-10 House, 32-1 Senate) with little organized industry opposition since municipal-supplied data centers remain permitted.",
+      "general_principles": [
+        {
+          "tag": "Closed-loop cooling",
+          "note": "Mandates non-consumptive cooling design for new data centers not on municipal systems, effectively requiring closed-loop or equivalent designs."
+        },
+        {
+          "tag": "Permit oversight",
+          "note": "Requires IDWR director findings before approving new water appropriations or transfers for data centers."
+        },
+        {
+          "tag": "Conservation",
+          "note": "Explicitly preserves consumptive water rights for agriculture and existing industry over new data center demand."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-03-13",
+          "milestone": "Introduced in Idaho House"
+        },
+        {
+          "date": "2026-03-20",
+          "milestone": "Passed House 58-10-2"
+        },
+        {
+          "date": "2026-03-31",
+          "milestone": "Passed Senate 32-1-2"
+        },
+        {
+          "date": "2026-04-02",
+          "milestone": "Signed by Governor",
+          "detail": "Session Law Chapter 291, effective July 1, 2026"
+        }
+      ]
+    },
+    {
+      "bill_id": "CO SB26-102",
+      "jurisdiction": "Colorado",
+      "level": "state",
+      "title": "Large-Load Data Centers",
+      "sponsor": "Sen. Cathy Kipp (D-Fort Collins); Rep. Kyle Brown (D)",
+      "summary": "Would have required operators of new large-load data centers to comply with operational water management requirements and to report annual electricity and water consumption to the Colorado Department of Public Health and Environment (first reports due June 30, 2028). Killed in committee at the sponsor's request.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "failed",
+      "status_detail": "Postponed indefinitely 9-0 by Senate Transportation & Energy Committee on May 11, 2026, four days after companion HB26-1030 died. Verified on leg.colorado.gov.",
+      "source_url": "https://leg.colorado.gov/bills/SB26-102",
+      "last_verified": "2026-06-10",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-05-11",
+          "title": "Both Colorado data center bills rejected in final days of 2026 legislative session",
+          "source": "Colorado Newsline",
+          "url": "https://coloradonewsline.com/2026/05/11/data-center-bills-rejected-legislative-session/",
+          "takeaway": "Both SB26-102 and companion HB26-1030 died amid heavy industry lobbying, leaving Colorado with no statewide data center water rules."
+        },
+        {
+          "date": "2026-05-20",
+          "title": "Colorado killed its only data center water bills. Cities are filling the gap themselves.",
+          "source": "Rocky Mountain Voice",
+          "url": "https://rockymountainvoice.com/2026/05/20/colorado-killed-its-only-data-center-water-bills-cities-are-filling-the-gap-themselves/",
+          "takeaway": "With the state bills dead, Denver, Jefferson County, and Longmont began writing their own data center water rules."
+        }
+      ],
+      "public_sentiment": "Environmental and ratepayer groups backed the disclosure mandates; 238 lobbyists for 221 clients registered on the two bills, with data center and utility interests arguing the mandates were too restrictive for 24/7 facilities and would deter investment. Its death triggered local-government backlash and municipal moratoriums.",
+      "general_principles": [
+        {
+          "tag": "Disclosure",
+          "note": "Required annual water and electricity consumption reporting to state health officials."
+        },
+        {
+          "tag": "Conservation",
+          "note": "Imposed operational water-management requirements on large-load data centers."
+        },
+        {
+          "tag": "Transparency",
+          "note": "Would have made data center resource use visible to regulators and the public for the first time in Colorado."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-02-11",
+          "milestone": "Introduced in Senate; assigned to Transportation & Energy Committee"
+        },
+        {
+          "date": "2026-03-18",
+          "milestone": "Committee hearing; amendments failed, bill laid over"
+        },
+        {
+          "date": "2026-05-07",
+          "milestone": "Companion HB26-1030 dies"
+        },
+        {
+          "date": "2026-05-11",
+          "milestone": "Postponed indefinitely 9-0 at sponsor's request"
+        }
+      ]
+    },
+    {
+      "bill_id": "NY S10642 / A11560",
+      "jurisdiction": "New York",
+      "level": "state",
+      "title": "Responsible Data Center Development Act (one-year moratorium)",
+      "sponsor": "Sen. Kristen Gonzalez (D-59th); Assembly companion A11560",
+      "summary": "Imposes a one-year statewide moratorium on permits for hyperscale data centers (peak load over 20 MW), requires environmental impact reporting on water consumption, discharge, and local water-system impacts, mandates separate water and electricity rate classes for large data centers, and pushes measures such as closed-loop cooling to prevent wastewater-infrastructure strain.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "introduced",
+      "status_detail": "Passed Senate 43-17 on June 4, 2026 and Assembly (via substituted A11560) as session closed June 5; awaiting Gov. Hochul's signature as of June 10, 2026 — would be the first statewide data center moratorium in the nation. Verified on nysenate.gov. Late-session successor to the three-year moratorium concept in S9144/A10141 (tracked separately).",
+      "source_url": "https://www.nysenate.gov/legislation/bills/2025/S10642",
+      "last_verified": "2026-06-10",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-06-04",
+          "title": "New York State Gets One Step Closer to a Data Center Moratorium",
+          "source": "Inside Climate News",
+          "url": "https://insideclimatenews.org/news/04062026/new-york-data-center-moratorium-bill/",
+          "takeaway": "The legislature passed the first-in-nation statewide hyperscale data center moratorium in the session's final hours."
+        },
+        {
+          "date": "2026-06-04",
+          "title": "NY Gov. Hochul Must Sign One-Year AI Data Center Moratorium Passed by Legislature",
+          "source": "Food & Water Watch",
+          "url": "https://www.foodandwaterwatch.org/2026/06/04/ny-gov-hochul-must-sign-one-year-ai-data-center-moratorium-passed-by-legislature/",
+          "takeaway": "Environmental groups are pressuring Hochul to sign, citing water and energy strain from hyperscale facilities."
+        }
+      ],
+      "public_sentiment": "Strong support from environmental groups (Earthjustice, Food & Water Watch), labor, and consumer advocates; opposed by tech and business groups warning it will push AI investment to other states. Gov. Hochul's position is uncertain given her economic-development agenda.",
+      "general_principles": [
+        {
+          "tag": "Moratorium",
+          "note": "One-year statewide pause on permits for data centers over 20 MW."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "Requires environmental impact reporting on water consumption, discharge, and local water-system effects."
+        },
+        {
+          "tag": "Cost allocation",
+          "note": "Creates separate rate classes so large data centers bear their full water and electric infrastructure costs."
+        },
+        {
+          "tag": "Closed-loop cooling",
+          "note": "Directs mitigation measures, potentially including closed-loop cooling, to prevent water pollution and wastewater strain."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-06-01",
+          "milestone": "S10642 introduced",
+          "detail": "Late-session print of the Responsible Data Center Development Act"
+        },
+        {
+          "date": "2026-06-04",
+          "milestone": "Passed Senate 43-17"
+        },
+        {
+          "date": "2026-06-05",
+          "milestone": "Passed Assembly via substitution of A11560 (102-39)"
+        },
+        {
+          "date": "2026-06-10",
+          "milestone": "Awaiting governor's action"
+        }
+      ]
+    },
+    {
+      "bill_id": "WI AB 840 / SB 843",
+      "jurisdiction": "Wisconsin",
+      "level": "state",
+      "title": "Certain Requirements Related to Data Centers (water recycling and reporting)",
+      "sponsor": "Reps. Zimmerman, Wittke et al. (R); Senate cosponsors Quinn, Feyen et al.",
+      "summary": "Would have required data centers to recycle the water used to cool computer equipment, report water usage to the Wisconsin DNR, and meet utility-rate requirements ensuring facilities, not residential ratepayers, pay for their energy and water infrastructure demands.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "failed",
+      "status_detail": "Passed Assembly 53-44 on Jan 20, 2026; Senate committee recommended concurrence March 13, 2026 but the Senate never passed it before the session ended — died at adjournment. Verified history on docs.legis.wisconsin.gov; re-verify exact final Senate disposition (failure-to-concur date).",
+      "source_url": "https://docs.legis.wisconsin.gov/2025/proposals/ab840",
+      "last_verified": "2026-06-10",
+      "verified": true,
+      "confidence": "medium",
+      "recent_news": [
+        {
+          "date": "2026-01-20",
+          "title": "Wisconsin Assembly advances bill to regulate data centers",
+          "source": "Wisconsin Public Radio",
+          "url": "https://www.wpr.org/news/wisconsin-assembly-advances-bill-regulate-data-centers",
+          "takeaway": "GOP-led AB 840 passed the Assembly with water-recycling and DNR water-reporting mandates after Democratic amendments failed."
+        },
+        {
+          "date": "2026-05-15",
+          "title": "Wisconsin's Data Center Reckoning: Four Bills, No Resolution, and a Policy Vacuum",
+          "source": "REJournals",
+          "url": "https://rejournals.com/wisconsins-data-center-reckoning-four-bills-no-resolution-and-a-policy-vacuum/",
+          "takeaway": "None of Wisconsin's four data center bills became law, leaving a regulatory vacuum despite bipartisan concern."
+        }
+      ],
+      "public_sentiment": "Republican authors framed it as protecting ratepayers and water resources; Democrats wanted stronger renewable-energy and labor provisions and mostly voted no, while conservation groups like River Alliance of Wisconsin pushed for tougher water safeguards. Industry was wary of the recycling mandate.",
+      "general_principles": [
+        {
+          "tag": "Closed-loop cooling",
+          "note": "Required data centers to recycle cooling water rather than consume it once-through."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "Mandated water-use reporting to the Department of Natural Resources."
+        },
+        {
+          "tag": "Cost allocation",
+          "note": "Utility-rate provisions aimed to keep data center infrastructure costs off household bills."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-01-09",
+          "milestone": "Introduced in Assembly"
+        },
+        {
+          "date": "2026-01-20",
+          "milestone": "Passed Assembly 53-44"
+        },
+        {
+          "date": "2026-03-13",
+          "milestone": "Senate committee recommended concurrence"
+        },
+        {
+          "date": "2026-04-15",
+          "milestone": "Died at end of 2025-26 session without Senate passage",
+          "detail": "Date approximate — re-verify adjournment disposition"
+        }
+      ]
+    },
+    {
+      "bill_id": "ME LD 307",
+      "jurisdiction": "Maine",
+      "level": "state",
+      "title": "An Act to Establish the Maine Data Center Coordination Council and Place a Temporary Limitation on Certain Data Centers",
+      "sponsor": "Rep. Drew Gattine (D-Westbrook)",
+      "summary": "Would have imposed a moratorium on municipal and state permitting of data centers with loads of 20 MW or more until November 1, 2027 while a new Data Center Coordination Council studied impacts including water and energy infrastructure demands. Vetoed by Gov. Mills, who said she would have signed it with an exemption for the Androscoggin Mill project in Jay that reuses existing water infrastructure.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "failed",
+      "status_detail": "Vetoed April 24, 2026; House sustained the veto April 29, 2026 (override fell short of two-thirds). Verified on mainelegislature.org bill status.",
+      "source_url": "http://www.mainelegislature.org/legis/bills/display_ps.asp?ld=307&PID=1456&snum=132",
+      "last_verified": "2026-06-10",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-04-24",
+          "title": "Governor Mills Announces Decision on LD 307",
+          "source": "Office of Governor Janet T. Mills",
+          "url": "https://www.maine.gov/governor/mills/news/governor-mills-announces-decision-ld-307-2026-04-24",
+          "takeaway": "Mills vetoed the near-first-in-nation statewide moratorium, citing the Jay mill redevelopment that reuses existing water and electrical infrastructure."
+        },
+        {
+          "date": "2026-04-27",
+          "title": "Maine Governor Vetoes First-in-Nation Data Center Moratorium Bill, Greenlights Rural Development",
+          "source": "The Daily Yonder",
+          "url": "https://dailyyonder.com/maine-governor-vetoes-first-in-nation-data-center-moratorium-bill-greenlights-rural-development/2026/04/27/",
+          "takeaway": "The veto is read industry-wide as a near-miss showing statewide moratoriums are now politically viable."
+        }
+      ],
+      "public_sentiment": "Environmental and community groups strongly supported the pause; the governor and rural development interests opposed it as written, specifically to protect the Androscoggin Mill data center project. The House override attempt failed on Veto Day.",
+      "general_principles": [
+        {
+          "tag": "Moratorium",
+          "note": "Would have paused all state and municipal permitting of 20+ MW data centers until November 2027."
+        },
+        {
+          "tag": "Preemptive review",
+          "note": "Created a Data Center Coordination Council to study resource impacts before further build-out."
+        },
+        {
+          "tag": "Permit oversight",
+          "note": "Tied resumption of permitting to completion of a coordinated state review framework."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2025-01-30",
+          "milestone": "Referred to Committee on Energy, Utilities and Technology"
+        },
+        {
+          "date": "2026-03-20",
+          "milestone": "Divided committee report issued"
+        },
+        {
+          "date": "2026-04-24",
+          "milestone": "Vetoed by Gov. Mills"
+        },
+        {
+          "date": "2026-04-29",
+          "milestone": "Veto sustained in House"
+        }
+      ]
+    },
+    {
+      "bill_id": "Denver CB 26-0431",
+      "jurisdiction": "Local (Denver, CO)",
+      "level": "local",
+      "title": "One-Year Moratorium on New Data Center Zoning Permits and Site Development Plans",
+      "sponsor": "Denver City Council (unanimous)",
+      "summary": "Pauses acceptance and processing of new zoning permits and site development plans for data centers in the City and County of Denver for one year while the city drafts rules on water consumption, energy use, noise, and siting — adopted amid Denver Water's call for a 20% drought reduction and a proposed CoreSite facility estimated at ~235,000 gallons/day.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Passed unanimously by Denver City Council May 18, 2026; effective May 21, 2026; expires May 2027 unless extended. Confirmed via Denver Legistar council bill text and multiple news reports.",
+      "source_url": "https://denver.legistar.com/View.ashx?M=F&ID=15376337&GUID=9AA8B5A2-CEC8-43E5-8752-C8EC3757EDBB",
+      "last_verified": "2026-06-10",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-05-18",
+          "title": "Data center moratorium gets unanimous approval in Denver, but that's just the beginning",
+          "source": "Denverite",
+          "url": "https://denverite.com/2026/05/18/denver-data-center-moratorium-passes-ban/",
+          "takeaway": "Council passed the pause unanimously and launched a working group to write permanent water, energy, noise, and siting rules."
+        },
+        {
+          "date": "2026-03-31",
+          "title": "Denver proposes yearlong moratorium on new data centers",
+          "source": "Colorado Politics",
+          "url": "https://www.coloradopolitics.com/2026/03/31/denver-proposes-yearlong-moratorium-on-new-data-centers/",
+          "takeaway": "The proposal emerged directly after Colorado's statewide data center water bills stalled, with water use a primary stated driver."
+        }
+      ],
+      "public_sentiment": "Neighborhood groups and water-conservation advocates strongly supported it, galvanized by the CoreSite facility's projected 86 million gallons/year during Stage 1 drought; data center developers and some business groups warned it pushes investment to neighboring jurisdictions.",
+      "general_principles": [
+        {
+          "tag": "Moratorium",
+          "note": "One-year citywide pause on new data center zoning permits and site development plans."
+        },
+        {
+          "tag": "Preemptive review",
+          "note": "Working group must assess impacts and craft water/energy/noise/siting regulations before permitting resumes."
+        },
+        {
+          "tag": "Conservation",
+          "note": "Explicitly motivated by Denver Water's 20% drought-reduction target and data center water demand."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-03-31",
+          "milestone": "Moratorium proposed in City Council"
+        },
+        {
+          "date": "2026-05-18",
+          "milestone": "Passed unanimously by City Council"
+        },
+        {
+          "date": "2026-05-21",
+          "milestone": "Moratorium effective"
+        },
+        {
+          "date": "2027-05-21",
+          "milestone": "Scheduled expiration",
+          "detail": "Council may extend or shorten"
+        }
+      ]
+    },
+    {
+      "bill_id": "VA SB 417",
+      "jurisdiction": "Virginia",
+      "level": "state",
+      "title": "Cloud Computing Cluster Infrastructure Grant Fund — Treated Wastewater Cooling Condition",
+      "sponsor": "Patron not confirmed — re-verify on Virginia LIS",
+      "summary": "Conditions eligibility for Cloud Computing Cluster Infrastructure Grant Fund awards on the data center using treated (reclaimed) wastewater rather than potable water in its cooling systems — an incentive-based approach rather than a cooling-technology mandate.",
+      "scope": [
+        "water"
+      ],
+      "status": "introduced",
+      "status_detail": "Did not clear the Senate before the 2026 crossover deadline; reported as carried over for consideration when the legislature reconvenes in 2027. Could not load lis.virginia.gov bill page (JS-only) — re-verify bill status, patron, and continuation on Virginia LIS.",
+      "source_url": "https://lis.virginia.gov/bill-details/20261/SB417",
+      "last_verified": "2026-06-10",
+      "verified": false,
+      "confidence": "medium",
+      "recent_news": [
+        {
+          "date": "2026-03-03",
+          "title": "State Data Center Water Usage Legislation Gains Momentum",
+          "source": "MultiState",
+          "url": "https://www.multistate.us/insider/2026/3/3/state-data-center-water-usage-legislation-gains-momentum",
+          "takeaway": "MultiState highlights SB 417 as Virginia's incentive-based alternative to closed-loop mandates, tying grant money to reclaimed-water cooling."
+        },
+        {
+          "date": "2026-06-01",
+          "title": "What's in the water? What we know and don't know about data center water discharge in Virginia",
+          "source": "Virginia Mercury",
+          "url": "https://virginiamercury.com/2026/06/01/whats-in-the-water-what-we-know-and-dont-know-about-data-center-water-discharge-in-virginia/",
+          "takeaway": "Continuing scrutiny of Virginia data center water use keeps pressure on incentive bills like SB 417 ahead of the 2027 session."
+        }
+      ],
+      "public_sentiment": "Conservation groups view it as a modest but workable carrot; industry prefers it to mandates like SC H 4583 or KS SB 400 since Amazon and others are already expanding recycled-water cooling. Skeptics note it only binds grant recipients, not all operators.",
+      "general_principles": [
+        {
+          "tag": "Anti-corporate-welfare",
+          "note": "Attaches environmental strings to state grant subsidies rather than handing them out unconditionally."
+        },
+        {
+          "tag": "Conservation",
+          "note": "Shifts cooling demand from potable supplies to treated wastewater."
+        },
+        {
+          "tag": "Best-practice guidance",
+          "note": "Uses incentives, not mandates, to steer operators toward reclaimed-water cooling."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-01-14",
+          "milestone": "Introduced for the 2026 Regular Session",
+          "detail": "Exact introduction date to re-verify on LIS"
+        },
+        {
+          "date": "2026-02-17",
+          "milestone": "Failed to advance before crossover",
+          "detail": "Date approximate — crossover deadline of 2026 session"
+        },
+        {
+          "date": "2027-01-13",
+          "milestone": "Expected reconsideration when legislature reconvenes in 2027"
         }
       ]
     }

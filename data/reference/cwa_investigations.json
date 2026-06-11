@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-06-02",
-  "note": "Clean Water Act enforcement actions and landmark precedent cases relevant to data center water use and cooling discharge. Four categories: 'datacenter' = direct CWA actions against named hyperscale operators or their contractors (including state nuisance and groundwater-contamination civil suits that establish direct water liability, e.g. the Amazon Boardman nitrate settlement); 'adjacent' = water-relevant actions at data-center sites where the binding or active enforcement sits OUTSIDE the CWA — a Clean Air Act suit, a local well-permitting action, or a permitted-but-paused voluntary water commitment — included because the water story matters even though no CWA action attaches (e.g. the xAI Colossus / Memphis greywater plant, plus state groundwater-withdrawal and zoning/recharge-area fights at Google's Berkeley County SC, Rowan's Medina County TX, and Atlas's Coweta County GA sites); 'industrial' = enforcement against large industrial water users that are the closest practical analogs (cooling water, pretreatment, sewer-system consent decrees, PFAS, CAFO discharges); 'precedent' = Supreme Court and federal appellate rulings that set the legal scope of the CWA, including Loper Bright (2024) ending Chevron deference and Lewis v. US (5th Cir. 2023) applying Sackett. Comprehensive coverage for 2020-present, with foundational earlier cases retained as benchmarks (Smithfield 1997, Tyson 2003, Brayton Point 2003-2007). Direct hyperscaler enforcement remains thin because operators usually sit behind contractor-permittee structures and discharge to municipal sewers — the industrial cases show what enforcement looks like once that shield slips. The Amazon Boardman 2026 $20.5M nitrate settlement is the first eight-figure direct-hyperscaler water settlement.",
+  "last_updated": "2026-06-10",
+  "note": "Clean Water Act enforcement actions and landmark precedent cases relevant to data center water use and cooling discharge. Four categories: 'datacenter' = direct CWA actions against named hyperscale operators or their contractors, including state permit enforcement and §404 permit applications with significant wetland/stream impacts (e.g. Amazon Boardman nitrate settlement, Google §404 applications in VA and AR); 'adjacent' = water-relevant actions at data-center sites where the binding or active enforcement sits OUTSIDE the CWA — a Clean Air Act suit, a local well-permitting action, a §404 citizen suit over data-center power infrastructure, or a permitted-but-paused voluntary water commitment; 'industrial' = enforcement against large industrial water users that are the closest practical analogs (cooling water §316(a)/(b), pretreatment, sewer-system consent decrees, PFAS, CAFO discharges); 'precedent' = Supreme Court and federal appellate rulings that set the legal scope of the CWA, including Loper Bright (2024) ending Chevron deference and Lewis v. US (5th Cir. 2023) applying Sackett. Comprehensive coverage for 2020-present, with foundational earlier cases retained as benchmarks (Smithfield 1997, Tyson 2003, Brayton Point 2003-2007). Direct hyperscaler enforcement remains thin because operators usually sit behind contractor-permittee structures and discharge to municipal sewers — the industrial cases show what enforcement looks like once that shield slips. The Amazon Boardman 2026 $20.5M nitrate settlement is the first eight-figure direct-hyperscaler water settlement. The Port of Morrow OR DEQ enforcement ($727K, 2024) is the largest state-level penalty at a WWTP explicitly identified as receiving data center wastewater. Google's concurrent §404 applications in VA (Project Raspberry, Project Loch) and AR (Port of Little Rock, 16.8 ac wetlands) mark a new wave of federal permitting scrutiny on data center construction in sensitive watersheds.",
   "cases": [
     {
       "case_id": "Google-Stillwater-OK-stormwater-2025",
@@ -32,7 +32,10 @@
           "url": "https://www.news9.com/story/68a87d4cd79483d4597c5395/stillwater-homeowner-association-sues-google-data-center-construction",
           "type": "news"
         }
-      ]
+      ],
+      "case_type": "construction-stormwater",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§402 construction stormwater — state NOV (closed)"
     },
     {
       "case_id": "Meta-MorganCo-GA-investigation-2026",
@@ -59,6 +62,15 @@
           "url": "https://www.tomshardware.com/tech-industry/big-tech/meta-data-center-allegedly-muddies-georgia-towns-drinking-water-investigation-underway-epa-promises-immediate-investigation-after-congresswoman-brings-dirty-jars-of-water-to-hearing",
           "type": "news"
         }
+      ],
+      "case_type": "groundwater",
+      "cwa_applied": "pending",
+      "cwa_instrument": "EPA investigation pledged — no enforcement action yet",
+      "cwa_pathway": "If construction runoff or blasting sediment reaches streams or wetlands, the §402 construction general permit applies — the Stillwater and Boydton template. If contaminants are migrating to wells via groundwater that ultimately reaches surface water, Maui's 'functional equivalent' test could require an NPDES permit; the wells themselves are Safe Drinking Water Act territory, outside the CWA.",
+      "analogous_cases": [
+        "Google-Stillwater-OK-stormwater-2025",
+        "Microsoft-Boydton-VA-2023",
+        "County-of-Maui-v-Hawaii-Wildlife-Fund-2020"
       ]
     },
     {
@@ -86,7 +98,10 @@
           "url": "https://www.bayjournal.com/article/smithfield_gets_record_fine_for_polluting_virginia_river",
           "type": "news"
         }
-      ]
+      ],
+      "case_type": "industrial-discharge",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§402 NPDES — $12.6M civil judgment"
     },
     {
       "case_id": "Tyson-Sedalia-2003",
@@ -108,7 +123,10 @@
           "url": "https://www.ehstoday.com/news/ehs_imp_36455",
           "type": "news"
         }
-      ]
+      ],
+      "case_type": "industrial-discharge",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§309(c) criminal — felony plea"
     },
     {
       "case_id": "Brayton-Point-Dominion-2003-2007",
@@ -130,7 +148,10 @@
           "url": "https://archive.epa.gov/epapages/newsroom_archive/newsreleases/0b35588451a54383852573dd0003c3bd.html",
           "type": "EPA press release"
         }
-      ]
+      ],
+      "case_type": "cooling-water",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§316(a)/(b) — NPDES forced closed-cycle retrofit"
     },
     {
       "case_id": "Swift-Beef-Grand-Island-2011",
@@ -152,7 +173,10 @@
           "url": "https://www.epa.gov/newsreleases/epa-fines-swift-beef-company-alleged-clean-water-act-violations-nebraska",
           "type": "EPA press release"
         }
-      ]
+      ],
+      "case_type": "pretreatment",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§307 pretreatment — consent decree"
     },
     {
       "case_id": "Yuengling-Pottsville-2016",
@@ -179,7 +203,10 @@
           "url": "https://www.epa.gov/archive/epa/newsreleases/yuengling-upgrade-environmental-measures-settle-clean-water-act-violations-two.html",
           "type": "EPA press release"
         }
-      ]
+      ],
+      "case_type": "pretreatment",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§307 pretreatment — consent decree"
     },
     {
       "case_id": "American-Zinc-Recycling-Palmerton-2021",
@@ -196,7 +223,10 @@
           "url": "https://www.epa.gov/enforcement/american-zinc-recycling-corp-settlement",
           "type": "EPA enforcement page"
         }
-      ]
+      ],
+      "case_type": "cooling-water",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§402 NPDES contact cooling water — settlement"
     },
     {
       "case_id": "Sackett-v-EPA-2023",
@@ -223,7 +253,10 @@
           "url": "https://www.congress.gov/crs-product/LSB10981",
           "type": "law review"
         }
-      ]
+      ],
+      "case_type": "wetlands-streams",
+      "cwa_applied": "applied",
+      "cwa_instrument": "SCOTUS ruling — §404/WOTUS jurisdiction narrowed"
     },
     {
       "case_id": "County-of-Maui-v-Hawaii-Wildlife-Fund-2020",
@@ -250,7 +283,10 @@
           "url": "https://en.wikipedia.org/wiki/County_of_Maui_v._Hawaii_Wildlife_Fund",
           "type": "news"
         }
-      ]
+      ],
+      "case_type": "groundwater",
+      "cwa_applied": "applied",
+      "cwa_instrument": "SCOTUS ruling — §402 'functional equivalent' test"
     },
     {
       "case_id": "Entergy-v-Riverkeeper-2009",
@@ -277,7 +313,10 @@
           "url": "https://www.justice.gov/enrd/i-i-entergy-corp-v-riverkeeper-inc",
           "type": "court ruling"
         }
-      ]
+      ],
+      "case_type": "cooling-water",
+      "cwa_applied": "applied",
+      "cwa_instrument": "SCOTUS ruling — §316(b) cost-benefit allowed"
     },
     {
       "case_id": "Rapanos-v-United-States-2006",
@@ -304,7 +343,10 @@
           "url": "https://en.wikipedia.org/wiki/Rapanos_v._United_States",
           "type": "news"
         }
-      ]
+      ],
+      "case_type": "wetlands-streams",
+      "cwa_applied": "applied",
+      "cwa_instrument": "SCOTUS ruling — WOTUS plurality (pre-Sackett)"
     },
     {
       "case_id": "Microsoft-Boydton-VA-2023",
@@ -326,7 +368,10 @@
           "url": "https://www.deq.virginia.gov/news-info/shortcuts/enforcement/enforcement-actions",
           "type": "state agency action"
         }
-      ]
+      ],
+      "case_type": "construction-stormwater",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§402 construction stormwater — VA DEQ enforcement"
     },
     {
       "case_id": "QTS-Fayetteville-GA-2024",
@@ -348,7 +393,10 @@
           "url": "https://www.cbsnews.com/atlanta/news/georgias-data-center-boom-leave-residents-concerns-about-environmental-impacts/",
           "type": "news"
         }
-      ]
+      ],
+      "case_type": "construction-stormwater",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§402 construction GP — citizen monitoring + GA EPD"
     },
     {
       "case_id": "QTS-CedarRapids-IA-2025",
@@ -375,6 +423,14 @@
           "url": "https://corridorbusiness.com/linn-county-seeks-20000-penalty-over-unpermitted-wells-at-qts-data-center-construction-site/",
           "type": "news"
         }
+      ],
+      "case_type": "groundwater",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "County well-permit enforcement (no CWA)",
+      "cwa_pathway": "Construction dewatering that pumps groundwater to a surface water needs §402 dewatering authorization under the construction general permit; an unpermitted discharge to a stream would violate §301(a) regardless of pollutant concentrations.",
+      "analogous_cases": [
+        "Wynja-Feedlot-IA-CAFO-2025",
+        "County-of-Maui-v-Hawaii-Wildlife-Fund-2020"
       ]
     },
     {
@@ -402,6 +458,15 @@
           "url": "https://wvmetronews.com/2026/05/24/mason-county-community-impacted-by-flooding-from-data-center-construction-site/",
           "type": "news"
         }
+      ],
+      "case_type": "construction-stormwater",
+      "cwa_applied": "pending",
+      "cwa_instrument": "Potential §402 construction stormwater — WV DEP",
+      "cwa_pathway": "A silt-fence/retention failure that discharges sediment off-site is the classic §402 construction-stormwater violation — WV DEP can issue an NOV under its delegated construction general permit, and downstream residents could serve a §505 citizen-suit notice.",
+      "analogous_cases": [
+        "Microsoft-Boydton-VA-2023",
+        "Google-Stillwater-OK-stormwater-2025",
+        "Energix-VA-2024"
       ]
     },
     {
@@ -429,7 +494,10 @@
           "url": "https://www.justice.gov/archives/opa/pr/cleveland-cliffs-agrees-improve-environmental-compliance-indiana-facility-and-pay-3-million",
           "type": "DOJ press release"
         }
-      ]
+      ],
+      "case_type": "cooling-water",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§402 NPDES — penalty after cooling-loop failure"
     },
     {
       "case_id": "Norfolk-Southern-East-Palestine-2024",
@@ -451,7 +519,10 @@
           "url": "https://www.federalregister.gov/documents/2024/05/30/2024-11862/notice-of-lodging-of-proposed-consent-decree-under-the-comprehensive-environmental-response",
           "type": "court ruling"
         }
-      ]
+      ],
+      "case_type": "spills-contamination",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§311 spill — $15M CWA penalty"
     },
     {
       "case_id": "Chemours-Washington-Works-PFAS-2023",
@@ -473,7 +544,10 @@
           "url": "https://www.stormwater.com/stormwater-management/press-release/53058892/epa-makes-first-ever-clean-water-act-enforcement-for-pfas-in-stormwater",
           "type": "news"
         }
-      ]
+      ],
+      "case_type": "spills-contamination",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§402 NPDES PFAS effluent limits — consent agreement"
     },
     {
       "case_id": "Hanover-Foods-2025",
@@ -500,7 +574,10 @@
           "url": "https://www.epa.gov/enforcement/hanover-foods-corporation-cwa-settlement-summary",
           "type": "EPA enforcement page"
         }
-      ]
+      ],
+      "case_type": "industrial-discharge",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§402 NPDES — >$1M penalty, chronic exceedances"
     },
     {
       "case_id": "Plains-Pipeline-Santa-Barbara-2020",
@@ -527,7 +604,10 @@
           "url": "https://www.federalregister.gov/documents/2020/03/30/2020-06500/notice-of-lodging-of-proposed-consent-decree-under-the-clean-water-act-the-oil-pollution-act-of-1990",
           "type": "court ruling"
         }
-      ]
+      ],
+      "case_type": "spills-contamination",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§311 oil spill — ~$24M federal penalty"
     },
     {
       "case_id": "Jersey-City-MUA-2025",
@@ -554,7 +634,10 @@
           "url": "https://www.justice.gov/opa/pr/jersey-city-municipal-utilities-authority-make-significant-improvements-jersey-city-s",
           "type": "DOJ press release"
         }
-      ]
+      ],
+      "case_type": "potw-sewer",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§301/§402 CSO consent decree"
     },
     {
       "case_id": "Cahokia-Heights-2024",
@@ -581,7 +664,10 @@
           "url": "https://www.epa.gov/enforcement/cahokia-heights-2024-clean-water-act-case-summary",
           "type": "EPA enforcement page"
         }
-      ]
+      ],
+      "case_type": "potw-sewer",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§301 unpermitted SSOs — consent decree"
     },
     {
       "case_id": "Guam-Waterworks-2024",
@@ -608,7 +694,10 @@
           "url": "https://www.epa.gov/enforcement/guam-waterworks-authority-clean-water-act-settlement-information-sheet",
           "type": "EPA enforcement page"
         }
-      ]
+      ],
+      "case_type": "potw-sewer",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§402 SSO/NPDES consent decree"
     },
     {
       "case_id": "Denali-Water-Solutions-2024",
@@ -635,7 +724,10 @@
           "url": "https://www.epa.gov/enforcement/denali-water-solutions-llc-clean-water-act-settlement-summary",
           "type": "EPA enforcement page"
         }
-      ]
+      ],
+      "case_type": "potw-sewer",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§405 sludge + §301 — judicial action"
     },
     {
       "case_id": "Reading-WWTP-2024",
@@ -652,7 +744,10 @@
           "url": "https://www.federalregister.gov/documents/2024/01/31/2024-01883/notice-of-lodging-of-consent-decree-under-the-clean-water-act",
           "type": "court ruling"
         }
-      ]
+      ],
+      "case_type": "pretreatment",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§402 + §307 pretreatment-program consent decree"
     },
     {
       "case_id": "Republic-Steel-OH-2024",
@@ -679,7 +774,10 @@
           "url": "https://chroniclet.com/news/379921/lorain-canton-steel-mills-at-center-of-epa-lawsuit-against-republic-steel/",
           "type": "news"
         }
-      ]
+      ],
+      "case_type": "industrial-discharge",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§402 NPDES — joint federal-state action"
     },
     {
       "case_id": "Energix-VA-2024",
@@ -711,7 +809,10 @@
           "url": "https://vchr.org/pdf/energix/deq_related/deq_fines_for_7_sites_march_2023.pdf",
           "type": "state agency action"
         }
-      ]
+      ],
+      "case_type": "construction-stormwater",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§402 VAR10 construction GP — escalating DEQ fines"
     },
     {
       "case_id": "Pactiv-Evergreen-Canton-NC-2023-2024",
@@ -743,7 +844,10 @@
           "url": "https://www.deq.nc.gov/news/key-issues/canton-paper-mill",
           "type": "state agency action"
         }
-      ]
+      ],
+      "case_type": "industrial-discharge",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§402 NPDES — NC DEQ civil penalties"
     },
     {
       "case_id": "Pacific-Seafood-OR-2026",
@@ -770,7 +874,10 @@
           "url": "https://www.kptv.com/2026/04/27/pacific-seafood-says-oregon-deq-out-control-after-company-hit-with-32-million-fines/",
           "type": "news"
         }
-      ]
+      ],
+      "case_type": "industrial-discharge",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§402 NPDES — OR DEQ penalties w/ economic benefit"
     },
     {
       "case_id": "SpaceX-Starbase-TX-2024",
@@ -802,7 +909,10 @@
           "url": "https://www.epa.gov/system/files/documents/2024-09/spacex_cafo_cwa-06-2024-1768_txu09110_090624__0.pdf",
           "type": "EPA press release"
         }
-      ]
+      ],
+      "case_type": "industrial-discharge",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§402/TPDES unpermitted discharge — TCEQ + EPA"
     },
     {
       "case_id": "Hailiang-Copper-TX-2023",
@@ -819,7 +929,10 @@
           "url": "https://www.tceq.texas.gov/downloads/agency/decisions/agendas/backup/2023/2023-0715-iwd-e.pdf",
           "type": "state agency action"
         }
-      ]
+      ],
+      "case_type": "industrial-discharge",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§402/TPDES unauthorized discharge — TCEQ penalty"
     },
     {
       "case_id": "Agri-Star-Postville-IA-2024-2025",
@@ -851,7 +964,10 @@
           "url": "https://iowacapitaldispatch.com/2025/02/26/agri-stars-postville-plant-sued-for-water-quality-violations/",
           "type": "news"
         }
-      ]
+      ],
+      "case_type": "pretreatment",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§402 NPDES + pretreatment — state enforcement"
     },
     {
       "case_id": "Hyponex-Scotts-OH-2024",
@@ -873,7 +989,10 @@
           "url": "https://www.epa.gov/system/files/documents/2024-05/cwa-05-2024-0013_proposedcafo_hyponexcorporation_shreveohio.pdf",
           "type": "EPA press release"
         }
-      ]
+      ],
+      "case_type": "industrial-discharge",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§402 NPDES — EPA Region 5 + Ohio EPA"
     },
     {
       "case_id": "SF-EPA-end-result-2025",
@@ -900,7 +1019,10 @@
           "url": "https://www.sidley.com/en/insights/newsupdates/2025/03/us-supreme-court-limits-epas-clean-water-act-authority-to-impose-water-quality-standards",
           "type": "law review"
         }
-      ]
+      ],
+      "case_type": "legal-doctrine",
+      "cwa_applied": "applied",
+      "cwa_instrument": "SCOTUS ruling — bars 'end-result' NPDES permit terms"
     },
     {
       "case_id": "Maui-remand-DHaw-2021",
@@ -927,7 +1049,10 @@
           "url": "https://www.calt.iastate.edu/post/federal-court-says-county-maui-effectively-discharging-pollutant-violation-clean-water-act",
           "type": "law review"
         }
-      ]
+      ],
+      "case_type": "groundwater",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§402 functional-equivalent test applied on remand"
     },
     {
       "case_id": "SierraClub-WVDEP-401-2023",
@@ -954,7 +1079,10 @@
           "url": "https://appvoices.org/2023/04/03/mvp-wv-401/",
           "type": "law review"
         }
-      ]
+      ],
+      "case_type": "wetlands-streams",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§401 state certification vacated (4th Cir.)"
     },
     {
       "case_id": "Amazon-Boardman-OR-nitrate-2026",
@@ -986,6 +1114,15 @@
           "url": "https://www.koin.com/news/oregon/amazon-will-pay-20-5m-to-settle-oregon-groundwater-contamination-case/",
           "type": "news"
         }
+      ],
+      "case_type": "groundwater",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "State-law class action — $20.5M settlement (no CWA)",
+      "cwa_pathway": "Under Maui, land-applied process water whose nitrate migrates through groundwater to the Columbia River could be the 'functional equivalent' of a direct discharge requiring a §402 NPDES permit — the same theory the Maui remand court applied to injection wells.",
+      "analogous_cases": [
+        "County-of-Maui-v-Hawaii-Wildlife-Fund-2020",
+        "Maui-remand-DHaw-2021",
+        "Oklahoma-v-Tyson-IRW-2005-2025"
       ]
     },
     {
@@ -1023,6 +1160,14 @@
           "url": "https://www.pima.gov/3552/Project-Blue-FAQ",
           "type": "state agency action"
         }
+      ],
+      "case_type": "water-supply",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "Municipal water denial + CAA dust NOV (no CWA)",
+      "cwa_pathway": "The CWA has no handle on a municipal water-service denial. The construction site itself still carries §402 stormwater obligations — sediment or dust-suppression runoff leaving the site would be enforceable the way Stillwater and Boydton were.",
+      "analogous_cases": [
+        "Google-Stillwater-OK-stormwater-2025",
+        "Microsoft-Boydton-VA-2023"
       ]
     },
     {
@@ -1055,7 +1200,10 @@
           "url": "https://marylandmatters.org/2025/06/05/diesel-spill-baltimore-harbor-east-hopkins/",
           "type": "news"
         }
-      ]
+      ],
+      "case_type": "construction-stormwater",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§402 construction stormwater + §311 oil — MDE"
     },
     {
       "case_id": "Atlanta-RMClayton-CRK-2024-2026",
@@ -1087,7 +1235,10 @@
           "url": "https://chattahoochee.org/wp-content/uploads/2026/02/ATL-CRK-2026-Consent-Decree.pdf",
           "type": "court filing"
         }
-      ]
+      ],
+      "case_type": "potw-sewer",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§505 citizen suit — numeric effluent violations"
     },
     {
       "case_id": "Youngstown-OH-CSO-2025",
@@ -1119,7 +1270,10 @@
           "url": "https://waterdaily.com/youngstown-consent-decree-deal-us-epa/",
           "type": "news"
         }
-      ]
+      ],
+      "case_type": "potw-sewer",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§301/§402 CSO consent decree (modified)"
     },
     {
       "case_id": "MDC-Hartford-CT-CSO-2025",
@@ -1151,7 +1305,10 @@
           "url": "https://themdc.org/wastewater-treatment/the-clean-water-project/",
           "type": "utility website"
         }
-      ]
+      ],
+      "case_type": "potw-sewer",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§301/§402 SSO consent decree (modified)"
     },
     {
       "case_id": "Wynja-Feedlot-IA-CAFO-2025",
@@ -1183,7 +1340,10 @@
           "url": "https://iowacapitaldispatch.com/briefs/epa-agrees-to-20k-settlement-with-northwest-iowa-feedlot-for-water-violations/",
           "type": "news"
         }
-      ]
+      ],
+      "case_type": "industrial-discharge",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§301(a) unpermitted CAFO discharge — penalty"
     },
     {
       "case_id": "Oklahoma-v-Tyson-IRW-2005-2025",
@@ -1215,6 +1375,15 @@
           "url": "https://oklahoma.gov/oag/news/newsroom/2025/november/drummond-calls-out-tyson-s-misinformation-campaign-over-poultry-lawsuit.html",
           "type": "state agency action"
         }
+      ],
+      "case_type": "spills-contamination",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "State public-nuisance judgment (no CWA)",
+      "cwa_pathway": "The agricultural-stormwater exemption keeps land-applied litter runoff out of §402. Land application of *industrial* or municipal-reuse water enjoys no such exemption — under Maui, nutrient migration to streams could require an NPDES permit, which is why this nuisance route matters for reclaimed-water cooling programs.",
+      "analogous_cases": [
+        "County-of-Maui-v-Hawaii-Wildlife-Fund-2020",
+        "Amazon-Boardman-OR-nitrate-2026",
+        "Denali-Water-Solutions-2024"
       ]
     },
     {
@@ -1247,6 +1416,14 @@
           "url": "https://www.pfaswatersettlement.com/frequently-asked-questions-tyco/",
           "type": "official settlement website"
         }
+      ],
+      "case_type": "spills-contamination",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "Mass-tort drinking-water settlements (no CWA)",
+      "cwa_pathway": "AFFF releases reaching surface water are actionable as §311 hazardous-substance spills, and Chemours shows PFAS in effluent is already enforceable under §402 NPDES limits; EPA's pending PFAS effluent guidelines would make this routine.",
+      "analogous_cases": [
+        "Chemours-Washington-Works-PFAS-2023",
+        "Norfolk-Southern-East-Palestine-2024"
       ]
     },
     {
@@ -1279,6 +1456,14 @@
           "url": "https://jhulr.org/2025/06/14/after-loper-bright-weakening-the-power-of-the-environmental-protection-agency/",
           "type": "law review"
         }
+      ],
+      "case_type": "legal-doctrine",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "APA ruling — not itself a CWA case",
+      "cwa_pathway": "Not a water case — but every CWA permit writer now loses Chevron deference, so each NPDES, §404, or WOTUS interpretation in the cases here is reviewable de novo. It applies to the CWA through every other case in this record.",
+      "analogous_cases": [
+        "Sackett-v-EPA-2023",
+        "SF-EPA-end-result-2025"
       ]
     },
     {
@@ -1311,7 +1496,10 @@
           "url": "https://acoel.org/an-early-christmas-present-from-three-fifth-circuit-judges-who-concluded-a-louisiana-property-is-not-subject-to-federal-clean-water-act-jurisdiction/",
           "type": "law review"
         }
-      ]
+      ],
+      "case_type": "wetlands-streams",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§404 jurisdiction — Sackett applied (5th Cir.)"
     },
     {
       "case_id": "xAI-Colossus-Memphis-TN-2026",
@@ -1343,6 +1531,14 @@
           "url": "https://earthjustice.org/case/xai-illegal-gas-power-plant-data-center-colossus",
           "type": "advocacy / litigation"
         }
+      ],
+      "case_type": "groundwater",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "State operating permit; no CWA discharge action",
+      "cwa_pathway": "Aquifer withdrawal volume is outside the CWA. But if the greywater plant (or the campus) ever discharges treated effluent to surface water it needs a §402 NPDES permit, and pollutants reaching the Mississippi via the aquifer could trigger Maui's functional-equivalent test.",
+      "analogous_cases": [
+        "County-of-Maui-v-Hawaii-Wildlife-Fund-2020",
+        "Google-Berkeley-SC-Middendorf-aquifer-2019"
       ]
     },
     {
@@ -1370,7 +1566,10 @@
           "url": "https://wsbt.com/news/local/wetland-impact-idem-sends-letter-halts-some-work-over-amazons-data-center-construction-impact-indiana-department-environmental-management-application-process-unauthorized-impact-st-joseph-county",
           "type": "news"
         }
-      ]
+      ],
+      "case_type": "wetlands-streams",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§404/§401 wetlands — IDEM cease-work order"
     },
     {
       "case_id": "Atlas-ProjectSail-Coweta-GA-2026",
@@ -1397,6 +1596,14 @@
           "url": "https://www.thecooldown.com/green-business/data-center-lawsuit-coweta-county-residents/",
           "type": "news"
         }
+      ],
+      "case_type": "groundwater",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "State-court rezoning challenge (no CWA)",
+      "cwa_pathway": "If the parcel's omitted wetlands are jurisdictional (post-Sackett: a continuous surface connection to relatively permanent waters), grading them would need a §404 permit — the lever used at Amazon New Carlisle. Siting over a recharge area, by itself, is beyond the CWA.",
+      "analogous_cases": [
+        "Sackett-v-EPA-2023",
+        "Amazon-NewCarlisle-IN-wetlands-2025"
       ]
     },
     {
@@ -1424,6 +1631,14 @@
           "url": "https://coastalconservationleague.org/projects/google-groundwater-permit/",
           "type": "advocacy"
         }
+      ],
+      "case_type": "groundwater",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "State withdrawal permit + private settlement (no CWA)",
+      "cwa_pathway": "Pure consumption — the CWA regulates discharges, not withdrawals, and §316(b) intake rules only reach facilities pulling >2 MGD directly from surface waters. A CWA hook would require a discharge: blowdown to surface water (§402) or to the sewer (§307 pretreatment).",
+      "analogous_cases": [
+        "Entergy-v-Riverkeeper-2009",
+        "Swift-Beef-Grand-Island-2011"
       ]
     },
     {
@@ -1451,6 +1666,15 @@
           "url": "https://www.datacenterdynamics.com/en/news/rowan-digital-to-invest-in-water-conservation-program-in-medina-county-texas/",
           "type": "trade press"
         }
+      ],
+      "case_type": "groundwater",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "Texas groundwater law / voluntary offsets (no CWA)",
+      "cwa_pathway": "Groundwater pumping under the Rule of Capture is invisible to the CWA. Discharge-side hooks appear only if the campus obtains a TPDES permit for blowdown and then exceeds it — the SpaceX and Hailiang TCEQ actions show what Texas enforcement looks like.",
+      "analogous_cases": [
+        "SpaceX-Starbase-TX-2024",
+        "Hailiang-Copper-TX-2023",
+        "Google-Berkeley-SC-Middendorf-aquifer-2019"
       ]
     },
     {
@@ -1473,6 +1697,13 @@
           "url": "https://www.techspot.com/news/112356-data-center-used-29-million-gallons-water-without/",
           "type": "news"
         }
+      ],
+      "case_type": "water-supply",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "Utility metering / billing dispute (no CWA)",
+      "cwa_pathway": "None plausible — metering and billing are utility-contract matters with no discharge, so no CWA section reaches them. The nearest water-accountability analog in this record is the same operator's construction-stormwater fight at Fayetteville.",
+      "analogous_cases": [
+        "QTS-Fayetteville-GA-2024"
       ]
     },
     {
@@ -1500,7 +1731,10 @@
           "url": "https://www.americanbar.org/groups/business_law/resources/business-law-today/2025-august/supreme-courts-cert-denials-pave-way-surge-environmental-citizen-suits/",
           "type": "bar association article"
         }
-      ]
+      ],
+      "case_type": "legal-doctrine",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§505 citizen-suit scope (9th Cir.)"
     },
     {
       "case_id": "CERF-v-Naples-9thCir-2024",
@@ -1527,7 +1761,10 @@
           "url": "https://www.mgkflitigationblog.com/ninth-circuit--clean-water-act-suit-civil-penalties-moot",
           "type": "litigation blog analysis"
         }
-      ]
+      ],
+      "case_type": "legal-doctrine",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§505 mootness (9th Cir.)"
     },
     {
       "case_id": "FortSmith-AR-sewer-CD-mod-2026",
@@ -1552,6 +1789,693 @@
         {
           "title": "Fort Smith board encouraged to approve modified federal consent decree",
           "url": "https://talkbusiness.net/2026/02/fort-smith-board-encouraged-to-approve-modified-federal-consent-decree/",
+          "type": "news"
+        }
+      ],
+      "case_type": "potw-sewer",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§301(a) SSO consent decree — 2026 modification"
+    },
+    {
+      "case_id": "PortOfMorrow-DEQ-OR-2024",
+      "category": "datacenter",
+      "respondent": "Port of Morrow (Morrow County, Oregon) — industrial wastewater treatment facility receiving effluent from Amazon data centers and food processors in the Port of Morrow Industrial Park",
+      "year": "2024-2025",
+      "cwa_section": "Oregon NPDES delegated §402 program — WPCF permit governing land application of nitrogen-rich wastewater; Oregon is a CWA §402-delegated state",
+      "violation_summary": "Oregon DEQ issued two separate penalty actions against the Port of Morrow WWTP, which explicitly processes wastewater from 'local food processors, manufacturers and data centers,' including Amazon Boardman data centers. (1) April 2024: $727,000 civil penalty for 880 permit violations (November 2023–February 2024) — prohibited non-growing-season land application of nitrate-laden wastewater to farm fields when soils are saturated and runoff carries nitrate to groundwater. (2) September 2025: $11,700 fine for six additional violations (May 2024–January 2025) including off-season land application, pipeline leaks, and irrigation runoff. Since 2011 DEQ has issued over 2,000 violations and $3M+ in cumulative fines at this facility. Separately, Governor Kotek signed an emergency order in January 2026 temporarily allowing the Port to exceed land-application limits due to full lagoon storage capacity — underscoring the structural capacity shortfall.",
+      "outcome": "Fines paid. Port committed to no more non-growing-season land application and is completing two new storage lagoons (1.5 billion gallon combined capacity) by November 2025. The Port simultaneously operates under a separate $2.4M state settlement for the broader Boardman-area nitrate groundwater crisis. Amazon's parallel $20.5M private class-action settlement (already in this dataset as Amazon-Boardman-OR-nitrate-2026) is a distinct legal track from this DEQ state enforcement action against the receiving WWTP.",
+      "takeaway": "The Port of Morrow enforcement demonstrates that when a data center's industrial effluent is commingled at a POTW or industrial WWTP, the *receiving facility* bears the primary NPDES enforcement exposure — not the data center directly. The $727K fine is the largest state penalty at any facility explicitly identified as receiving data center wastewater. This is the state-enforcement counterpart to the Amazon Boardman private settlement already in this dataset.",
+      "sources": [
+        {
+          "title": "Oregon DEQ: Port of Morrow fined $727,000 for wastewater permit violations (April 2024)",
+          "url": "https://www.opb.org/article/2024/06/12/port-morrow-wastewater-violation-fines/",
+          "type": "news"
+        },
+        {
+          "title": "Oregon DEQ imposes additional $11,700 fine on Port of Morrow (September 2025)",
+          "url": "https://www.opb.org/article/2025/09/30/oregon-port-of-morrow-deq-department-environmental-quality-wastewater-nitrate-nitrates/",
+          "type": "news"
+        },
+        {
+          "title": "Gov. Kotek issues emergency order allowing Port of Morrow to exceed water pollution permit (January 2026)",
+          "url": "https://oregoncapitalchronicle.com/2025/01/13/gov-kotek-issues-emergency-order-allowing-port-of-morrow-to-violate-water-pollution-permit/",
+          "type": "news"
+        }
+      ],
+      "case_type": "potw-sewer",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§402 (delegated) — $727K penalty at receiving WWTP"
+    },
+    {
+      "case_id": "Google-ProjectRaspberry-VA-2026",
+      "category": "datacenter",
+      "respondent": "Google LLC (applicant via 'Project Raspberry'), Greenfield Industrial Park, Daleville, Botetourt County, Virginia — three 300,000 sq ft data center buildings on 343.6 acres",
+      "year": "2025-2026",
+      "cwa_section": "Section 404 individual permit (Army Corps Norfolk District NAO-2025-01857); Virginia §401 Water Quality Certification from DEQ required; Botetourt County zoning approval independent track",
+      "violation_summary": "Not an enforcement action — a §404 individual permit application in active federal review. Google's Project Raspberry data center campus in Botetourt County would impact approximately 3.24 acres of non-tidal wetlands and 6,715 linear feet of stream channels in unnamed tributaries to Tinker Creek and Rulman Branch (Roanoke River basin). Public notice issued March 10, 2026; comment period closed April 9, 2026. Separately, Google litigated through December 2025 to suppress its projected water use under Virginia FOIA; a judge ordered disclosure on November 5, 2025 — the disclosed figure was 8 million gallons per day at full campus buildout.",
+      "outcome": "PENDING — Army Corps environmental review ongoing as of June 2026. Virginia §401 WQC not yet issued. Google has offered to purchase wetland mitigation bank credits. The FOIA disclosure of 8 MGD projected water use drew public attention to the scale of data center water demand in the Roanoke Valley water shed.",
+      "takeaway": "One of the largest §404 individual permit applications for a single data center campus currently in the federal pipeline in Virginia. The FOIA fight over water-use projections (8 MGD/day at full buildout) is itself precedent-setting: Virginia courts confirmed that data center water-use records held by public utilities are public records, not proprietary business information — a significant transparency ruling for the tracker's data-collection strategy.",
+      "sources": [
+        {
+          "title": "Army Corps of Engineers Public Notice NAO-2025-01857 — Project Raspberry, Botetourt County VA",
+          "url": "https://www.nao.usace.army.mil/Media/Public-Notices/Article/4428952/nao-2025-01857-project-raspberry-botetourt-virginia/",
+          "type": "regulatory filing"
+        },
+        {
+          "title": "Corps of Engineers solicits public comments on proposed Google data centers' effect on water sources (Cardinal News)",
+          "url": "https://cardinalnews.org/2026/03/18/tech-briefs-corps-of-engineers-solicits-public-comments-on-proposed-google-data-centers-effect-on-water-sources/",
+          "type": "news"
+        },
+        {
+          "title": "Water authority releases Google data center records ahead of contempt hearing (Roanoke Rambler)",
+          "url": "https://www.roanokerambler.com/water-authority-releases-google-data-center-records-ahead-scheduled-contempt-hearing/",
+          "type": "news"
+        }
+      ],
+      "case_type": "wetlands-streams",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§404 individual permit application (in federal review)"
+    },
+    {
+      "case_id": "Google-ProjectLoch-VA-2026",
+      "category": "datacenter",
+      "respondent": "Google LLC (applicant via 'Project Loch'), near Route 288 and Watkins Center Parkway, Chesterfield County, Virginia — three-building data center campus on approximately 350 acres",
+      "year": "2026",
+      "cwa_section": "Section 404 individual permit (Army Corps Norfolk District NAO-2026-00182); Virginia §401 Water Quality Certification required",
+      "violation_summary": "Not an enforcement action — a §404 individual permit application filed in 2026. Google's Project Loch data center campus in Chesterfield County would impact approximately 4.8 acres of wetlands and 2,828 linear feet of stream channels. Part of Google's announced $9 billion Virginia data center expansion program. Public notice issued May 2026.",
+      "outcome": "PENDING — Army Corps environmental review and public comment phase ongoing as of June 2026. Virginia §401 WQC not yet issued.",
+      "takeaway": "Together with Project Raspberry (NAO-2025-01857) and the Little Rock AR application, Google's concurrent §404 permit applications in Virginia show that hyperscaler data center construction is generating a wave of individual §404 permits in the federal pipeline — each with multi-acre wetland and multi-thousand-foot stream impacts. The cumulative wetland/stream impact of Virginia's data center build-out is now large enough to warrant cumulative-impact analysis under NEPA.",
+      "sources": [
+        {
+          "title": "Army Corps of Engineers Public Notice NAO-2026-00182 — Project Loch, Chesterfield County VA",
+          "url": "https://www.nao.usace.army.mil/Media/Public-Notices/Article/4484789/nao-2026-00182-vmrc-project-loch-chesterfield-county-virginia-wauford-prm-site/",
+          "type": "regulatory filing"
+        },
+        {
+          "title": "Google data center in Chesterfield: Army Corps permit filing (Axios Richmond)",
+          "url": "https://www.axios.com/local/richmond/2026/05/19/google-data-center-chesterfield-army-corps-permit",
+          "type": "news"
+        }
+      ],
+      "case_type": "wetlands-streams",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§404 individual permit application (in federal review)"
+    },
+    {
+      "case_id": "Google-LittleRock-AR-2026",
+      "category": "datacenter",
+      "respondent": "Willowbend Capital LLC (Google front company), Port of Little Rock, Pulaski County, Arkansas — $1 billion, 5-building, 1.43 million sq ft data center campus",
+      "year": "2026",
+      "cwa_section": "Section 404 individual permit (Army Corps Little Rock District SWL-2026-00038); Arkansas §401 Water Quality Certification from ADEQ required",
+      "violation_summary": "Not an enforcement action — the largest §404 wetland-impact permit application for a data center currently in the federal pipeline (as of June 2026). Google's proposed Port of Little Rock campus would fill approximately 16.8 acres of wetlands and more than 6,000 feet of stream channels, the largest single-site wetland footprint of any data center application in the Army Corps public-notice database. Public demonstrations were held outside the Army Corps Little Rock District building. Google is proposing to purchase wetland mitigation bank credits.",
+      "outcome": "PENDING — Corps accepting public comments; environmental review ongoing as of June 2026. No permit issued or denied.",
+      "takeaway": "The largest single §404 wetland impact in any active data center permit application, illustrating that hyperscale campuses can generate wetland and stream impacts an order of magnitude larger than construction stormwater GPs alone address. The 16.8-acre/6,000-foot footprint is a credible trigger for individual permit review rather than nationwide permits, giving the Corps and state §401 certifying authority substantial leverage over project design.",
+      "sources": [
+        {
+          "title": "Army Corps SWL-2026-00038 public notice — Willowbend Capital / Port of Little Rock",
+          "url": "https://www.swl.usace.army.mil/Missions/Regulatory/Public-Notices/Article/4447433/swl-2026-00038/",
+          "type": "regulatory filing"
+        },
+        {
+          "title": "Google's $1B Port of Little Rock data center (Arkansas Online)",
+          "url": "https://www.arkansasonline.com/news/2026/mar/31/googles-1b-port-of-little-rock-data-center/",
+          "type": "news"
+        },
+        {
+          "title": "Little Rock protesters rally over Google data center, citing water and wetland risks (KATV)",
+          "url": "https://katv.com/news/local/little-rock-protesters-rally-over-google-data-center-citing-water-and-wetland-risks",
+          "type": "news"
+        }
+      ],
+      "case_type": "wetlands-streams",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§404 individual permit application (in federal review)"
+    },
+    {
+      "case_id": "Greenidge-SenecaLake-NY-2025",
+      "category": "industrial",
+      "respondent": "Greenidge Generation LLC — combined bitcoin-mining and natural-gas peaking power plant at Dresden, Yates County, New York, on the shore of Seneca Lake",
+      "year": "2021-2025",
+      "cwa_section": "Section 316(a) (thermal discharge variance — exceeds state temperature limits), Section 316(b) (cooling water intake structure compliance — CWWS intake screens not installed), and SPDES permit NY-0001325 (New York's CWA §402 delegated program)",
+      "violation_summary": "New York DEC documented that Greenidge's once-through cooling water discharges exceeded state temperature limits in all 8 temperature monitoring surveys conducted between June 2021 and April 2022, reaching 86°F — approximately 10°F above ambient Seneca Lake temperature and 7°F above the state water-quality limit. The facility withdraws up to 139 million gallons per day from Seneca Lake, returning it at elevated temperatures. SPDES permit NY-0001325 expired September 30, 2022; renewal remains unresolved as of 2025. Greenidge has not installed required §316(b) closed-cycle wet surface aerisol cooling system (CWWS) intake screens. DEC denied air permit renewal three times (2022, 2023, 2024); a New York Supreme Court overturned the third denial in November 2024.",
+      "outcome": "PARTIAL resolution: A November 2025 settlement between Greenidge and DEC addressed greenhouse-gas emissions only (44% cut by 2030), leaving the SPDES water permit renewal and §316(b) intake compliance fully unresolved. No formal CWA consent order or monetary water penalty has been publicly reported. The thermal exceedances documented 2021–2022 remain the factual predicate for ongoing permit conditions.",
+      "takeaway": "The only documented case where a digital-infrastructure operator (bitcoin mining / high-density compute) faces formal §316(a) thermal-discharge exceedance findings and unresolved §316(b) intake noncompliance. The 139 MGD intake volume is comparable to a large industrial cooling system. Data centers using once-through or open-loop cooling on surface-water intakes face the same §316(b) best-technology-available and §316(a) thermal-variance obligations — Greenidge illustrates what enforcement looks like when those obligations are not met.",
+      "sources": [
+        {
+          "title": "Greenidge's warm-water discharges heated Seneca Lake beyond state limits, but DEC waiver excuses violations",
+          "url": "https://waterfrontonline.blog/2022/10/07/greenidges-warm-water-discharges-heated-seneca-lake-beyond-state-limits-but-dec-wavier-excuses-violations/",
+          "type": "news"
+        },
+        {
+          "title": "DEC signs agreement with Greenidge, ends legal battle (Rochester Beacon, November 2025)",
+          "url": "https://rochesterbeacon.com/2025/11/11/dec-signs-agreement-with-greenidge-ends-legal-battle/",
+          "type": "news"
+        },
+        {
+          "title": "Greenidge Generation — SPDES permit renewal documentation and DEC proceedings (Treichler Law)",
+          "url": "https://treichlerlawoffice.com/water/greenidge/index.html",
+          "type": "advocacy / litigation"
+        }
+      ],
+      "case_type": "cooling-water",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§316(a)/(b) + SPDES — thermal/intake findings"
+    },
+    {
+      "case_id": "TransGas-AdamsFork-WV-2025",
+      "category": "adjacent",
+      "respondent": "TransGas Development Systems (New York-based); Adams Fork Energy Project — natural-gas-fueled ammonia plant and two data center facilities at Twisted Gun Golf Course (Wharncliffe) and Harless Industrial Park (Holden), Mingo County, West Virginia",
+      "year": "2025-2026",
+      "cwa_section": "Section 404 (alleged lack of Army Corps dredge-and-fill permit for project requiring stream/wetland disturbance in West Virginia). ESA Section 7 consultation, NEPA review, and NGA pipeline certificate also cited. No active agency enforcement order has been issued — this is a citizen suit alleging §404 violations; the Army Corps has not independently issued a NOV, cease-and-desist, or penalty.",
+      "violation_summary": "On December 3, 2025, ten Mingo County residents filed a federal citizen suit in the U.S. District Court for the Southern District of West Virginia, alleging TransGas has begun advancing ground-disturbing activities for the Adams Fork Energy Project — which would power two data center campuses — without obtaining required CWA §404 dredge-and-fill permits, ESA consultation, NEPA review, or FERC gas-pipeline approval. Plaintiffs named the Army Corps Huntington District, U.S. Fish & Wildlife Service, and FERC as defendants for failing to initiate required regulatory reviews of a project affecting streams and wetlands in the Tug Fork watershed.",
+      "outcome": "Judge denied plaintiffs' motion for a temporary restraining order and preliminary injunction. Litigation continuing as of June 2026. No Army Corps enforcement action, NOV, or permit denial has been independently issued.",
+      "takeaway": "The first documented CWA §404 citizen suit targeting unpermitted stream/wetland disturbance at a data-center power-supply project. The framing — plaintiffs suing both the developer AND the Army Corps for regulatory inaction — is a template for future citizen enforcement where the Corps fails to require permits for data center construction in sensitive watersheds. The TRO denial does not preclude full merits review or injunctive relief after the administrative record is developed.",
+      "sources": [
+        {
+          "title": "Mingo County residents file federal lawsuit against company building power plants, data center in WV",
+          "url": "https://westvirginiawatch.com/2025/12/05/mingo-county-residents-file-federal-lawsuit-against-company-building-power-plants-data-center-in-wv/",
+          "type": "news"
+        },
+        {
+          "title": "West Virginia residents file lawsuit against ammonia plant / data centre project (QC Intel)",
+          "url": "https://www.qcintel.com/ammonia/article/west-virginia-residents-file-lawsuit-against-ammonia-plant-data-centre-project-54475.html",
+          "type": "news"
+        }
+      ],
+      "case_type": "wetlands-streams",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§404 allegation via §505 citizen suit (pending)"
+    },
+    {
+      "case_id": "QuantumLoophole-FrederickMD-boring-discharges-2022-2024",
+      "category": "datacenter",
+      "respondent": "Quantum Loophole Inc. (Quantum Frederick data center campus / QLoop fiber conduit; TPG-backed, later replaced by Catellus as developer)",
+      "year": "2022-2024",
+      "cwa_section": "Maryland-delegated CWA §402 program plus Maryland Water Pollution Control law (Md. Env. Code Title 9) and Maryland Nontidal Wetlands Protection Act — unpermitted discharges to waters/wetlands and unauthorized wetland impacts during construction of data-center fiber/water infrastructure.",
+      "violation_summary": "During construction of the QLoop fiber-conduit ring and water line serving the 2,100-acre Quantum Frederick data center campus, MDE documented violations across 25 inspections (Aug 2022–Oct 2023), including four horizontal-directional-drilling 'frac-outs' that released bore mud and drilling additives into a Monocacy River tributary and wetlands, plus unauthorized discharge of hundreds of thousands of gallons of possibly contaminated groundwater into Tuscarora Creek (Potomac watershed). Montgomery County segments of the fiber project accumulated over 80 state violations between Aug 2022 and Feb 2024. A county stop-work order halted drilling in April 2024.",
+      "outcome": "MDE proposed a $130,000 settlement in November 2023, then rescinded it on June 18, 2024 after new violations, referring the matter to the Maryland Office of the Attorney General for formal enforcement (referral reported September 2024; still an active enforcement matter). Separately, investor TPG removed Quantum Loophole as manager/developer of the campus and QLoop in 2024 following Delaware litigation.",
+      "takeaway": "Data-center enabling infrastructure (fiber conduits, water lines) can generate the project's biggest CWA exposure before any building rises — HDD frac-outs into streams and wetlands are treated as unpermitted discharges under state-delegated programs. Escalation from a modest administrative settlement to attorney-general enforcement shows regulators harden their posture when violations continue, and developer-of-record status can be lost over environmental compliance failures.",
+      "case_type": "spills-contamination",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§402 (delegated) unpermitted discharges — MD AG enforcement referral",
+      "sources": [
+        {
+          "title": "Frustrations mount with developer of Maryland data center complex",
+          "url": "https://www.bayjournal.com/news/energy/frustrations-mount-with-developer-of-maryland-data-center-complex/article_3af1522a-1d2b-11ef-bbbf-c727c4493083.html",
+          "type": "news"
+        },
+        {
+          "title": "Maryland Environment Dept. Rescinds Quantum Loophole Settlement",
+          "url": "https://insidetowers.com/maryland-environment-dept-rescinds-quantum-loophole-settlement/",
+          "type": "news"
+        },
+        {
+          "title": "Quantum Loophole pauses Maryland campus work amid environmental violations",
+          "url": "https://www.datacenterdynamics.com/en/news/quantum-loophole-pauses-maryland-campus-work-amid-environmental-violations/",
+          "type": "news"
+        },
+        {
+          "title": "New environmental abuses alleged at Quantum Loophole data center",
+          "url": "https://www.wusa9.com/article/tech/science/environment/environmental-abuse-allegation-quantum-loophole-mega-data-center-development-frederick/65-0d5c2b7b-8e46-4cc9-961b-5d0208570864",
+          "type": "news"
+        },
+        {
+          "title": "A Maryland data center project has violated environmental protections (Potomac Conservancy)",
+          "url": "https://potomac.org/blog/2024/4/5-2024-an-open-letter-fred-county-md",
+          "type": "ngo"
+        }
+      ]
+    },
+    {
+      "case_id": "AWS-LakeAnnaVA-VPDES-cooling-discharge-2026",
+      "category": "datacenter",
+      "respondent": "Amazon Web Services (Lake Anna Tech Campus, Louisa County, Virginia)",
+      "year": "2025-2026",
+      "cwa_section": "CWA §402 via Virginia's delegated VPDES program — draft individual discharge permit for treated cooling water (thermal limits under §301/§316(a)-type conditions, metals limits; PFAS monitoring not required but reserved via special condition).",
+      "violation_summary": "Not an enforcement action — a permit application in active state review. AWS is seeking a VPDES individual permit to discharge up to 280,000 gallons/day of treated cooling-tower water from its Lake Anna Tech Campus data centers into Sedges Creek, a tributary of Lake Anna. The draft permit caps discharge temperature at 89.6°F and sets zinc/copper limits but does not mandate PFAS testing (DEQ retained authority to add it later). AWS says discharge would occur only during the hottest ~4% of the year. A contentious DEQ public hearing was held June 9, 2026 at Louisa County Middle School, where residents objected to thermal and contaminant impacts on the lake.",
+      "outcome": "Pending as of June 10, 2026 — DEQ has published responses to public comments and says it will make a final permit decision; no timeline announced. This is one of the first direct-to-surface-water cooling discharge permits sought by a hyperscaler in Virginia.",
+      "takeaway": "Hyperscalers are beginning to seek their own direct NPDES/VPDES discharge permits rather than routing all cooling water through municipal WWTPs — moving the operational CWA exposure from the receiving POTW's permit onto the data center itself. The PFAS-testing gap and thermal limits in this draft are likely to template (and be litigated in) future data-center discharge permits.",
+      "case_type": "cooling-water",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§402/VPDES individual cooling-discharge permit (draft, hearing June 2026)",
+      "sources": [
+        {
+          "title": "DEQ meeting about data center discharge water into Lake Anna tributaries turns contentious",
+          "url": "https://www.12onyourside.com/2026/06/10/deq-meeting-about-data-center-water-discharging-into-lake-anna-tributaries-turns-contentious/",
+          "type": "news"
+        },
+        {
+          "title": "DEQ VPDES Public Hearing For AWS Site Draws Concerned Citizens",
+          "url": "https://lakeannalife.com/deq-vpdes-public-hearing-for-aws-site-draws-concerned-citizens/",
+          "type": "news"
+        },
+        {
+          "title": "What we know and don't know about data center water discharge in Virginia (Virginia Mercury via WHRO)",
+          "url": "https://www.whro.org/environment/2026-06-04/what-we-know-and-dont-know-about-data-center-water-discharge-in-virginia",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Google-FortWayneIN-isolated-wetland-permit-2025",
+      "category": "datacenter",
+      "respondent": "Google LLC (Project Zodiac, Fort Wayne/Allen County, Indiana) and AEP Indiana Michigan Power (transmission for the campus)",
+      "year": "2025",
+      "cwa_section": "Indiana state-regulated (isolated) wetland permit program under IDEM — the state analog covering wetlands outside post-Sackett federal §404 jurisdiction; companion IDEM review for the AEP transmission wetland fill.",
+      "violation_summary": "On September 16, 2025, IDEM granted a permit authorizing Google's $2B Project Zodiac data center (on ~1,400 acres containing ~33 acres of wetlands) to fill 2.44 acres of state-regulated wetlands, after a 30-day comment period that drew dozens of opposition comments; no public hearing was held, which the Hoosier Environmental Council criticized in formal comments (Oct 2025). In October–December 2025, IDEM separately approved AEP's request to temporarily fill wetlands to build power infrastructure for the campus.",
+      "outcome": "Permit issued with compensatory mitigation: Google must purchase ~4 acres of wetland mitigation credits via the state mitigation bank / IDNR in-lieu-fee program (Maumee Service Area). Opposition continued at later IDEM hearings (e.g., a packed November 2025 hearing on the campus's generator permit). Construction is proceeding as of mid-2026.",
+      "takeaway": "Post-Sackett, hyperscaler wetland exposure increasingly runs through state isolated-wetland programs rather than federal §404 — and states like Indiana are approving fills with bank-credit mitigation and minimal process (no hearing). Power-delivery infrastructure (utility transmission) generates its own parallel wetland permits, widening the project's water-permit footprint beyond the data center parcel.",
+      "case_type": "wetlands-streams",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "State isolated-wetland permit — outside federal §404 post-Sackett",
+      "cwa_pathway": "Sackett pushed these isolated wetlands out of federal §404 jurisdiction, which is exactly why the only permit here is a state one. Any wetland on the parcel with a continuous surface connection to a relatively permanent water would still require a federal §404 individual permit — the route Google itself is in for its Virginia and Arkansas campuses.",
+      "analogous_cases": [
+        "Sackett-v-EPA-2023",
+        "Lewis-v-United-States-5th-Cir-2023",
+        "Google-LittleRock-AR-2026"
+      ],
+      "sources": [
+        {
+          "title": "Wetland permit for Project Zodiac data center moves forward without public hearing (Hoosier Environmental Council)",
+          "url": "https://www.hecweb.org/2025/10/07/hecs-public-comments-on-the-isolated-wetland-permit-for-project-zodiac-data-center/",
+          "type": "ngo"
+        },
+        {
+          "title": "IDEM Okays Google's $2B Fort Wayne Wetlands Data Center",
+          "url": "https://www.inkfreenews.com/2025/09/25/idem-okays-googles-2b-fort-wayne-wetlands-data-center/",
+          "type": "news"
+        },
+        {
+          "title": "Indiana approves expanding Google's Fort Wayne data center campus onto protected wetlands, despite local opposition",
+          "url": "https://www.datacenterdynamics.com/en/news/indiana-approves-expanding-googles-fort-wayne-data-center-campus-onto-protected-wetlands-despite-local-opposition/",
+          "type": "news"
+        },
+        {
+          "title": "AEP request to temporarily fill wetlands to power Fort Wayne Google data center approved",
+          "url": "https://www.21alivenews.com/2025/12/04/aep-request-temporarily-fill-wetlands-power-fort-wayne-google-data-center-approved/",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Microsoft-MountPleasantWI-wetland-individual-permit-2024",
+      "category": "datacenter",
+      "respondent": "Microsoft Corporation (Mount Pleasant datacenter campus, Racine County, Wisconsin)",
+      "year": "2024-2026",
+      "cwa_section": "Wisconsin wetland individual permit under Wis. Stat. §281.36 — the state program covering both federal-jurisdiction (§404/§401-coordinated) and nonfederal wetlands; application MKE 09-14.",
+      "violation_summary": "Not an enforcement action — wetland permitting for a hyperscale build-out. Microsoft obtained Wisconsin DNR approval in July 2024 to fill wetlands for its first Mount Pleasant data center building, and filed a separate wetland individual permit application (MKE 09-14) for campus expansion that went to a contested public informational hearing in fall 2024. The campus — announced at $3.3B and expanded to a $4B+ AI datacenter with a further $13.3B two-campus expansion proposed in January 2026 — sits on the former Foxconn site near Lake Michigan tributaries. NB: the final disposition of MKE 09-14 was not confirmed in available reporting; re-verify against WI DNR permit records.",
+      "outcome": "Initial wetland-fill approval granted (July 2024); expansion wetland permitting proceeded through DNR's individual-permit process with public hearings. Related water controversy continues: Midwest Environmental Advocates sued the City of Racine in September 2025 to force disclosure of the campus's projected water use (tracked separately), and Microsoft has since committed to closed-loop, near-zero-water cooling for most of the campus.",
+      "takeaway": "Even 'zero-water cooling' campuses carry front-end wetland-permit exposure at the construction stage, processed through state programs that blend §404/§401 review with state-law jurisdiction. Transparency litigation by Waterkeeper-affiliated groups is becoming the soft-enforcement lever where no discharge violation yet exists.",
+      "case_type": "wetlands-streams",
+      "cwa_applied": "pending",
+      "cwa_instrument": "State wetland individual permit (§404/§401-coordinated) — in process",
+      "cwa_pathway": "Where the filled wetlands are federally jurisdictional (post-Sackett: continuous surface connection to relatively permanent waters, plausible this close to Lake Michigan tributaries), the fill requires federal §404 authorization and a §401 certification, coordinated through Wisconsin's individual-permit process — the same posture as Amazon's New Carlisle campus one state south.",
+      "analogous_cases": [
+        "Amazon-NewCarlisle-IN-wetlands-2025",
+        "Sackett-v-EPA-2023",
+        "Google-FortWayneIN-isolated-wetland-permit-2025"
+      ],
+      "sources": [
+        {
+          "title": "Public Hearing for Microsoft MKE 09-14 Wetland Individual Permit Application (Wisconsin DNR)",
+          "url": "https://dnr.wisconsin.gov/calendar/hearing/99371",
+          "type": "agency"
+        },
+        {
+          "title": "Microsoft breaks ground on $1bn data center in Wisconsin (notes July DNR wetland-fill approval)",
+          "url": "https://www.datacenterdynamics.com/en/news/microsoft-breaks-ground-on-1bn-data-center-in-wisconsin/",
+          "type": "news"
+        },
+        {
+          "title": "Lawsuit seeks to force release of projected water use by Microsoft data centers",
+          "url": "https://www.wpr.org/news/microsoft-data-centers-lawsuit-force-release-projected-water-use",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Meta-NewtonCountyGA-well-failures-2018-2025",
+      "category": "adjacent",
+      "respondent": "Meta Platforms (Stanton Springs data center campus), Newton County, GA",
+      "year": "2018-2025",
+      "cwa_section": "No CWA action — no formal legal vehicle; resident complaints to county officials and media, county water-supply planning response.",
+      "violation_summary": "Residents living adjacent to Meta's $750M+ Stanton Springs data center campus in Newton County, GA (bordering Morgan County) reported private wells failing and water turning to sediment-laden sludge after construction began in 2018, with one couple ~1,000 feet from the site spending ~$5,000 on damaged plumbing and appliances. By 2025 reporting, the facility was drawing roughly 500,000 gallons/day — about 10% of Newton County's daily water use — in a county projected to face a total water deficit by 2030, and residents faced a ~33% water rate increase. Meta commissioned a consultant study concluding its operations did not harm local groundwater; no regulatory enforcement followed.",
+      "outcome": "No enforcement or litigation as of June 2026; affected residents bore repair costs themselves. The dispute fed into the May 2026 congressional scrutiny of the same campus (the Morgan County turbid-water EPA inquiry, tracked separately) and into Georgia legislative debates on data-center water reporting.",
+      "takeaway": "Construction-phase dewatering and ground disturbance can damage neighboring private wells with zero permit trigger, because private well impacts fall outside NPDES and most state groundwater programs. Reputational and legislative exposure arrives years before any regulator does.",
+      "case_type": "groundwater",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "No formal action — resident complaints + county planning",
+      "cwa_pathway": "Construction sediment reaching streams or wetlands would implicate the §402 construction general permit (the lever EPA pledged to examine next door in Morgan County); pollutants moving via groundwater to navigable waters could trigger Maui's functional-equivalent test. Pure well-yield loss from withdrawal stays outside the CWA.",
+      "analogous_cases": [
+        "Meta-MorganCo-GA-investigation-2026",
+        "County-of-Maui-v-Hawaii-Wildlife-Fund-2020"
+      ],
+      "sources": [
+        {
+          "title": "What it's like living next to one of Meta's largest data centers",
+          "url": "https://www.fastcompany.com/91396678/meta-georgia-data-center-stanton-springs",
+          "type": "news"
+        },
+        {
+          "title": "Meta data center impacts local water supply in Newton County",
+          "url": "https://ppc.land/meta-data-center-impacts-local-water-supply-in-newton-county/",
+          "type": "news"
+        },
+        {
+          "title": "America's data centers are thirsty. Rural towns are paying the price",
+          "url": "https://fortune.com/2026/05/13/data-center-georgia-arizona-water-wars/",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "MilwaukeeRiverkeeper-RacineWI-water-records-suit-2025",
+      "category": "adjacent",
+      "respondent": "City of Racine, WI (records custodian for Microsoft Mount Pleasant data center water-supply data)",
+      "year": "2025",
+      "cwa_section": "No CWA action — Wisconsin Public Records Law enforcement suit (Racine County Circuit Court), filed by Midwest Environmental Advocates for Milwaukee Riverkeeper.",
+      "violation_summary": "In February 2025 Milwaukee Riverkeeper requested the City of Racine's records on projected Lake Michigan water deliveries to Microsoft's $3.3B Mount Pleasant data center (on the former Foxconn site). After ~210 days without a response, Midwest Environmental Advocates filed suit on September 15, 2025 in Racine County Circuit Court to compel disclosure. Two days after filing, the city released the figures — Microsoft had asked that the data be treated as trade secrets, then waived the request — showing roughly 2.8 million gallons for Area 3B and up to ~8.4 million gallons if expanded.",
+      "outcome": "Records released September 17, 2025, mooting the core demand; the episode became a leading exhibit in Wisconsin's data-center transparency debate (and contrasts with Microsoft's later Caledonia site withdrawal in November 2025 after community pushback).",
+      "takeaway": "Water-use figures shielded as trade secrets are increasingly indefensible once litigation is filed — operators should assume projected consumption becomes public. Transparency suits are emerging as the cheapest pressure point for opponents because they require no environmental violation at all.",
+      "case_type": "water-supply",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "State public-records suit — records released (no CWA)",
+      "cwa_pathway": "None plausible for the records dispute itself. Operationally, cooling blowdown returned to the Racine wastewater utility would sit under the POTW's §307 pretreatment program, and Great Lakes withdrawals are governed by the Great Lakes Compact rather than the CWA. The closest CWA-side analog is the Virginia FOIA fight over Google's Project Raspberry water projections.",
+      "analogous_cases": [
+        "Google-ProjectRaspberry-VA-2026",
+        "QTS-Fayette-GA-unbilled-water-2026"
+      ],
+      "sources": [
+        {
+          "title": "MEA Takes Legal Action to Compel City of Racine to Disclose Data Center's Projected Water Use",
+          "url": "https://midwestadvocates.org/mea-takes-legal-action-to-compel-city-of-racine-to-disclose-data-centers-projected-water-use/",
+          "type": "ngo"
+        },
+        {
+          "title": "Lawsuit seeks to force release of projected water use by Microsoft data centers",
+          "url": "https://www.wpr.org/news/microsoft-data-centers-lawsuit-force-release-projected-water-use",
+          "type": "news"
+        },
+        {
+          "title": "Racine releases records showing Microsoft data center would use 8 million gallons of water per year",
+          "url": "https://wisconsinexaminer.com/briefs/racine-releases-records-showing-microsoft-data-center-would-use-8-million-gallons-of-water-per-year/",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "CorpusChristi-SintonTX-EvangelineAquifer-wells-2026",
+      "category": "adjacent",
+      "respondent": "City of Sinton, TX (permit challenger) vs. City of Corpus Christi, TX; unnamed prospective data-center developer(s) in Sinton",
+      "year": "2026",
+      "cwa_section": "No CWA action — Texas groundwater-district well-permit contest and state-court litigation over emergency water-supply wells.",
+      "violation_summary": "Drought-stricken Corpus Christi applied for permits to drill 22 emergency wells into the Evangeline Aquifer near Sinton (San Patricio County), targeting up to 24 MGD by 2027. The dispute formalized in February 2026 when Sinton challenged the permits; Corpus Christi officials publicly allege Sinton is blocking the wells to reserve groundwater for one or two planned data centers, citing an April 21, 2026 rezoning of ~1,000 acres from agricultural to industrial, AEP's purchase of adjacent substation land, and drilling permits inside the rezoned tract. On May 16, 2026, Judge Alicia York ruled the litigation may proceed.",
+      "outcome": "Litigation active as of June 2026 and could run for years; Corpus Christi has begun pipeline construction at its own risk while Sinton neither confirms nor denies the data-center plans.",
+      "takeaway": "Data centers are now a bargaining chip in municipal water-rights fights even before any project is announced — the mere prospect of one can stall a half-million-person city's emergency drought supply. Aquifer allocation contests under Texas groundwater law are a growing exposure channel entirely outside federal water statutes.",
+      "case_type": "groundwater",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "Texas groundwater-district permit contest (no CWA)",
+      "cwa_pathway": "None plausible for the withdrawal/allocation fight itself — the CWA does not govern groundwater pumping. §404 could only be implicated if pipeline or wellfield construction crossed jurisdictional wetlands or streams.",
+      "analogous_cases": [
+        "Rowan-ProjectCinco-Medina-TX-2025",
+        "Google-Berkeley-SC-Middendorf-aquifer-2019"
+      ],
+      "sources": [
+        {
+          "title": "Corpus Christi Leaders Believe Data Center Plans May Be Behind Delays to Emergency Water Supply",
+          "url": "https://insideclimatenews.org/news/19052026/corpus-christi-emergency-water-supply-delays/",
+          "type": "news"
+        },
+        {
+          "title": "Local Texas leaders believe data center plans may be behind delays to emergency water supply",
+          "url": "https://www.route-fifty.com/infrastructure/2026/05/local-texas-leaders-believe-data-center-plans-may-be-behind-delays-emergency-water-supply/413626/",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Sailfish-HoodCountyTX-ComancheCircle-aquifer-moratorium-2025-2026",
+      "category": "adjacent",
+      "respondent": "Sailfish Development (Comanche Circle project) and seven other data-center developers; Hood County, TX Commissioners Court",
+      "year": "2025-2026",
+      "cwa_section": "No CWA action — failed county moratorium votes (state preemption of county land-use power) and amended county development regulations.",
+      "violation_summary": "Eight data-center projects are planned in Hood County, TX (third-densest in the state per square mile), led by Sailfish Development's ~2,600-acre, up-to-5 GW Comanche Circle campus near Tolar. Residents organized as Protect the Paluxy Valley, arguing the site sits over an Upper Trinity Aquifer recharge zone and in the Paluxy River watershed feeding Dinosaur Valley State Park. Two county moratorium attempts failed — including a 3-2 vote on February 10, 2026 after a state senator warned commissioners they lacked authority — though commissioners unanimously tightened development regulations for large industrial projects in March 2026.",
+      "outcome": "As of June 2026 the projects proceed; Texas counties have no zoning power over unincorporated land, leaving residents with only groundwater-district permitting and state legislation as levers.",
+      "takeaway": "In no-zoning states like Texas, aquifer-recharge and watershed objections have no local legal vehicle at all — counties literally cannot say no. Developer exposure is therefore deferred to groundwater districts, state legislatures, and eventual nuisance litigation rather than resolved at siting.",
+      "case_type": "groundwater",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "Failed county moratorium votes — no local vehicle (no CWA)",
+      "cwa_pathway": "§402 construction-stormwater permitting (TPDES CGP) would govern sediment to the Paluxy River during the build-out, and §404 would apply if tributary streams or wetlands in the watershed are filled; aquifer-recharge depletion itself is beyond the CWA.",
+      "analogous_cases": [
+        "Atlas-ProjectSail-Coweta-GA-2026",
+        "Rowan-ProjectCinco-Medina-TX-2025"
+      ],
+      "sources": [
+        {
+          "title": "The 8 data centers that could transform one Texas county",
+          "url": "https://www.texastribune.org/2026/06/02/texas-data-centers-hood-county-local-control-rural-water-power/",
+          "type": "news"
+        },
+        {
+          "title": "A Texas county rejects moratorium on data center development",
+          "url": "https://www.texastribune.org/2026/02/10/texas-hood-county-rejects-data-center-development-pause-ai/",
+          "type": "news"
+        },
+        {
+          "title": "Hood County to consider another data center moratorium despite potential legal concerns",
+          "url": "https://www.keranews.org/energy-environment/2026-02-24/hood-county-to-consider-another-data-center-moratorium-despite-potential-legal-concerns",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Charlotte-NC-drought-datacenter-moratorium-2026",
+      "category": "adjacent",
+      "respondent": "City of Charlotte, NC (moratorium); Digital Realty (400 MW campus) and PowerHouse Data Centers (300 MW University City facility) proceeding outside it",
+      "year": "2026",
+      "cwa_section": "No CWA action — municipal 150-day development moratorium adopted under NC zoning law amid drought water restrictions.",
+      "violation_summary": "With Charlotte under water-use restrictions during its worst drought in roughly 20 years, residents at a May 27, 2026 public hearing demanded a pause on data-center development, citing water and electricity demand. On June 8, 2026, Charlotte City Council unanimously approved a 150-day moratorium on new data centers (through November 5, 2026) while staff draft new regulations. The moratorium does not reach already-approved projects, including Digital Realty's 400 MW campus near Charlotte Douglas Airport and PowerHouse's 300 MW University City facility — which would be the largest data centers in North Carolina.",
+      "outcome": "Moratorium in effect as of June 2026; new zoning/regulatory standards expected by November 2026, while the two grandfathered mega-projects continue and a state data-center bill advances in the NC legislature.",
+      "takeaway": "Drought conditions convert ordinary capacity planning into political flashpoints: a unanimous big-city moratorium passed within weeks of public hearings. Grandfathering means the largest water loads escape the new rules — concentrating future scrutiny (and potential discharge/pretreatment fights) on incumbent projects.",
+      "case_type": "water-supply",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "Municipal 150-day moratorium (no CWA)",
+      "cwa_pathway": "Cooling-tower blowdown from the grandfathered campuses to Charlotte Water's POTW would fall under the §307 pretreatment program (40 CFR 403) if pollutant loads are significant — the Swift Beef / Yuengling fact pattern; the drought/moratorium dispute itself is outside the CWA.",
+      "analogous_cases": [
+        "Swift-Beef-Grand-Island-2011",
+        "ProjectBlue-Tucson-AMES-2026"
+      ],
+      "sources": [
+        {
+          "title": "Charlotte City Council approves 150-day data center moratorium",
+          "url": "https://www.wfae.org/politics/2026-06-08/charlotte-city-council-approves-150-day-data-center-moratorium",
+          "type": "news"
+        },
+        {
+          "title": "Charlotte enacts 150-day moratorium on data center construction",
+          "url": "https://www.axios.com/local/charlotte/2026/06/09/charlotte-data-center-moratorium-150-days",
+          "type": "news"
+        },
+        {
+          "title": "Charlotte residents demand moratorium on data centers during public hearing",
+          "url": "https://www.wfae.org/energy-environment/2026-05-27/charlotte-residents-demand-moratorium-on-data-centers-during-public-hearing",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Microsoft-CaledoniaWI-rezoning-withdrawal-2025",
+      "category": "adjacent",
+      "respondent": "Microsoft; Village of Caledonia, WI (Racine County)",
+      "year": "2025",
+      "cwa_section": "No CWA action — contested local rezoning (244 acres agricultural to industrial) abandoned after public opposition.",
+      "violation_summary": "Microsoft sought to rezone 244 acres of farmland in Caledonia, WI for a data center near Lake Michigan. At a September 2025 Plan Commission meeting, roughly 40 residents spoke against the project over more than two hours, raising water and Lake Michigan impacts alongside noise, air quality, utility-bill, and jobs concerns — pushback amplified by the contemporaneous Racine records fight over the nearby Mount Pleasant campus's undisclosed water use. In November 2025, Microsoft announced it would not proceed at the Caledonia site, citing community feedback, and would seek an alternative location (reportedly in Ozaukee County).",
+      "outcome": "Project withdrawn as of November 2025; Microsoft is scouting alternate Wisconsin sites, and neighboring Port Washington faces parallel opposition to a separate data-center campus.",
+      "takeaway": "A hyperscaler abandoned a sited project purely on local sentiment — no permit denial, no litigation — showing water-and-transparency concerns now carry veto-like force at the rezoning stage in the Great Lakes region. Withdrawal-and-relocate also just moves the same water questions to the next county.",
+      "case_type": "water-supply",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "Contested rezoning withdrawn (no CWA)",
+      "cwa_pathway": "None plausible for the rezoning fight itself. Had construction proceeded, §402 construction-stormwater permitting near Lake Michigan tributaries and §307 POTW pretreatment for blowdown would be the operative CWA touchpoints.",
+      "analogous_cases": [
+        "Atlas-ProjectSail-Coweta-GA-2026",
+        "MilwaukeeRiverkeeper-RacineWI-water-records-suit-2025"
+      ],
+      "sources": [
+        {
+          "title": "Microsoft scraps plans for Caledonia data center site, working to find an alternate location",
+          "url": "https://www.wpr.org/news/microsoft-caledonia-data-center-site-ozaukee-county",
+          "type": "news"
+        },
+        {
+          "title": "Microsoft data center rejected in Wisconsin village, AI boom hits snag",
+          "url": "https://www.cnbc.com/2025/11/25/microsoft-ai-data-center-rejection-vs-support.html",
+          "type": "news"
+        },
+        {
+          "title": "Caledonia residents push back against rezoning for proposed data center",
+          "url": "https://spectrumnews1.com/wi/milwaukee/news/2025/09/29/caledonia--data-center--microsoft",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "USACE-NWP39-DataCenters-2026",
+      "category": "datacenter",
+      "respondent": "U.S. Army Corps of Engineers (Nationwide Permit 39 reissuance covering data center developers nationwide)",
+      "year": "2025-2026",
+      "cwa_section": "CWA §404 — Nationwide Permit 39 (commercial and institutional developments), 2026 reissuance.",
+      "violation_summary": "Not an enforcement action — a permitting-framework change. On June 18, 2025 the Army Corps proposed reissuing and modifying its §404 nationwide permits, and on January 8, 2026 published the final reissuance in the Federal Register. The 2026 version of Nationwide Permit 39 expressly clarifies that 'data centers, artificial intelligence and machine learning facilities' qualify as commercial developments eligible for general (streamlined) §404 permitting for wetland and stream fills, rather than requiring individual permits. Legal commentators flag the change as lowering the federal wetlands-permitting bar for data center construction while litigation risk around such approvals rises.",
+      "outcome": "Final nationwide permits issued January 2026 and in effect; data center projects with qualifying wetland/stream impacts (generally ≤1/2 acre) can now proceed under NWP 39 with preconstruction notification instead of individual §404 review.",
+      "takeaway": "The Corps has formally routed most data center wetland fills onto the fastest §404 track — small-footprint campus impacts now avoid individual-permit scrutiny, but projects exceeding NWP thresholds (like Google's and SDC's individual applications) remain the high-visibility exception, and streamlined approvals are an emerging target for NGO litigation.",
+      "case_type": "wetlands-streams",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§404 Nationwide Permit 39 (2026 reissuance) — data centers expressly enumerated",
+      "sources": [
+        {
+          "title": "Federal Register: Reissuance and Modification of Nationwide Permits (Jan 8, 2026)",
+          "url": "https://www.federalregister.gov/documents/2026/01/08/2026-00121/reissuance-and-modification-of-nationwide-permits",
+          "type": "agency"
+        },
+        {
+          "title": "USACE announces finalization of nationwide permits",
+          "url": "https://www.usace.army.mil/Media/News-Releases/News-Release-Article-View/Article/4372486/us-army-corps-of-engineers-announces-finalization-of-nationwide-permits/",
+          "type": "agency"
+        },
+        {
+          "title": "The Rise of Data Centers Brings Environmental Permitting Challenges and Litigation Risk (Hunton)",
+          "url": "https://www.hunton.com/insights/publications/the-rise-of-data-centers-brings-environmental-permitting-challenges-and-litigation-risk",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "SDC-ATLA-DouglasCounty-GA-404-401-2025",
+      "category": "datacenter",
+      "respondent": "SDC ATLA, LLC (Stream Data Centers), Winston, Douglas County, GA",
+      "year": "2025-2026",
+      "cwa_section": "§404 individual permit (USACE Savannah District) + §401 water quality certification (GA EPD, 401-SAS-2025-00336).",
+      "violation_summary": "Not an enforcement action — permitting for a 1.3M sq ft, nine-building data center campus with two substations on a 215.61-acre site in Winston, Douglas County, GA. The project requires a USACE §404 permit for filling 0.583 acres of wetland plus 128 linear feet of ephemeral, 2,586 LF of intermittent, and 2,573 LF of perennial stream — roughly a mile of jurisdictional stream impacts. GA EPD public-noticed and issued the §401 water quality certification (file 401-SAS-2025-00336, with a corrected certification letter posted by EPD), while Winston residents voiced opposition to a second large data center in the area.",
+      "outcome": "Georgia §401 certification issued (2025); §404 permitting with the Corps proceeding as of mid-2026; local opposition continues but no litigation identified.",
+      "takeaway": "One of the larger stream-impact footprints in any active data center §404 matter (~5,300 linear feet across three stream classes), showing that as campuses move onto unfragmented greenfield sites, stream channels — not just wetland acreage — are becoming the binding CWA constraint and the trigger for individual rather than nationwide permits.",
+      "case_type": "wetlands-streams",
+      "cwa_applied": "applied",
+      "cwa_instrument": "§404 individual permit application + §401 state certification issued",
+      "sources": [
+        {
+          "title": "GA EPD Public Notice — Sec. 401 Water Quality Certification, SDC ATLA Data Centers",
+          "url": "https://epd.georgia.gov/document/document/public-notice-sec-401-water-quality-certification-sdc-atla-data-centers/download",
+          "type": "agency"
+        },
+        {
+          "title": "GA EPD — 401-SAS-2025-00336 SDC ATLA WQC (corrected certification letter)",
+          "url": "https://epd.georgia.gov/document/document/401-sas-2025-00336-sdc-atla-wqc-yccorrected/download",
+          "type": "agency"
+        },
+        {
+          "title": "Winston residents feeling touch of data center deja vu (Douglas County Sentinel)",
+          "url": "https://www.douglascountysentinel.com/douglasville_sentinel/winston-residents-feeling-touch-of-data-center-deja-vu/article_d4be1876-9b83-5655-915d-64c6cc7eb141.html",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "HomerCity-IndianaCounty-PA-NPDES-2026",
+      "category": "adjacent",
+      "respondent": "Homer City Redevelopment / Homer City Generation LP (4.4 GW gas plant powering on-site AI data center campus), Indiana County, PA",
+      "year": "2025-2026",
+      "cwa_section": "§402 NPDES industrial/cooling-water discharge — PA DEP draft permit PAD320011 (plus pending Ch. 105 wetland/stream encroachment permit).",
+      "violation_summary": "The shuttered Homer City coal plant is being converted into the country's largest gas-fired data center campus (seven turbines, 4.4 GW, target 2027). PA DEP's permitting docket shows an NPDES renewal application filed May 1, 2026, an amendment for Outfall 027 modification filed Feb 20, 2026, and a draft NPDES permit (PAD320011) publicly noticed May 12, 2026; a separate pending permit would impact several acres of wetlands and hundreds of feet of stream. In January 2026, Clean Air Council, PennFuture, and Sierra Club appealed the plant's air plan approval to the Environmental Hearing Board, arguing DEP must review the entire project comprehensively, including its water use.",
+      "outcome": "Draft NPDES permit out for comment as of May 2026; wetland/stream encroachment permit and roughly a dozen other approvals still pending; environmental groups' EHB appeal of the air permit is active and signals likely challenges to the water permits.",
+      "takeaway": "Behind-the-meter power plants built for data centers carry the classic steam-electric CWA exposure (cooling-water outfalls, thermal limits, §316) that the data center buildings themselves avoid — and NGOs are using each individual permit, including water permits, as a sequential chokepoint against the integrated campus.",
+      "case_type": "cooling-water",
+      "cwa_applied": "pending",
+      "cwa_instrument": "§402 NPDES draft permit (PAD320011) — cooling outfalls at DC power plant",
+      "cwa_pathway": "The repowered plant's cooling and process outfalls require a renewed/amended NPDES permit with thermal and effluent limits (§402/§316), and campus build-out needs §404/state Ch. 105 authorization for wetland and stream impacts; either permit can be appealed to the PA Environmental Hearing Board — the path opponents have already used on the air side.",
+      "analogous_cases": [
+        "Brayton-Point-Dominion-2003-2007",
+        "Greenidge-SenecaLake-NY-2025",
+        "TransGas-AdamsFork-WV-2025"
+      ],
+      "sources": [
+        {
+          "title": "PA DEP — Homer City Generation Site Redevelopment permitting page",
+          "url": "https://www.pa.gov/agencies/dep/about-dep/regional-office-locations/northwest-regional-office/northwest-community-information/homer-city-generation-redevelopment",
+          "type": "agency"
+        },
+        {
+          "title": "Pa. groups appeal permit for Homer City gas power plant meant to fuel data center (The Allegheny Front, Jan 2026)",
+          "url": "https://www.alleghenyfront.org/pennsylvania-homer-city-data-center-power-plant-permit-appeal/",
+          "type": "news"
+        },
+        {
+          "title": "PA OKs air permit for Homer City gas plant fueling data centers (Technical.ly)",
+          "url": "https://technical.ly/civics/homer-city-indiana-county-pennsylvania-data-center-permit-approval/",
+          "type": "news"
+        }
+      ]
+    },
+    {
+      "case_id": "Meta-RichlandParish-LA-WaterSupply-2025",
+      "category": "adjacent",
+      "respondent": "Meta Platforms (Hyperion data center), Richland Parish, LA",
+      "year": "2024-2026",
+      "cwa_section": "No CWA action — state groundwater/surface-water withdrawal authorizations with no monitoring regime; Sparta-area aquifer stress concerns.",
+      "violation_summary": "Meta's $27B+, 2,250-acre Hyperion campus (announced Dec 2024, operational target 2028) is authorized under Louisiana records to use up to 23 million gallons per day (~8.4B gal/yr), though Meta says steady-state use will be 500-600M gal/yr (~1.5 MGD). LSU and Tulane water researchers publicized in 2025-2026 that no Louisiana regulatory body is tasked with monitoring Meta's actual withdrawals or tracking aquifer condition over time. Meta has responded with voluntary watershed-restoration commitments (RES, Ducks Unlimited) pledging to 'restore' 100% of consumption to the Boeuf, Tensas, and Lower Mississippi watersheds.",
+      "outcome": "No enforcement action or permit denial as of June 2026 — the dispute is over the absence of any binding water-use oversight; Sierra Club and academic researchers continue pressing for monitoring requirements while construction proceeds.",
+      "takeaway": "The largest permitted water envelope of any US data center (23 MGD) sits in a state with effectively no groundwater-withdrawal regulator — a regulatory-gap pattern (like post-Sackett wetlands gaps) where the CWA's discharge-focused architecture leaves consumptive use governed only by voluntary corporate replenishment pledges.",
+      "case_type": "water-supply",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "No CWA instrument — unmonitored state withdrawal authorization (23 MGD max)",
+      "cwa_pathway": "CWA hooks exist only at the margins: §404 permitting for wetland impacts on the 2,250-acre former-farmland site, future NPDES coverage if cooling blowdown or treated process water is discharged to surface waters, and a Maui-style functional-equivalent theory if wastewater reaches surface waters via groundwater. The consumptive withdrawals themselves are outside the CWA entirely.",
+      "analogous_cases": [
+        "Google-Berkeley-SC-Middendorf-aquifer-2019",
+        "County-of-Maui-v-Hawaii-Wildlife-Fund-2020",
+        "Amazon-Boardman-OR-nitrate-2026"
+      ],
+      "sources": [
+        {
+          "title": "How much water will Meta's Louisiana data center use? New details unveiled for first time (NOLA.com)",
+          "url": "https://www.nola.com/news/environment/meta-louisiana-data-center-water-ai/article_d27dea17-d571-453c-b5a5-0deb571ea272.html",
+          "type": "news"
+        },
+        {
+          "title": "In Rural Louisiana, Meta's New Data Center Promises Growth—But at What Cost? (Sierra Club)",
+          "url": "https://www.sierraclub.org/sierra/rural-louisiana-meta-s-new-data-center-promises-growth-what-cost",
+          "type": "ngo"
+        }
+      ]
+    },
+    {
+      "case_id": "Bessemer-AL-Hyperscale-WaterSupply-2025",
+      "category": "adjacent",
+      "respondent": "Unnamed hyperscale developer (~$14.5B campus) / City of Bessemer; Warrior River Water Authority, Jefferson County, AL",
+      "year": "2025-2026",
+      "cwa_section": "No CWA action — water-supply capacity dispute, receiving-stream concerns (Little Blue, Five Mile, Blue Creeks → Black Warrior River), and ESA overlay (Birmingham darter).",
+      "violation_summary": "A proposed ~$14.5B hyperscale campus in Bessemer, AL would demand about 2 million gallons of water per day — roughly the usage of 6,700 households, two-thirds of the city's population. In July 2025 the Warrior River Water Authority stated it cannot supply the requested 2 MGD without 'significant upgrades to the existing water system.' Black Warrior Riverkeeper warned the project would be 'a massive water user… and a massive wastewater user' affecting Little Blue, Five Mile, and Blue Creeks downstream, and in November 2025 the newly documented Birmingham darter fish was found just downstream of the site. The Bessemer City Council nonetheless approved the rezoning 5-2 on November 18-19, 2025.",
+      "outcome": "Rezoning approved Nov 2025 over public objection; water-supply upgrades, wastewater arrangements, and any §404/NPDES construction permitting unresolved as of June 2026; Riverkeeper monitoring continues and the darter creates potential ESA leverage.",
+      "takeaway": "Shows the now-standard pre-CWA pressure points — utility capacity letters and newly described endangered species — being used to contest a campus before any discharge exists, and flags the receiving creeks where construction-stormwater and WWTP NPDES exposure will concentrate once ground breaks.",
+      "case_type": "water-supply",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "No CWA instrument yet — utility capacity dispute ahead of permitting",
+      "cwa_pathway": "Construction of the multi-hundred-acre site draining to Little Blue/Five Mile/Blue Creeks will require Alabama's NPDES construction general permit, any stream or wetland crossings will need §404/§401 authorization, and the wastewater load lands on a POTW whose NPDES permit becomes the operational compliance point; the Birmingham darter adds an ESA consultation overlay to any federal permit.",
+      "analogous_cases": [
+        "Charlotte-NC-drought-datacenter-moratorium-2026",
+        "QTS-Fayetteville-GA-2024"
+      ],
+      "sources": [
+        {
+          "title": "Water Utility Says It Can't Meet Demand for Alabama Data Center Without 'Significant Upgrades' (Inside Climate News)",
+          "url": "https://insideclimatenews.org/news/12072025/bessemer-alabama-water-utility-data-center-upgrades/",
+          "type": "news"
+        },
+        {
+          "title": "Bessemer officials approve data center construction despite environmental concerns (Alabama Reflector)",
+          "url": "https://alabamareflector.com/2025/11/19/bessemer-officials-approve-data-center-construction-despite-environmental-concerns/",
+          "type": "news"
+        },
+        {
+          "title": "A Proposed Alabama Data Center Faces New Hurdles: A 'Road to Nowhere' and the Birmingham Darter (Inside Climate News)",
+          "url": "https://insideclimatenews.org/news/13112025/proposed-alabama-data-center-clashes-with-northern-beltline-birmingham-darter/",
           "type": "news"
         }
       ]
