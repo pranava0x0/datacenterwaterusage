@@ -130,6 +130,38 @@ disputes) — each given (a) an explicit dedupe list of existing case_ids,
 the main session; agents never write to the dataset. Convert backlog
 watch-items first — they're pre-researched.
 
+**Calibration + prompt rules (measured across the four 2026-06-10 runs;
+~12k subagent tokens per verified-and-integrated item is the benchmark):**
+
+- **Cap search angles at ~6 and give a stop condition** ("stop after N
+  verified cases, or when 2 consecutive angles surface nothing new"). The
+  one run prompted with 12+ angles and no stop rule cost 27k tokens/item
+  and 52 tool calls — 2.7× the other three runs (9-10k/item) for the same
+  quality. Breadth of angles, not number of results, drove the waste.
+- **Dedupe by name match, not by search.** Say "skip anything matching
+  these orgs+locations — do not spend searches confirming a duplicate."
+  The explicit dedupe list produced zero true duplicates across 25 items
+  and got the one near-miss (a successor bill print) self-flagged because
+  the prompt named the related existing entries.
+- **Output contract must say:** plain UTF-8 (no HTML entities — one run
+  returned `&amp;` throughout and needed an unescape pass), *omit*
+  conditional keys entirely rather than emitting empty strings, and "your
+  final message is parsed, not read" (held 4/4 when stated).
+- **When asking for updates to existing records, paste the exact ids to
+  echo back.** Describing the records in prose got invented slugs back,
+  which then needed manual matching.
+- **"Cite only URLs you successfully fetched."** Agents will otherwise
+  cite from search-result snippets; ~5% of returned links were bad. Keep
+  the main-session curl spot-check regardless (one bash call per batch;
+  it caught a hard 404 that the agent missed; treat 403s from
+  bot-blocking news sites as inconclusive, not dead).
+- **Piggyback maintenance onto research:** folding the watch-item
+  re-checks into one of the research agents (Task A / Task B structure)
+  cost no extra agent and kept the backlog honest.
+- **Assign `analogous_cases` at integration, not in the agent.** Linking
+  new cases to historic ones needs whole-dataset judgment the agent
+  doesn't have; the schema test then verifies every id resolves.
+
 ### Adding a vocabulary item (case_type, category, status)
 
 Schema change — don't do it casually. Add to the canonical dict in
