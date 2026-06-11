@@ -25,7 +25,7 @@ tests/                   pytest — full suite runs in ~2s; no excuse to skip
 
 | Goal | Command |
 | --- | --- |
-| Tests (446, ~2s) | `python3 -m pytest -q` |
+| Tests (~3s locally) | `python3 -m pytest -q` |
 | Rebuild static site | `python3 build_site.py` |
 | Local dashboard | `streamlit run dashboard.py` |
 | Scraper dev run | `python3 main.py ... --limit N` (always start limited) |

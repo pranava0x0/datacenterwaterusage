@@ -105,6 +105,23 @@ class BaseScraper(abc.ABC):
                     local_path = await self.fetch_document(meta)
                     await self._rate_limit_delay()
 
+                    # fetch_document() -> None is overloaded across scrapers:
+                    # metadata-only records (e.g. the Ohio GP status checks)
+                    # legitimately have no file, while file-bearing records
+                    # return None when the download failed (subclasses swallow
+                    # download exceptions). Disambiguate via the metadata: if
+                    # it advertised a downloadable file, None means failure —
+                    # do NOT mark fetched (the absent state row makes the next
+                    # run retry) and do NOT emit a record pointing at no file.
+                    expects_file = bool(
+                        meta.get("document_url") or meta.get("pdf_url")
+                    )
+                    if local_path is None and expects_file:
+                        self.logger.warning(
+                            "document_fetch_failed_no_file", doc_id=doc_id
+                        )
+                        continue
+
                     await self.state_manager.mark_fetched(self.name, doc_id, local_path)
                     results.append(self._build_record(meta, local_path))
                     count += 1

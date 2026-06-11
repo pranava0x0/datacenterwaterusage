@@ -1,4 +1,12 @@
-"""One-off migration: add case_type / cwa_applied / cwa_instrument /
+"""HISTORICAL one-off migration (2026-06-10) — kept for provenance only.
+
+This script annotated the 63 cases that existed on 2026-06-10 with the
+classification schema. Cases added afterwards ship with the fields inline,
+so ANNOTATIONS/PATHWAYS below intentionally do NOT cover them and the
+script now refuses to run against a newer dataset instead of failing
+mid-write. Do not extend the maps — new cases carry their own schema.
+
+Original purpose: add case_type / cwa_applied / cwa_instrument /
 cwa_pathway / analogous_cases to every case in cwa_investigations.json.
 
 case_type      — the water-issue ("project type") taxonomy used by the new
@@ -194,8 +202,14 @@ def main():
     ids = {c["case_id"] for c in cases}
 
     missing = ids - set(ANNOTATIONS)
+    if missing:
+        raise SystemExit(
+            "This is the frozen 2026-06-10 migration; the dataset now has "
+            f"{len(missing)} case(s) it never covered (e.g. "
+            f"{sorted(missing)[0]}). Newer cases carry the schema inline — "
+            "there is nothing for this script to do. Exiting without writing."
+        )
     extra = set(ANNOTATIONS) - ids
-    assert not missing, f"cases without annotation: {missing}"
     assert not extra, f"annotations without case: {extra}"
 
     for c in cases:

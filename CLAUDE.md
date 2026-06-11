@@ -106,7 +106,7 @@ Python-based scraping and data extraction pipeline that finds documents related 
 - **CLI**: click
 - **Dashboard (authoring)**: streamlit + plotly — `dashboard.py` is the local-dev / source-of-truth app (`streamlit run dashboard.py`).
 - **Dashboard (deployed)**: a **pre-rendered static site**. `build_site.py` imports `dashboard`'s pure `_build_*_html` builders + data constants and emits a single self-contained `pages/index.html` (vanilla-JS tabs/filters/collapsibles, Chart.js for the 2 quantitative charts, CSS-grid heatmap). This replaced the old stlite/Pyodide WASM deploy in June 2026 — first paint went from ~25–40 s to ~35 ms. Edit a card builder or the data and both the Streamlit app and the static site change together; regenerate with `python build_site.py` — which also emits **`pages/llms.txt`**, an LLM-friendly markdown mirror (llmstxt.org convention: project summary, key numbers, the cross-bill principles summary, one-liners for every bill and CWA case with sources). It is linked from the page (`<link rel="alternate">` + footer) and test-enforced to contain every bill_id/case_id, so it can never drift from the page.
-- **Testing**: pytest + pytest-asyncio (466 tests)
+- **Testing**: pytest + pytest-asyncio (468 tests)
 
 ### Key Directories
 - `scrapers/` — one module per government portal, organized by state

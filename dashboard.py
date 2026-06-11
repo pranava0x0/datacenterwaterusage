@@ -2108,6 +2108,11 @@ def _build_cwa_case_html(case: dict, case_ids: set[str] | None = None) -> str:
         )
 
     if detail_sections:
+        # Native <details> is ideal on the static page. Known limitation in
+        # the Streamlit app: every widget interaction reruns the script and
+        # re-renders this markdown, so an expanded card collapses back to
+        # closed when the user touches a filter. Accepted trade-off — the
+        # deployed artifact is the static site.
         sections.append(
             '<details class="bill-card-details">'
             '<summary>Details — violation, outcome, sources</summary>'

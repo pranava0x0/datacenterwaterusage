@@ -2,7 +2,7 @@
 
 > Tracking data center water consumption in Virginia & Ohio via public regulatory data (EPA ECHO DMR flow at receiving wastewater treatment plants, state permit portals, utility financial reports), plus three curated national datasets: data-center water legislation, Clean Water Act cases relevant to data centers, and company water claims.
 
-Static build 2026-06-10. Dashboard: https://pranava0x0.github.io/datacenterwaterusage/ · Source: https://github.com/pranava0x0/datacenterwaterusage
+Static build 2026-06-11. Dashboard: https://pranava0x0.github.io/datacenterwaterusage/ · Source: https://github.com/pranava0x0/datacenterwaterusage
 
 ## Key numbers
 

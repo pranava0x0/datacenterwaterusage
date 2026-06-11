@@ -589,6 +589,28 @@ class TestLegislationTracker:
             assert bid in bills, f"missing newly-added bill {bid}"
             assert bills[bid]["status"] == status, bid
 
+    def test_filter_axes_never_empty(self):
+        # The client-side filters AND every record by scope, principles,
+        # status, and level (sc.some(...) / pr.some(...) in the static JS).
+        # A record with an empty scope or principles array would fail every
+        # filter combination and be permanently invisible in the UI — so
+        # emptiness is a data bug, not a presentation choice. (PR #13 review.)
+        from dashboard import LEGISLATION_LEVEL_LABELS, LEGISLATION_SCOPE_LABELS
+
+        for b in self._bills():
+            assert b.get("scope"), f"{b['bill_id']}: empty scope hides the card"
+            assert b.get("general_principles"), (
+                f"{b['bill_id']}: empty general_principles hides the card"
+            )
+            for s in b["scope"]:
+                assert s in LEGISLATION_SCOPE_LABELS, f"{b['bill_id']}: scope {s!r}"
+            assert b.get("level") in LEGISLATION_LEVEL_LABELS, (
+                f"{b['bill_id']}: level {b.get('level')!r} not filterable"
+            )
+            assert b.get("status") in ("enacted", "introduced", "failed"), (
+                f"{b['bill_id']}: status {b.get('status')!r} not filterable"
+            )
+
     def test_principle_tags_are_canonical(self):
         # Every general_principles tag must be in the canonical taxonomy that
         # powers the summary panel and the principle filter — a typo'd tag

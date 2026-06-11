@@ -839,15 +839,24 @@ tabs.forEach(t => t.addEventListener('click', () => {
 }));
 
 // --- Legislation filtering ---
+// Node lists are cached once at load: the cards are static, and re-querying
+// the DOM on every checkbox change triggers needless reflow work on
+// low-end mobile as the dataset grows.
 const legCount = document.getElementById('leg-count');
+const legBills = [...document.querySelectorAll('.leg-bill')];
+const legChecks = [...document.querySelectorAll('.leg-status, .leg-level, .leg-scope, .leg-principle')];
 function applyLegFilter(){
-  const statuses = new Set([...document.querySelectorAll('.leg-status:checked')].map(c => c.value));
-  const levels = new Set([...document.querySelectorAll('.leg-level:checked')].map(c => c.value));
-  const scopes = new Set([...document.querySelectorAll('.leg-scope:checked')].map(c => c.value));
-  const prins = new Set([...document.querySelectorAll('.leg-principle:checked')].map(c => c.value));
+  const statuses = new Set(), levels = new Set(), scopes = new Set(), prins = new Set();
+  legChecks.forEach(c => {
+    if (!c.checked) return;
+    if (c.classList.contains('leg-status')) statuses.add(c.value);
+    else if (c.classList.contains('leg-level')) levels.add(c.value);
+    else if (c.classList.contains('leg-scope')) scopes.add(c.value);
+    else prins.add(c.value);
+  });
   const counts = {};
   let shown = 0;
-  document.querySelectorAll('.leg-bill').forEach(el => {
+  legBills.forEach(el => {
     const sc = (el.dataset.scope || '').split(' ').filter(Boolean);
     const pr = (el.dataset.principles || '').split(' ').filter(Boolean);
     const ok = statuses.has(el.dataset.status) && levels.has(el.dataset.level) &&
@@ -861,19 +870,21 @@ function applyLegFilter(){
   legCount.innerHTML = '<strong>Showing ' + shown + ' of ' + window.LEG_TOTAL +
     ' bills</strong>' + (lSummary ? ' — ' + lSummary : '');
 }
-document.querySelectorAll('.leg-status, .leg-level, .leg-scope, .leg-principle').forEach(c =>
-  c.addEventListener('change', applyLegFilter));
+legChecks.forEach(c => c.addEventListener('change', applyLegFilter));
 if (legCount) applyLegFilter();
 
 // --- CWA filtering ---
 const cwaCount = document.getElementById('cwa-count');
+const cwaCases = [...document.querySelectorAll('.cwa-case')];
+const cwaCatChecks = [...document.querySelectorAll('.cwa-cat')];
+const cwaTypeChecks = [...document.querySelectorAll('.cwa-type')];
 function applyCwaFilter(){
-  const cats = new Set([...document.querySelectorAll('.cwa-cat:checked')].map(c => c.value));
-  const types = new Set([...document.querySelectorAll('.cwa-type:checked')].map(c => c.value));
+  const cats = new Set(cwaCatChecks.filter(c => c.checked).map(c => c.value));
+  const types = new Set(cwaTypeChecks.filter(c => c.checked).map(c => c.value));
   const recent = document.getElementById('cwa-recent').checked;
   const counts = {};
   let shown = 0;
-  document.querySelectorAll('.cwa-case').forEach(el => {
+  cwaCases.forEach(el => {
     const cat = el.dataset.category;
     const ye = parseInt(el.dataset.yearend, 10) || 0;
     const ok = cats.has(cat) && types.has(el.dataset.casetype) && (!recent || ye >= 2020);
@@ -888,9 +899,31 @@ function applyCwaFilter(){
   cwaCount.innerHTML = '<strong>Showing ' + shown + ' of ' + window.CWA_TOTAL +
     ' cases</strong>' + (summary ? ' — ' + summary : '');
 }
-document.querySelectorAll('.cwa-cat, .cwa-type, #cwa-recent').forEach(c =>
+[...cwaCatChecks, ...cwaTypeChecks, document.getElementById('cwa-recent')].forEach(c =>
   c.addEventListener('change', applyCwaFilter));
 if (cwaCount) applyCwaFilter();
+
+// --- In-page anchor links vs. active filters ---
+// The principles panel and the CWA "historic examples" links target cards by
+// id. If a filter currently hides the target, the browser can't scroll to it
+// — so on click, reset that tab's filters first, then let the anchor land.
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href^="#bill-"], a[href^="#cwa-"]');
+  if (!a) return;
+  const target = document.getElementById(a.getAttribute('href').slice(1));
+  if (!target) return;
+  const wrap = target.closest('.leg-bill, .cwa-case');
+  if (!wrap || !wrap.hidden) return;
+  if (wrap.classList.contains('leg-bill')) {
+    legChecks.forEach(c => { c.checked = true; });
+    applyLegFilter();
+  } else {
+    cwaCatChecks.forEach(c => { c.checked = true; });
+    cwaTypeChecks.forEach(c => { c.checked = true; });
+    document.getElementById('cwa-recent').checked = false;
+    applyCwaFilter();
+  }
+});
 
 // --- Records table state filter ---
 const recCount = document.getElementById('rec-count');
@@ -1022,7 +1055,8 @@ def build_llms_txt() -> str:
         cat = dash.CWA_CATEGORY_LABELS.get(c.get("category"), "?")
         ctype = dash.CWA_CASE_TYPE_LABELS.get(c.get("case_type"), "?")
         status = dash.CWA_STATUS_LABELS.get(c.get("cwa_applied"), "?")
-        src = (c.get("sources") or [{}])[0].get("url", "")
+        case_sources = c.get("sources") or []
+        src = case_sources[0].get("url", "") if case_sources else ""
         line = (
             f"- {c.get('case_id')} ({c.get('year')}) — {cat} / {ctype} / {status} "
             f"— {c.get('cwa_instrument', '')}. {c.get('takeaway', '')}"
