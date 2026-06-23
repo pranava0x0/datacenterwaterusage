@@ -26,6 +26,7 @@ from utils.device import (
     get_device_type,
     inject_responsive_css,
 )
+from utils.equivalents import annual_gallons_to_households
 
 # --- Config ---
 
@@ -848,10 +849,14 @@ MASLEY_COMPARISONS = [
 
 
 def compute_household_equivalent(gallons_per_year: int, gpd: int = 200) -> int:
-    """Convert annual gallons to equivalent number of households served."""
-    if gpd <= 0:
-        return 0
-    return int(gallons_per_year / (gpd * 365))
+    """Convert annual gallons to equivalent number of households served.
+
+    Thin wrapper over ``utils.equivalents.annual_gallons_to_households`` so the
+    gpd→households math lives in one place. Default 200 gpd is the lower
+    Virginia regional figure the context cards use (vs. EPA's 300 gpd national
+    default); behavior (int truncation, 0 for non-positive gpd) is unchanged.
+    """
+    return annual_gallons_to_households(gallons_per_year, gpd)
 
 
 def render_local_context(is_mobile: bool = False):
@@ -1358,6 +1363,206 @@ CWA_CATEGORY_LABELS = {
     "precedent": "Landmark Precedent",
 }
 
+# Forward-looking, merit-scored menu of Clean Water Act theories that could
+# realistically attach to a data center. Scoring (1–5, 5 = strongest) is on
+# public-interest merit ONLY — Impact (community/environmental harm averted),
+# Viability (legal strength post-Sackett/Maui), Tractability (can THIS tracker
+# source the evidence via ECHO DMR/SNC, public permits, FOIA). No data-center
+# CWA enforcement case exists yet; full write-up with primary-source citations
+# lives in docs/cwa-enforcement-and-data-centers.md. Kept module-level so the
+# builder stays pure and unit-testable, and so build_site.py reuses one source
+# of truth.
+CWA_APPLICATION_THEORIES = [
+    {
+        "rank": 1,
+        "theory": "Citizen suit against the receiving POTW",
+        "hook": "CWA §505 (33 U.S.C. §1365)",
+        "impact": 5, "viability": 5, "tractability": 5,
+        "why": "Turns the tracker's existing ECHO SNC/DMR pull into the predicate "
+               "for a citizen suit against the plant that actually carries data-center "
+               "cooling blowdown — not the DC's near-empty stormwater permit.",
+        "analog": "Port of Morrow, OR (WWTP receiving DC wastewater)",
+    },
+    {
+        "rank": 2,
+        "theory": "Pretreatment / Industrial-User loading",
+        "hook": "CWA §307 + §403",
+        "impact": 5, "viability": 5, "tractability": 4,
+        "why": "Where DC blowdown actually goes; loading can force POTW pass-through "
+               "(putting the plant in violation) and raise every other ratepayer's "
+               "costs. Industrial-user permits and local limits are FOIA-able.",
+        "analog": "Port of Morrow, OR; industrial pretreatment consent decrees",
+    },
+    {
+        "rank": 3,
+        "theory": "Construction stormwater",
+        "hook": "CWA §402 (Construction General Permit)",
+        "impact": 4, "viability": 5, "tractability": 4,
+        "why": "The single most-enforced real CWA violation against large "
+               "construction; acute turbidity and habitat impact during the "
+               "multi-hundred-acre build-out. NOIs and NOVs are ECHO-visible.",
+        "analog": "Arch Coal mining-site analog",
+    },
+    {
+        "rank": 4,
+        "theory": "Cooling-tower blowdown direct to surface water",
+        "hook": "CWA §402 (NPDES numeric limits)",
+        "impact": 4, "viability": 5, "tractability": 4,
+        "why": "The classic numeric-limit-exceedance pattern (thermal, chlorine, "
+               "biocides, conductivity); directly overlaps the flow metrics the "
+               "tracker already scrapes. Permit + DMR via ECHO.",
+        "analog": "West Penn Power (boron exceedance)",
+    },
+    {
+        "rank": 5,
+        "theory": "On-site package WWTP / greywater-recycle plant effluent",
+        "hook": "CWA §402 (NPDES)",
+        "impact": 4, "viability": 4, "tractability": 4,
+        "why": "Large campuses building their own treatment/reuse plant give it its "
+               "OWN NPDES permit + DMR — a clean, trackable point source distinct "
+               "from the data-center building.",
+        "analog": "xAI Colossus greywater plant, Memphis",
+    },
+    {
+        "rank": 6,
+        "theory": "Wetlands dredge-and-fill + state certification",
+        "hook": "CWA §404 + §401",
+        "impact": 5, "viability": 3, "tractability": 4,
+        "why": "Permanent habitat / flood-storage loss; the live enforcement edge. "
+               "Sackett narrowed FEDERAL reach, but §401 and retained VA/OH state "
+               "programs remain. Permit applications are public.",
+        "analog": "New Carlisle IN; Project Raspberry/Loch VA; Port of Little Rock AR",
+    },
+    {
+        "rank": 7,
+        "theory": "Thermal discharge + cooling-water intake",
+        "hook": "CWA §316(a)/(b)",
+        "impact": 4, "viability": 4, "tractability": 3,
+        "why": "Heat is a regulated pollutant; intake impingement/entrainment. Bites "
+               "hardest where a DC pairs with on-site gas turbines (full power-plant "
+               "profile).",
+        "analog": "Greenidge Generation, NY (§316 thermal/intake)",
+    },
+    {
+        "rank": 8,
+        "theory": "Antidegradation / Tier 2 review of a new outfall",
+        "hook": "CWA §303 / state water-quality standards",
+        "impact": 4, "viability": 4, "tractability": 3,
+        "why": "A procedural lever that forces an alternatives analysis (e.g., dry or "
+               "closed-loop cooling) before a new or expanded discharge into "
+               "high-quality waters is permitted — high leverage at the siting stage.",
+        "analog": "—",
+    },
+    {
+        "rank": 9,
+        "theory": "County of Maui “functional equivalent” discharge",
+        "hook": "CWA §402 (Maui, 2020)",
+        "impact": 4, "viability": 3, "tractability": 2,
+        "why": "The most novel theory: a cooling discharge, injection well, or land "
+               "application that reaches surface water VIA groundwater can still need "
+               "a permit. Closes a common DC discharge loophole; fact-intensive.",
+        "analog": "County of Maui v. Hawaii Wildlife Fund",
+    },
+    {
+        "rank": 10,
+        "theory": "PFAS in discharge",
+        "hook": "CWA §402 (NPDES)",
+        "impact": 4, "viability": 3, "tractability": 2,
+        "why": "AFFF fire-suppression systems + cooling-chemistry additives, as NPDES "
+               "PFAS limits tighten. Strong regulatory tailwind; sourceable once "
+               "effluent PFAS monitoring is permit-required.",
+        "analog": "Industrial PFAS cases",
+    },
+    {
+        "rank": 11,
+        "theory": "Oil spill / SPCC from backup-diesel fuel farms",
+        "hook": "CWA §311 (33 U.S.C. §1321)",
+        "impact": 3, "viability": 5, "tractability": 3,
+        "why": "A release reaching a water of the U.S. is legally identical to the "
+               "pipeline-spill cases (incl. negligence-criminal exposure and the "
+               "duty-to-report trap); event-driven, so a lower base rate but settled law.",
+        "analog": "BP / Enbridge / Summit Midstream §311 line",
+    },
+    {
+        "rank": 12,
+        "theory": "Industrial stormwater",
+        "hook": "CWA §402 (Multi-Sector General Permit)",
+        "impact": 3, "viability": 4, "tractability": 3,
+        "why": "Exposed equipment yards and chemical/fuel storage areas; lower "
+               "per-event impact but routine. MSGP benchmark monitoring is public.",
+        "analog": "—",
+    },
+]
+
+
+def _theory_score_cell(value: int) -> str:
+    """Render one Impact/Viability/Tractability score cell, clamped to 1–5."""
+    v = max(1, min(5, int(value)))
+    return f'<td class="theory-score theory-s{v}">{v}</td>'
+
+
+def _build_cwa_theories_html(theories: list[dict]) -> str:
+    """Pure HTML for the prioritized CWA-application theories table.
+
+    Shared by the Streamlit panel (``render_cwa_application_theories``) and the
+    static site (``build_site``) so the scored ranking has a single source of
+    truth. Forward-looking analysis — scoring is merit-only (Impact / Viability
+    / Tractability), deliberately not keyed to any operator's or official's
+    identity or politics.
+    """
+    rows = []
+    for t in sorted(theories, key=lambda x: x["rank"]):
+        analog = t.get("analog", "")
+        analog_html = (
+            f'<div class="theory-analog">Analog: {html.escape(analog)}</div>'
+            if analog and analog != "—"
+            else ""
+        )
+        rows.append(
+            "<tr>"
+            f'<td class="theory-rank">{int(t["rank"])}</td>'
+            f'<td><strong>{html.escape(t["theory"])}</strong>'
+            f'<div class="theory-hook">{html.escape(t["hook"])}</div></td>'
+            f'{_theory_score_cell(t["impact"])}'
+            f'{_theory_score_cell(t["viability"])}'
+            f'{_theory_score_cell(t["tractability"])}'
+            f'<td>{html.escape(t["why"])}{analog_html}</td>'
+            "</tr>"
+        )
+    return (
+        '<p class="theory-note">Forward-looking analysis — <strong>no data-center CWA '
+        "enforcement case exists yet</strong>. Scored on public-interest merit only: "
+        "<strong>I</strong>mpact (community/environmental harm averted), "
+        "<strong>V</strong>iability (legal strength post-<em>Sackett</em>/<em>Maui</em>), "
+        "<strong>T</strong>ractability (can this tracker source the evidence via ECHO "
+        "DMR/SNC, public permits, FOIA). 5 = strongest; sorted by priority.</p>"
+        '<div class="table-wrap"><table class="theory-table"><thead><tr>'
+        "<th>#</th><th>Theory (CWA hook)</th><th>I</th><th>V</th><th>T</th>"
+        "<th>Why it matters</th></tr></thead>"
+        f'<tbody>{"".join(rows)}</tbody></table></div>'
+    )
+
+
+def render_cwa_application_theories():
+    """Prioritized, merit-scored menu of CWA theories that could attach to a DC.
+
+    The forward-looking companion to ``render_cwa_datacenter_insights``: that
+    panel reads what the *record* shows; this one ranks where enforcement could
+    realistically go next, scored by impact, legal viability, and how readily
+    this project can source the evidence.
+    """
+    with st.expander(
+        "Prioritized CWA-application theories — what could attach to a data center"
+    ):
+        st.markdown(
+            _build_cwa_theories_html(CWA_APPLICATION_THEORIES),
+            unsafe_allow_html=True,
+        )
+        st.caption(
+            "Full write-up with primary-source citations: "
+            "docs/cwa-enforcement-and-data-centers.md"
+        )
+
 
 def _cwa_statute_explainer_md() -> str:
     """Markdown body for the 'What is a CWA investigation?' expander.
@@ -1627,6 +1832,9 @@ def render_cwa_tracker():
 
     # Headline synthesis — the computed "so what" before the case list.
     render_cwa_datacenter_insights()
+
+    # Forward-looking companion: where enforcement could realistically go next.
+    render_cwa_application_theories()
 
     with st.expander(
         "What is a Clean Water Act investigation? — statute, authority, "

@@ -34,7 +34,9 @@ from dashboard import (
     _cwa_datacenter_insights,
     _build_cwa_case_html,
     _cwa_statute_explainer_md,
+    _build_cwa_theories_html,
     _build_bill_card_html,
+    CWA_APPLICATION_THEORIES,
     CONTEXT_DATA,
     MASLEY_COMPARISONS,
     PER_QUERY_ESTIMATES,
@@ -989,3 +991,70 @@ class TestCompanyWaterClaims:
         # The big four hyperscalers should each have at least one claim.
         for required in ("meta", "google", "microsoft", "amazon"):
             assert required in slugs, required
+
+
+# --- Tests for prioritized CWA-application theories panel ---
+
+
+class TestCWAApplicationTheories:
+    def test_twelve_theories_ranked_uniquely(self):
+        ranks = [t["rank"] for t in CWA_APPLICATION_THEORIES]
+        assert len(CWA_APPLICATION_THEORIES) == 12
+        assert sorted(ranks) == list(range(1, 13)), "ranks must be 1..12, unique"
+
+    def test_required_fields_and_score_ranges(self):
+        required = {
+            "rank", "theory", "hook", "impact", "viability",
+            "tractability", "why", "analog",
+        }
+        for t in CWA_APPLICATION_THEORIES:
+            missing = required - set(t)
+            assert not missing, f"theory #{t.get('rank')} missing {missing}"
+            for dim in ("impact", "viability", "tractability"):
+                assert 1 <= t[dim] <= 5, f"#{t['rank']} {dim} out of range"
+            assert t["why"].strip()
+            assert "§" in t["hook"] or "Maui" in t["hook"], t["hook"]
+
+    def test_top_two_are_receiving_wwtp_and_pretreatment(self):
+        # The tracker's highest-leverage, most-tractable theories must lead.
+        by_rank = {t["rank"]: t for t in CWA_APPLICATION_THEORIES}
+        assert by_rank[1]["tractability"] == 5
+        assert "POTW" in by_rank[1]["theory"] or "§505" in by_rank[1]["hook"]
+        assert "Pretreatment" in by_rank[2]["theory"]
+
+    def test_builder_renders_all_rows_sorted(self):
+        html_str = _build_cwa_theories_html(CWA_APPLICATION_THEORIES)
+        assert html_str.count("<tr>") == len(CWA_APPLICATION_THEORIES) + 1  # +header
+        assert 'class="theory-table"' in html_str
+        # No data-center CWA case exists yet — the disclaimer must be present.
+        assert "no data-center cwa" in html_str.lower()
+        # Rank 1 must appear before rank 12 in document order (sorted).
+        assert html_str.index('class="theory-rank">1<') < html_str.index(
+            'class="theory-rank">12<'
+        )
+
+    def test_builder_handles_shuffled_input(self):
+        shuffled = list(reversed(CWA_APPLICATION_THEORIES))
+        html_str = _build_cwa_theories_html(shuffled)
+        # Builder sorts by rank regardless of input order.
+        first_rank_pos = html_str.index('class="theory-rank">1<')
+        last_rank_pos = html_str.index('class="theory-rank">12<')
+        assert first_rank_pos < last_rank_pos
+
+    def test_builder_omits_dash_analog(self):
+        # Entries with analog "—" should not emit an "Analog:" line.
+        solo = [{
+            "rank": 1, "theory": "T", "hook": "§402", "impact": 3,
+            "viability": 3, "tractability": 3, "why": "w", "analog": "—",
+        }]
+        assert "Analog:" not in _build_cwa_theories_html(solo)
+
+    def test_builder_escapes_html(self):
+        evil = [{
+            "rank": 1, "theory": "<script>x</script>", "hook": "§402",
+            "impact": 3, "viability": 3, "tractability": 3, "why": "w&y",
+            "analog": "a<b",
+        }]
+        out = _build_cwa_theories_html(evil)
+        assert "<script>x</script>" not in out
+        assert "&lt;script&gt;" in out

@@ -71,6 +71,29 @@ class TestStaticBuild:
         for needle in ("New Carlisle", "Puget Soundkeeper", "Edwards Aquifer", "Fort Smith"):
             assert needle in html, f"missing case content: {needle}"
 
+    def test_cwa_theories_panel_rendered(self):
+        html = _html()
+        # The prioritized-theories panel is present on the CWA tab...
+        assert "Prioritized CWA-application theories" in html
+        assert 'class="theory-table"' in html
+        # ...with every theory row (12 + 1 header) reaching the page...
+        assert html.count('class="theory-rank"') == len(
+            dashboard.CWA_APPLICATION_THEORIES
+        )
+        # ...the novel Maui theory and the §505 lead row both surface.
+        assert "functional equivalent" in html
+        assert "receiving POTW" in html
+
+    def test_theories_panel_does_not_inflate_card_counts(self):
+        # Regression guard: the new panel uses .theory-* classes, so the
+        # cwa-case / bill-card / claim-card counts the filters rely on are
+        # unchanged by it.
+        html = _html()
+        cases = dashboard.load_cwa_investigations().get("cases", [])
+        bills = dashboard.load_legislation().get("bills", [])
+        assert html.count('class="cwa-case"') == len(cases)
+        assert html.count('class="bill-card"') == len(bills) + len(cases)
+
     def test_markdown_blobs_converted(self):
         # The statute explainer is markdown in the source; it must arrive as HTML
         # (primary-source citation present, no raw markdown link syntax left).

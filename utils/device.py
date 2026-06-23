@@ -581,6 +581,57 @@ _RESPONSIVE_CSS = """
     color: #6b7280;
     font-size: 0.75rem;
 }
+/* --- Prioritized CWA-application theories table --- */
+.theory-note {
+    font-size: 0.85rem;
+    color: #333;
+    margin: 0.2rem 0 0.6rem 0;
+}
+.table-wrap {
+    overflow-x: auto;
+}
+.theory-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.86rem;
+    background: #fff;
+}
+.theory-table th,
+.theory-table td {
+    border: 1px solid #e5e7eb;
+    padding: 0.4rem 0.55rem;
+    text-align: left;
+    vertical-align: top;
+}
+.theory-table thead th {
+    background: #eff3ff;
+    color: #08519c;
+}
+.theory-rank {
+    font-weight: 700;
+    text-align: center;
+    color: #08519c;
+}
+.theory-hook {
+    color: #4b5563;
+    font-size: 0.8rem;
+    margin-top: 0.15rem;
+}
+.theory-analog {
+    color: #4b5563;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    font-style: italic;
+}
+.theory-score {
+    text-align: center;
+    font-weight: 700;
+}
+.theory-s5 { background: #08519c; color: #fff; }
+.theory-s4 { background: #3182bd; color: #fff; }
+.theory-s3 { background: #9ecae1; }
+.theory-s2 { background: #deebf7; }
+.theory-s1 { background: #f7fbff; }
 </style>
 """
 

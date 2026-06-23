@@ -263,6 +263,8 @@ def build_cwa_tab() -> str:
   </ul>
 </div>"""
 
+    theories = dash._build_cwa_theories_html(dash.CWA_APPLICATION_THEORIES)
+
     explainer = md(dash._cwa_statute_explainer_md())
 
     # Category filter checkboxes (all on by default).
@@ -298,6 +300,12 @@ def build_cwa_tab() -> str:
   organized by what they actually tell us about how the law applies to data center water use
   and cooling discharges.</p>
   {insights}
+  <details class="lazy">
+    <summary>Prioritized CWA-application theories — what could attach to a data center</summary>
+    <section class="panel">{theories}
+    <p class="src-note">Full write-up with primary-source citations:
+    docs/cwa-enforcement-and-data-centers.md</p></section>
+  </details>
   <details class="lazy">
     <summary>What is a Clean Water Act investigation? — statute, authority, and why it's deployed</summary>
     <div class="explainer-md">{explainer}</div>

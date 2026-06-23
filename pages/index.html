@@ -411,6 +411,57 @@
     color: #6b7280;
     font-size: 0.75rem;
 }
+/* --- Prioritized CWA-application theories table --- */
+.theory-note {
+    font-size: 0.85rem;
+    color: #333;
+    margin: 0.2rem 0 0.6rem 0;
+}
+.table-wrap {
+    overflow-x: auto;
+}
+.theory-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.86rem;
+    background: #fff;
+}
+.theory-table th,
+.theory-table td {
+    border: 1px solid #e5e7eb;
+    padding: 0.4rem 0.55rem;
+    text-align: left;
+    vertical-align: top;
+}
+.theory-table thead th {
+    background: #eff3ff;
+    color: #08519c;
+}
+.theory-rank {
+    font-weight: 700;
+    text-align: center;
+    color: #08519c;
+}
+.theory-hook {
+    color: #4b5563;
+    font-size: 0.8rem;
+    margin-top: 0.15rem;
+}
+.theory-analog {
+    color: #4b5563;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    font-style: italic;
+}
+.theory-score {
+    text-align: center;
+    font-weight: 700;
+}
+.theory-s5 { background: #08519c; color: #fff; }
+.theory-s4 { background: #3182bd; color: #fff; }
+.theory-s3 { background: #9ecae1; }
+.theory-s2 { background: #deebf7; }
+.theory-s1 { background: #f7fbff; }
 
 
 :root{--ink:#1a1a2e;--blue:#08519c;--blue2:#3182bd;--muted:#4b5563}
@@ -582,6 +633,12 @@ details.lazy .panel{margin:0}
       stormwater permit.</li>
   </ul>
 </div>
+  <details class="lazy">
+    <summary>Prioritized CWA-application theories — what could attach to a data center</summary>
+    <section class="panel"><p class="theory-note">Forward-looking analysis — <strong>no data-center CWA enforcement case exists yet</strong>. Scored on public-interest merit only: <strong>I</strong>mpact (community/environmental harm averted), <strong>V</strong>iability (legal strength post-<em>Sackett</em>/<em>Maui</em>), <strong>T</strong>ractability (can this tracker source the evidence via ECHO DMR/SNC, public permits, FOIA). 5 = strongest; sorted by priority.</p><div class="table-wrap"><table class="theory-table"><thead><tr><th>#</th><th>Theory (CWA hook)</th><th>I</th><th>V</th><th>T</th><th>Why it matters</th></tr></thead><tbody><tr><td class="theory-rank">1</td><td><strong>Citizen suit against the receiving POTW</strong><div class="theory-hook">CWA §505 (33 U.S.C. §1365)</div></td><td class="theory-score theory-s5">5</td><td class="theory-score theory-s5">5</td><td class="theory-score theory-s5">5</td><td>Turns the tracker&#x27;s existing ECHO SNC/DMR pull into the predicate for a citizen suit against the plant that actually carries data-center cooling blowdown — not the DC&#x27;s near-empty stormwater permit.<div class="theory-analog">Analog: Port of Morrow, OR (WWTP receiving DC wastewater)</div></td></tr><tr><td class="theory-rank">2</td><td><strong>Pretreatment / Industrial-User loading</strong><div class="theory-hook">CWA §307 + §403</div></td><td class="theory-score theory-s5">5</td><td class="theory-score theory-s5">5</td><td class="theory-score theory-s4">4</td><td>Where DC blowdown actually goes; loading can force POTW pass-through (putting the plant in violation) and raise every other ratepayer&#x27;s costs. Industrial-user permits and local limits are FOIA-able.<div class="theory-analog">Analog: Port of Morrow, OR; industrial pretreatment consent decrees</div></td></tr><tr><td class="theory-rank">3</td><td><strong>Construction stormwater</strong><div class="theory-hook">CWA §402 (Construction General Permit)</div></td><td class="theory-score theory-s4">4</td><td class="theory-score theory-s5">5</td><td class="theory-score theory-s4">4</td><td>The single most-enforced real CWA violation against large construction; acute turbidity and habitat impact during the multi-hundred-acre build-out. NOIs and NOVs are ECHO-visible.<div class="theory-analog">Analog: Arch Coal mining-site analog</div></td></tr><tr><td class="theory-rank">4</td><td><strong>Cooling-tower blowdown direct to surface water</strong><div class="theory-hook">CWA §402 (NPDES numeric limits)</div></td><td class="theory-score theory-s4">4</td><td class="theory-score theory-s5">5</td><td class="theory-score theory-s4">4</td><td>The classic numeric-limit-exceedance pattern (thermal, chlorine, biocides, conductivity); directly overlaps the flow metrics the tracker already scrapes. Permit + DMR via ECHO.<div class="theory-analog">Analog: West Penn Power (boron exceedance)</div></td></tr><tr><td class="theory-rank">5</td><td><strong>On-site package WWTP / greywater-recycle plant effluent</strong><div class="theory-hook">CWA §402 (NPDES)</div></td><td class="theory-score theory-s4">4</td><td class="theory-score theory-s4">4</td><td class="theory-score theory-s4">4</td><td>Large campuses building their own treatment/reuse plant give it its OWN NPDES permit + DMR — a clean, trackable point source distinct from the data-center building.<div class="theory-analog">Analog: xAI Colossus greywater plant, Memphis</div></td></tr><tr><td class="theory-rank">6</td><td><strong>Wetlands dredge-and-fill + state certification</strong><div class="theory-hook">CWA §404 + §401</div></td><td class="theory-score theory-s5">5</td><td class="theory-score theory-s3">3</td><td class="theory-score theory-s4">4</td><td>Permanent habitat / flood-storage loss; the live enforcement edge. Sackett narrowed FEDERAL reach, but §401 and retained VA/OH state programs remain. Permit applications are public.<div class="theory-analog">Analog: New Carlisle IN; Project Raspberry/Loch VA; Port of Little Rock AR</div></td></tr><tr><td class="theory-rank">7</td><td><strong>Thermal discharge + cooling-water intake</strong><div class="theory-hook">CWA §316(a)/(b)</div></td><td class="theory-score theory-s4">4</td><td class="theory-score theory-s4">4</td><td class="theory-score theory-s3">3</td><td>Heat is a regulated pollutant; intake impingement/entrainment. Bites hardest where a DC pairs with on-site gas turbines (full power-plant profile).<div class="theory-analog">Analog: Greenidge Generation, NY (§316 thermal/intake)</div></td></tr><tr><td class="theory-rank">8</td><td><strong>Antidegradation / Tier 2 review of a new outfall</strong><div class="theory-hook">CWA §303 / state water-quality standards</div></td><td class="theory-score theory-s4">4</td><td class="theory-score theory-s4">4</td><td class="theory-score theory-s3">3</td><td>A procedural lever that forces an alternatives analysis (e.g., dry or closed-loop cooling) before a new or expanded discharge into high-quality waters is permitted — high leverage at the siting stage.</td></tr><tr><td class="theory-rank">9</td><td><strong>County of Maui “functional equivalent” discharge</strong><div class="theory-hook">CWA §402 (Maui, 2020)</div></td><td class="theory-score theory-s4">4</td><td class="theory-score theory-s3">3</td><td class="theory-score theory-s2">2</td><td>The most novel theory: a cooling discharge, injection well, or land application that reaches surface water VIA groundwater can still need a permit. Closes a common DC discharge loophole; fact-intensive.<div class="theory-analog">Analog: County of Maui v. Hawaii Wildlife Fund</div></td></tr><tr><td class="theory-rank">10</td><td><strong>PFAS in discharge</strong><div class="theory-hook">CWA §402 (NPDES)</div></td><td class="theory-score theory-s4">4</td><td class="theory-score theory-s3">3</td><td class="theory-score theory-s2">2</td><td>AFFF fire-suppression systems + cooling-chemistry additives, as NPDES PFAS limits tighten. Strong regulatory tailwind; sourceable once effluent PFAS monitoring is permit-required.<div class="theory-analog">Analog: Industrial PFAS cases</div></td></tr><tr><td class="theory-rank">11</td><td><strong>Oil spill / SPCC from backup-diesel fuel farms</strong><div class="theory-hook">CWA §311 (33 U.S.C. §1321)</div></td><td class="theory-score theory-s3">3</td><td class="theory-score theory-s5">5</td><td class="theory-score theory-s3">3</td><td>A release reaching a water of the U.S. is legally identical to the pipeline-spill cases (incl. negligence-criminal exposure and the duty-to-report trap); event-driven, so a lower base rate but settled law.<div class="theory-analog">Analog: BP / Enbridge / Summit Midstream §311 line</div></td></tr><tr><td class="theory-rank">12</td><td><strong>Industrial stormwater</strong><div class="theory-hook">CWA §402 (Multi-Sector General Permit)</div></td><td class="theory-score theory-s3">3</td><td class="theory-score theory-s4">4</td><td class="theory-score theory-s3">3</td><td>Exposed equipment yards and chemical/fuel storage areas; lower per-event impact but routine. MSGP benchmark monitoring is public.</td></tr></tbody></table></div>
+    <p class="src-note">Full write-up with primary-source citations:
+    docs/cwa-enforcement-and-data-centers.md</p></section>
+  </details>
   <details class="lazy">
     <summary>What is a Clean Water Act investigation? — statute, authority, and why it's deployed</summary>
     <div class="explainer-md"><h4>1. What the statute is</h4>
