@@ -546,6 +546,12 @@ These are large data-center water stories with no formal CWA enforcement action 
 **Sample prompt:**
 > Add a lightweight `scrapers/` watch-monitor that polls LDEQ public notices (Meta Richland Parish) and TDEC Division of Water Resources (xAI Colossus greywater plant) for new permits, NOVs, or consent orders, and flags candidates for promotion into `cwa_investigations.json` (category `datacenter`). Keep it append-only and rate-limited; surface new hits in the dataset's `last_updated` note.
 
+### Prioritized CWA-application theories → dashboard panel (MEDIUM, added 2026-06-23)
+`docs/cwa-enforcement-and-data-centers.md` now carries a **scored, forward-looking menu of 12 CWA theories** that could attach to a data center, ranked on public-interest merit — Impact (community/environmental harm averted), Viability (legal strength post-*Sackett*/*Maui*), and Tractability (can this tracker source the evidence). Top picks: (1) **§505 citizen suit against the *receiving* POTW** in SNC while loaded by DC blowdown and (2) **§307/§403 pretreatment / Industrial-User** loading — both turn the existing ECHO DMR/SNC pull into an actionable community-cost finding against the permit that actually carries the operational discharge. Highest-novelty legal theory: (9) **County of Maui "functional equivalent"** for discharge-to-groundwater-reaching-surface-water. Theories should drive *what we scrape/surface next*, not editorialize — scoring is merit-only (impact/viability/tractability), deliberately **not** keyed to any operator's or official's identity or politics.
+
+**Sample prompt:**
+> Turn the "Prioritized CWA-application theories" table in `docs/cwa-enforcement-and-data-centers.md` into a small dashboard sub-panel on the CWA tab: render the 12 theories with their Impact/Viability/Tractability scores as a sortable list, each linking to the matching `cwa_investigations.json` analog case where one exists. Lead with the §505-vs-receiving-WWTP and pretreatment rows since the pipeline already pulls the ECHO SNC/DMR data they depend on. Add a builder + tests mirroring `render_cwa_datacenter_insights`. Keep scoring merit-based (impact/viability/tractability) — do not add partisan or company-targeting axes.
+
 ---
 
 ## Reference: Data Source Landscape
