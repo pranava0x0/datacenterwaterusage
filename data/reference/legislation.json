@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-05-28",
-  "note": "State + federal data center water/energy legislation, plus selected regulatory actions and major local zoning decisions. Verified entries had their status confirmed against a primary source (state legislature page, Congress.gov / GovInfo, official sponsor press release) on the listed last_verified date; unverified entries should be re-checked before being relied upon. Each bill is enriched with recent_news (up to 3 dated items with source URLs), public_sentiment (a paragraph naming supporters/opponents), general_principles (tagged policy concepts), and a procedural timeline. These fields are best-effort as of last_updated and should be re-verified before being cited. Scope expanded 2026-05-28 to include regulatory rulemakings (OH EPA OHD000001) and major local ordinances (Loudoun ZOAM) that function as de facto data-center policy.",
+  "last_updated": "2026-06-22",
+  "note": "State + federal data center water/energy legislation, plus selected regulatory actions and major local zoning decisions. Verified entries had their status confirmed against a primary source (state legislature page, Congress.gov / GovInfo, official sponsor press release) on the listed last_verified date; unverified entries should be re-checked before being relied upon. Each bill is enriched with recent_news (up to 3 dated items with source URLs), public_sentiment (a paragraph naming supporters/opponents), general_principles (tagged policy concepts), and a procedural timeline. These fields are best-effort as of last_updated and should be re-verified before being cited. Scope expanded 2026-05-28 to include regulatory rulemakings (OH EPA OHD000001) and major local ordinances (Loudoun ZOAM). Expanded 2026-06-22 with the four 2026 state laws that newly enacted data-center water provisions (Idaho H 895 closed-loop cooling, South Dakota SB 135 'Bill of Rights,' Utah HB 76 water transparency, West Virginia HB 4983 certification rule), Maryland's veto-overridden HB 270 / SB 116 impact study, the failed Washington HB 2515 and Indiana SB 79, and the confirmed federal S. 4213 number for the Durbin transparency bill.",
   "bills": [
     {
       "bill_id": "VA HB 496 / SB 553",
@@ -979,7 +979,7 @@
       ]
     },
     {
-      "bill_id": "US S. — Data Center Water and Energy Transparency Act (Durbin; number TBD)",
+      "bill_id": "US S. 4213",
       "jurisdiction": "Federal (US)",
       "level": "federal",
       "title": "Data Center Water and Energy Transparency Act",
@@ -990,12 +990,19 @@
         "energy"
       ],
       "status": "introduced",
-      "status_detail": "Introduced ~2026-03-25 per Senator's press release. Canonical S. bill number not confirmed against Congress.gov; do not confuse with S. 4214 (AI Data Center Moratorium Act, introduced the same day).",
-      "source_url": "https://www.durbin.senate.gov/newsroom/press-releases/as-utility-costs-rise-durbin-introduces-new-legislation-to-bring-transparency-to-energy-and-water-consumption-by-data-centers",
-      "last_verified": "2026-05-25",
-      "verified": false,
-      "confidence": "low",
+      "status_detail": "Introduced March 25, 2026 and referred to committee. Confirmed as S. 4213 in the 119th Congress; do not confuse with S. 4214 (AI Data Center Moratorium Act, introduced the same day).",
+      "source_url": "https://www.congress.gov/bill/119th-congress/senate-bill/4213",
+      "last_verified": "2026-06-22",
+      "verified": true,
+      "confidence": "high",
       "recent_news": [
+        {
+          "date": "2026-03-30",
+          "title": "Senator introduces legislation to bring transparency to water consumption by data centers",
+          "source": "National Ground Water Association",
+          "url": "https://www.ngwa.org/detail/news/2026/03/30/senator-introduces-legislation-to-bring-transparency-to-water-consumption-by-data-centers",
+          "takeaway": "Confirms the bill is numbered S. 4213 and would require operators to report energy and water use to states or EPA plus the Secretaries of Energy and Agriculture."
+        },
         {
           "date": "2026-03-26",
           "title": "Data center boom raises water, power questions",
@@ -1011,7 +1018,7 @@
           "takeaway": "Original release: 5-year pre-construction projections, state-level reporting, EPA/DOE/USDA aggregated regional reports, and per-day fines for noncompliance."
         }
       ],
-      "public_sentiment": "Coverage is thin and no formal endorsements have been published in available reporting. The bill aligns with positions taken by Sierra Club Illinois, the Illinois Clean Jobs Coalition, and environmental advocates pushing parallel state-level transparency (Illinois POWER Act). No direct Data Center Coalition or NetChoice response to this specific federal bill has surfaced, though DCC has opposed similar prescriptive transparency provisions in Illinois state legislation. Durbin introduced it solo with no Senate cosponsors at launch.",
+      "public_sentiment": "Coverage aligns the bill with positions taken by Sierra Club Illinois, the Illinois Clean Jobs Coalition, and environmental advocates pushing parallel state-level transparency (Illinois POWER Act). The Data Center Coalition has opposed similar prescriptive transparency provisions in state legislation. Unlike the initial framing, S. 4213 drew bipartisan cosponsors, with reporting naming Sens. Josh Hawley (R-MO), Elizabeth Warren (D-MA), Richard Blumenthal (D-CT), Chris Van Hollen (D-MD), and Tom Cotton (R-AR).",
       "general_principles": [
         {
           "tag": "Transparency",
@@ -1034,7 +1041,7 @@
         {
           "date": "2026-03-25",
           "milestone": "Introduced",
-          "detail": "Sen. Dick Durbin (D-IL) introduced solo; Senate bill number not yet confirmed in public Congress.gov listings as of late May 2026."
+          "detail": "Sen. Dick Durbin (D-IL) introduced S. 4213; referred to committee."
         }
       ]
     },
@@ -2062,6 +2069,494 @@
         {
           "date": "2026-12-31",
           "milestone": "Phase 2 full Board action expected"
+        }
+      ]
+    },
+    {
+      "bill_id": "ID H 895",
+      "jurisdiction": "Idaho",
+      "level": "state",
+      "title": "Data center cooling water consumption limits",
+      "sponsor": "House Ways & Means Committee (carried by Rep. Britt Raybould, R-Rexburg)",
+      "summary": "New data centers built on or after July 1, 2026 must cool with non-consumptive/closed-loop systems or use water supplied by a municipal, water-district, or water-and-sewer system, rather than evaporative or hybrid cooling that consumes large volumes of water.",
+      "scope": [
+        "water"
+      ],
+      "status": "enacted",
+      "status_detail": "Signed by Gov. Brad Little April 2, 2026; adds to Idaho Code to limit consumptive cooling-water use for certain data centers; effective July 1, 2026. House passed 58-10; Senate 32-1.",
+      "source_url": "https://legislature.idaho.gov/sessioninfo/2026/legislation/H0895/",
+      "last_verified": "2026-06-22",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-03-30",
+          "title": "Idaho advances bill on data center water consumption",
+          "source": "Capital Press",
+          "url": "https://capitalpress.com/2026/03/30/idaho-advances-bill-on-data-center-water-consumption/",
+          "takeaway": "Sponsor Rep. Britt Raybould framed the bill as pushing developers toward closed-loop, non-consumptive cooling instead of water-hungry evaporative or hybrid systems."
+        },
+        {
+          "date": "2026-03-20",
+          "title": "How much water will Kuna's data centers use?",
+          "source": "BoiseDev",
+          "url": "https://boisedev.com/news/2026/03/20/data-center-water/",
+          "takeaway": "Context for the bill: fast-growing Kuna is the focus of large data-center proposals whose evaporative cooling could draw heavily on local water."
+        }
+      ],
+      "public_sentiment": "Backed by water-conservation and agricultural interests in fast-growing southwest Idaho (Kuna), where large data-center proposals raised aquifer concerns; supporters cast the closed-loop mandate as a low-cost safeguard. The Idaho Freedom Foundation scored it and some industry voices warned closed-loop requirements raise build costs, but the bill cleared both chambers by wide margins and was signed without controversy.",
+      "general_principles": [
+        {
+          "tag": "Conservation",
+          "note": "Requires non-consumptive/closed-loop cooling so cooling water is recirculated rather than evaporated."
+        },
+        {
+          "tag": "Resource protection",
+          "note": "Steers data centers away from drawing down groundwater for evaporative cooling."
+        },
+        {
+          "tag": "Permit oversight",
+          "note": "Conditions where a new data center may source cooling water (municipal/water-district supply or non-consumptive systems)."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-03-13",
+          "milestone": "Introduced",
+          "detail": "House Ways & Means Committee bill, printed and referred to Resources & Conservation."
+        },
+        {
+          "date": "2026-03-20",
+          "milestone": "Passed House",
+          "detail": "House passed 58-10-2."
+        },
+        {
+          "date": "2026-03-31",
+          "milestone": "Passed Senate",
+          "detail": "Senate passed 32-1-2."
+        },
+        {
+          "date": "2026-04-02",
+          "milestone": "Signed into law",
+          "detail": "Delivered to and signed by Gov. Brad Little."
+        },
+        {
+          "date": "2026-07-01",
+          "milestone": "Effective"
+        }
+      ]
+    },
+    {
+      "bill_id": "SD SB 135",
+      "jurisdiction": "South Dakota",
+      "level": "state",
+      "title": "Data Center Bill of Rights for Citizens",
+      "sponsor": "Sen. Pres. Pro Tempore Chris Karr (R-Sioux Falls) & House Speaker Jon Hansen (R-Dell Rapids)",
+      "summary": "Data centers with peak electrical demand of 10 MW or greater must cover the electrical-infrastructure costs they cause (including stranded costs if they leave) and must coordinate with water service providers so their water use stays within locally approved supply; the state may not preempt local ordinances regulating data centers.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Signed by Gov. Larry Rhoden March 24, 2026; applies to data centers >=10 MW peak demand. The only data-center bill to pass the 2026 session (moratorium and tax-incentive bills failed); the Public Utilities Commission may charge regulatory-review costs to operators.",
+      "source_url": "https://legiscan.com/SD/bill/SB135/2026",
+      "last_verified": "2026-06-22",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-03-25",
+          "title": "Data center restrictions signed into South Dakota law after push for incentives failed",
+          "source": "KOTA",
+          "url": "https://www.kotatv.com/2026/03/25/data-center-restrictions-signed-into-south-dakota-law-after-push-incentives-failed/",
+          "takeaway": "Gov. Rhoden signed SB 135 after lawmakers rejected both a moratorium and tax incentives; the law makes large data centers pay their own infrastructure costs and protects local water supply."
+        },
+        {
+          "date": "2026-03-05",
+          "title": "Data center regulation bill passes South Dakota House",
+          "source": "South Dakota Searchlight",
+          "url": "https://southdakotasearchlight.com/2026/03/05/data-center-regulation-bill-passes-south-dakota-house/",
+          "takeaway": "House passed an amended SB 135 60-7, advancing the 10-MW threshold and the water-compatibility requirement to the governor."
+        },
+        {
+          "date": "2026-03-11",
+          "title": "Bill to regulate data centers heads to governor's desk",
+          "source": "KOTA",
+          "url": "https://www.kotatv.com/2026/03/11/really-good-step-right-direction-bill-regulate-data-centers-heads-governors-desk/",
+          "takeaway": "Sponsors called it a 'Data Center Bill of Rights' protecting ratepayers and local water providers from being overburdened by large facilities."
+        }
+      ],
+      "public_sentiment": "Sponsored by South Dakota's top legislative leaders (Senate President Pro Tempore Chris Karr and House Speaker Jon Hansen) and framed as ratepayer/water protection, it passed with wide margins after the Legislature rejected both a data-center moratorium and tax incentives. Tribal advocates (reported by Buffalo's Fire) raised concerns about the law's broader data-center framework, while industry resisted the cost-causation and local-control provisions.",
+      "general_principles": [
+        {
+          "tag": "Cost allocation",
+          "note": "Requires data centers >=10 MW to pay the electrical-infrastructure costs they cause, including if they exit."
+        },
+        {
+          "tag": "Resource protection",
+          "note": "Data centers must coordinate with water service providers so their use stays within locally approved supply."
+        },
+        {
+          "tag": "Local control",
+          "note": "Bars the state from preempting local ordinances that limit or regulate data centers."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-03-05",
+          "milestone": "Passed House",
+          "detail": "House Do Pass Amended, 60-7."
+        },
+        {
+          "date": "2026-03-11",
+          "milestone": "Sent to Governor"
+        },
+        {
+          "date": "2026-03-24",
+          "milestone": "Signed into law",
+          "detail": "Signed by Gov. Larry Rhoden."
+        }
+      ]
+    },
+    {
+      "bill_id": "UT HB 76",
+      "jurisdiction": "Utah",
+      "level": "state",
+      "title": "Data Center Water Transparency Amendments",
+      "sponsor": "Rep. Jill Koford (R-Ogden)",
+      "summary": "Large data centers (redefined as 10,000+ sq ft, down from 50,000) must notify water providers of their projected water demand and report their actual water consumption to the state. A committee substitute made the water data more publicly transparent after criticism that the original version would have shielded individual facilities' use from public records.",
+      "scope": [
+        "water"
+      ],
+      "status": "enacted",
+      "status_detail": "Signed by Gov. Spencer Cox March 23, 2026 (among 87 bills signed that session); lowers the 'large data center' threshold to 10,000 sq ft. Default effective date ~60 days after the 2026 session adjourned (early May 2026).",
+      "source_url": "https://le.utah.gov/~2026/bills/static/HB0076.html",
+      "last_verified": "2026-06-22",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-04-27",
+          "title": "New bill forces Utah data centers to disclose water use estimates",
+          "source": "Wyoming Public Media",
+          "url": "https://www.wyomingpublicmedia.org/natural-resources-energy/2026-04-27/new-bill-forces-utah-data-centers-to-disclose-water-use-estimates",
+          "takeaway": "Great Salt Lake Waterkeeper's Zach Frankel warned two data centers can use as much water as a city of 100,000; the law makes new facilities disclose projected and actual use."
+        },
+        {
+          "date": "2026-03-17",
+          "title": "How Utah's 2026 legislative session reshaped water policy",
+          "source": "Utah Public Radio",
+          "url": "https://www.upr.org/politics/2026-03-17/how-utahs-2026-legislative-session-reshaped-water-policy",
+          "takeaway": "HB 76 is highlighted among the session's data-center water measures, requiring large facilities to notify providers and report consumption."
+        }
+      ],
+      "public_sentiment": "Great Salt Lake Waterkeeper (Zach Frankel) hailed the final bill as a transparency victory after public pushback forced sponsor Rep. Jill Koford to substitute a version that makes water-use data more public rather than exempt from disclosure. The data-center industry called the reporting 'burdensome' and warned it could deter investment, but the bill passed and Gov. Cox signed it; weeks later Cox issued an executive order setting higher water standards for new data-center development.",
+      "general_principles": [
+        {
+          "tag": "Transparency",
+          "note": "Makes large data centers' projected and actual water use visible to the state and, after the substitute, more public."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "Requires operators to notify water providers of projected demand and report actual consumption."
+        },
+        {
+          "tag": "Permit oversight",
+          "note": "Lowers the 'large data center' threshold to 10,000 sq ft so more facilities fall under the reporting regime."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-01-20",
+          "milestone": "Introduced",
+          "detail": "HB 76 by Rep. Jill Koford; substitute adopted in committee during week one after public criticism."
+        },
+        {
+          "date": "2026-03-07",
+          "milestone": "Passed Legislature",
+          "detail": "Cleared both chambers as the 2026 general session closed."
+        },
+        {
+          "date": "2026-03-23",
+          "milestone": "Signed into law",
+          "detail": "Signed by Gov. Spencer Cox among 87 bills."
+        }
+      ]
+    },
+    {
+      "bill_id": "WV HB 4983",
+      "jurisdiction": "West Virginia",
+      "level": "state",
+      "title": "High-impact data center / microgrid certification rule (Dept. of Commerce)",
+      "sponsor": "House Energy & Public Works Committee (Dept. of Commerce legislative rule bundle)",
+      "summary": "Authorizes a Dept. of Commerce legislative rule setting the certification process for 'high impact' data centers and microgrid districts (implementing 2025's HB 2014) and keeps key project details confidential. A Senate amendment added only soft language directing that potential water use be 'studied' and water sources given 'mindful protections'; floor amendments to require pre-operation water-impact assessments and to limit groundwater use were rejected.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Approved by Gov. Patrick Morrisey March 27, 2026. House passed 78-16 (Feb 17); Senate passed an amended version 28-6 (~Mar 11). Implements the certified-microgrid / high-impact-data-center program from 2025 HB 2014. Water-protection amendments were defeated, leaving only non-binding 'study'/'mindful protection' language.",
+      "source_url": "https://www.wvlegislature.gov/Bill_Status/bills_text.cfm?billdoc=hb4983+intr.htm&yr=2026&sesstype=RS&i=4983",
+      "last_verified": "2026-06-22",
+      "verified": true,
+      "confidence": "medium",
+      "recent_news": [
+        {
+          "date": "2026-02-18",
+          "title": "WV House passes new data center development rules without local control, water protection provisions",
+          "source": "West Virginia Watch",
+          "url": "https://westvirginiawatch.com/2026/02/18/wv-house-passes-new-data-center-development-rules-without-local-control-water-protection-provisions/",
+          "takeaway": "The House passed HB 4983 78-16 after rejecting amendments that would have required water-impact assessments and limited groundwater use for data centers."
+        },
+        {
+          "date": "2026-03-11",
+          "title": "WV Senate passes data center rules with new language urging developers to study potential water use",
+          "source": "West Virginia Watch",
+          "url": "https://westvirginiawatch.com/2026/03/11/wv-senate-passes-data-center-rules-with-new-language-urging-developers-to-study-potential-water-use/",
+          "takeaway": "The Senate added only soft language directing that potential water use be studied and water sources given 'mindful protections,' stopping short of binding limits."
+        },
+        {
+          "date": "2026-03-12",
+          "title": "Data center rule amended, returns to House",
+          "source": "The Real WV",
+          "url": "https://therealwv.com/2026/03/12/data-center-rule-amended-returns-to-house/",
+          "takeaway": "The amended rule bundle returned to the House for concurrence before heading to Gov. Morrisey."
+        }
+      ],
+      "public_sentiment": "WV Rivers Coalition, Conservation West Virginia, and legislators including Del. Laura Kimble criticized HB 4983 for stripping local control and rejecting binding water-use transparency and groundwater limits, leaving only a non-binding 'study' directive; advocates noted large data centers can use 3-5 million gallons/day. The Morrisey administration and Dept. of Commerce backed it as implementing the 2025 high-impact-data-center/microgrid program, and it passed both chambers comfortably.",
+      "general_principles": [
+        {
+          "tag": "Confidentiality",
+          "note": "Keeps basic information about proposed high-impact data center projects shielded from public disclosure."
+        },
+        {
+          "tag": "Permit oversight",
+          "note": "Sets the state certification process for high-impact data centers and microgrid districts."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "Rejected amendments would have required pre-operation water-impact assessments and groundwater limits; only non-binding 'study' language survived."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-02-17",
+          "milestone": "Passed House",
+          "detail": "House passed 78-16; water-protection amendments rejected."
+        },
+        {
+          "date": "2026-03-11",
+          "milestone": "Passed Senate",
+          "detail": "Senate passed an amended version 28-6."
+        },
+        {
+          "date": "2026-03-12",
+          "milestone": "Returned to House",
+          "detail": "House concurrence on the amended rule bundle."
+        },
+        {
+          "date": "2026-03-27",
+          "milestone": "Approved by Governor",
+          "detail": "Approved by Gov. Patrick Morrisey."
+        }
+      ]
+    },
+    {
+      "bill_id": "MD HB 270 / SB 116",
+      "jurisdiction": "Maryland",
+      "level": "state",
+      "title": "Data Center Impact Analysis and Report",
+      "sponsor": "Sen. Karen Lewis Young & Sen. Stephen Ready (SB 116); HB 270 House companion",
+      "summary": "Commissions a state study of the environmental, energy, and economic impacts of data center development: the Dept. of the Environment assesses effects on air and water quality and Chesapeake Bay restoration, the Maryland Energy Administration assesses energy demand and infrastructure, and the University of Maryland School of Business covers economic impacts. The report is due to the Governor and General Assembly by Sept. 1, 2026.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "2025 Regular Session. Vetoed by Gov. Wes Moore (May 2025); the General Assembly overrode the veto Dec. 16, 2025, enacting it. ~$502K study; report due Sept. 1, 2026.",
+      "source_url": "https://mgaleg.maryland.gov/mgawebsite/Legislation/Details/SB0116?ys=2025RS",
+      "last_verified": "2026-06-22",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2025-12-16",
+          "title": "Climate study, energy planning, data center bills become law after Moore vetoes are overridden",
+          "source": "Maryland Matters",
+          "url": "https://marylandmatters.org/2025/12/16/general-assembly-climate-veto-overrides/",
+          "takeaway": "The General Assembly overrode Gov. Moore's veto of the data-center impact study, enacting the requirement that MDE and MEA quantify water, energy, and economic impacts."
+        },
+        {
+          "date": "2025-12-16",
+          "title": "Maryland General Assembly overrides veto on data center impact report",
+          "source": "Technical.ly",
+          "url": "https://technical.ly/civics/maryland-data-center-impact-study-veto-override/",
+          "takeaway": "Override coverage details the $502K study examining electricity demand, water resources, infrastructure costs, and local economies, due September 2026."
+        }
+      ],
+      "public_sentiment": "Environmental groups (including Nature Forward) and legislative leadership backed the study and supplied the supermajority to override Gov. Wes Moore's veto; Moore (D) had argued it was duplicative and burdensome. The data-center industry was wary of a state impact study that could inform future siting and permitting rules, while advocates framed it as a prerequisite to responsible data-center growth in Maryland.",
+      "general_principles": [
+        {
+          "tag": "Transparency",
+          "note": "A state-commissioned study makes data centers' water, energy, and economic effects public."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "Requires MDE and the Maryland Energy Administration to quantify water-quality, Bay-restoration, and energy-demand impacts."
+        },
+        {
+          "tag": "Permit oversight",
+          "note": "Findings are intended to inform future data-center siting and permitting policy."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2025-04-08",
+          "milestone": "Passed General Assembly",
+          "detail": "Cleared both chambers in the 2025 Regular Session."
+        },
+        {
+          "date": "2025-05-16",
+          "milestone": "Vetoed",
+          "detail": "Vetoed by Gov. Wes Moore."
+        },
+        {
+          "date": "2025-12-16",
+          "milestone": "Veto overridden (enacted)",
+          "detail": "General Assembly overrode the veto, enacting the study."
+        },
+        {
+          "date": "2026-09-01",
+          "milestone": "Report due"
+        }
+      ]
+    },
+    {
+      "bill_id": "WA HB 2515",
+      "jurisdiction": "Washington",
+      "level": "state",
+      "title": "Data center sustainability reporting and grid protections",
+      "sponsor": "Rep. Beth Doglio (D-Olympia)",
+      "summary": "Would have required data center operators to file a sustainability report disclosing server-cooling technology and water/energy use and emissions, directed utilities to adopt a data-center cost-recovery tariff by 2027 so other ratepayers do not subsidize them, and required large loads to curtail electricity use during grid stress.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "failed",
+      "status_detail": "Passed House Appropriations in mid-February 2026 but died when it failed to advance before the 2026 session's cutoff (early March 2026). A Republican-backed amendment had stripped the annual operator fee and loosened clean-energy terms; the sponsor signaled reintroduction in 2027.",
+      "source_url": "https://washingtonstatestandard.com/2026/03/02/its-lights-out-for-wa-legislatures-effort-to-regulate-data-centers/",
+      "last_verified": "2026-06-22",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-03-02",
+          "title": "It's lights out for WA Legislature's effort to regulate data centers",
+          "source": "Washington State Standard",
+          "url": "https://washingtonstatestandard.com/2026/03/02/its-lights-out-for-wa-legislatures-effort-to-regulate-data-centers/",
+          "takeaway": "HB 2515 died at the session cutoff after tech-industry pressure weakened it; Rep. Doglio said she would keep working on the legislation next year."
+        },
+        {
+          "date": "2026-02-12",
+          "title": "How Washington state lawmakers are trying to regulate data centers",
+          "source": "OPB",
+          "url": "https://www.opb.org/article/2026/02/12/washington-lawmakers-regulate-data-centers/",
+          "takeaway": "The bill would have required sustainability reports on cooling technology and water/energy use plus a utility cost-recovery tariff and emergency curtailment."
+        },
+        {
+          "date": "2026-02-11",
+          "title": "How WA lawmakers are trying to regulate data centers",
+          "source": "Washington State Standard",
+          "url": "https://washingtonstatestandard.com/2026/02/11/how-wa-lawmakers-are-trying-to-regulate-data-centers/",
+          "takeaway": "Early coverage details the transparency and ratepayer-protection design before amendments weakened the bill in committee."
+        }
+      ],
+      "public_sentiment": "Sponsor Rep. Beth Doglio, environmental groups, and ratepayer advocates backed HB 2515 over grid-reliability and water-strain concerns. Tech companies gained ground against it (per the Daily Chronicle) and a Republican-backed amendment stripped the operator fee and loosened clean-energy requirements before the bill stalled at the cutoff; advocates argued Washington 'can't afford to wait' on data-center rules.",
+      "general_principles": [
+        {
+          "tag": "Disclosure",
+          "note": "Sustainability report on cooling technology, water/energy use, and emissions."
+        },
+        {
+          "tag": "Cost allocation",
+          "note": "Utility data-center cost-recovery tariff by 2027 so other ratepayers aren't subsidizing large loads."
+        },
+        {
+          "tag": "Reliability",
+          "note": "Mandatory curtailment of large data-center loads during grid stress."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-02-13",
+          "milestone": "Passed House Appropriations",
+          "detail": "Advanced out of committee in mid-February."
+        },
+        {
+          "date": "2026-03-02",
+          "milestone": "Died at cutoff",
+          "detail": "Failed to advance before the 2026 session deadline."
+        }
+      ]
+    },
+    {
+      "bill_id": "IN SB 79",
+      "jurisdiction": "Indiana",
+      "level": "state",
+      "title": "Data center development and electricity reporting",
+      "sponsor": "Sen. J.D. Ford (D) & Sen. Spencer Deery (R)",
+      "summary": "Would have created an Indiana Utility Regulatory Commission working group to forecast data-center electricity demand (report by Oct. 31, 2026), required operators to file quarterly electricity-use reports the IURC publishes online, and required local governments to obtain projected power and water-use disclosures plus a site assessment before issuing data-center permits.",
+      "scope": [
+        "energy",
+        "water"
+      ],
+      "status": "failed",
+      "status_detail": "Died in the 2026 session - never granted a hearing in the Senate Utilities Committee. Bipartisan sponsorship (Ford D / Deery R).",
+      "source_url": "https://iga.in.gov/legislative/2026/bills/senate/79",
+      "last_verified": "2026-06-22",
+      "verified": true,
+      "confidence": "medium",
+      "recent_news": [
+        {
+          "date": "2026-03-26",
+          "title": "That 1% incentive to encourage data center approvals? Final deal watered it down",
+          "source": "Indiana Capital Chronicle",
+          "url": "https://indianacapitalchronicle.com/2026/03/26/that-1-incentive-to-encourage-data-center-approvals-final-deal-watered-it-down/",
+          "takeaway": "Indiana's 2026 session ended with little binding data-center oversight; transparency bills like SB 79 stalled while a weakened local-incentive deal advanced."
+        },
+        {
+          "date": "2026-02-20",
+          "title": "State Data Center Legislation in 2026 Tackles Energy and Tax Issues",
+          "source": "MultiState",
+          "url": "https://www.multistate.us/insider/2026/2/20/state-data-center-legislation-in-2026-tackles-energy-and-tax-issues",
+          "takeaway": "Indiana was among states weighing data-center electricity-reporting and demand-forecasting bills, with SB 79 pairing IURC reporting with local power/water disclosure."
+        }
+      ],
+      "public_sentiment": "The Citizens Action Coalition and consumer/environmental advocates backed SB 79 for ratepayer protection and transparency, but it never received a Senate Utilities Committee hearing in a session where Indiana lawmakers largely deferred to utilities and a watered-down tax-incentive deal. Its bipartisan sponsorship (Sens. J.D. Ford and Spencer Deery) underscored cross-party interest in disclosure even as the bill died.",
+      "general_principles": [
+        {
+          "tag": "Disclosure",
+          "note": "Quarterly operator electricity-use reports published online, plus local projected power and water-use disclosure before permitting."
+        },
+        {
+          "tag": "Demand forecasting",
+          "note": "IURC working group to estimate future data-center electricity demand and report by Oct. 31, 2026."
+        },
+        {
+          "tag": "Local control",
+          "note": "Requires a site assessment and disclosures before a county/municipality issues a data-center permit."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-01-08",
+          "milestone": "Introduced",
+          "detail": "Filed for the 2026 session by Sens. Ford and Deery."
+        },
+        {
+          "date": "2026-03-14",
+          "milestone": "Died in committee",
+          "detail": "Never granted a hearing in the Senate Utilities Committee before session end."
         }
       ]
     }
