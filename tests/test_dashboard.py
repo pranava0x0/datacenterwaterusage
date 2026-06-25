@@ -573,6 +573,97 @@ class TestLegislationTracker:
     def _bills(self):
         return load_legislation().get("bills", [])
 
+    def test_june_10_2026_bill_additions_present(self):
+        # Regression guard for the 2026-06-10 research pass (7 entries),
+        # including the first enacted state water-cooling law outside the
+        # original set (Idaho) and the first local moratorium besides Loudoun.
+        bills = {b["bill_id"]: b for b in self._bills()}
+        expected = {
+            "ID H 895": "enacted",
+            "CO SB26-102": "failed",
+            "NY S10642 / A11560": "introduced",
+            "WI AB 840 / SB 843": "failed",
+            "ME LD 307": "failed",
+            "Denver CB 26-0431": "enacted",
+            "VA SB 417": "introduced",
+        }
+        for bid, status in expected.items():
+            assert bid in bills, f"missing newly-added bill {bid}"
+            assert bills[bid]["status"] == status, bid
+
+    def test_filter_axes_never_empty(self):
+        # The client-side filters AND every record by scope, principles,
+        # status, and level (sc.some(...) / pr.some(...) in the static JS).
+        # A record with an empty scope or principles array would fail every
+        # filter combination and be permanently invisible in the UI — so
+        # emptiness is a data bug, not a presentation choice. (PR #13 review.)
+        from dashboard import LEGISLATION_LEVEL_LABELS, LEGISLATION_SCOPE_LABELS
+
+        for b in self._bills():
+            assert b.get("scope"), f"{b['bill_id']}: empty scope hides the card"
+            assert b.get("general_principles"), (
+                f"{b['bill_id']}: empty general_principles hides the card"
+            )
+            for s in b["scope"]:
+                assert s in LEGISLATION_SCOPE_LABELS, f"{b['bill_id']}: scope {s!r}"
+            assert b.get("level") in LEGISLATION_LEVEL_LABELS, (
+                f"{b['bill_id']}: level {b.get('level')!r} not filterable"
+            )
+            assert b.get("status") in ("enacted", "introduced", "failed"), (
+                f"{b['bill_id']}: status {b.get('status')!r} not filterable"
+            )
+
+    def test_principle_tags_are_canonical(self):
+        # Every general_principles tag must be in the canonical taxonomy that
+        # powers the summary panel and the principle filter — a typo'd tag
+        # would silently vanish from both.
+        from dashboard import LEGISLATION_PRINCIPLE_DESCRIPTIONS
+
+        for b in self._bills():
+            for p in b.get("general_principles", []):
+                assert p.get("tag") in LEGISLATION_PRINCIPLE_DESCRIPTIONS, (
+                    f"{b['bill_id']}: unknown principle tag {p.get('tag')!r}"
+                )
+
+    def test_principles_summary_invariants(self):
+        from dashboard import _legislation_principles_summary
+
+        bills = self._bills()
+        rows = _legislation_principles_summary(bills)
+        assert rows, "expected a non-empty principles summary"
+        ids = {b["bill_id"] for b in bills}
+        # Ordered by count desc; every row carries a description and resolvable examples.
+        counts = [r["count"] for r in rows]
+        assert counts == sorted(counts, reverse=True)
+        for r in rows:
+            assert r["description"], f"{r['tag']} missing description"
+            assert 0 <= r["enacted"] <= r["count"]
+            assert 1 <= len(r["example_bills"]) <= 3
+            for bid, _status in r["example_bills"]:
+                assert bid in ids, f"{r['tag']}: unknown example bill {bid}"
+        # A bill tagged N times with the same tag counts once.
+        assert max(counts) <= len(bills)
+
+    def test_principles_summary_panel_html(self):
+        from dashboard import _build_principles_summary_html, _bill_anchor
+
+        bills = self._bills()
+        panel = _build_principles_summary_html(bills)
+        assert "Key principles across all bills" in panel
+        # Example links are in-page anchors that resolve to real card ids.
+        anchors = set(re.findall(r'href="#(bill-[a-z0-9-]+)"', panel))
+        assert anchors, "expected example-bill anchor links"
+        card_ids = {_bill_anchor(b["bill_id"]) for b in bills}
+        assert anchors <= card_ids
+
+    def test_legislation_explainer_covers_vocabulary(self):
+        from dashboard import _legislation_explainer_md
+
+        md = _legislation_explainer_md()
+        for term in ("Enacted", "Introduced", "Failed", "Federal", "Water",
+                     "Principles", "verified"):
+            assert term in md, f"explainer missing {term}"
+
     def test_dataset_loads(self):
         payload = load_legislation()
         assert payload.get("last_updated")
@@ -693,7 +784,13 @@ class TestLegislationTracker:
 
         for b in self._bills():
             html_str = _build_bill_card_html(b)
-            assert html_str.startswith('<div class="bill-card">'), b["bill_id"]
+            # Each card carries a stable anchor id so the principles panel's
+            # example-bill links can target it.
+            from dashboard import _bill_anchor
+
+            assert html_str.startswith(
+                f'<div class="bill-card" id="{_bill_anchor(b["bill_id"])}">'
+            ), b["bill_id"]
             # bill_id must round-trip through the renderer (HTML-escaped).
             assert _html.escape(b["bill_id"]) in html_str, b["bill_id"]
             # Status badge must show one of the four labelled statuses, not
@@ -746,6 +843,48 @@ class TestCWAInvestigations:
         for c in self._cases():
             assert c["category"] in VALID_CWA_CATEGORIES, c["case_id"]
 
+    def test_case_type_classification(self):
+        # Every case carries the project-type taxonomy used by the filters; a
+        # value outside CWA_CASE_TYPE_LABELS would silently vanish from the
+        # static site's checkbox filter.
+        from dashboard import CWA_CASE_TYPE_LABELS, CWA_STATUS_LABELS
+
+        for c in self._cases():
+            assert c.get("case_type") in CWA_CASE_TYPE_LABELS, c["case_id"]
+            assert c.get("cwa_applied") in CWA_STATUS_LABELS, c["case_id"]
+            assert c.get("cwa_instrument"), f"{c['case_id']} missing cwa_instrument"
+
+    def test_non_applied_cases_have_pathway_and_analogs(self):
+        # The whole point of tracking pending / not-applied cases: each must
+        # explain how the CWA *could* reach the fact pattern and point at
+        # historic examples that resolve to real cases in this dataset.
+        ids = {c["case_id"] for c in self._cases()}
+        for c in self._cases():
+            if c["cwa_applied"] in ("pending", "not-applied"):
+                assert len(c.get("cwa_pathway", "")) > 60, (
+                    f"{c['case_id']} needs a substantive cwa_pathway"
+                )
+                analogs = c.get("analogous_cases", [])
+                assert analogs, f"{c['case_id']} needs analogous_cases"
+                for a in analogs:
+                    assert a in ids, f"{c['case_id']}: unknown analog {a}"
+                assert c["case_id"] not in analogs, (
+                    f"{c['case_id']} cannot be its own analog"
+                )
+
+    def test_card_renders_classification_and_pathway(self):
+        # The card must answer (1) what type of case + did the CWA apply, and
+        # (2) for non-applied cases, how it could apply with analog links.
+        ids = {c["case_id"] for c in self._cases()}
+        for c in self._cases():
+            html_str = _build_cwa_case_html(c, ids)
+            assert 'class="cwa-type-pill"' in html_str, c["case_id"]
+            assert 'class="cwa-status-pill"' in html_str, c["case_id"]
+            if c["cwa_applied"] in ("pending", "not-applied"):
+                assert "How the CWA could apply" in html_str, c["case_id"]
+                first_analog = c["analogous_cases"][0]
+                assert f'href="#cwa-{first_analog}"' in html_str, c["case_id"]
+
     def test_every_category_represented(self):
         cats = {c["category"] for c in self._cases()}
         assert cats == VALID_CWA_CATEGORIES, f"missing categories: {VALID_CWA_CATEGORIES - cats}"
@@ -785,7 +924,10 @@ class TestCWAInvestigations:
 
         for c in self._cases():
             html_str = _build_cwa_case_html(c)
-            assert html_str.startswith('<div class="bill-card">')
+            # Each card carries an id anchor so analog cross-links can target it.
+            assert html_str.startswith(
+                f'<div class="bill-card" id="cwa-{c["case_id"]}">'
+            )
             prefix = c["respondent"].split(",")[0][:20]
             assert _html.escape(prefix) in html_str, (
                 f"{c['case_id']}: respondent prefix not rendered"
@@ -865,11 +1007,55 @@ class TestCWAInvestigations:
             assert cid in cases, f"missing newly-added case {cid}"
             assert cases[cid]["category"] == cat, cid
 
+    def test_june_10_2026_research_additions_present(self):
+        # Regression guard for the 2026-06-10 research pass: ten verified
+        # cases (4 datacenter, 6 adjacent). Pin the anchors so a reshuffle
+        # can't silently drop them.
+        cases = {c["case_id"]: c for c in self._cases()}
+        expected = {
+            "QuantumLoophole-FrederickMD-boring-discharges-2022-2024": ("datacenter", "applied"),
+            "AWS-LakeAnnaVA-VPDES-cooling-discharge-2026": ("datacenter", "applied"),
+            "Google-FortWayneIN-isolated-wetland-permit-2025": ("datacenter", "not-applied"),
+            "Microsoft-MountPleasantWI-wetland-individual-permit-2024": ("datacenter", "pending"),
+            "Meta-NewtonCountyGA-well-failures-2018-2025": ("adjacent", "not-applied"),
+            "MilwaukeeRiverkeeper-RacineWI-water-records-suit-2025": ("adjacent", "not-applied"),
+            "CorpusChristi-SintonTX-EvangelineAquifer-wells-2026": ("adjacent", "not-applied"),
+            "Sailfish-HoodCountyTX-ComancheCircle-aquifer-moratorium-2025-2026": ("adjacent", "not-applied"),
+            "Charlotte-NC-drought-datacenter-moratorium-2026": ("adjacent", "not-applied"),
+            "Microsoft-CaledoniaWI-rezoning-withdrawal-2025": ("adjacent", "not-applied"),
+        }
+        for cid, (cat, status) in expected.items():
+            assert cid in cases, f"missing newly-added case {cid}"
+            assert cases[cid]["category"] == cat, cid
+            assert cases[cid]["cwa_applied"] == status, cid
+
+    def test_june_10_2026_second_research_pass_present(self):
+        # Regression guard for the second 2026-06-10 research pass (5 cases).
+        cases = {c["case_id"]: c for c in self._cases()}
+        expected = {
+            "USACE-NWP39-DataCenters-2026": ("datacenter", "applied"),
+            "SDC-ATLA-DouglasCounty-GA-404-401-2025": ("datacenter", "applied"),
+            "HomerCity-IndianaCounty-PA-NPDES-2026": ("adjacent", "pending"),
+            "Meta-RichlandParish-LA-WaterSupply-2025": ("adjacent", "not-applied"),
+            "Bessemer-AL-Hyperscale-WaterSupply-2025": ("adjacent", "not-applied"),
+        }
+        for cid, (cat, status) in expected.items():
+            assert cid in cases, f"missing newly-added case {cid}"
+            assert cases[cid]["category"] == cat, cid
+            assert cases[cid]["cwa_applied"] == status, cid
+
     def test_adjacent_cases_disclaim_cwa_enforcement(self):
-        # The 'adjacent' category exists precisely because the binding action
-        # sits OUTSIDE the CWA. Every adjacent case must say so in its
-        # cwa_section so the framing can't drift into implying CWA enforcement.
-        adjacent = [c for c in self._cases() if c["category"] == "adjacent"]
+        # The 'adjacent' category mostly exists because the binding action
+        # sits OUTSIDE the CWA — those cases must say so in cwa_section so
+        # the framing can't drift into implying CWA enforcement. Since the
+        # 2026-06-10 schema, cwa_applied is the canonical signal: adjacent
+        # cases marked applied/pending (e.g. a data-center power plant with
+        # a live NPDES draft permit) legitimately skip the disclaimer.
+        adjacent = [
+            c
+            for c in self._cases()
+            if c["category"] == "adjacent" and c["cwa_applied"] == "not-applied"
+        ]
         assert len(adjacent) >= 5, "expected the expanded adjacent set"
         for c in adjacent:
             section = c["cwa_section"].lower()

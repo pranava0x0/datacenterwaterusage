@@ -264,7 +264,8 @@ class TestRunPipeline:
             }
 
         async def fake_fetch(metadata):
-            return None
+            # Model a SUCCESSFUL offline fetch — a real local path.
+            return "data/downloads/va/prince-william-water/pwc_ius_2024.pdf"
 
         scraper.discover = fake_discover
         scraper.fetch_document = fake_fetch
@@ -275,6 +276,45 @@ class TestRunPipeline:
         assert rec.state == "VA"
         assert rec.municipality_agency == "Prince William Water"
         assert rec.source_portal.value == "va_pwc_ius"
+        assert rec.local_file_path == (
+            "data/downloads/va/prince-william-water/pwc_ius_2024.pdf"
+        )
+
+    @pytest.mark.asyncio
+    async def test_run_failed_fetch_is_retryable(self, config):
+        """A failed download (fetch_document -> None) must NOT be marked
+        fetched or emitted as a record — otherwise the next run would skip
+        the document forever and the output would point at no file.
+        Regression for the BaseScraper.run bug found in PR #13 review."""
+        state_mgr = FakeStateManager()
+        scraper = PWCIUSScraper(
+            config=config,
+            state_manager=state_mgr,
+            file_store=FakeFileStore(),
+            browser=None,
+        )
+
+        async def fake_discover(limit=None):
+            yield {
+                "url": "https://princewilliamwater.org/sites/default/files/IUS_March%202024.pdf",
+                # document_url advertises a downloadable file, so a None
+                # fetch result must be treated as a failed download.
+                "document_url": "https://princewilliamwater.org/sites/default/files/IUS_March%202024.pdf",
+                "title": "IUS 2024",
+                "date": None,
+                "state": "VA",
+                "agency": "Prince William Water",
+                "id": "pwc-ius-2024",
+            }
+
+        async def fake_fetch(metadata):
+            return None  # download failure
+
+        scraper.discover = fake_discover
+        scraper.fetch_document = fake_fetch
+        results = await scraper.run(limit=10)
+        assert results == []
+        assert not await state_mgr.is_fetched("va_pwc_ius", "pwc-ius-2024")
 
     @pytest.mark.asyncio
     async def test_run_skips_already_fetched(self, config):
@@ -336,7 +376,7 @@ class TestRunPipeline:
                 }
 
         async def fake_fetch(metadata):
-            return None
+            return f"data/downloads/va/prince-william-water/{metadata['filename']}"
 
         scraper.discover = fake_discover
         scraper.fetch_document = fake_fetch

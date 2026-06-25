@@ -169,10 +169,65 @@ class TestStaticBuild:
         assert "solution-cat-header" in html
 
 
+class TestLegislationFilters:
+    def test_filter_controls_present(self):
+        html = _html()
+        # Principle / status / level / scope chip checkboxes + count line.
+        for cls in ("leg-principle", "leg-status", "leg-level", "leg-scope"):
+            assert f'class="chip-check"><input type="checkbox" class="{cls}"' in html
+        assert 'id="leg-count"' in html
+        bills = dashboard.load_legislation().get("bills", [])
+        assert f"window.LEG_TOTAL = {len(bills)}" in html
+
+    def test_every_bill_carries_filter_attrs(self):
+        html = _html()
+        bills = dashboard.load_legislation().get("bills", [])
+        assert html.count('class="leg-bill"') == len(bills)
+        assert html.count("data-principles=") == len(bills)
+
+    def test_principles_panel_on_static_page(self):
+        html = _html()
+        assert "Key principles across all bills" in html
+        # The most common tag must appear as a filter chip and in the panel.
+        assert html.count("Transparency") >= 2
+
+
+class TestCwaAccordion:
+    def test_case_narrative_collapsed(self):
+        # Scroll-control: every case's violation/outcome/sources live in a
+        # collapsed <details>; takeaway and CWA pathway stay visible.
+        html = _html()
+        cases = dashboard.load_cwa_investigations().get("cases", [])
+        assert html.count("Details — violation, outcome, sources") == len(cases)
+        # Pathway blocks remain OUTSIDE the details (visible by default).
+        pending = [c for c in cases if c.get("cwa_applied") in ("pending", "not-applied")]
+        assert html.count("How the CWA could apply") == len(pending)
+
+
+class TestLlmsTxt:
+    def test_llms_txt_contains_everything(self):
+        txt = build_site.build_llms_txt()
+        assert txt.startswith("# Data Center Water Use Tracker")
+        assert txt.splitlines()[2].startswith(">")  # llms.txt-convention blockquote
+        for b in dashboard.load_legislation().get("bills", []):
+            assert b["bill_id"] in txt, f"llms.txt missing bill {b['bill_id']}"
+        for c in dashboard.load_cwa_investigations().get("cases", []):
+            assert c["case_id"] in txt, f"llms.txt missing case {c['case_id']}"
+        assert "## Key principles across tracked legislation" in txt
+        assert build_site.REPO_URL in txt
+
+    def test_site_links_llms_txt(self):
+        html = _html()
+        assert '<link rel="alternate" type="text/plain" href="llms.txt"' in html
+        assert '<a href="llms.txt">llms.txt</a>' in html
+
+
 class TestWriteOutput:
     def test_main_writes_index_html(self, tmp_path, monkeypatch):
         out = tmp_path / "index.html"
         monkeypatch.setattr(build_site, "OUT_PATH", out)
+        monkeypatch.setattr(build_site, "LLMS_TXT_PATH", tmp_path / "llms.txt")
         build_site.main()
         assert out.exists()
         assert out.stat().st_size > 200_000
+        assert (tmp_path / "llms.txt").exists()
