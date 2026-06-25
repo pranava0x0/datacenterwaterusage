@@ -36,6 +36,8 @@ JSON_PATH = BASE_DIR / "data" / "output" / "results.json"
 LEGISLATION_PATH = BASE_DIR / "data" / "reference" / "legislation.json"
 COMPANY_WATER_CLAIMS_PATH = BASE_DIR / "data" / "reference" / "company_water_claims.json"
 CWA_INVESTIGATIONS_PATH = BASE_DIR / "data" / "reference" / "cwa_investigations.json"
+WATER_NEWS_PATH = BASE_DIR / "data" / "reference" / "water_news.json"
+WATER_SOLUTIONS_PATH = BASE_DIR / "data" / "reference" / "water_solutions.json"
 
 COLORS = {
     "primary": "#08519c",
@@ -209,6 +211,34 @@ def load_cwa_investigations(path: Path = CWA_INVESTIGATIONS_PATH) -> dict:
     file change (mtime/size) rather than a fixed TTL.
     """
     return _load_cwa_investigations_cached(str(path), _file_signature(path))
+
+
+@st.cache_data
+def _load_water_news_cached(path_str: str, signature: tuple) -> dict:
+    p = Path(path_str)
+    if not p.exists():
+        return {"last_updated": None, "items": []}
+    with open(p, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def load_water_news(path: Path = WATER_NEWS_PATH) -> dict:
+    """Load curated data center water news items."""
+    return _load_water_news_cached(str(path), _file_signature(path))
+
+
+@st.cache_data
+def _load_water_solutions_cached(path_str: str, signature: tuple) -> dict:
+    p = Path(path_str)
+    if not p.exists():
+        return {"last_updated": None, "categories": []}
+    with open(p, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def load_water_solutions(path: Path = WATER_SOLUTIONS_PATH) -> dict:
+    """Load data center water solutions by category."""
+    return _load_water_solutions_cached(str(path), _file_signature(path))
 
 
 # --- Page Config ---
@@ -1175,6 +1205,9 @@ def render_legislation_tracker(is_mobile: bool = False, is_tablet: bool = False)
         f"**{len(bills)} bills tracked** — {_legislation_status_summary(bills)}"
     )
 
+    # Key themes grid + emerging solutions box
+    st.markdown(_build_legislation_themes_html(bills), unsafe_allow_html=True)
+
     sorted_bills = sorted(
         bills,
         key=lambda b: (
@@ -1346,6 +1379,279 @@ def _build_principles_html(principles: list[dict]) -> str:
     return (
         '<div class="bill-section-label">General principles</div>' + "".join(rows)
     )
+
+
+# --- Legislation Themes ---
+
+LEGISLATION_THEME_DEFINITIONS = [
+    {
+        "tag": "Transparency",
+        "label": "Transparency & Disclosure",
+        "color": "#08519c",
+        "description": "Require data centers to publicly report actual or projected water consumption to regulators and the public.",
+    },
+    {
+        "tag": "Environmental Review",
+        "label": "Environmental Review",
+        "color": "#2e8b57",
+        "description": "Subject new construction to CEQA/SEQRA impact assessment, including a mandatory water-supply analysis.",
+    },
+    {
+        "tag": "Technology Mandate",
+        "label": "Technology Mandates",
+        "color": "#c41e3a",
+        "description": "Require closed-loop, reclaimed-water, or non-consumptive cooling as a permit condition.",
+    },
+    {
+        "tag": "Cost Allocation",
+        "label": "Cost Allocation",
+        "color": "#d4a017",
+        "description": "Ensure data centers bear the marginal cost of water-supply infrastructure they trigger, not residential ratepayers.",
+    },
+    {
+        "tag": "Permit Reform",
+        "label": "Permit Reform & Moratoria",
+        "color": "#6b3fa0",
+        "description": "Impose construction moratoria or water-compatibility reviews before new permits, giving regulators time to assess cumulative demand.",
+    },
+    {
+        "tag": "Consumer Protection",
+        "label": "Consumer Protection",
+        "color": "#1a7a8a",
+        "description": "Prevent data center grid and water infrastructure costs from being socialized to residential ratepayers.",
+    },
+]
+
+
+def _build_legislation_themes_html(bills: list[dict]) -> str:
+    """Build the 6-card theme grid + emerging solutions box for the top of the legislation tab."""
+    from collections import defaultdict
+    esc = html.escape
+
+    # Count bills per theme tag, collecting example IDs
+    tag_bills: dict[str, list[str]] = defaultdict(list)
+    for bill in bills:
+        seen: set[str] = set()
+        for p in bill.get("general_principles", []):
+            if not isinstance(p, dict):
+                continue
+            tag = p.get("tag", "")
+            if tag and tag not in seen:
+                seen.add(tag)
+                tag_bills[tag].append(bill.get("bill_id", ""))
+
+    cards = []
+    for theme in LEGISLATION_THEME_DEFINITIONS:
+        tag = theme["tag"]
+        ids = tag_bills.get(tag, [])
+        count = len(ids)
+        examples = ", ".join(ids[:3])
+        if len(ids) > 3:
+            examples += f" +{len(ids) - 3} more"
+        cards.append(
+            f'<div class="theme-card" style="border-top:3px solid {theme["color"]}">'
+            f'<div class="theme-card-count" style="color:{theme["color"]}">{count}</div>'
+            f'<div class="theme-card-label">{esc(theme["label"])}</div>'
+            f'<div class="theme-card-desc">{esc(theme["description"])}</div>'
+            f'<div class="theme-card-examples">{esc(examples) if examples else "—"}</div>'
+            f'</div>'
+        )
+
+    solutions_box = (
+        '<div class="insights" style="margin-top:.8rem">'
+        '<h4>What solutions are emerging</h4><ul>'
+        '<li><strong>Utility-level monthly reporting</strong> — Virginia HB 496 (enacted April 2026) '
+        'is the first state law requiring utilities to report monthly water volumes to data centers. '
+        'Several states are watching for the first published data, expected late 2026.</li>'
+        '<li><strong>Closed-loop cooling mandates</strong> — Idaho H895 (enacted) and South Carolina '
+        'HB 4583 (pending) are first movers on banning open evaporative cooling for new facilities, '
+        'eliminating the largest consumptive water-loss pathway.</li>'
+        '<li><strong>Environmental review triggers</strong> — New York S10642 (passed legislature, '
+        'awaiting governor) would require SEQRA review before any facility exceeds 50 MW — the '
+        'broadest state environmental-review trigger yet proposed for data centers.</li>'
+        '<li><strong>Direct DC water permits</strong> — Ohio EPA OHD000001 would be the first '
+        'federal permit requiring data centers to file discharge monitoring reports directly, '
+        'closing the gap where DC cooling water routes through municipal WWTPs with no '
+        'facility-level accounting.</li>'
+        '</ul></div>'
+    )
+
+    return '<div class="theme-grid">' + ''.join(cards) + '</div>' + solutions_box
+
+
+# --- Water News Tab ---
+
+NEWS_TAG_LABELS = {
+    "regulation": "Regulation",
+    "enforcement": "Enforcement",
+    "solutions": "Solutions",
+    "research": "Research",
+    "data": "Data & Reports",
+    "policy": "Policy",
+}
+NEWS_TAG_COLORS = {
+    "regulation": "#08519c",
+    "enforcement": "#c41e3a",
+    "solutions": "#2e8b57",
+    "research": "#6b3fa0",
+    "data": "#1a7a8a",
+    "policy": "#d4a017",
+}
+
+
+def _build_news_item_html(item: dict) -> str:
+    """Build one news card for the News tab (distinct from _build_news_html for bill cards)."""
+    esc = html.escape
+    title = esc(item.get("title", ""))
+    outlet = esc(item.get("outlet", ""))
+    date_str = esc(item.get("date", ""))
+    summary = esc(item.get("summary", ""))
+    url = item.get("source_url") or ""
+    tags = item.get("tags", [])
+    cross_tab = item.get("cross_ref_tab")
+    cross_note = item.get("cross_ref_note", "")
+
+    headline = (
+        f'<a href="{esc(url)}" target="_blank" rel="noopener" class="news-title">{title}</a>'
+        if url else f'<span class="news-title">{title}</span>'
+    )
+    meta = " · ".join(b for b in (outlet, date_str) if b)
+    tags_html = "".join(
+        f'<span class="news-tag" style="color:{NEWS_TAG_COLORS.get(t, "#555")}">'
+        f'{esc(NEWS_TAG_LABELS.get(t, t))}</span>'
+        for t in tags
+    )
+    cross_html = (
+        f'<div class="news-crossref">→ {esc(cross_note)}</div>'
+        if cross_tab and cross_note else ""
+    )
+    tags_str = ",".join(tags)
+    return (
+        f'<div class="news-card" data-tags="{esc(tags_str)}">'
+        f'{headline}'
+        f'<div class="news-meta">{esc(meta)}</div>'
+        f'<div class="news-summary">{summary}</div>'
+        f'<div class="news-tags">{tags_html}</div>'
+        f'{cross_html}'
+        f'</div>'
+    )
+
+
+def render_water_news():
+    """Render the Data Center Water News tab (Streamlit)."""
+    st.subheader("Data Center Water News")
+    st.markdown(
+        "Curated headlines on data center water use, regulation, enforcement, and solutions — "
+        "linked to this tracker's datasets where applicable. Newest first."
+    )
+    payload = load_water_news()
+    items = payload.get("items", [])
+    if not items:
+        st.info("No news items loaded.")
+        return
+
+    all_tags = sorted({t for item in items for t in item.get("tags", [])})
+    selected = st.multiselect(
+        "Filter by topic",
+        options=all_tags,
+        default=all_tags,
+        format_func=lambda t: NEWS_TAG_LABELS.get(t, t),
+        key="news_tag_filter",
+    )
+    selected_set = set(selected)
+    filtered = [i for i in items if any(t in selected_set for t in i.get("tags", []))]
+    st.markdown(f"**{len(filtered)} of {len(items)} items**")
+    st.markdown(
+        "".join(_build_news_item_html(i) for i in filtered),
+        unsafe_allow_html=True,
+    )
+    last_updated = payload.get("last_updated") or "unknown"
+    st.caption(f"Dataset last updated {last_updated}.")
+
+
+# --- Water Solutions Tab ---
+
+SOLUTION_STATUS_LABELS = {"deployed": "Deployed", "pilot": "Pilot / In Progress", "proposed": "Proposed"}
+SOLUTION_STATUS_COLORS = {
+    "deployed": ("#2e8b57", "#eaf7ef", "#b7e4c7"),
+    "pilot": ("#9a6700", "#fff7e6", "#f3d99b"),
+    "proposed": ("#08519c", "#eef6ff", "#bcd9f5"),
+}
+SOLUTION_ACTOR_LABELS = {
+    "state": "State", "federal": "Federal", "utility": "Utility", "industry": "Industry",
+}
+
+
+def _build_solution_card_html(sol: dict) -> str:
+    esc = html.escape
+    title = esc(sol.get("title", ""))
+    status = (sol.get("status") or "proposed").lower()
+    actor_type = (sol.get("actor_type") or "").lower()
+    actor = esc(sol.get("actor", ""))
+    description = esc(sol.get("description", ""))
+    example = esc(sol.get("example", ""))
+    url = sol.get("source_url") or ""
+    cross_tab = sol.get("cross_ref_tab")
+    cross_note = sol.get("cross_ref_note", "")
+
+    status_label = SOLUTION_STATUS_LABELS.get(status, status.title())
+    color, bg, border = SOLUTION_STATUS_COLORS.get(status, ("#555", "#f5f5f5", "#ccc"))
+    actor_label = SOLUTION_ACTOR_LABELS.get(actor_type, actor_type.title())
+
+    badge = (
+        f'<span class="solution-badge" '
+        f'style="color:{color};background:{bg};border:1px solid {border}">'
+        f'{esc(status_label)}</span>'
+    )
+    source_link = (
+        f' · <a href="{esc(url)}" target="_blank" rel="noopener">Source</a>' if url else ""
+    )
+    example_html = (
+        f'<div class="solution-example">{example}</div>' if example else ""
+    )
+    cross_html = (
+        f'<div class="solution-crossref">→ {esc(cross_note)}</div>'
+        if cross_tab and cross_note else ""
+    )
+    return (
+        f'<div class="solution-card">'
+        f'{badge}'
+        f'<div class="solution-title">{title}</div>'
+        f'<div class="solution-actor">{esc(actor_label)}: {actor}{source_link}</div>'
+        f'<div class="solution-desc">{description}</div>'
+        f'{example_html}'
+        f'{cross_html}'
+        f'</div>'
+    )
+
+
+def render_water_solutions():
+    """Render the Water Solutions tab (Streamlit)."""
+    st.subheader("Data Center Water Solutions")
+    st.markdown(
+        "Solutions to data center water challenges documented across this tracker — "
+        "organized by who is driving them: state/federal regulators, utilities, or industry."
+    )
+    payload = load_water_solutions()
+    categories = payload.get("categories", [])
+    if not categories:
+        st.info("Solutions dataset not loaded.")
+        return
+
+    for cat in categories:
+        st.markdown(
+            f'<h3 class="solution-cat-header">{html.escape(cat.get("label", ""))}</h3>'
+            f'<p class="solution-cat-desc">{html.escape(cat.get("description", ""))}</p>',
+            unsafe_allow_html=True,
+        )
+        solutions = cat.get("solutions", [])
+        st.markdown(
+            "".join(_build_solution_card_html(s) for s in solutions),
+            unsafe_allow_html=True,
+        )
+
+    last_updated = payload.get("last_updated") or "unknown"
+    st.caption(f"Dataset last updated {last_updated}.")
 
 
 # --- Clean Water Act Investigations Tracker ---
@@ -2246,15 +2552,21 @@ def main():
             "via public regulatory data."
         )
 
-    # Three tabs — Legislation is the homepage, CWA Cases is the enforcement
-    # history, Data is the measurements side.
-    tab_legislation, tab_cwa, tab_data = st.tabs(
-        ["Legislation", "CWA Cases", "Data"]
+    tab_legislation, tab_cwa, tab_news, tab_solutions, tab_data = st.tabs(
+        ["Legislation", "CWA Cases", "News", "Solutions", "Data"]
     )
 
     # --- CWA Cases tab ---
     with tab_cwa:
         render_cwa_tracker()
+
+    # --- News tab ---
+    with tab_news:
+        render_water_news()
+
+    # --- Solutions tab ---
+    with tab_solutions:
+        render_water_solutions()
 
     # --- Legislation tab (homepage) ---
     with tab_legislation:

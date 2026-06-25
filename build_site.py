@@ -79,6 +79,7 @@ def build_legislation_tab() -> str:
     )
     cards = "".join(dash._build_bill_card_html(b) for b in sorted_bills)
     summary = dash._legislation_status_summary(bills)
+    themes_html = dash._build_legislation_themes_html(bills)
     last_updated = payload.get("last_updated") or "unknown"
 
     return f"""
@@ -88,6 +89,7 @@ def build_legislation_tab() -> str:
   disclosure — bills, signed laws, agency rulemakings, and major zoning ordinances.
   Enacted laws are the next mandatory data sources to come online.</p>
   <p class="count-line"><strong>{len(bills)} bills tracked</strong> — {esc(summary)}</p>
+  {themes_html}
   {cards}
   <p class="src-note">Dataset last updated {esc(last_updated)}. Verification status for
   each entry is tracked in the underlying JSON; treat any not flagged verified=true
@@ -679,6 +681,83 @@ def build_records_table(df: pd.DataFrame) -> str:
 
 
 # --------------------------------------------------------------------------
+# News tab
+# --------------------------------------------------------------------------
+
+
+def build_news_tab() -> str:
+    payload = dash.load_water_news()
+    items = payload.get("items", [])
+    last_updated = payload.get("last_updated") or "unknown"
+
+    all_tags: list[str] = sorted({t for item in items for t in item.get("tags", [])})
+    tag_boxes = "".join(
+        f'<label class="chip-check"><input type="checkbox" class="news-tag-filter" '
+        f'value="{t}" checked> {esc(dash.NEWS_TAG_LABELS.get(t, t))}</label>'
+        for t in all_tags
+    )
+
+    cards = "".join(dash._build_news_item_html(i) for i in items)
+
+    return f"""
+<section class="panel">
+  <h2>Data Center Water News</h2>
+  <p class="lead">Curated headlines on data center water regulation, enforcement,
+  research, and solutions — linked to this tracker's datasets where applicable.
+  Newest first.</p>
+  <div class="cwa-filters">
+    <span class="filter-label">Filter by topic:</span>{tag_boxes}
+  </div>
+  <p class="count-line" id="news-count">
+    <strong>{len(items)} items</strong></p>
+  <div id="news-cards">{cards}</div>
+  <p class="src-note">Dataset last updated {esc(last_updated)}.</p>
+</section>"""
+
+
+# --------------------------------------------------------------------------
+# Solutions tab
+# --------------------------------------------------------------------------
+
+
+def build_solutions_tab() -> str:
+    payload = dash.load_water_solutions()
+    categories = payload.get("categories", [])
+    last_updated = payload.get("last_updated") or "unknown"
+
+    status_order = {"deployed": 0, "pilot": 1, "proposed": 2}
+    sections = []
+    total_solutions = 0
+    for cat in categories:
+        label = cat.get("label", "")
+        desc = cat.get("description", "")
+        sols = sorted(
+            cat.get("solutions", []),
+            key=lambda s: status_order.get(s.get("status", "proposed"), 9),
+        )
+        total_solutions += len(sols)
+        cards_html = "".join(dash._build_solution_card_html(s) for s in sols)
+        sections.append(
+            f'<h3 class="solution-cat-header">{esc(label)}</h3>'
+            f'<p class="solution-cat-desc">{esc(desc)}</p>'
+            f'{cards_html}'
+        )
+
+    return f"""
+<section class="panel">
+  <h2>Data Center Water Solutions</h2>
+  <p class="lead">Solutions to data center water challenges documented across this tracker —
+  organized by who is driving them: state and federal regulators, water utilities, and
+  industry operators. Status badges indicate real-world deployment stage.</p>
+  <p class="count-line"><strong>{total_solutions} solutions</strong> across
+  {len(categories)} categories</p>
+  {"".join(sections)}
+  <p class="src-note">Dataset last updated {esc(last_updated)}. Deployment status
+  is as of the dataset date; check source links for current status.</p>
+</section>"""
+
+
+# --------------------------------------------------------------------------
 # Assembly
 # --------------------------------------------------------------------------
 
@@ -781,11 +860,44 @@ details.lazy .panel{margin:0}
 .explainer-md h4{margin-top:1rem}
 .explainer-md blockquote{border-left:3px solid var(--blue2);margin:.5rem 0;padding:.2rem .8rem;color:#333;background:#f6fafe}
 
+/* Legislation themes grid */
+.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin:.8rem 0 1rem}
+.theme-card{background:#fff;border:1px solid #e2e8f0;border-radius:.5rem;padding:.8rem 1rem}
+.theme-card-count{font-size:2.1rem;font-weight:700;line-height:1.1}
+.theme-card-label{font-weight:700;font-size:.92rem;margin:.15rem 0}
+.theme-card-desc{font-size:.83rem;color:#555;margin:.2rem 0 .3rem}
+.theme-card-examples{font-size:.78rem;color:#999}
+
+/* News tab */
+.news-card{border:1px solid #e2e8f0;border-radius:.5rem;background:#fff;padding:.85rem 1rem;margin:.5rem 0}
+.news-title{font-weight:700;display:block;margin-bottom:.2rem;color:var(--ink)}
+a.news-title{color:var(--blue)}
+.news-meta{font-size:.8rem;color:#888;margin-bottom:.3rem}
+.news-summary{font-size:.88rem;color:#333;margin:.25rem 0}
+.news-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.4rem}
+.news-tag{border-radius:999px;border:1px solid #d6e2ee;padding:.12rem .5rem;font-size:.77rem;font-weight:600;background:#f5f9fc}
+.news-crossref{font-size:.82rem;color:#666;font-style:italic;margin-top:.35rem}
+
+/* Solutions tab */
+.solution-cat-header{font-size:1.15rem;font-weight:700;color:var(--blue);margin:1.2rem 0 .2rem;
+  border-bottom:2px solid #d6e2ee;padding-bottom:.3rem}
+.solution-cat-desc{font-size:.9rem;color:#555;margin:0 0 .6rem}
+.solution-card{border:1px solid #e2e8f0;border-radius:.5rem;background:#fff;padding:.85rem 1rem;margin:.5rem 0}
+.solution-badge{display:inline-block;border-radius:999px;padding:.15rem .65rem;font-size:.78rem;
+  font-weight:700;margin-bottom:.35rem}
+.solution-title{font-weight:700;font-size:.95rem;margin:.1rem 0 .2rem}
+.solution-actor{font-size:.82rem;color:#666;margin-bottom:.35rem}
+.solution-desc{font-size:.88rem;color:#333;margin:.2rem 0}
+.solution-example{font-size:.84rem;background:#f8faff;border-left:3px solid var(--blue2);
+  padding:.4rem .65rem;margin:.4rem 0;border-radius:0 .25rem .25rem 0;color:#333}
+.solution-crossref{font-size:.82rem;color:#666;font-style:italic;margin-top:.35rem}
+
 @media (max-width:760px){
   .wrap{padding:.75rem .75rem 3rem}
   h1{font-size:1.35rem}
   .hero{grid-template-columns:repeat(2,1fr)}
   .chart-wrap{height:300px}
+  .theme-grid{grid-template-columns:repeat(2,1fr)}
 }
 """
 
@@ -843,6 +955,21 @@ function applyRecFilter(){
 document.querySelectorAll('.rec-state').forEach(c => c.addEventListener('change', applyRecFilter));
 if (recCount) applyRecFilter();
 
+// --- News tag filter ---
+const newsCount = document.getElementById('news-count');
+function applyNewsFilter(){
+  const active = new Set([...document.querySelectorAll('.news-tag-filter:checked')].map(c => c.value));
+  let shown = 0;
+  document.querySelectorAll('#news-cards .news-card').forEach(el => {
+    const tags = el.dataset.tags ? el.dataset.tags.split(',') : [];
+    const ok = active.size === 0 || tags.some(t => active.has(t));
+    el.hidden = !ok;
+    if (ok) shown++;
+  });
+  if (newsCount) newsCount.innerHTML = '<strong>' + shown + ' items</strong>';
+}
+document.querySelectorAll('.news-tag-filter').forEach(c => c.addEventListener('change', applyNewsFilter));
+
 // --- Charts (lazy: only build once the Data tab is shown) ---
 const CHART_DATA = __CHART_DATA__;
 let chartsBuilt = false;
@@ -887,6 +1014,8 @@ document.querySelectorAll('details.lazy').forEach(d =>
 def build_html() -> str:
     legislation = build_legislation_tab()
     cwa = build_cwa_tab()
+    news = build_news_tab()
+    solutions = build_solutions_tab()
     data_html, chart_data = build_data_tab()
     js = build_js(chart_data)
     built = datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -910,11 +1039,15 @@ def build_html() -> str:
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" data-tab="legislation" aria-selected="true">Legislation</button>
     <button class="tab" role="tab" data-tab="cwa" aria-selected="false">CWA Cases</button>
+    <button class="tab" role="tab" data-tab="news" aria-selected="false">News</button>
+    <button class="tab" role="tab" data-tab="solutions" aria-selected="false">Solutions</button>
     <button class="tab" role="tab" data-tab="data" aria-selected="false">Data</button>
   </div>
 
   <div class="tabpanel" id="panel-legislation" role="tabpanel">{legislation}</div>
   <div class="tabpanel" id="panel-cwa" role="tabpanel" hidden>{cwa}</div>
+  <div class="tabpanel" id="panel-news" role="tabpanel" hidden>{news}</div>
+  <div class="tabpanel" id="panel-solutions" role="tabpanel" hidden>{solutions}</div>
   <div class="tabpanel" id="panel-data" role="tabpanel" hidden>{data_html}</div>
 
   <p class="src-note">Static build {built} · Sources: EPA ECHO DMR, VA DEQ, Ohio EPA,

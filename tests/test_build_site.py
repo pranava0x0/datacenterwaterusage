@@ -35,7 +35,15 @@ class TestStaticBuild:
         for banned in ("stlite", "pyodide", "@stlite/browser", "micropip"):
             assert banned not in html, f"WASM runtime artifact present: {banned}"
 
+    def test_five_tabs_present(self):
+        html = _html()
+        for tab in ("legislation", "cwa", "news", "solutions", "data"):
+            assert f'data-tab="{tab}"' in html
+        for pid in ("panel-legislation", "panel-cwa", "panel-news", "panel-solutions", "panel-data"):
+            assert f'id="{pid}"' in html
+
     def test_three_tabs_present(self):
+        # Alias kept for backwards compatibility — five tabs now exist, these three must be present.
         html = _html()
         for tab in ("legislation", "cwa", "data"):
             assert f'data-tab="{tab}"' in html
@@ -126,6 +134,39 @@ class TestStaticBuild:
         html = _html()
         # html.escape turns ' into &#x27; inside the card text.
         assert "&#x27;" in html or "&#39;" in html
+
+    def test_legislation_themes_panel_embedded(self):
+        html = _html()
+        # Theme grid appears on the legislation tab
+        assert 'class="theme-grid"' in html
+        # All 6 themes rendered (each has a theme-card-count span)
+        assert html.count('class="theme-card"') == len(dashboard.LEGISLATION_THEME_DEFINITIONS)
+        # Emerging solutions box is present
+        assert "What solutions are emerging" in html
+        # Virginia HB 496 appears in the solutions insights box
+        assert "HB 496" in html
+
+    def test_news_tab_content_embedded(self):
+        html = _html()
+        items = dashboard.load_water_news().get("items", [])
+        assert len(items) > 0
+        # Every news card is rendered
+        assert html.count('class="news-card"') == len(items)
+        # Spot-check a known headline
+        assert "Boardman" in html  # Amazon settlement
+        assert "news-tag-filter" in html  # tag filter checkboxes present
+
+    def test_solutions_tab_content_embedded(self):
+        html = _html()
+        payload = dashboard.load_water_solutions()
+        categories = payload.get("categories", [])
+        total_solutions = sum(len(c.get("solutions", [])) for c in categories)
+        assert total_solutions > 0
+        # Every solution card is rendered
+        assert html.count('class="solution-card"') == total_solutions
+        # Spot-check known content
+        assert "Closed-Loop" in html
+        assert "solution-cat-header" in html
 
 
 class TestWriteOutput:

@@ -1,0 +1,219 @@
+{
+  "last_updated": "2026-06-24",
+  "description": "Solutions to data center water challenges, organized by actor type. Drawn from enacted legislation, utility programs, enforcement outcomes, and industry practice documented across the tracker's datasets.",
+  "categories": [
+    {
+      "id": "policy",
+      "label": "Policy & Regulatory Solutions",
+      "description": "Enacted laws, permits, and proposed rules that require or incentivize water-responsible data center siting, design, and reporting.",
+      "solutions": [
+        {
+          "id": "va-hb496-monthly-reporting",
+          "title": "Virginia Monthly DC Water Reporting Mandate",
+          "status": "deployed",
+          "actor_type": "state",
+          "actor": "Virginia General Assembly / Dept. of Environmental Quality",
+          "description": "HB 496 / SB 553 (enacted April 2026) requires water utilities to report monthly aggregate volumes delivered to data centers to the State Water Control Board. Creates the first mandatory utility-level data stream for DC water use in the US.",
+          "example": "Loudoun Water (serving ~1.635B gal/yr to data centers) must file monthly reports beginning ~July 2026. First published data will be the only facility-aggregated DC water series in any US state.",
+          "source_url": "https://lis.virginia.gov/cgi-bin/legp604.exe?ses=251&typ=bil&val=hb496",
+          "cross_ref_tab": "legislation",
+          "cross_ref_note": "VA HB 496 / SB 553 tracked in Legislation tab"
+        },
+        {
+          "id": "idaho-h895-closed-loop-mandate",
+          "title": "Idaho Closed-Loop Cooling Mandate",
+          "status": "deployed",
+          "actor_type": "state",
+          "actor": "Idaho Legislature",
+          "description": "H895 (enacted 2026) requires new data centers to use closed-loop or non-consumptive cooling systems as a permit condition, eliminating the largest evaporative water loss pathway. Designed to protect the Snake River Plain aquifer.",
+          "example": "First state-level mandate of its kind in the US. South Carolina HB 4583 (pending) would extend this closed-loop model to the Southeast.",
+          "source_url": null,
+          "cross_ref_tab": "legislation",
+          "cross_ref_note": "ID H895 and SC HB 4583 in Legislation tab"
+        },
+        {
+          "id": "sd-sb135-cost-causation",
+          "title": "South Dakota Cost-Causation Billing",
+          "status": "deployed",
+          "actor_type": "state",
+          "actor": "South Dakota Legislature",
+          "description": "SB 135 (enacted 2026) requires data centers ≥10 MW to demonstrate water-supply compatibility and mandates that developers bear the marginal cost of supply-infrastructure expansions they trigger — not residential ratepayers.",
+          "example": "Part of South Dakota's 'Data Center Bill of Rights.' Addresses the pattern where large industrial loads trigger regional water infrastructure upgrades whose costs are socialized to all ratepayers.",
+          "source_url": null,
+          "cross_ref_tab": "legislation",
+          "cross_ref_note": "SD SB 135 in Legislation tab"
+        },
+        {
+          "id": "utah-hb76-eo-disclosure",
+          "title": "Utah Water Disclosure Law + Executive Order",
+          "status": "deployed",
+          "actor_type": "state",
+          "actor": "Utah Legislature / Governor Spencer Cox",
+          "description": "HB 76 (enacted March 2026) mandates projected and actual water consumption disclosure from facilities ≥10,000 sq ft. EO 2026-03 (May 2026) directs agencies to require water-impact review before approvals and evaluate cost-attribution models.",
+          "example": "Disclosure threshold set to match existing utility metering capabilities, making reporting immediately actionable rather than dependent on new infrastructure.",
+          "source_url": null,
+          "cross_ref_tab": "legislation",
+          "cross_ref_note": "UT HB 76 and UT EO 2026-03 in Legislation tab"
+        },
+        {
+          "id": "ohio-epa-ohd000001",
+          "title": "Ohio EPA Data Center Wastewater General Permit (OHD000001)",
+          "status": "pilot",
+          "actor_type": "federal",
+          "actor": "Ohio EPA (US EPA Region 5)",
+          "description": "First proposed general permit requiring data centers to file Discharge Monitoring Reports (DMRs) directly for cooling-tower blowdown, closing the gap where DC cooling water routes through municipal WWTPs with no facility-level accounting.",
+          "example": "Comment period closed January 2025; permit finalization pending as of June 2026. If enacted, it would create the first direct federal-level DC water monitoring dataset, complementing the WWTP-level data this project already tracks via EPA ECHO.",
+          "source_url": "https://epa.ohio.gov/",
+          "cross_ref_tab": "data",
+          "cross_ref_note": "OHD000001 tracked by oh_epa_general_permit scraper — see Data tab"
+        },
+        {
+          "id": "ny-s10642-seqra-review",
+          "title": "New York SEQRA Environmental Review for 50MW+ Facilities",
+          "status": "proposed",
+          "actor_type": "state",
+          "actor": "New York Legislature (awaiting governor signature)",
+          "description": "S10642 / A11560 requires SEQRA environmental-impact assessment and public comment before any data center project exceeds 50 MW, including a mandatory water-supply analysis. Would be the broadest state environmental-review trigger for data centers in the US.",
+          "example": "Passed Senate 44-16 and Assembly 102-39 as of June 2026. Gov. Hochul has not publicly committed to signing or vetoing.",
+          "source_url": "https://www.nysenate.gov/legislation/bills/2025/S10642",
+          "cross_ref_tab": "legislation",
+          "cross_ref_note": "NY S10642 / A11560 in Legislation tab"
+        }
+      ]
+    },
+    {
+      "id": "utility",
+      "label": "Utility & Infrastructure Solutions",
+      "description": "Water utility programs and regional planning approaches that integrate data center demand into supply management, capacity planning, and dual-feed infrastructure.",
+      "solutions": [
+        {
+          "id": "loudoun-dual-feed",
+          "title": "Dual-Feed Systems: Potable + Reclaimed Water Connections",
+          "status": "deployed",
+          "actor_type": "utility",
+          "actor": "Loudoun Water (Virginia)",
+          "description": "Data centers receive two separate connections — potable for human-contact uses and reclaimed (recycled, non-potable) water for cooling-tower makeup — reducing pressure on drinking water supplies.",
+          "example": "Loudoun Water ACFR 2023: 899M gal potable + 736M gal reclaimed delivered to data centers annually. Reclaimed water is 45% of total DC supply — the highest reclaimed fraction of any US data center utility cluster tracked here.",
+          "source_url": "https://www.loudounwater.org/about/comprehensive-annual-financial-reports",
+          "cross_ref_tab": "data",
+          "cross_ref_note": "Loudoun Water ACFR data tracked in Data tab"
+        },
+        {
+          "id": "pwc-eru-demand-planning",
+          "title": "ERU-Based Demand Planning via Industrial User Surveys",
+          "status": "deployed",
+          "actor_type": "utility",
+          "actor": "Prince William Water (Virginia)",
+          "description": "Annual Industrial User Surveys allocate Equivalent Residential Units (ERUs) to data center customers, giving utility planners binding demand commitments for capital planning before construction begins.",
+          "example": "2024 survey: 56 data centers hold 3,276 ERUs = ~478M gal/yr (avg 58.5 ERU per facility). ERU allocations are reviewed with each expansion permit, creating a cumulative demand ledger that's used to size infrastructure upgrades.",
+          "source_url": "https://www.pwcsa.org/",
+          "cross_ref_tab": "data",
+          "cross_ref_note": "Prince William Water IUS data in Data tab"
+        },
+        {
+          "id": "central-ohio-regional-forecasting",
+          "title": "Regional Demand Forecasting with Data Center Growth Scenarios",
+          "status": "pilot",
+          "actor_type": "utility",
+          "actor": "Central Ohio Regional Water Authority / Ohio EPA",
+          "description": "Collaborative regional water demand study incorporating data center growth scenarios to enable proactive infrastructure investment rather than reactive expansion after capacity constraints appear.",
+          "example": "March 2025 study projects industrial demand: ~10 MGD (2024) → 40 MGD (2030) → 90 MGD (2050). Intel New Albany campus alone: ~6 MGD. Study is informing $2B+ in regional water infrastructure planning.",
+          "source_url": "https://epa.ohio.gov/",
+          "cross_ref_tab": "data",
+          "cross_ref_note": "Central Ohio projections in Data tab"
+        },
+        {
+          "id": "utility-aggregate-metering",
+          "title": "Aggregate DC Water Metering and Annual Public Reporting",
+          "status": "deployed",
+          "actor_type": "utility",
+          "actor": "Loudoun Water, Fairfax Water (Virginia)",
+          "description": "Utilities publish aggregate data center water deliveries in annual financial reports (ACFRs), providing the only publicly available utility-level DC water volumes in Virginia — currently the primary Tier 1 data source for this tracker.",
+          "example": "Loudoun Water ACFR 2023: 1.635B gal to data centers (~15% of total utility sales). Fairfax Water supplies ~18 MGD wholesale to Loudoun. Virginia HB 496 will formalize and extend this to monthly reports.",
+          "source_url": "https://www.loudounwater.org/about/comprehensive-annual-financial-reports",
+          "cross_ref_tab": "data",
+          "cross_ref_note": "Loudoun Water and Fairfax Water data in Data tab"
+        }
+      ]
+    },
+    {
+      "id": "technology",
+      "label": "Technology & Operational Solutions",
+      "description": "Engineering approaches that reduce or eliminate water consumption through improved cooling design, alternative water sources, and efficiency metrics.",
+      "solutions": [
+        {
+          "id": "closed-loop-cooling-towers",
+          "title": "Closed-Loop Recirculating Cooling Towers",
+          "status": "deployed",
+          "actor_type": "industry",
+          "actor": "Hyperscalers (AWS, Google, Microsoft, Meta) — industry standard",
+          "description": "Recirculating systems reuse the same water in a closed loop, dramatically reducing freshwater withdrawal compared to once-through systems. This is the current standard for all modern hyperscale facilities and the technology basis for Idaho's closed-loop mandate.",
+          "example": "Typical WUE (Water Usage Effectiveness): 1.5–2.0 L/kWh for recirculating towers vs. 3–4 L/kWh for older designs. Industry target: WUE < 1.2 L/kWh. Still consumptive (evaporation) but far more efficient than alternatives.",
+          "source_url": null,
+          "cross_ref_tab": null,
+          "cross_ref_note": null
+        },
+        {
+          "id": "reclaimed-water-sourcing",
+          "title": "Reclaimed / Recycled Water Sourcing",
+          "status": "deployed",
+          "actor_type": "industry",
+          "actor": "Google (Prineville OR), Meta, Loudoun Water DC customers",
+          "description": "Data centers contract with utilities or municipalities for reclaimed (non-potable recycled) water to supply cooling towers, freeing potable water for human use. Requires dual-plumbing infrastructure but is well-established in water-stressed regions.",
+          "example": "Loudoun Water: 736M gal/yr reclaimed delivered to data centers (45% of total DC supply). Google's Prineville, OR campus uses 100% reclaimed water for cooling. Reclaimed water WUE is identical to potable — the gain is purely in source substitution.",
+          "source_url": null,
+          "cross_ref_tab": "data",
+          "cross_ref_note": "Loudoun Water reclaimed volumes in Data tab"
+        },
+        {
+          "id": "direct-liquid-cooling",
+          "title": "Direct Liquid Cooling (DLC) for AI / GPU Clusters",
+          "status": "pilot",
+          "actor_type": "industry",
+          "actor": "Google, Microsoft, Meta (AI training facilities)",
+          "description": "Liquid coolant is circulated directly to processors and server components, removing heat without relying on large evaporative cooling towers. Near-zero cooling water required for DLC-equipped racks — the cooling burden shifts to heat exchangers that can reject to ambient air.",
+          "example": "Adoption accelerating for AI training clusters (H100/H200/GB200 GPU pods) where heat density exceeds air-side cooling limits. Microsoft reports WUE near 0 for full-DLC racks. At scale, eliminates the cooling-tower evaporation entirely.",
+          "source_url": null,
+          "cross_ref_tab": null,
+          "cross_ref_note": null
+        },
+        {
+          "id": "air-side-dry-cooling",
+          "title": "Air-Side / Dry Cooling (Zero Evaporation)",
+          "status": "pilot",
+          "actor_type": "industry",
+          "actor": "Microsoft (Dublin, Ireland; Helsinki, Finland), UK operators",
+          "description": "In cooler climates, outside air rejects heat without any water evaporation — 'free cooling' or 'economizer mode.' Zero consumptive water use when operating in full air-side mode. Feasibility depends on wet-bulb temperature and local climate.",
+          "example": "Microsoft's Dublin data center uses air-side cooling 95%+ of the year, achieving near-zero WUE. Not viable for Virginia summer conditions without backup wet cooling; becomes more viable for data centers sited in northern latitudes or at altitude.",
+          "source_url": null,
+          "cross_ref_tab": null,
+          "cross_ref_note": null
+        },
+        {
+          "id": "wue-reporting",
+          "title": "Water Usage Effectiveness (WUE) Self-Reporting",
+          "status": "deployed",
+          "actor_type": "industry",
+          "actor": "Green Grid (standard-setter), Google, Microsoft, Meta, Amazon",
+          "description": "WUE (liters of water per kilowatt-hour of IT load) is an industry self-reporting metric enabling year-over-year comparison. Analogous to PUE for power efficiency, it allows tracking progress without facility-level disclosure — though no independent verification exists.",
+          "example": "Google 2024: WUE 1.10 L/kWh (global average). Microsoft FY2023: WUE 0.33 L/kWh (includes 'net-water replenishments' — accounting treatment disputed). Meta: 0.26 L/kWh. No independent auditor verifies these figures — see Company Claims tab for verbatim operator quotes.",
+          "source_url": null,
+          "cross_ref_tab": "legislation",
+          "cross_ref_note": "Company Claims in Legislation tab (Company Water Claims section)"
+        },
+        {
+          "id": "immersion-cooling",
+          "title": "Immersion Cooling (Full Liquid Submersion)",
+          "status": "proposed",
+          "actor_type": "industry",
+          "actor": "Submer, Wiwynn, GRC, early Microsoft pilots",
+          "description": "Servers are fully submerged in dielectric (non-conductive) fluid that absorbs heat directly. The fluid is cooled via compact heat exchangers that can reject to ambient air with minimal or zero evaporative water loss — potentially eliminating cooling water entirely at scale.",
+          "example": "Commercial deployments remain rare at hyperscale as of 2026, primarily in HPC and crypto mining. Microsoft and others have published pilot results. Long-term potential to reduce WUE to ~0 without requiring a cold climate or DLC-compatible processor packages.",
+          "source_url": null,
+          "cross_ref_tab": null,
+          "cross_ref_note": null
+        }
+      ]
+    }
+  ]
+}
