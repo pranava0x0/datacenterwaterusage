@@ -1,0 +1,171 @@
+{
+  "last_updated": "2026-06-24",
+  "description": "Curated headlines about data center water use, regulation, enforcement, and solutions — linked to the tracker's datasets where possible.",
+  "items": [
+    {
+      "id": "ny-s10642-passes-legislature-2026-06",
+      "date": "2026-06",
+      "title": "New York Data Center Bill Passes Legislature, Awaits Hochul Signature",
+      "outlet": "New York Legislature",
+      "summary": "The Responsible Data Center Development Act (S10642 / A11560) passed the Senate 44-16 and Assembly 102-39, mandating SEQRA environmental review for any facility exceeding 50 MW. If signed, it would be the broadest state-level environmental review trigger for data centers in the US. Gov. Hochul has not publicly committed as of June 2026.",
+      "tags": ["regulation", "policy"],
+      "source_url": "https://www.nysenate.gov/legislation/bills/2025/S10642",
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "NY S10642 / A11560 in Legislation tab"
+    },
+    {
+      "id": "michigan-moratorium-2026-06",
+      "date": "2026-06",
+      "title": "Bipartisan Michigan Lawmakers Push Data Center Construction Moratorium",
+      "outlet": "Michigan Legislature",
+      "summary": "SB 1018-1020 and companion HB 5594-5596 would impose a moratorium on new data center construction permits until the state completes a water-capacity analysis and Great Lakes Compact review. A bipartisan Capitol event in June renewed pressure, though Senate leadership prefers targeted regulation over a blanket moratorium.",
+      "tags": ["regulation", "policy"],
+      "source_url": null,
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "MI SB 1018-1020 in Legislation tab"
+    },
+    {
+      "id": "illinois-pritzker-pauses-incentives-2026-06",
+      "date": "2026-06",
+      "title": "Illinois Governor Pritzker Pauses New Data Center Incentive Agreements",
+      "outlet": "Illinois Governor's Office",
+      "summary": "After the POWER Act (SB 3830) failed to pass before the session ended, Gov. Pritzker used executive authority to pause new Data Center Investment Program incentive agreements. The move signals growing state reluctance to extend tax incentives without commensurate water and power transparency requirements.",
+      "tags": ["policy", "regulation"],
+      "source_url": null,
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "IL SB 3830 in Legislation tab"
+    },
+    {
+      "id": "google-s404-permits-2026-05",
+      "date": "2026-05",
+      "title": "Google Files §404 Individual Permit Applications for Three Data Center Projects",
+      "outlet": "US Army Corps of Engineers",
+      "summary": "Google filed individual §404 permit applications for Project Raspberry (VA), Project Loch (VA), and a Port of Little Rock (AR) site. The Arkansas application involves 16.8 acres of wetland fill — the largest §404 wetland footprint in any active data center permit. Each application triggers a public comment period and Section 401 water quality certification from the respective state.",
+      "tags": ["enforcement", "permits"],
+      "source_url": null,
+      "cross_ref_tab": "cwa",
+      "cross_ref_note": "Google §404 applications in CWA Cases tab — Potential Exposure section"
+    },
+    {
+      "id": "ut-eo-2026-03-signed-2026-05",
+      "date": "2026-05",
+      "title": "Utah Governor Signs Executive Order Requiring Water-Use Review Before Data Center Permits",
+      "outlet": "Utah Governor's Office",
+      "summary": "Gov. Spencer Cox signed EO 2026-03 directing state agencies to require water-use impact review before approving large data center projects. The EO also instructs the Department of Natural Resources to evaluate cost-attribution models so developers bear marginal supply expansion costs. It complements Utah HB 76 (enacted March 2026), which mandates projected and actual water disclosure at a 10,000 sq ft threshold.",
+      "tags": ["regulation", "policy"],
+      "source_url": null,
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "UT EO 2026-03 and UT HB 76 in Legislation tab"
+    },
+    {
+      "id": "virginia-hb496-enacted-2026-04",
+      "date": "2026-04",
+      "title": "Virginia Enacts First Mandatory Data Center Water Reporting Law",
+      "outlet": "Virginia Governor's Office",
+      "summary": "Gov. Spanberger signed HB 496 (companion SB 553) on April 13, 2026, amending Va. Code § 62.1-44.38 to require water utilities to report monthly aggregate water volumes delivered to data centers. The law is effective July 1, 2026; first published data is expected late 2026. It is the first enacted state law mandating utility-level DC water reporting in the US.",
+      "tags": ["regulation", "policy"],
+      "source_url": "https://lis.virginia.gov/cgi-bin/legp604.exe?ses=251&typ=bil&val=hb496",
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "VA HB 496 / SB 553 in Legislation tab"
+    },
+    {
+      "id": "maryland-veto-override-2026-04",
+      "date": "2026-04",
+      "title": "Maryland Legislature Overrides Veto to Mandate Data Center Impact Study",
+      "outlet": "Maryland General Assembly",
+      "summary": "The Maryland General Assembly voted to override Gov. Moore's veto of HB 270 / SB 116, requiring the Department of Natural Resources to conduct an economic and environmental impact study of large data centers before 2028. The study must include water consumption projections and infrastructure cost allocation.",
+      "tags": ["regulation", "policy"],
+      "source_url": null,
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "MD HB 270 / SB 116 in Legislation tab"
+    },
+    {
+      "id": "amazon-boardman-settlement-2026-03",
+      "date": "2026-03",
+      "title": "Amazon Pays $20.5M in First Eight-Figure Hyperscaler Water Settlement",
+      "outlet": "Oregon Department of Justice / Oregon DEQ",
+      "summary": "Amazon and its WWTP operator settled with Oregon DEQ and DOJ over nitrogen discharge at the Boardman industrial park — the first direct hyperscaler water-penalty case to reach eight figures. Data center cooling-tower blowdown was among the industrial loads routed to the facility. The settlement funds nutrient trading credits in the Columbia River basin.",
+      "tags": ["enforcement", "settlements"],
+      "source_url": "https://www.doj.state.or.us/",
+      "cross_ref_tab": "cwa",
+      "cross_ref_note": "Amazon Boardman OR case in CWA Cases tab — Historical section"
+    },
+    {
+      "id": "idaho-h895-enacted-2026-03",
+      "date": "2026-03",
+      "title": "Idaho Becomes First State to Mandate Closed-Loop (Non-Consumptive) Cooling for Data Centers",
+      "outlet": "Idaho Legislature",
+      "summary": "Idaho H895 requires new data center facilities to use closed-loop or non-consumptive cooling systems as a condition of permitting. This eliminates the largest pathway of consumptive water loss — evaporation from open cooling towers. The law is designed to protect groundwater in the Snake River Plain aquifer system.",
+      "tags": ["regulation", "solutions"],
+      "source_url": null,
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "ID H895 in Legislation tab"
+    },
+    {
+      "id": "south-dakota-sb135-enacted-2026-03",
+      "date": "2026-03",
+      "title": "South Dakota Enacts 'Data Center Bill of Rights' with Water-Supply Compatibility Rule",
+      "outlet": "South Dakota Legislature",
+      "summary": "SB 135 requires data centers ≥10 MW to demonstrate water-supply compatibility before construction approval, and mandates cost-causation billing so developers bear the marginal cost of supply-infrastructure expansions they trigger — not residential ratepayers. Part of a broader 'bill of rights' package addressing grid and water load-shifting.",
+      "tags": ["regulation", "policy"],
+      "source_url": null,
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "SD SB 135 in Legislation tab"
+    },
+    {
+      "id": "utah-hb76-enacted-2026-03",
+      "date": "2026-03",
+      "title": "Utah Enacts Water Transparency Amendments Lowering Disclosure Threshold to 10,000 sq ft",
+      "outlet": "Utah Legislature",
+      "summary": "Utah HB 76 mandates that data centers ≥10,000 sq ft publicly report projected and actual water consumption annually. The 10,000 sq ft threshold was set to align with existing utility metering capabilities. It is a successor to earlier bills that stalled over data-collection infrastructure concerns.",
+      "tags": ["regulation", "policy"],
+      "source_url": null,
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "UT HB 76 in Legislation tab"
+    },
+    {
+      "id": "california-ab2619-advancing-2026-05",
+      "date": "2026-05",
+      "title": "California AB 2619 Advances — Successor to Vetoed AB 93",
+      "outlet": "California Legislature",
+      "summary": "AB 2619 (Asm. Papan) advances through committee, requiring data centers to publicly disclose projected and actual water use annually. It is the successor to AB 93, which Gov. Newsom vetoed in October 2024 citing data-collection concerns. Companion SB 887 would add CEQA review requirements. Both bills are expected to see floor votes in summer 2026.",
+      "tags": ["regulation", "policy"],
+      "source_url": "https://leginfo.legislature.ca.gov/faces/billNavClient.xhtml?bill_id=202520260AB2619",
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "CA AB 2619 and CA SB 887 in Legislation tab"
+    },
+    {
+      "id": "central-ohio-water-study-2025-03",
+      "date": "2025-03",
+      "title": "Central Ohio Study Projects Data Center Water Demand Growing from 10 to 90 MGD by 2050",
+      "outlet": "Central Ohio Regional Water Authority / Ohio EPA",
+      "summary": "A regional water demand study published March 2025 projects industrial water demand — dominated by planned data center expansions — growing from ~10 MGD today to 40 MGD by 2030 and 90 MGD by 2050. Intel's New Albany campus alone accounts for ~6 MGD. The study is being used to plan $2B+ in regional water infrastructure.",
+      "tags": ["research", "data"],
+      "source_url": "https://epa.ohio.gov/",
+      "cross_ref_tab": "data",
+      "cross_ref_note": "Central Ohio demand projections in the Data tab"
+    },
+    {
+      "id": "ohio-epa-ohd000001-2025-01",
+      "date": "2025-01",
+      "title": "Ohio EPA Closes Comment Period on First-Ever Data Center Wastewater General Permit",
+      "outlet": "Ohio EPA",
+      "summary": "Comment period closed January 2025 on Ohio EPA OHD000001 — the first proposed general permit requiring data centers to file Discharge Monitoring Reports (DMRs) directly for cooling-tower blowdown. Currently, most DC cooling water routes through municipal WWTPs with no facility-level accounting. Final permit is still pending.",
+      "tags": ["regulation", "data"],
+      "source_url": "https://epa.ohio.gov/",
+      "cross_ref_tab": "data",
+      "cross_ref_note": "OHD000001 in Data tab — Ohio EPA scraper"
+    },
+    {
+      "id": "uc-riverside-ai-water-study-2023-06",
+      "date": "2023-06",
+      "title": "UC Riverside 'Making AI Less Thirsty' — First Major Quantification of AI Water Footprint",
+      "outlet": "University of California, Riverside (Shaolei Ren et al.)",
+      "summary": "The landmark study estimated 0.5 L per 10–50 ChatGPT queries (direct cooling only) and up to 500 mL per query when including thermoelectric cooling for electricity generation. It catalyzed policy and media attention on data center water use and established WUE (Water Usage Effectiveness) as a public-facing metric. The viral 'one 500mL bottle per prompt' figure in later coverage was a 50–250× overstatement of this research.",
+      "tags": ["research"],
+      "source_url": "https://arxiv.org/abs/2304.03271",
+      "cross_ref_tab": "data",
+      "cross_ref_note": "Per-query estimates discussed in Data tab"
+    }
+  ]
+}

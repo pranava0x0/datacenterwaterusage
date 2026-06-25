@@ -178,8 +178,8 @@ def get_chart_config(device_type: DeviceType) -> dict:
 
 
 # Shared component CSS lives in assets/components.css (a real .css file
-# gets IDE highlighting/formatting; PR #13 review). Loaded once at import
-# and wrapped for st.markdown; build_site.py strips the <style> wrapper.
+# gets IDE highlighting/formatting). Loaded once at import and wrapped for
+# st.markdown; build_site.py strips the <style> wrapper.
 _RESPONSIVE_CSS = (
     "<style>\n"
     + (Path(__file__).resolve().parents[1] / "assets" / "components.css").read_text()

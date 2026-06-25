@@ -26,6 +26,7 @@ from utils.device import (
     get_device_type,
     inject_responsive_css,
 )
+from utils.equivalents import annual_gallons_to_households
 
 # --- Config ---
 
@@ -35,6 +36,8 @@ JSON_PATH = BASE_DIR / "data" / "output" / "results.json"
 LEGISLATION_PATH = BASE_DIR / "data" / "reference" / "legislation.json"
 COMPANY_WATER_CLAIMS_PATH = BASE_DIR / "data" / "reference" / "company_water_claims.json"
 CWA_INVESTIGATIONS_PATH = BASE_DIR / "data" / "reference" / "cwa_investigations.json"
+WATER_NEWS_PATH = BASE_DIR / "data" / "reference" / "water_news.json"
+WATER_SOLUTIONS_PATH = BASE_DIR / "data" / "reference" / "water_solutions.json"
 
 COLORS = {
     "primary": "#08519c",
@@ -208,6 +211,34 @@ def load_cwa_investigations(path: Path = CWA_INVESTIGATIONS_PATH) -> dict:
     file change (mtime/size) rather than a fixed TTL.
     """
     return _load_cwa_investigations_cached(str(path), _file_signature(path))
+
+
+@st.cache_data
+def _load_water_news_cached(path_str: str, signature: tuple) -> dict:
+    p = Path(path_str)
+    if not p.exists():
+        return {"last_updated": None, "items": []}
+    with open(p, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def load_water_news(path: Path = WATER_NEWS_PATH) -> dict:
+    """Load curated data center water news items."""
+    return _load_water_news_cached(str(path), _file_signature(path))
+
+
+@st.cache_data
+def _load_water_solutions_cached(path_str: str, signature: tuple) -> dict:
+    p = Path(path_str)
+    if not p.exists():
+        return {"last_updated": None, "categories": []}
+    with open(p, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def load_water_solutions(path: Path = WATER_SOLUTIONS_PATH) -> dict:
+    """Load data center water solutions by category."""
+    return _load_water_solutions_cached(str(path), _file_signature(path))
 
 
 # --- Page Config ---
@@ -848,10 +879,14 @@ MASLEY_COMPARISONS = [
 
 
 def compute_household_equivalent(gallons_per_year: int, gpd: int = 200) -> int:
-    """Convert annual gallons to equivalent number of households served."""
-    if gpd <= 0:
-        return 0
-    return int(gallons_per_year / (gpd * 365))
+    """Convert annual gallons to equivalent number of households served.
+
+    Thin wrapper over ``utils.equivalents.annual_gallons_to_households`` so the
+    gpd→households math lives in one place. Default 200 gpd is the lower
+    Virginia regional figure the context cards use (vs. EPA's 300 gpd national
+    default); behavior (int truncation, 0 for non-positive gpd) is unchanged.
+    """
+    return annual_gallons_to_households(gallons_per_year, gpd)
 
 
 def render_local_context(is_mobile: bool = False):
@@ -1366,6 +1401,9 @@ def render_legislation_tracker(is_mobile: bool = False, is_tablet: bool = False)
         f"{_legislation_status_summary(filtered)}"
     )
 
+    # Key themes grid + emerging solutions box
+    st.markdown(_build_legislation_themes_html(bills), unsafe_allow_html=True)
+
     sorted_bills = sorted(
         filtered,
         key=lambda b: (
@@ -1573,6 +1611,279 @@ def _build_principles_html(principles: list[dict]) -> str:
     )
 
 
+# --- Legislation Themes ---
+
+LEGISLATION_THEME_DEFINITIONS = [
+    {
+        "tag": "Transparency",
+        "label": "Transparency & Disclosure",
+        "color": "#08519c",
+        "description": "Require data centers to publicly report actual or projected water consumption to regulators and the public.",
+    },
+    {
+        "tag": "Environmental Review",
+        "label": "Environmental Review",
+        "color": "#2e8b57",
+        "description": "Subject new construction to CEQA/SEQRA impact assessment, including a mandatory water-supply analysis.",
+    },
+    {
+        "tag": "Technology Mandate",
+        "label": "Technology Mandates",
+        "color": "#c41e3a",
+        "description": "Require closed-loop, reclaimed-water, or non-consumptive cooling as a permit condition.",
+    },
+    {
+        "tag": "Cost Allocation",
+        "label": "Cost Allocation",
+        "color": "#d4a017",
+        "description": "Ensure data centers bear the marginal cost of water-supply infrastructure they trigger, not residential ratepayers.",
+    },
+    {
+        "tag": "Permit Reform",
+        "label": "Permit Reform & Moratoria",
+        "color": "#6b3fa0",
+        "description": "Impose construction moratoria or water-compatibility reviews before new permits, giving regulators time to assess cumulative demand.",
+    },
+    {
+        "tag": "Consumer Protection",
+        "label": "Consumer Protection",
+        "color": "#1a7a8a",
+        "description": "Prevent data center grid and water infrastructure costs from being socialized to residential ratepayers.",
+    },
+]
+
+
+def _build_legislation_themes_html(bills: list[dict]) -> str:
+    """Build the 6-card theme grid + emerging solutions box for the top of the legislation tab."""
+    from collections import defaultdict
+    esc = html.escape
+
+    # Count bills per theme tag, collecting example IDs
+    tag_bills: dict[str, list[str]] = defaultdict(list)
+    for bill in bills:
+        seen: set[str] = set()
+        for p in bill.get("general_principles", []):
+            if not isinstance(p, dict):
+                continue
+            tag = p.get("tag", "")
+            if tag and tag not in seen:
+                seen.add(tag)
+                tag_bills[tag].append(bill.get("bill_id", ""))
+
+    cards = []
+    for theme in LEGISLATION_THEME_DEFINITIONS:
+        tag = theme["tag"]
+        ids = tag_bills.get(tag, [])
+        count = len(ids)
+        examples = ", ".join(ids[:3])
+        if len(ids) > 3:
+            examples += f" +{len(ids) - 3} more"
+        cards.append(
+            f'<div class="theme-card" style="border-top:3px solid {theme["color"]}">'
+            f'<div class="theme-card-count" style="color:{theme["color"]}">{count}</div>'
+            f'<div class="theme-card-label">{esc(theme["label"])}</div>'
+            f'<div class="theme-card-desc">{esc(theme["description"])}</div>'
+            f'<div class="theme-card-examples">{esc(examples) if examples else "—"}</div>'
+            f'</div>'
+        )
+
+    solutions_box = (
+        '<div class="insights" style="margin-top:.8rem">'
+        '<h4>What solutions are emerging</h4><ul>'
+        '<li><strong>Utility-level monthly reporting</strong> — Virginia HB 496 (enacted April 2026) '
+        'is the first state law requiring utilities to report monthly water volumes to data centers. '
+        'Several states are watching for the first published data, expected late 2026.</li>'
+        '<li><strong>Closed-loop cooling mandates</strong> — Idaho H895 (enacted) and South Carolina '
+        'HB 4583 (pending) are first movers on banning open evaporative cooling for new facilities, '
+        'eliminating the largest consumptive water-loss pathway.</li>'
+        '<li><strong>Environmental review triggers</strong> — New York S10642 (passed legislature, '
+        'awaiting governor) would require SEQRA review before any facility exceeds 50 MW — the '
+        'broadest state environmental-review trigger yet proposed for data centers.</li>'
+        '<li><strong>Direct DC water permits</strong> — Ohio EPA OHD000001 would be the first '
+        'federal permit requiring data centers to file discharge monitoring reports directly, '
+        'closing the gap where DC cooling water routes through municipal WWTPs with no '
+        'facility-level accounting.</li>'
+        '</ul></div>'
+    )
+
+    return '<div class="theme-grid">' + ''.join(cards) + '</div>' + solutions_box
+
+
+# --- Water News Tab ---
+
+NEWS_TAG_LABELS = {
+    "regulation": "Regulation",
+    "enforcement": "Enforcement",
+    "solutions": "Solutions",
+    "research": "Research",
+    "data": "Data & Reports",
+    "policy": "Policy",
+}
+NEWS_TAG_COLORS = {
+    "regulation": "#08519c",
+    "enforcement": "#c41e3a",
+    "solutions": "#2e8b57",
+    "research": "#6b3fa0",
+    "data": "#1a7a8a",
+    "policy": "#d4a017",
+}
+
+
+def _build_news_item_html(item: dict) -> str:
+    """Build one news card for the News tab (distinct from _build_news_html for bill cards)."""
+    esc = html.escape
+    title = esc(item.get("title", ""))
+    outlet = esc(item.get("outlet", ""))
+    date_str = esc(item.get("date", ""))
+    summary = esc(item.get("summary", ""))
+    url = item.get("source_url") or ""
+    tags = item.get("tags", [])
+    cross_tab = item.get("cross_ref_tab")
+    cross_note = item.get("cross_ref_note", "")
+
+    headline = (
+        f'<a href="{esc(url)}" target="_blank" rel="noopener" class="news-title">{title}</a>'
+        if url else f'<span class="news-title">{title}</span>'
+    )
+    meta = " · ".join(b for b in (outlet, date_str) if b)
+    tags_html = "".join(
+        f'<span class="news-tag" style="color:{NEWS_TAG_COLORS.get(t, "#555")}">'
+        f'{esc(NEWS_TAG_LABELS.get(t, t))}</span>'
+        for t in tags
+    )
+    cross_html = (
+        f'<div class="news-crossref">→ {esc(cross_note)}</div>'
+        if cross_tab and cross_note else ""
+    )
+    tags_str = ",".join(tags)
+    return (
+        f'<div class="news-card" data-tags="{esc(tags_str)}">'
+        f'{headline}'
+        f'<div class="news-meta">{esc(meta)}</div>'
+        f'<div class="news-summary">{summary}</div>'
+        f'<div class="news-tags">{tags_html}</div>'
+        f'{cross_html}'
+        f'</div>'
+    )
+
+
+def render_water_news():
+    """Render the Data Center Water News tab (Streamlit)."""
+    st.subheader("Data Center Water News")
+    st.markdown(
+        "Curated headlines on data center water use, regulation, enforcement, and solutions — "
+        "linked to this tracker's datasets where applicable. Newest first."
+    )
+    payload = load_water_news()
+    items = payload.get("items", [])
+    if not items:
+        st.info("No news items loaded.")
+        return
+
+    all_tags = sorted({t for item in items for t in item.get("tags", [])})
+    selected = st.multiselect(
+        "Filter by topic",
+        options=all_tags,
+        default=all_tags,
+        format_func=lambda t: NEWS_TAG_LABELS.get(t, t),
+        key="news_tag_filter",
+    )
+    selected_set = set(selected)
+    filtered = [i for i in items if any(t in selected_set for t in i.get("tags", []))]
+    st.markdown(f"**{len(filtered)} of {len(items)} items**")
+    st.markdown(
+        "".join(_build_news_item_html(i) for i in filtered),
+        unsafe_allow_html=True,
+    )
+    last_updated = payload.get("last_updated") or "unknown"
+    st.caption(f"Dataset last updated {last_updated}.")
+
+
+# --- Water Solutions Tab ---
+
+SOLUTION_STATUS_LABELS = {"deployed": "Deployed", "pilot": "Pilot / In Progress", "proposed": "Proposed"}
+SOLUTION_STATUS_COLORS = {
+    "deployed": ("#2e8b57", "#eaf7ef", "#b7e4c7"),
+    "pilot": ("#9a6700", "#fff7e6", "#f3d99b"),
+    "proposed": ("#08519c", "#eef6ff", "#bcd9f5"),
+}
+SOLUTION_ACTOR_LABELS = {
+    "state": "State", "federal": "Federal", "utility": "Utility", "industry": "Industry",
+}
+
+
+def _build_solution_card_html(sol: dict) -> str:
+    esc = html.escape
+    title = esc(sol.get("title", ""))
+    status = (sol.get("status") or "proposed").lower()
+    actor_type = (sol.get("actor_type") or "").lower()
+    actor = esc(sol.get("actor", ""))
+    description = esc(sol.get("description", ""))
+    example = esc(sol.get("example", ""))
+    url = sol.get("source_url") or ""
+    cross_tab = sol.get("cross_ref_tab")
+    cross_note = sol.get("cross_ref_note", "")
+
+    status_label = SOLUTION_STATUS_LABELS.get(status, status.title())
+    color, bg, border = SOLUTION_STATUS_COLORS.get(status, ("#555", "#f5f5f5", "#ccc"))
+    actor_label = SOLUTION_ACTOR_LABELS.get(actor_type, actor_type.title())
+
+    badge = (
+        f'<span class="solution-badge" '
+        f'style="color:{color};background:{bg};border:1px solid {border}">'
+        f'{esc(status_label)}</span>'
+    )
+    source_link = (
+        f' · <a href="{esc(url)}" target="_blank" rel="noopener">Source</a>' if url else ""
+    )
+    example_html = (
+        f'<div class="solution-example">{example}</div>' if example else ""
+    )
+    cross_html = (
+        f'<div class="solution-crossref">→ {esc(cross_note)}</div>'
+        if cross_tab and cross_note else ""
+    )
+    return (
+        f'<div class="solution-card">'
+        f'{badge}'
+        f'<div class="solution-title">{title}</div>'
+        f'<div class="solution-actor">{esc(actor_label)}: {actor}{source_link}</div>'
+        f'<div class="solution-desc">{description}</div>'
+        f'{example_html}'
+        f'{cross_html}'
+        f'</div>'
+    )
+
+
+def render_water_solutions():
+    """Render the Water Solutions tab (Streamlit)."""
+    st.subheader("Data Center Water Solutions")
+    st.markdown(
+        "Solutions to data center water challenges documented across this tracker — "
+        "organized by who is driving them: state/federal regulators, utilities, or industry."
+    )
+    payload = load_water_solutions()
+    categories = payload.get("categories", [])
+    if not categories:
+        st.info("Solutions dataset not loaded.")
+        return
+
+    for cat in categories:
+        st.markdown(
+            f'<h3 class="solution-cat-header">{html.escape(cat.get("label", ""))}</h3>'
+            f'<p class="solution-cat-desc">{html.escape(cat.get("description", ""))}</p>',
+            unsafe_allow_html=True,
+        )
+        solutions = cat.get("solutions", [])
+        st.markdown(
+            "".join(_build_solution_card_html(s) for s in solutions),
+            unsafe_allow_html=True,
+        )
+
+    last_updated = payload.get("last_updated") or "unknown"
+    st.caption(f"Dataset last updated {last_updated}.")
+
+
 # --- Clean Water Act Investigations Tracker ---
 
 CWA_CATEGORY_ORDER = {
@@ -1616,6 +1927,206 @@ CWA_STATUS_COLORS = {
     "pending": "#b45309",  # amber — between applied and not-applied
     "not-applied": "#6b7280",  # neutral gray — explicitly not a failure state
 }
+
+# Forward-looking, merit-scored menu of Clean Water Act theories that could
+# realistically attach to a data center. Scoring (1–5, 5 = strongest) is on
+# public-interest merit ONLY — Impact (community/environmental harm averted),
+# Viability (legal strength post-Sackett/Maui), Tractability (can THIS tracker
+# source the evidence via ECHO DMR/SNC, public permits, FOIA). No data-center
+# CWA enforcement case exists yet; full write-up with primary-source citations
+# lives in docs/cwa-enforcement-and-data-centers.md. Kept module-level so the
+# builder stays pure and unit-testable, and so build_site.py reuses one source
+# of truth.
+CWA_APPLICATION_THEORIES = [
+    {
+        "rank": 1,
+        "theory": "Citizen suit against the receiving POTW",
+        "hook": "CWA §505 (33 U.S.C. §1365)",
+        "impact": 5, "viability": 5, "tractability": 5,
+        "why": "Turns the tracker's existing ECHO SNC/DMR pull into the predicate "
+               "for a citizen suit against the plant that actually carries data-center "
+               "cooling blowdown — not the DC's near-empty stormwater permit.",
+        "analog": "Port of Morrow, OR (WWTP receiving DC wastewater)",
+    },
+    {
+        "rank": 2,
+        "theory": "Pretreatment / Industrial-User loading",
+        "hook": "CWA §307 + §403",
+        "impact": 5, "viability": 5, "tractability": 4,
+        "why": "Where DC blowdown actually goes; loading can force POTW pass-through "
+               "(putting the plant in violation) and raise every other ratepayer's "
+               "costs. Industrial-user permits and local limits are FOIA-able.",
+        "analog": "Port of Morrow, OR; industrial pretreatment consent decrees",
+    },
+    {
+        "rank": 3,
+        "theory": "Construction stormwater",
+        "hook": "CWA §402 (Construction General Permit)",
+        "impact": 4, "viability": 5, "tractability": 4,
+        "why": "The single most-enforced real CWA violation against large "
+               "construction; acute turbidity and habitat impact during the "
+               "multi-hundred-acre build-out. NOIs and NOVs are ECHO-visible.",
+        "analog": "Arch Coal mining-site analog",
+    },
+    {
+        "rank": 4,
+        "theory": "Cooling-tower blowdown direct to surface water",
+        "hook": "CWA §402 (NPDES numeric limits)",
+        "impact": 4, "viability": 5, "tractability": 4,
+        "why": "The classic numeric-limit-exceedance pattern (thermal, chlorine, "
+               "biocides, conductivity); directly overlaps the flow metrics the "
+               "tracker already scrapes. Permit + DMR via ECHO.",
+        "analog": "West Penn Power (boron exceedance)",
+    },
+    {
+        "rank": 5,
+        "theory": "On-site package WWTP / greywater-recycle plant effluent",
+        "hook": "CWA §402 (NPDES)",
+        "impact": 4, "viability": 4, "tractability": 4,
+        "why": "Large campuses building their own treatment/reuse plant give it its "
+               "OWN NPDES permit + DMR — a clean, trackable point source distinct "
+               "from the data-center building.",
+        "analog": "xAI Colossus greywater plant, Memphis",
+    },
+    {
+        "rank": 6,
+        "theory": "Wetlands dredge-and-fill + state certification",
+        "hook": "CWA §404 + §401",
+        "impact": 5, "viability": 3, "tractability": 4,
+        "why": "Permanent habitat / flood-storage loss; the live enforcement edge. "
+               "Sackett narrowed FEDERAL reach, but §401 and retained VA/OH state "
+               "programs remain. Permit applications are public.",
+        "analog": "New Carlisle IN; Project Raspberry/Loch VA; Port of Little Rock AR",
+    },
+    {
+        "rank": 7,
+        "theory": "Thermal discharge + cooling-water intake",
+        "hook": "CWA §316(a)/(b)",
+        "impact": 4, "viability": 4, "tractability": 3,
+        "why": "Heat is a regulated pollutant; intake impingement/entrainment. Bites "
+               "hardest where a DC pairs with on-site gas turbines (full power-plant "
+               "profile).",
+        "analog": "Greenidge Generation, NY (§316 thermal/intake)",
+    },
+    {
+        "rank": 8,
+        "theory": "Antidegradation / Tier 2 review of a new outfall",
+        "hook": "CWA §303 / state water-quality standards",
+        "impact": 4, "viability": 4, "tractability": 3,
+        "why": "A procedural lever that forces an alternatives analysis (e.g., dry or "
+               "closed-loop cooling) before a new or expanded discharge into "
+               "high-quality waters is permitted — high leverage at the siting stage.",
+        "analog": "—",
+    },
+    {
+        "rank": 9,
+        "theory": "County of Maui “functional equivalent” discharge",
+        "hook": "CWA §402 (Maui, 2020)",
+        "impact": 4, "viability": 3, "tractability": 2,
+        "why": "The most novel theory: a cooling discharge, injection well, or land "
+               "application that reaches surface water VIA groundwater can still need "
+               "a permit. Closes a common DC discharge loophole; fact-intensive.",
+        "analog": "County of Maui v. Hawaii Wildlife Fund",
+    },
+    {
+        "rank": 10,
+        "theory": "PFAS in discharge",
+        "hook": "CWA §402 (NPDES)",
+        "impact": 4, "viability": 3, "tractability": 2,
+        "why": "AFFF fire-suppression systems + cooling-chemistry additives, as NPDES "
+               "PFAS limits tighten. Strong regulatory tailwind; sourceable once "
+               "effluent PFAS monitoring is permit-required.",
+        "analog": "Industrial PFAS cases",
+    },
+    {
+        "rank": 11,
+        "theory": "Oil spill / SPCC from backup-diesel fuel farms",
+        "hook": "CWA §311 (33 U.S.C. §1321)",
+        "impact": 3, "viability": 5, "tractability": 3,
+        "why": "A release reaching a water of the U.S. is legally identical to the "
+               "pipeline-spill cases (incl. negligence-criminal exposure and the "
+               "duty-to-report trap); event-driven, so a lower base rate but settled law.",
+        "analog": "BP / Enbridge / Summit Midstream §311 line",
+    },
+    {
+        "rank": 12,
+        "theory": "Industrial stormwater",
+        "hook": "CWA §402 (Multi-Sector General Permit)",
+        "impact": 3, "viability": 4, "tractability": 3,
+        "why": "Exposed equipment yards and chemical/fuel storage areas; lower "
+               "per-event impact but routine. MSGP benchmark monitoring is public.",
+        "analog": "—",
+    },
+]
+
+
+def _theory_score_cell(value: int) -> str:
+    """Render one Impact/Viability/Tractability score cell, clamped to 1–5."""
+    v = max(1, min(5, int(value)))
+    return f'<td class="theory-score theory-s{v}">{v}</td>'
+
+
+def _build_cwa_theories_html(theories: list[dict]) -> str:
+    """Pure HTML for the prioritized CWA-application theories table.
+
+    Shared by the Streamlit panel (``render_cwa_application_theories``) and the
+    static site (``build_site``) so the scored ranking has a single source of
+    truth. Forward-looking analysis — scoring is merit-only (Impact / Viability
+    / Tractability), deliberately not keyed to any operator's or official's
+    identity or politics.
+    """
+    rows = []
+    for t in sorted(theories, key=lambda x: x["rank"]):
+        analog = t.get("analog", "")
+        analog_html = (
+            f'<div class="theory-analog">Analog: {html.escape(analog)}</div>'
+            if analog and analog != "—"
+            else ""
+        )
+        rows.append(
+            "<tr>"
+            f'<td class="theory-rank">{int(t["rank"])}</td>'
+            f'<td><strong>{html.escape(t["theory"])}</strong>'
+            f'<div class="theory-hook">{html.escape(t["hook"])}</div></td>'
+            f'{_theory_score_cell(t["impact"])}'
+            f'{_theory_score_cell(t["viability"])}'
+            f'{_theory_score_cell(t["tractability"])}'
+            f'<td>{html.escape(t["why"])}{analog_html}</td>'
+            "</tr>"
+        )
+    return (
+        '<p class="theory-note">Forward-looking analysis — <strong>no data-center CWA '
+        "enforcement case exists yet</strong>. Scored on public-interest merit only: "
+        "<strong>I</strong>mpact (community/environmental harm averted), "
+        "<strong>V</strong>iability (legal strength post-<em>Sackett</em>/<em>Maui</em>), "
+        "<strong>T</strong>ractability (can this tracker source the evidence via ECHO "
+        "DMR/SNC, public permits, FOIA). 5 = strongest; sorted by priority.</p>"
+        '<div class="table-wrap"><table class="theory-table"><thead><tr>'
+        "<th>#</th><th>Theory (CWA hook)</th><th>I</th><th>V</th><th>T</th>"
+        "<th>Why it matters</th></tr></thead>"
+        f'<tbody>{"".join(rows)}</tbody></table></div>'
+    )
+
+
+def render_cwa_application_theories():
+    """Prioritized, merit-scored menu of CWA theories that could attach to a DC.
+
+    The forward-looking companion to ``render_cwa_datacenter_insights``: that
+    panel reads what the *record* shows; this one ranks where enforcement could
+    realistically go next, scored by impact, legal viability, and how readily
+    this project can source the evidence.
+    """
+    with st.expander(
+        "Prioritized CWA-application theories — what could attach to a data center"
+    ):
+        st.markdown(
+            _build_cwa_theories_html(CWA_APPLICATION_THEORIES),
+            unsafe_allow_html=True,
+        )
+        st.caption(
+            "Full write-up with primary-source citations: "
+            "docs/cwa-enforcement-and-data-centers.md"
+        )
 
 
 def _cwa_statute_explainer_md() -> str:
@@ -1816,16 +2327,18 @@ def _cwa_datacenter_insights(cases: list[dict]) -> dict:
     }
 
 
-def render_cwa_datacenter_insights():
+def render_cwa_datacenter_insights(cases: list[dict] | None = None):
     """Headline 'what this record tells data centers' panel.
 
-    Computed live from the dataset so the counts move with the cases, then
-    framed around the tracker's mission: the operational CWA exposure for a
-    data center lands on the *receiving* WWTP permit — which is exactly what
-    this project monitors via EPA ECHO DMR.
+    Pass ``cases`` to scope the computation (e.g., historical-only subset).
+    When omitted, loads the full dataset — kept for backward compatibility.
+    Computed live so counts move with the dataset; framed around the tracker's
+    mission: operational CWA exposure lands on the *receiving* WWTP permit.
     """
-    payload = load_cwa_investigations()
-    stats = _cwa_datacenter_insights(payload.get("cases", []))
+    if cases is None:
+        payload = load_cwa_investigations()
+        cases = payload.get("cases", [])
+    stats = _cwa_datacenter_insights(cases)
     total = stats["total"]
     if not total:
         return
@@ -1833,17 +2346,17 @@ def render_cwa_datacenter_insights():
         st.markdown("#### What this record tells data centers")
         st.markdown(
             f"- **The permittee shield.** {stats['contractor_permittee']} of "
-            f"{total} direct data-center cases name a construction contractor "
-            "or subcontractor — not the hyperscaler — as the party on the "
-            "permit. Operators routinely sit one entity removed from the "
+            f"{total} resolved data-center enforcement cases name a construction "
+            "contractor or subcontractor — not the hyperscaler — as the party "
+            "on the permit. Operators routinely sit one entity removed from the "
             "permittee, which is why direct enforcement against them is thin."
         )
         st.markdown(
             f"- **CWA risk is front-loaded into construction.** Construction "
             "stormwater, sediment, and erosion under the §402 Construction "
             f"General Permit is the most common touchpoint — it appears in "
-            f"{stats['construction_stormwater']} of {total} cases, far more "
-            "than operational cooling-water discharge."
+            f"{stats['construction_stormwater']} of {total} historical cases, "
+            "far more than operational cooling-water discharge."
         )
         st.markdown(
             "- **The liability frontier is moving.** The 2026 Amazon Boardman "
@@ -1862,19 +2375,23 @@ def render_cwa_datacenter_insights():
 
 
 def render_cwa_tracker():
-    """Render the Clean Water Act historic investigations panel.
+    """Render the Clean Water Act investigations panel.
 
-    Three categories: direct data-center cases (rare), large-industrial-user
-    enforcement (closest practical analogs), and landmark precedent cases that
-    set the legal doctrines for what CWA actually reaches. Cases are sorted
-    most-recent-first within each category so the freshest enforcement bubbles
-    to the top.
+    Split into two sections:
+    1. Historical enforcement record — enforcement actions, penalties,
+       settlements, and landmark rulings that have actually occurred.
+       Industrial cases are the closest legal analogs to data center
+       operations; precedent rulings define CWA's legal scope.
+    2. Active & potential exposure — named data center sites where
+       proceedings are pending or circumstances match historical patterns
+       but no formal CWA enforcement has been issued yet.
     """
-    st.subheader("Clean Water Act Investigations")
+    st.subheader("Clean Water Act — Historical Record & Potential Exposure")
     st.markdown(
-        "Enforcement actions and landmark court rulings under the Clean Water "
-        "Act, organized by what they actually tell us about how the law applies "
-        "to data center water use and cooling discharges."
+        "Two views on the CWA and data centers: the enforcement record that has "
+        "actually built (penalties, settlements, court rulings), and specific "
+        "named sites where active proceedings or matching circumstances suggest "
+        "CWA exposure is next."
     )
 
     payload = load_cwa_investigations()
@@ -1884,8 +2401,14 @@ def render_cwa_tracker():
         st.info(note)
         return
 
-    # Headline synthesis — the computed "so what" before the case list.
-    render_cwa_datacenter_insights()
+    historical = [c for c in cases if c.get("display_section", "historical") == "historical"]
+    potential = [c for c in cases if c.get("display_section") == "potential"]
+
+    # Headline synthesis — computed over historical enforcement cases only.
+    render_cwa_datacenter_insights(historical)
+
+    # Forward-looking bridge from historical record to potential exposure.
+    render_cwa_application_theories()
 
     with st.expander(
         "What is a Clean Water Act investigation? — statute, authority, "
@@ -1893,9 +2416,20 @@ def render_cwa_tracker():
     ):
         st.markdown(_cwa_statute_explainer_md())
 
+    # ── SECTION 1: HISTORICAL ENFORCEMENT RECORD ──────────────────────────
+    st.markdown("---")
+    st.markdown("### Part 1 — Historical CWA Enforcement Record")
+    st.markdown(
+        f"**{len(historical)} cases** — enforcement actions, penalties, settlements, "
+        "and landmark court rulings that have **actually occurred**. "
+        "**Industrial cases are legal analogs** — they show the enforcement pattern "
+        "for operations similar to data centers, but are enforcement against *other* "
+        "industries, not data centers themselves. "
+        "Precedent rulings define the legal scope for future CWA enforcement."
+    )
+
     # Filter controls. Primary axis: project type (what kind of water issue);
-    # secondary: case group (who it involves) + 2020+ toggle. Defaults show
-    # everything so first-time visitors see the full dataset.
+    # secondary: case group (who it involves) + 2020+ toggle.
     selected_types = st.multiselect(
         "Filter by project type",
         options=list(CWA_CASE_TYPE_LABELS.keys()),
@@ -1903,12 +2437,18 @@ def render_cwa_tracker():
         format_func=lambda k: CWA_CASE_TYPE_LABELS.get(k, k.title()),
         key="cwa_case_type_filter",
     )
+    # Adjacent cases all moved to section 2 (potential), so only
+    # datacenter/industrial/precedent remain here.
+    hist_cats = sorted(
+        {c.get("category") for c in historical if c.get("category")},
+        key=lambda k: CWA_CATEGORY_ORDER.get(k, 9),
+    )
     filter_cols = st.columns([3, 1])
     with filter_cols[0]:
         selected_categories = st.multiselect(
             "Filter by case group",
-            options=list(CWA_CATEGORY_LABELS.keys()),
-            default=list(CWA_CATEGORY_LABELS.keys()),
+            options=hist_cats,
+            default=hist_cats,
             format_func=lambda k: CWA_CATEGORY_LABELS.get(k, k.title()),
             key="cwa_category_filter",
         )
@@ -1920,46 +2460,69 @@ def render_cwa_tracker():
             help="Show only cases with an end year of 2020 or later.",
         )
 
-    filtered = [
+    filtered_hist = [
         c
-        for c in cases
+        for c in historical
         if c.get("category") in selected_categories
         and c.get("case_type") in selected_types
     ]
     if recent_only:
-        filtered = [c for c in filtered if _cwa_year_end(c.get("year", "")) >= 2020]
+        filtered_hist = [
+            c for c in filtered_hist if _cwa_year_end(c.get("year", "")) >= 2020
+        ]
 
-    if not filtered:
+    all_ids = {c.get("case_id") for c in cases}
+    if filtered_hist:
+        st.markdown(
+            f"**Showing {len(filtered_hist)} of {len(historical)} historical cases** "
+            f"— {_cwa_summary(filtered_hist)}"
+        )
+        sorted_hist = sorted(
+            filtered_hist,
+            key=lambda c: (
+                CWA_CATEGORY_ORDER.get(c.get("category"), 9),
+                -_cwa_year_end(c.get("year", "")),
+            ),
+        )
+        st.markdown(
+            "".join(_build_cwa_case_html(case, all_ids) for case in sorted_hist),
+            unsafe_allow_html=True,
+        )
+    else:
         st.info("No cases match the current filter. Try widening the category or year selection.")
-        return
 
+    # ── SECTION 2: ACTIVE & POTENTIAL EXPOSURE ─────────────────────────────
+    st.markdown("---")
+    st.markdown("### Part 2 — Active & Potential CWA Exposure at Named Data Center Sites")
     st.markdown(
-        f"**Showing {len(filtered)} of {len(cases)} cases** — {_cwa_summary(filtered)}"
+        f"**{len(potential)} named data center sites** where regulatory proceedings "
+        "are active (pending permit applications, ongoing investigations, active "
+        "citizen suits) or where the factual circumstances match the historical "
+        "enforcement patterns above — but **no formal CWA enforcement action has "
+        "been issued yet**. Use the theories panel above to trace which CWA hook "
+        "applies to each site."
     )
 
-    # Sort: category order, then year descending (most recent first).
-    sorted_cases = sorted(
-        filtered,
+    sorted_pot = sorted(
+        potential,
         key=lambda c: (
             CWA_CATEGORY_ORDER.get(c.get("category"), 9),
             -_cwa_year_end(c.get("year", "")),
         ),
     )
-    # One markdown blob for all case cards (49 → 1 component) — same
-    # consolidation as render_legislation_tracker; each card is a self-contained
+    # One markdown blob for all case cards — each card is a self-contained
     # <div class="bill-card">, so the joined output renders identically.
-    all_ids = {c.get("case_id") for c in cases}
     st.markdown(
-        "".join(_build_cwa_case_html(case, all_ids) for case in sorted_cases),
+        "".join(_build_cwa_case_html(case, all_ids) for case in sorted_pot),
         unsafe_allow_html=True,
     )
 
     last_updated = payload.get("last_updated") or "unknown"
-    note = payload.get("note", "")
-    caption = f"Dataset last updated {last_updated}."
-    if note:
-        caption += " " + note
-    st.caption(caption)
+    st.caption(
+        f"Dataset last updated {last_updated}. "
+        f"Total: {len(cases)} entries "
+        f"({len(historical)} historical enforcement, {len(potential)} active/potential)."
+    )
 
 
 def _cwa_case_caption(case_id: str) -> str:
@@ -2348,15 +2911,21 @@ def main():
             "via public regulatory data."
         )
 
-    # Three tabs — Legislation is the homepage, CWA Cases is the enforcement
-    # history, Data is the measurements side.
-    tab_legislation, tab_cwa, tab_data = st.tabs(
-        ["Legislation", "CWA Cases", "Data"]
+    tab_legislation, tab_cwa, tab_news, tab_solutions, tab_data = st.tabs(
+        ["Legislation", "CWA Cases", "News", "Solutions", "Data"]
     )
 
     # --- CWA Cases tab ---
     with tab_cwa:
         render_cwa_tracker()
+
+    # --- News tab ---
+    with tab_news:
+        render_water_news()
+
+    # --- Solutions tab ---
+    with tab_solutions:
+        render_water_solutions()
 
     # --- Legislation tab (homepage) ---
     with tab_legislation:

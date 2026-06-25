@@ -35,7 +35,15 @@ class TestStaticBuild:
         for banned in ("stlite", "pyodide", "@stlite/browser", "micropip"):
             assert banned not in html, f"WASM runtime artifact present: {banned}"
 
+    def test_five_tabs_present(self):
+        html = _html()
+        for tab in ("legislation", "cwa", "news", "solutions", "data"):
+            assert f'data-tab="{tab}"' in html
+        for pid in ("panel-legislation", "panel-cwa", "panel-news", "panel-solutions", "panel-data"):
+            assert f'id="{pid}"' in html
+
     def test_three_tabs_present(self):
+        # Alias kept for backwards compatibility — five tabs now exist, these three must be present.
         html = _html()
         for tab in ("legislation", "cwa", "data"):
             assert f'data-tab="{tab}"' in html
@@ -52,9 +60,14 @@ class TestStaticBuild:
     def test_all_cwa_cases_embedded(self):
         html = _html()
         cases = dashboard.load_cwa_investigations().get("cases", [])
-        assert html.count('class="cwa-case"') == len(cases)
-        # The JS total used by the filter count line must match the dataset.
-        assert f"window.CWA_TOTAL = {len(cases)}" in html
+        historical = [c for c in cases if c.get("display_section", "historical") == "historical"]
+        potential = [c for c in cases if c.get("display_section") == "potential"]
+        # Historical cases get the filterable .cwa-case wrapper; potential cases get
+        # .cwa-potential-case so client-side filtering doesn't hide them.
+        assert html.count('class="cwa-case"') == len(historical)
+        assert html.count('class="cwa-potential-case"') == len(potential)
+        # The JS total used by the filter count line reflects historical cases only.
+        assert f"window.CWA_TOTAL = {len(historical)}" in html
 
     def test_all_bills_and_claims_embedded(self):
         html = _html()
@@ -70,6 +83,30 @@ class TestStaticBuild:
         html = _html()
         for needle in ("New Carlisle", "Puget Soundkeeper", "Edwards Aquifer", "Fort Smith"):
             assert needle in html, f"missing case content: {needle}"
+
+    def test_cwa_theories_panel_rendered(self):
+        html = _html()
+        # The prioritized-theories panel is present on the CWA tab...
+        assert "Prioritized CWA-application theories" in html
+        assert 'class="theory-table"' in html
+        # ...with every theory row (12 + 1 header) reaching the page...
+        assert html.count('class="theory-rank"') == len(
+            dashboard.CWA_APPLICATION_THEORIES
+        )
+        # ...the novel Maui theory and the §505 lead row both surface.
+        assert "functional equivalent" in html
+        assert "receiving POTW" in html
+
+    def test_theories_panel_does_not_inflate_card_counts(self):
+        # Regression guard: the new panel uses .theory-* classes, so the
+        # cwa-case / bill-card / claim-card counts the filters rely on are
+        # unchanged by it.
+        html = _html()
+        cases = dashboard.load_cwa_investigations().get("cases", [])
+        historical = [c for c in cases if c.get("display_section", "historical") == "historical"]
+        bills = dashboard.load_legislation().get("bills", [])
+        assert html.count('class="cwa-case"') == len(historical)
+        assert html.count('class="bill-card"') == len(bills) + len(cases)
 
     def test_markdown_blobs_converted(self):
         # The statute explainer is markdown in the source; it must arrive as HTML
@@ -97,6 +134,39 @@ class TestStaticBuild:
         html = _html()
         # html.escape turns ' into &#x27; inside the card text.
         assert "&#x27;" in html or "&#39;" in html
+
+    def test_legislation_themes_panel_embedded(self):
+        html = _html()
+        # Theme grid appears on the legislation tab
+        assert 'class="theme-grid"' in html
+        # All 6 themes rendered (each has a theme-card-count span)
+        assert html.count('class="theme-card"') == len(dashboard.LEGISLATION_THEME_DEFINITIONS)
+        # Emerging solutions box is present
+        assert "What solutions are emerging" in html
+        # Virginia HB 496 appears in the solutions insights box
+        assert "HB 496" in html
+
+    def test_news_tab_content_embedded(self):
+        html = _html()
+        items = dashboard.load_water_news().get("items", [])
+        assert len(items) > 0
+        # Every news card is rendered
+        assert html.count('class="news-card"') == len(items)
+        # Spot-check a known headline
+        assert "Boardman" in html  # Amazon settlement
+        assert "news-tag-filter" in html  # tag filter checkboxes present
+
+    def test_solutions_tab_content_embedded(self):
+        html = _html()
+        payload = dashboard.load_water_solutions()
+        categories = payload.get("categories", [])
+        total_solutions = sum(len(c.get("solutions", [])) for c in categories)
+        assert total_solutions > 0
+        # Every solution card is rendered
+        assert html.count('class="solution-card"') == total_solutions
+        # Spot-check known content
+        assert "Closed-Loop" in html
+        assert "solution-cat-header" in html
 
 
 class TestLegislationFilters:

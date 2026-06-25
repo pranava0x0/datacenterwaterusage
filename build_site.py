@@ -82,6 +82,7 @@ def build_legislation_tab() -> str:
             b.get("jurisdiction", ""),
         ),
     )
+    themes_html = dash._build_legislation_themes_html(bills)
     # Wrap each card with machine-readable attrs for client-side filtering.
     cards = "".join(
         f'<div class="leg-bill" data-status="{esc(b.get("status",""))}" '
@@ -126,6 +127,7 @@ def build_legislation_tab() -> str:
   <p class="lead">State, federal, and local action on data center water (and energy)
   disclosure — bills, signed laws, agency rulemakings, and major zoning ordinances.
   Enacted laws are the next mandatory data sources to come online.</p>
+  {themes_html}
   {principles_panel}
   <details class="lazy">
     <summary>How to read this tracker — statuses, levels, principles</summary>
@@ -292,7 +294,9 @@ def build_company_claims() -> str:
 def build_cwa_tab() -> str:
     payload = dash.load_cwa_investigations()
     cases = payload.get("cases", [])
-    stats = dash._cwa_datacenter_insights(cases)
+    historical = [c for c in cases if c.get("display_section", "historical") == "historical"]
+    potential = [c for c in cases if c.get("display_section") == "potential"]
+    stats = dash._cwa_datacenter_insights(historical)
     total = stats["total"]
     last_updated = payload.get("last_updated") or "unknown"
 
@@ -303,13 +307,13 @@ def build_cwa_tab() -> str:
   <h4>What this record tells data centers</h4>
   <ul>
     <li><strong>The permittee shield.</strong> {stats['contractor_permittee']} of {total}
-      direct data-center cases name a construction contractor or subcontractor — not the
-      hyperscaler — as the party on the permit. Operators routinely sit one entity removed
-      from the permittee, which is why direct enforcement against them is thin.</li>
+      resolved data-center enforcement cases name a construction contractor or subcontractor —
+      not the hyperscaler — as the party on the permit. Operators routinely sit one entity
+      removed from the permittee, which is why direct enforcement against them is thin.</li>
     <li><strong>CWA risk is front-loaded into construction.</strong> Construction stormwater,
       sediment, and erosion under the §402 Construction General Permit is the most common
-      touchpoint — it appears in {stats['construction_stormwater']} of {total} cases, far more
-      than operational cooling-water discharge.</li>
+      touchpoint — it appears in {stats['construction_stormwater']} of {total} historical cases,
+      far more than operational cooling-water discharge.</li>
     <li><strong>The liability frontier is moving.</strong> The 2026 Amazon Boardman settlement
       ($20.5M, Oregon nitrate) is the first eight-figure direct-hyperscaler water settlement —
       pushing exposure beyond stormwater into groundwater and nutrient contamination.</li>
@@ -321,10 +325,16 @@ def build_cwa_tab() -> str:
   </ul>
 </div>"""
 
+    theories = dash._build_cwa_theories_html(dash.CWA_APPLICATION_THEORIES)
     explainer = md(dash._cwa_statute_explainer_md())
 
-    # Filter checkboxes (all on by default). Primary axis: project type;
-    # secondary: case group (category).
+    # Section 1: historical cases — filter checkboxes (project type + category).
+    # Adjacent cases all moved to section 2, so filters cover datacenter/industrial/precedent.
+    hist_cats = sorted(
+        {c.get("category") for c in historical if c.get("category")},
+        key=lambda k: dash.CWA_CATEGORY_ORDER.get(k, 9),
+    )
+    # Primary axis: project type (what kind of water issue).
     type_boxes = "".join(
         f'<label class="chip-check"><input type="checkbox" class="cwa-type" '
         f'value="{k}" checked> {esc(v)}</label>'
@@ -332,26 +342,40 @@ def build_cwa_tab() -> str:
     )
     cat_boxes = "".join(
         f'<label class="chip-check"><input type="checkbox" class="cwa-cat" '
-        f'value="{k}" checked> {esc(v)}</label>'
-        for k, v in dash.CWA_CATEGORY_LABELS.items()
+        f'value="{k}" checked> {esc(dash.CWA_CATEGORY_LABELS.get(k, k))}</label>'
+        for k in hist_cats
     )
 
     # Sort like the app: category order, then year descending; wrap each card in
     # a div carrying machine-readable category + type + end-year for filtering.
-    sorted_cases = sorted(
-        cases,
+    all_ids = {c.get("case_id") for c in cases}
+    sorted_hist = sorted(
+        historical,
         key=lambda c: (
             dash.CWA_CATEGORY_ORDER.get(c.get("category"), 9),
             -dash._cwa_year_end(c.get("year", "")),
         ),
     )
-    all_ids = {c.get("case_id") for c in cases}
-    case_cards = "".join(
+    hist_cards = "".join(
         f'<div class="cwa-case" data-category="{esc(c.get("category",""))}" '
         f'data-casetype="{esc(c.get("case_type",""))}" '
         f'data-yearend="{dash._cwa_year_end(c.get("year",""))}">'
         f'{dash._build_cwa_case_html(c, all_ids)}</div>'
-        for c in sorted_cases
+        for c in sorted_hist
+    )
+
+    # Section 2: potential/active cases — no client-side filter needed.
+    sorted_pot = sorted(
+        potential,
+        key=lambda c: (
+            dash.CWA_CATEGORY_ORDER.get(c.get("category"), 9),
+            -dash._cwa_year_end(c.get("year", "")),
+        ),
+    )
+    pot_cards = "".join(
+        f'<div class="cwa-potential-case">'
+        f'{dash._build_cwa_case_html(c, all_ids)}</div>'
+        for c in sorted_pot
     )
 
     cat_labels_json = json.dumps(dash.CWA_CATEGORY_LABELS)
@@ -359,15 +383,28 @@ def build_cwa_tab() -> str:
 
     return f"""
 <section class="panel">
-  <h2>Clean Water Act Investigations</h2>
-  <p class="lead">Enforcement actions and landmark court rulings under the Clean Water Act,
-  organized by what they actually tell us about how the law applies to data center water use
-  and cooling discharges.</p>
+  <h2>Clean Water Act — Historical Record &amp; Potential Exposure</h2>
+  <p class="lead">Two views on the CWA and data centers: the enforcement record that has
+  actually built (penalties, settlements, court rulings), and specific named sites where
+  active proceedings or matching circumstances suggest CWA exposure is next.</p>
   {insights}
+  <details class="lazy">
+    <summary>Prioritized CWA-application theories — what could attach to a data center</summary>
+    <section class="panel">{theories}
+    <p class="src-note">Full write-up with primary-source citations:
+    docs/cwa-enforcement-and-data-centers.md</p></section>
+  </details>
   <details class="lazy">
     <summary>What is a Clean Water Act investigation? — statute, authority, and why it's deployed</summary>
     <div class="explainer-md">{explainer}</div>
   </details>
+
+  <h3>Part 1 — Historical CWA Enforcement Record</h3>
+  <p><strong>{len(historical)} cases</strong> — enforcement actions, penalties, settlements,
+  and landmark court rulings that have <strong>actually occurred</strong>.
+  <strong>Industrial cases are legal analogs</strong> — the enforcement pattern for
+  operations similar to data centers, but against other industries, not data centers.
+  Precedent rulings define CWA's legal scope for future enforcement.</p>
   <div class="cwa-filters">
     <span class="filter-label">Project type:</span>
     <div class="cwa-types">{type_boxes}</div>
@@ -378,13 +415,25 @@ def build_cwa_tab() -> str:
     <label class="chip-check"><input type="checkbox" id="cwa-recent"> 2020 onward only</label>
   </div>
   <p class="count-line" id="cwa-count"></p>
-  <div id="cwa-cases">{case_cards}</div>
-  <p class="src-note">Dataset last updated {esc(last_updated)}.</p>
+  <div id="cwa-cases">{hist_cards}</div>
+
+  <hr>
+  <h3>Part 2 — Active &amp; Potential CWA Exposure at Named Data Center Sites</h3>
+  <p><strong>{len(potential)} named data center sites</strong> where regulatory proceedings
+  are active (pending permit applications, ongoing investigations, active citizen suits)
+  or where the factual circumstances match the historical enforcement patterns above —
+  but <strong>no formal CWA enforcement action has been issued yet</strong>.
+  Use the theories panel above to trace which CWA hook applies to each site.</p>
+  <div id="cwa-potential">{pot_cards}</div>
+
+  <p class="src-note">Dataset last updated {esc(last_updated)}.
+  Total: {len(cases)} entries ({len(historical)} historical enforcement,
+  {len(potential)} active/potential).</p>
 </section>
 <script>
   window.CWA_CAT_LABELS = {cat_labels_json};
   window.CWA_CAT_ORDER = {cat_order_json};
-  window.CWA_TOTAL = {len(cases)};
+  window.CWA_TOTAL = {len(historical)};
 </script>
 """
 
@@ -705,6 +754,83 @@ def build_records_table(df: pd.DataFrame) -> str:
 
 
 # --------------------------------------------------------------------------
+# News tab
+# --------------------------------------------------------------------------
+
+
+def build_news_tab() -> str:
+    payload = dash.load_water_news()
+    items = payload.get("items", [])
+    last_updated = payload.get("last_updated") or "unknown"
+
+    all_tags: list[str] = sorted({t for item in items for t in item.get("tags", [])})
+    tag_boxes = "".join(
+        f'<label class="chip-check"><input type="checkbox" class="news-tag-filter" '
+        f'value="{t}" checked> {esc(dash.NEWS_TAG_LABELS.get(t, t))}</label>'
+        for t in all_tags
+    )
+
+    cards = "".join(dash._build_news_item_html(i) for i in items)
+
+    return f"""
+<section class="panel">
+  <h2>Data Center Water News</h2>
+  <p class="lead">Curated headlines on data center water regulation, enforcement,
+  research, and solutions — linked to this tracker's datasets where applicable.
+  Newest first.</p>
+  <div class="cwa-filters">
+    <span class="filter-label">Filter by topic:</span>{tag_boxes}
+  </div>
+  <p class="count-line" id="news-count">
+    <strong>{len(items)} items</strong></p>
+  <div id="news-cards">{cards}</div>
+  <p class="src-note">Dataset last updated {esc(last_updated)}.</p>
+</section>"""
+
+
+# --------------------------------------------------------------------------
+# Solutions tab
+# --------------------------------------------------------------------------
+
+
+def build_solutions_tab() -> str:
+    payload = dash.load_water_solutions()
+    categories = payload.get("categories", [])
+    last_updated = payload.get("last_updated") or "unknown"
+
+    status_order = {"deployed": 0, "pilot": 1, "proposed": 2}
+    sections = []
+    total_solutions = 0
+    for cat in categories:
+        label = cat.get("label", "")
+        desc = cat.get("description", "")
+        sols = sorted(
+            cat.get("solutions", []),
+            key=lambda s: status_order.get(s.get("status", "proposed"), 9),
+        )
+        total_solutions += len(sols)
+        cards_html = "".join(dash._build_solution_card_html(s) for s in sols)
+        sections.append(
+            f'<h3 class="solution-cat-header">{esc(label)}</h3>'
+            f'<p class="solution-cat-desc">{esc(desc)}</p>'
+            f'{cards_html}'
+        )
+
+    return f"""
+<section class="panel">
+  <h2>Data Center Water Solutions</h2>
+  <p class="lead">Solutions to data center water challenges documented across this tracker —
+  organized by who is driving them: state and federal regulators, water utilities, and
+  industry operators. Status badges indicate real-world deployment stage.</p>
+  <p class="count-line"><strong>{total_solutions} solutions</strong> across
+  {len(categories)} categories</p>
+  {"".join(sections)}
+  <p class="src-note">Dataset last updated {esc(last_updated)}. Deployment status
+  is as of the dataset date; check source links for current status.</p>
+</section>"""
+
+
+# --------------------------------------------------------------------------
 # Assembly
 # --------------------------------------------------------------------------
 
@@ -808,11 +934,44 @@ details.lazy .panel{margin:0}
 .explainer-md h4{margin-top:1rem}
 .explainer-md blockquote{border-left:3px solid var(--blue2);margin:.5rem 0;padding:.2rem .8rem;color:#333;background:#f6fafe}
 
+/* Legislation themes grid */
+.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin:.8rem 0 1rem}
+.theme-card{background:#fff;border:1px solid #e2e8f0;border-radius:.5rem;padding:.8rem 1rem}
+.theme-card-count{font-size:2.1rem;font-weight:700;line-height:1.1}
+.theme-card-label{font-weight:700;font-size:.92rem;margin:.15rem 0}
+.theme-card-desc{font-size:.83rem;color:#555;margin:.2rem 0 .3rem}
+.theme-card-examples{font-size:.78rem;color:#999}
+
+/* News tab */
+.news-card{border:1px solid #e2e8f0;border-radius:.5rem;background:#fff;padding:.85rem 1rem;margin:.5rem 0}
+.news-title{font-weight:700;display:block;margin-bottom:.2rem;color:var(--ink)}
+a.news-title{color:var(--blue)}
+.news-meta{font-size:.8rem;color:#888;margin-bottom:.3rem}
+.news-summary{font-size:.88rem;color:#333;margin:.25rem 0}
+.news-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.4rem}
+.news-tag{border-radius:999px;border:1px solid #d6e2ee;padding:.12rem .5rem;font-size:.77rem;font-weight:600;background:#f5f9fc}
+.news-crossref{font-size:.82rem;color:#666;font-style:italic;margin-top:.35rem}
+
+/* Solutions tab */
+.solution-cat-header{font-size:1.15rem;font-weight:700;color:var(--blue);margin:1.2rem 0 .2rem;
+  border-bottom:2px solid #d6e2ee;padding-bottom:.3rem}
+.solution-cat-desc{font-size:.9rem;color:#555;margin:0 0 .6rem}
+.solution-card{border:1px solid #e2e8f0;border-radius:.5rem;background:#fff;padding:.85rem 1rem;margin:.5rem 0}
+.solution-badge{display:inline-block;border-radius:999px;padding:.15rem .65rem;font-size:.78rem;
+  font-weight:700;margin-bottom:.35rem}
+.solution-title{font-weight:700;font-size:.95rem;margin:.1rem 0 .2rem}
+.solution-actor{font-size:.82rem;color:#666;margin-bottom:.35rem}
+.solution-desc{font-size:.88rem;color:#333;margin:.2rem 0}
+.solution-example{font-size:.84rem;background:#f8faff;border-left:3px solid var(--blue2);
+  padding:.4rem .65rem;margin:.4rem 0;border-radius:0 .25rem .25rem 0;color:#333}
+.solution-crossref{font-size:.82rem;color:#666;font-style:italic;margin-top:.35rem}
+
 @media (max-width:760px){
   .wrap{padding:.75rem .75rem 3rem}
   h1{font-size:1.35rem}
   .hero{grid-template-columns:repeat(2,1fr)}
   .chart-wrap{height:300px}
+  .theme-grid{grid-template-columns:repeat(2,1fr)}
   /* Tighter cards + chips so 70+ cards stay scannable on a phone. */
   .bill-card{padding:.65rem .75rem}
   .chip-check{font-size:.78rem;padding:.18rem .55rem}
@@ -940,6 +1099,21 @@ function applyRecFilter(){
 }
 document.querySelectorAll('.rec-state').forEach(c => c.addEventListener('change', applyRecFilter));
 if (recCount) applyRecFilter();
+
+// --- News tag filter ---
+const newsCount = document.getElementById('news-count');
+function applyNewsFilter(){
+  const active = new Set([...document.querySelectorAll('.news-tag-filter:checked')].map(c => c.value));
+  let shown = 0;
+  document.querySelectorAll('#news-cards .news-card').forEach(el => {
+    const tags = el.dataset.tags ? el.dataset.tags.split(',') : [];
+    const ok = active.size === 0 || tags.some(t => active.has(t));
+    el.hidden = !ok;
+    if (ok) shown++;
+  });
+  if (newsCount) newsCount.innerHTML = '<strong>' + shown + ' items</strong>';
+}
+document.querySelectorAll('.news-tag-filter').forEach(c => c.addEventListener('change', applyNewsFilter));
 
 // --- Charts (lazy: only build once the Data tab is shown) ---
 const CHART_DATA = __CHART_DATA__;
@@ -1082,6 +1256,8 @@ def build_llms_txt() -> str:
 def build_html() -> str:
     legislation = build_legislation_tab()
     cwa = build_cwa_tab()
+    news = build_news_tab()
+    solutions = build_solutions_tab()
     data_html, chart_data = build_data_tab()
     js = build_js(chart_data)
     built = datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -1106,11 +1282,15 @@ def build_html() -> str:
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" data-tab="legislation" aria-selected="true">Legislation</button>
     <button class="tab" role="tab" data-tab="cwa" aria-selected="false">CWA Cases</button>
+    <button class="tab" role="tab" data-tab="news" aria-selected="false">News</button>
+    <button class="tab" role="tab" data-tab="solutions" aria-selected="false">Solutions</button>
     <button class="tab" role="tab" data-tab="data" aria-selected="false">Data</button>
   </div>
 
   <div class="tabpanel" id="panel-legislation" role="tabpanel">{legislation}</div>
   <div class="tabpanel" id="panel-cwa" role="tabpanel" hidden>{cwa}</div>
+  <div class="tabpanel" id="panel-news" role="tabpanel" hidden>{news}</div>
+  <div class="tabpanel" id="panel-solutions" role="tabpanel" hidden>{solutions}</div>
   <div class="tabpanel" id="panel-data" role="tabpanel" hidden>{data_html}</div>
 
   <p class="src-note">Static build {built} · Sources: EPA ECHO DMR, VA DEQ, Ohio EPA,

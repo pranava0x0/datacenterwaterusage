@@ -17,8 +17,9 @@ Last reviewed: 2026-05-28 (External Tracker Survey added — see section below t
 **Follow-ups**: scheduled refresh script that pulls the latest `docs/data/claims.json` from the sibling repo and re-filters theme=water (today the snapshot is manual). Optional: surface non-water themes (energy, infrastructure) the same way.
 
 ### ✅ National Data Center Water Legislation Tracker (May 2026)
-**Status**: Built — `data/reference/legislation.json` (14 state + federal bills) + `render_legislation_tracker()` dashboard panel (sorted by status, flags verified vs. unconfirmed entries). 10 tests in test_dashboard.py. VA HB 496/SB 553 and MN HF 16 confirmed enacted; remaining entries flagged "Unconfirmed" pending primary-source verification.
-**Follow-ups**: confirm the unconfirmed bill statuses against legislature records; add a scheduled re-verification monitor; optional US choropleth map.
+**Status**: Built — `data/reference/legislation.json` (now **38** state + federal + local/regulatory entries) + `render_legislation_tracker()` dashboard panel (sorted by status, flags verified vs. unconfirmed entries). 10 tests in test_dashboard.py. VA HB 496/SB 553 and MN HF 16 confirmed enacted; remaining entries flagged "Unconfirmed" pending primary-source verification.
+**June 2026 expansion (31 → 38)**: added the four 2026 state laws with newly *enacted* data-center water provisions — Idaho H 895 (closed-loop/non-consumptive cooling mandate, eff. July 1 2026), South Dakota SB 135 ("Data Center Bill of Rights," ≥10 MW cost-causation + water-supply compatibility), Utah HB 76 (Water Transparency Amendments; projected + actual water disclosure, 10,000-sq-ft threshold), West Virginia HB 4983 (Dept.-of-Commerce certification rule where binding water-protection amendments were rejected) — plus Maryland HB 270/SB 116 (veto-overridden impact study), failed Washington HB 2515 and Indiana SB 79, and upgraded the federal Durbin entry to its confirmed number **S. 4213**.
+**Follow-ups**: confirm the remaining unconfirmed bill statuses against legislature records; add a scheduled re-verification monitor; optional US choropleth map. **Candidates to verify + add next pass** (surfaced June 2026, not yet primary-verified): Florida hyperscale data-center regulatory framework (proposed, per Holland & Knight Feb 2026 — get the bill number); Iowa HF 2261 (separate water-utility customer class for ≥20 MW loads); Virginia SB 417 (conditions Cloud Computing Cluster grant eligibility on reclaimed-water cooling; did not advance, 2027 carryover); Indiana HB 1043 (data-center water regulation — confirm contents/status).
 
 ### ✅ EPA ECHO NAICS Facility Discovery (Federal)
 **Status**: Built — `scrapers/epa_echo_naics.py` (18 tests)
@@ -352,11 +353,13 @@ Adapt Center for Secure Water (Illinois) gap matrix for VA. For each facility, s
 **Sample prompt:**
 > Add `disclosure_score()` to `extractors/transparency.py` that takes a facility record and returns a 6-element list (volume/timing/source/return/cooling/monthly) of `True`/`False`/`Partial`. Render as a six-cell color-coded badge row on each facility card in the dashboard. Add a state-level "Disclosure Quality Index" tile that averages all facilities in the state. Tests verify that a fully-disclosing Loudoun ACFR facility scores 6/6 and an undisclosed NDA facility scores 0/6.
 
-#### 9. Household-equivalent toggle on all volume displays (HIGH)
+#### 9. Household-equivalent toggle on all volume displays (HIGH) — ⚙️ CORE BUILT 2026-06-23
 "This facility uses the equivalent of X households per day." Reusable on every gallons number across the dashboard. Use EPA's 300 gpd/household constant; offer pool / NYC-water-system-day toggles too.
 
-**Sample prompt:**
-> Add `utils/equivalents.py` with helpers `gpd_to_households(n, gpd_per_household=300)`, `gpd_to_olympic_pools(n)`, `gpd_to_nyc_supply_days(n)`. Add a session-state toggle in the dashboard header: "Show in [gallons | households | pools | NYC-days]". All volume metrics rewrite their label according to the toggle. Cite EPA WaterSense 300 gpd default. Tests verify rounding and unit-conversion correctness.
+**Status (2026-06-23):** the reusable core shipped — `utils/equivalents.py` with `gpd_to_households(n, gpd_per_household=300)`, `annual_gallons_to_households(...)`, `gallons_to_olympic_pools(n)`, and `gallons_to_nyc_supply_days(n)` (EPA WaterSense 300 gpd default; Olympic pool ≈ 660K gal; NYC system ≈ 1B gal/day). `dashboard.compute_household_equivalent` now delegates to it (one source of truth; exact legacy behavior preserved). 15 tests in `tests/test_equivalents.py`. **Remaining follow-up:** the session-state header toggle that rewrites every volume label across the dashboard (UI-only; the math is done).
+
+**Sample prompt (remaining toggle):**
+> Add a session-state toggle in the dashboard header: "Show in [gallons | households | pools | NYC-days]" backed by the existing `utils/equivalents.py` helpers. All volume metrics rewrite their label according to the toggle. Mirror the change into `build_site.py` so the static site offers the same toggle. Tests verify each unit renders.
 
 #### 10. Piedmont Environmental Council ArcGIS ingest (HIGH)
 PEC publishes a crowd-sourced existing + proposed VA data centers ArcGIS layer that already covers VA — directly fills the "proposed but not yet built" gap our pipeline misses today.
@@ -549,6 +552,11 @@ These are large data-center water stories with no formal CWA enforcement action 
 
 **Sample prompt:**
 > Add a lightweight `scrapers/` watch-monitor that polls LDEQ public notices (Meta Richland Parish) and TDEC Division of Water Resources (xAI Colossus greywater plant) for new permits, NOVs, or consent orders, and flags candidates for promotion into `cwa_investigations.json` (category `datacenter`). Keep it append-only and rate-limited; surface new hits in the dataset's `last_updated` note.
+
+### ✅ Prioritized CWA-application theories → dashboard panel (added 2026-06-23, BUILT 2026-06-23)
+`docs/cwa-enforcement-and-data-centers.md` carries a **scored, forward-looking menu of 12 CWA theories** that could attach to a data center, ranked on public-interest merit — Impact (community/environmental harm averted), Viability (legal strength post-*Sackett*/*Maui*), and Tractability (can this tracker source the evidence). Top picks: (1) **§505 citizen suit against the *receiving* POTW** in SNC while loaded by DC blowdown and (2) **§307/§403 pretreatment / Industrial-User** loading — both turn the existing ECHO DMR/SNC pull into an actionable community-cost finding against the permit that actually carries the operational discharge. Highest-novelty legal theory: (9) **County of Maui "functional equivalent"** for discharge-to-groundwater-reaching-surface-water. Scoring is merit-only (impact/viability/tractability), deliberately **not** keyed to any operator's or official's identity or politics.
+
+**Status (2026-06-23):** BUILT. `dashboard.CWA_APPLICATION_THEORIES` (the 12 scored theories) + pure `_build_cwa_theories_html()` builder + `render_cwa_application_theories()` panel, wired into the Streamlit CWA tab (after the insights panel) and the static site (`build_site.build_cwa_tab`, in a collapsible). `.theory-table` CSS added to `_RESPONSIVE_CSS` so both surfaces match. 7 tests in `test_dashboard.py` + 2 in `test_build_site.py` (panel renders, all 12 rows, distinct classes so card/case counts are unaffected). **Optional follow-up:** hyperlink each theory's `analog` to the matching `cwa_investigations.json` case, and add client-side sorting by I/V/T.
 
 ---
 
