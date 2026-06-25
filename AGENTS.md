@@ -44,6 +44,12 @@ tests/                   pytest — full suite runs in ~2s; no excuse to skip
   not-applied — `cwa_pathway` + `analogous_cases` whose ids must resolve.
   Tests in `tests/test_dashboard.py` reject violations; run them before
   committing data.
+- **legislation.json field formats are non-obvious — match existing bills exactly.**
+  `timeline`: list of `{date, milestone, detail?}` objects (not a dict of key→date).
+  `general_principles`: list of `{tag, note}` dicts (not a list of strings).
+  Using the wrong format silently builds incorrect JSON that only fails at
+  `python3 build_site.py` time with a cryptic AttributeError. Always check one
+  existing bill before adding new entries. (Error logged 2026-06-24 in errors.md.)
 - **Append-only data.** Don't delete or rewrite existing records; adjudicate
   conflicts toward the newer version (CLAUDE.md § 3).
 - **VA DEQ's website WAF-blocks scripted fetches (403).** Don't burn time
@@ -199,6 +205,16 @@ lookup a single WebSearch answers. Sibling repos measured the failure mode:
 full deep-research fan-out can burn millions of tokens and return nothing.
 Deep-research / multi-agent workflows are **explicit user opt-in only**,
 with a stated cost expectation.
+
+**Never spawn an agent to resolve merge conflicts in files you were just editing.**
+Measured in this repo (2026-06-24): resolving 8-file merge conflict via agent
+cost ~105k tokens (28.9k parent + 76.2k child, 59 tool uses). Correct cost
+was ~25-35k inline. The failure mode: a ~1000-word agent prompt encoding the
+solution + sub-agent spawning + re-reading files already in context = 3-4×
+waste. The signal you're in this trap: if you can write a detailed prompt
+explaining exactly how to resolve each conflict, you already have the context
+to do it with 4-6 `Edit` calls yourself. Inline the edits, run
+`python3 build_site.py && python3 -m pytest -q`, done.
 
 ### Token gate at 50K
 

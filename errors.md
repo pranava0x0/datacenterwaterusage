@@ -96,6 +96,14 @@ Format:
 - **Root cause**: API limitation — the primary ECHO REST endpoints (`get_effluent`, `get_facility_info`, `get_qid`) are unreliable. However, the chart/download endpoints work consistently.
 - **Resolution**: Fixed — switched to `eff_rest_services.get_summary_chart` (for facility info) and `eff_rest_services.download_effluent_chart` (for DMR CSV data). These endpoints return complete data reliably. The CSV contains 64 columns per record with full DMR values, limits, and violation data.
 
+### [2026-06-24] legislation.json new entries: timeline and general_principles format errors
+- **Module**: dashboard.py `_build_timeline_html`, `_build_principles_html`
+- **Error**: `AttributeError: 'str' object has no attribute 'get'` in `_build_timeline_html` (line ~1276) and `_build_principles_html` (line ~1339) when running `python3 build_site.py`.
+- **Context**: Adding 8 new bills to `data/reference/legislation.json` during a legislation expansion pass. The new entries used incorrect field formats — `timeline` as a dict (`{"introduced": "2026-06-09"}`) instead of a list of event objects (`[{"date": "...", "milestone": "..."}]`), and `general_principles` as a list of strings instead of a list of `{tag, note}` dicts.
+- **Root cause**: Data bug — new legislation entries didn't match the format of existing entries. Should inspect existing bills before adding new ones.
+- **Next time**: Before adding legislation.json entries, check one existing bill's `timeline` (list of `{date, milestone, detail?}`) and `general_principles` (list of `{tag, note}`) structure. The formats are not self-evident from field names alone.
+- **Resolution**: Fixed — converted all 8 new bill entries to correct list format for both fields. `python3 build_site.py` and 466 tests pass after fix.
+
 ### [2026-06-01] EPA ECHO NAICS facility search returns HTTP error for VA and OH
 - **Module**: scrapers/epa_echo_naics.py
 - **Error**: `RetryError[<Future ... raised HTTPStatusError>]` from the ECHO facility-search call for both `state=VA` and `state=OH` (NAICS 518210). After tenacity retries, the search returns 0 facilities and the scraper writes no records (`total_facilities=0`).
