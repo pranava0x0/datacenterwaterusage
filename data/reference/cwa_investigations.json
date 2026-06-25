@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-06-04",
+  "last_updated": "2026-06-24",
   "note": "Clean Water Act enforcement actions and landmark precedent cases relevant to data center water use and cooling discharge. Four categories: 'datacenter' = direct CWA actions against named hyperscale operators or their contractors, including state permit enforcement and §404 permit applications with significant wetland/stream impacts (e.g. Amazon Boardman nitrate settlement, Google §404 applications in VA and AR); 'adjacent' = water-relevant actions at data-center sites where the binding or active enforcement sits OUTSIDE the CWA — a Clean Air Act suit, a local well-permitting action, a §404 citizen suit over data-center power infrastructure, or a permitted-but-paused voluntary water commitment; 'industrial' = enforcement against large industrial water users that are the closest practical analogs (cooling water §316(a)/(b), pretreatment, sewer-system consent decrees, PFAS, CAFO discharges); 'precedent' = Supreme Court and federal appellate rulings that set the legal scope of the CWA, including Loper Bright (2024) ending Chevron deference and Lewis v. US (5th Cir. 2023) applying Sackett. Comprehensive coverage for 2020-present, with foundational earlier cases retained as benchmarks (Smithfield 1997, Tyson 2003, Brayton Point 2003-2007). Direct hyperscaler enforcement remains thin because operators usually sit behind contractor-permittee structures and discharge to municipal sewers — the industrial cases show what enforcement looks like once that shield slips. The Amazon Boardman 2026 $20.5M nitrate settlement is the first eight-figure direct-hyperscaler water settlement. The Port of Morrow OR DEQ enforcement ($727K, 2024) is the largest state-level penalty at a WWTP explicitly identified as receiving data center wastewater. Google's concurrent §404 applications in VA (Project Raspberry, Project Loch) and AR (Port of Little Rock, 16.8 ac wetlands) mark a new wave of federal permitting scrutiny on data center construction in sensitive watersheds.",
   "cases": [
     {
@@ -32,7 +32,8 @@
           "url": "https://www.news9.com/story/68a87d4cd79483d4597c5395/stillwater-homeowner-association-sues-google-data-center-construction",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Meta-MorganCo-GA-investigation-2026",
@@ -59,7 +60,8 @@
           "url": "https://www.tomshardware.com/tech-industry/big-tech/meta-data-center-allegedly-muddies-georgia-towns-drinking-water-investigation-underway-epa-promises-immediate-investigation-after-congresswoman-brings-dirty-jars-of-water-to-hearing",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "potential"
     },
     {
       "case_id": "Smithfield-Pagan-River-1997",
@@ -86,7 +88,8 @@
           "url": "https://www.bayjournal.com/article/smithfield_gets_record_fine_for_polluting_virginia_river",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Tyson-Sedalia-2003",
@@ -108,7 +111,8 @@
           "url": "https://www.ehstoday.com/news/ehs_imp_36455",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Brayton-Point-Dominion-2003-2007",
@@ -130,7 +134,8 @@
           "url": "https://archive.epa.gov/epapages/newsroom_archive/newsreleases/0b35588451a54383852573dd0003c3bd.html",
           "type": "EPA press release"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Swift-Beef-Grand-Island-2011",
@@ -152,7 +157,8 @@
           "url": "https://www.epa.gov/newsreleases/epa-fines-swift-beef-company-alleged-clean-water-act-violations-nebraska",
           "type": "EPA press release"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Yuengling-Pottsville-2016",
@@ -179,7 +185,8 @@
           "url": "https://www.epa.gov/archive/epa/newsreleases/yuengling-upgrade-environmental-measures-settle-clean-water-act-violations-two.html",
           "type": "EPA press release"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "American-Zinc-Recycling-Palmerton-2021",
@@ -196,7 +203,8 @@
           "url": "https://www.epa.gov/enforcement/american-zinc-recycling-corp-settlement",
           "type": "EPA enforcement page"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Sackett-v-EPA-2023",
@@ -223,7 +231,8 @@
           "url": "https://www.congress.gov/crs-product/LSB10981",
           "type": "law review"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "County-of-Maui-v-Hawaii-Wildlife-Fund-2020",
@@ -250,7 +259,8 @@
           "url": "https://en.wikipedia.org/wiki/County_of_Maui_v._Hawaii_Wildlife_Fund",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Entergy-v-Riverkeeper-2009",
@@ -277,7 +287,8 @@
           "url": "https://www.justice.gov/enrd/i-i-entergy-corp-v-riverkeeper-inc",
           "type": "court ruling"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Rapanos-v-United-States-2006",
@@ -304,7 +315,8 @@
           "url": "https://en.wikipedia.org/wiki/Rapanos_v._United_States",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Microsoft-Boydton-VA-2023",
@@ -326,7 +338,8 @@
           "url": "https://www.deq.virginia.gov/news-info/shortcuts/enforcement/enforcement-actions",
           "type": "state agency action"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "QTS-Fayetteville-GA-2024",
@@ -348,7 +361,8 @@
           "url": "https://www.cbsnews.com/atlanta/news/georgias-data-center-boom-leave-residents-concerns-about-environmental-impacts/",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "QTS-CedarRapids-IA-2025",
@@ -375,7 +389,8 @@
           "url": "https://corridorbusiness.com/linn-county-seeks-20000-penalty-over-unpermitted-wells-at-qts-data-center-construction-site/",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Nscale-MasonCounty-WV-2026",
@@ -402,7 +417,8 @@
           "url": "https://wvmetronews.com/2026/05/24/mason-county-community-impacted-by-flooding-from-data-center-construction-site/",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "potential"
     },
     {
       "case_id": "Cleveland-Cliffs-Burns-Harbor-2022",
@@ -429,7 +445,8 @@
           "url": "https://www.justice.gov/archives/opa/pr/cleveland-cliffs-agrees-improve-environmental-compliance-indiana-facility-and-pay-3-million",
           "type": "DOJ press release"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Norfolk-Southern-East-Palestine-2024",
@@ -451,7 +468,8 @@
           "url": "https://www.federalregister.gov/documents/2024/05/30/2024-11862/notice-of-lodging-of-proposed-consent-decree-under-the-comprehensive-environmental-response",
           "type": "court ruling"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Chemours-Washington-Works-PFAS-2023",
@@ -473,7 +491,8 @@
           "url": "https://www.stormwater.com/stormwater-management/press-release/53058892/epa-makes-first-ever-clean-water-act-enforcement-for-pfas-in-stormwater",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Hanover-Foods-2025",
@@ -500,7 +519,8 @@
           "url": "https://www.epa.gov/enforcement/hanover-foods-corporation-cwa-settlement-summary",
           "type": "EPA enforcement page"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Plains-Pipeline-Santa-Barbara-2020",
@@ -527,7 +547,8 @@
           "url": "https://www.federalregister.gov/documents/2020/03/30/2020-06500/notice-of-lodging-of-proposed-consent-decree-under-the-clean-water-act-the-oil-pollution-act-of-1990",
           "type": "court ruling"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Jersey-City-MUA-2025",
@@ -554,7 +575,8 @@
           "url": "https://www.justice.gov/opa/pr/jersey-city-municipal-utilities-authority-make-significant-improvements-jersey-city-s",
           "type": "DOJ press release"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Cahokia-Heights-2024",
@@ -581,7 +603,8 @@
           "url": "https://www.epa.gov/enforcement/cahokia-heights-2024-clean-water-act-case-summary",
           "type": "EPA enforcement page"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Guam-Waterworks-2024",
@@ -608,7 +631,8 @@
           "url": "https://www.epa.gov/enforcement/guam-waterworks-authority-clean-water-act-settlement-information-sheet",
           "type": "EPA enforcement page"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Denali-Water-Solutions-2024",
@@ -635,7 +659,8 @@
           "url": "https://www.epa.gov/enforcement/denali-water-solutions-llc-clean-water-act-settlement-summary",
           "type": "EPA enforcement page"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Reading-WWTP-2024",
@@ -652,7 +677,8 @@
           "url": "https://www.federalregister.gov/documents/2024/01/31/2024-01883/notice-of-lodging-of-consent-decree-under-the-clean-water-act",
           "type": "court ruling"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Republic-Steel-OH-2024",
@@ -679,7 +705,8 @@
           "url": "https://chroniclet.com/news/379921/lorain-canton-steel-mills-at-center-of-epa-lawsuit-against-republic-steel/",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Energix-VA-2024",
@@ -711,7 +738,8 @@
           "url": "https://vchr.org/pdf/energix/deq_related/deq_fines_for_7_sites_march_2023.pdf",
           "type": "state agency action"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Pactiv-Evergreen-Canton-NC-2023-2024",
@@ -743,7 +771,8 @@
           "url": "https://www.deq.nc.gov/news/key-issues/canton-paper-mill",
           "type": "state agency action"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Pacific-Seafood-OR-2026",
@@ -770,7 +799,8 @@
           "url": "https://www.kptv.com/2026/04/27/pacific-seafood-says-oregon-deq-out-control-after-company-hit-with-32-million-fines/",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "SpaceX-Starbase-TX-2024",
@@ -802,7 +832,8 @@
           "url": "https://www.epa.gov/system/files/documents/2024-09/spacex_cafo_cwa-06-2024-1768_txu09110_090624__0.pdf",
           "type": "EPA press release"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Hailiang-Copper-TX-2023",
@@ -819,7 +850,8 @@
           "url": "https://www.tceq.texas.gov/downloads/agency/decisions/agendas/backup/2023/2023-0715-iwd-e.pdf",
           "type": "state agency action"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Agri-Star-Postville-IA-2024-2025",
@@ -851,7 +883,8 @@
           "url": "https://iowacapitaldispatch.com/2025/02/26/agri-stars-postville-plant-sued-for-water-quality-violations/",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Hyponex-Scotts-OH-2024",
@@ -873,7 +906,8 @@
           "url": "https://www.epa.gov/system/files/documents/2024-05/cwa-05-2024-0013_proposedcafo_hyponexcorporation_shreveohio.pdf",
           "type": "EPA press release"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "SF-EPA-end-result-2025",
@@ -900,7 +934,8 @@
           "url": "https://www.sidley.com/en/insights/newsupdates/2025/03/us-supreme-court-limits-epas-clean-water-act-authority-to-impose-water-quality-standards",
           "type": "law review"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Maui-remand-DHaw-2021",
@@ -927,7 +962,8 @@
           "url": "https://www.calt.iastate.edu/post/federal-court-says-county-maui-effectively-discharging-pollutant-violation-clean-water-act",
           "type": "law review"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "SierraClub-WVDEP-401-2023",
@@ -954,7 +990,8 @@
           "url": "https://appvoices.org/2023/04/03/mvp-wv-401/",
           "type": "law review"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Amazon-Boardman-OR-nitrate-2026",
@@ -986,7 +1023,8 @@
           "url": "https://www.koin.com/news/oregon/amazon-will-pay-20-5m-to-settle-oregon-groundwater-contamination-case/",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "ProjectBlue-Tucson-AMES-2026",
@@ -1023,7 +1061,8 @@
           "url": "https://www.pima.gov/3552/Project-Blue-FAQ",
           "type": "state agency action"
         }
-      ]
+      ],
+      "display_section": "potential"
     },
     {
       "case_id": "JohnsHopkins-DSAI-Baltimore-2025",
@@ -1055,7 +1094,8 @@
           "url": "https://marylandmatters.org/2025/06/05/diesel-spill-baltimore-harbor-east-hopkins/",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Atlanta-RMClayton-CRK-2024-2026",
@@ -1087,7 +1127,8 @@
           "url": "https://chattahoochee.org/wp-content/uploads/2026/02/ATL-CRK-2026-Consent-Decree.pdf",
           "type": "court filing"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Youngstown-OH-CSO-2025",
@@ -1119,7 +1160,8 @@
           "url": "https://waterdaily.com/youngstown-consent-decree-deal-us-epa/",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "MDC-Hartford-CT-CSO-2025",
@@ -1151,7 +1193,8 @@
           "url": "https://themdc.org/wastewater-treatment/the-clean-water-project/",
           "type": "utility website"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Wynja-Feedlot-IA-CAFO-2025",
@@ -1183,7 +1226,8 @@
           "url": "https://iowacapitaldispatch.com/briefs/epa-agrees-to-20k-settlement-with-northwest-iowa-feedlot-for-water-violations/",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Oklahoma-v-Tyson-IRW-2005-2025",
@@ -1215,7 +1259,8 @@
           "url": "https://oklahoma.gov/oag/news/newsroom/2025/november/drummond-calls-out-tyson-s-misinformation-campaign-over-poultry-lawsuit.html",
           "type": "state agency action"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Tyco-BASF-PFAS-AFFF-PWS-2024",
@@ -1247,7 +1292,8 @@
           "url": "https://www.pfaswatersettlement.com/frequently-asked-questions-tyco/",
           "type": "official settlement website"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Loper-Bright-Enterprises-v-Raimondo-2024",
@@ -1279,7 +1325,8 @@
           "url": "https://jhulr.org/2025/06/14/after-loper-bright-weakening-the-power-of-the-environmental-protection-agency/",
           "type": "law review"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Lewis-v-United-States-5th-Cir-2023",
@@ -1311,7 +1358,8 @@
           "url": "https://acoel.org/an-early-christmas-present-from-three-fifth-circuit-judges-who-concluded-a-louisiana-property-is-not-subject-to-federal-clean-water-act-jurisdiction/",
           "type": "law review"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "xAI-Colossus-Memphis-TN-2026",
@@ -1343,7 +1391,8 @@
           "url": "https://earthjustice.org/case/xai-illegal-gas-power-plant-data-center-colossus",
           "type": "advocacy / litigation"
         }
-      ]
+      ],
+      "display_section": "potential"
     },
     {
       "case_id": "Amazon-NewCarlisle-IN-wetlands-2025",
@@ -1370,7 +1419,8 @@
           "url": "https://wsbt.com/news/local/wetland-impact-idem-sends-letter-halts-some-work-over-amazons-data-center-construction-impact-indiana-department-environmental-management-application-process-unauthorized-impact-st-joseph-county",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Atlas-ProjectSail-Coweta-GA-2026",
@@ -1397,7 +1447,8 @@
           "url": "https://www.thecooldown.com/green-business/data-center-lawsuit-coweta-county-residents/",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "potential"
     },
     {
       "case_id": "Google-Berkeley-SC-Middendorf-aquifer-2019",
@@ -1424,7 +1475,8 @@
           "url": "https://coastalconservationleague.org/projects/google-groundwater-permit/",
           "type": "advocacy"
         }
-      ]
+      ],
+      "display_section": "potential"
     },
     {
       "case_id": "Rowan-ProjectCinco-Medina-TX-2025",
@@ -1451,7 +1503,8 @@
           "url": "https://www.datacenterdynamics.com/en/news/rowan-digital-to-invest-in-water-conservation-program-in-medina-county-texas/",
           "type": "trade press"
         }
-      ]
+      ],
+      "display_section": "potential"
     },
     {
       "case_id": "QTS-Fayette-GA-unbilled-water-2026",
@@ -1473,7 +1526,8 @@
           "url": "https://www.techspot.com/news/112356-data-center-used-29-million-gallons-water-without/",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "potential"
     },
     {
       "case_id": "PortOfTacoma-v-PugetSoundkeeper-9thCir-2024",
@@ -1500,7 +1554,8 @@
           "url": "https://www.americanbar.org/groups/business_law/resources/business-law-today/2025-august/supreme-courts-cert-denials-pave-way-surge-environmental-citizen-suits/",
           "type": "bar association article"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "CERF-v-Naples-9thCir-2024",
@@ -1527,7 +1582,8 @@
           "url": "https://www.mgkflitigationblog.com/ninth-circuit--clean-water-act-suit-civil-penalties-moot",
           "type": "litigation blog analysis"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "FortSmith-AR-sewer-CD-mod-2026",
@@ -1554,7 +1610,8 @@
           "url": "https://talkbusiness.net/2026/02/fort-smith-board-encouraged-to-approve-modified-federal-consent-decree/",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "PortOfMorrow-DEQ-OR-2024",
@@ -1581,7 +1638,8 @@
           "url": "https://oregoncapitalchronicle.com/2025/01/13/gov-kotek-issues-emergency-order-allowing-port-of-morrow-to-violate-water-pollution-permit/",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "Google-ProjectRaspberry-VA-2026",
@@ -1608,7 +1666,8 @@
           "url": "https://www.roanokerambler.com/water-authority-releases-google-data-center-records-ahead-scheduled-contempt-hearing/",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "potential"
     },
     {
       "case_id": "Google-ProjectLoch-VA-2026",
@@ -1630,7 +1689,8 @@
           "url": "https://www.axios.com/local/richmond/2026/05/19/google-data-center-chesterfield-army-corps-permit",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "potential"
     },
     {
       "case_id": "Google-LittleRock-AR-2026",
@@ -1657,7 +1717,8 @@
           "url": "https://katv.com/news/local/little-rock-protesters-rally-over-google-data-center-citing-water-and-wetland-risks",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "potential"
     },
     {
       "case_id": "Greenidge-SenecaLake-NY-2025",
@@ -1684,7 +1745,8 @@
           "url": "https://treichlerlawoffice.com/water/greenidge/index.html",
           "type": "advocacy / litigation"
         }
-      ]
+      ],
+      "display_section": "historical"
     },
     {
       "case_id": "TransGas-AdamsFork-WV-2025",
@@ -1706,7 +1768,8 @@
           "url": "https://www.qcintel.com/ammonia/article/west-virginia-residents-file-lawsuit-against-ammonia-plant-data-centre-project-54475.html",
           "type": "news"
         }
-      ]
+      ],
+      "display_section": "potential"
     }
   ]
 }

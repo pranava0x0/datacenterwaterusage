@@ -52,9 +52,14 @@ class TestStaticBuild:
     def test_all_cwa_cases_embedded(self):
         html = _html()
         cases = dashboard.load_cwa_investigations().get("cases", [])
-        assert html.count('class="cwa-case"') == len(cases)
-        # The JS total used by the filter count line must match the dataset.
-        assert f"window.CWA_TOTAL = {len(cases)}" in html
+        historical = [c for c in cases if c.get("display_section", "historical") == "historical"]
+        potential = [c for c in cases if c.get("display_section") == "potential"]
+        # Historical cases get the filterable .cwa-case wrapper; potential cases get
+        # .cwa-potential-case so client-side filtering doesn't hide them.
+        assert html.count('class="cwa-case"') == len(historical)
+        assert html.count('class="cwa-potential-case"') == len(potential)
+        # The JS total used by the filter count line reflects historical cases only.
+        assert f"window.CWA_TOTAL = {len(historical)}" in html
 
     def test_all_bills_and_claims_embedded(self):
         html = _html()
@@ -90,8 +95,9 @@ class TestStaticBuild:
         # unchanged by it.
         html = _html()
         cases = dashboard.load_cwa_investigations().get("cases", [])
+        historical = [c for c in cases if c.get("display_section", "historical") == "historical"]
         bills = dashboard.load_legislation().get("bills", [])
-        assert html.count('class="cwa-case"') == len(cases)
+        assert html.count('class="cwa-case"') == len(historical)
         assert html.count('class="bill-card"') == len(bills) + len(cases)
 
     def test_markdown_blobs_converted(self):

@@ -234,7 +234,9 @@ def build_company_claims() -> str:
 def build_cwa_tab() -> str:
     payload = dash.load_cwa_investigations()
     cases = payload.get("cases", [])
-    stats = dash._cwa_datacenter_insights(cases)
+    historical = [c for c in cases if c.get("display_section", "historical") == "historical"]
+    potential = [c for c in cases if c.get("display_section") == "potential"]
+    stats = dash._cwa_datacenter_insights(historical)
     total = stats["total"]
     last_updated = payload.get("last_updated") or "unknown"
 
@@ -245,13 +247,13 @@ def build_cwa_tab() -> str:
   <h4>What this record tells data centers</h4>
   <ul>
     <li><strong>The permittee shield.</strong> {stats['contractor_permittee']} of {total}
-      direct data-center cases name a construction contractor or subcontractor — not the
-      hyperscaler — as the party on the permit. Operators routinely sit one entity removed
-      from the permittee, which is why direct enforcement against them is thin.</li>
+      resolved data-center enforcement cases name a construction contractor or subcontractor —
+      not the hyperscaler — as the party on the permit. Operators routinely sit one entity
+      removed from the permittee, which is why direct enforcement against them is thin.</li>
     <li><strong>CWA risk is front-loaded into construction.</strong> Construction stormwater,
       sediment, and erosion under the §402 Construction General Permit is the most common
-      touchpoint — it appears in {stats['construction_stormwater']} of {total} cases, far more
-      than operational cooling-water discharge.</li>
+      touchpoint — it appears in {stats['construction_stormwater']} of {total} historical cases,
+      far more than operational cooling-water discharge.</li>
     <li><strong>The liability frontier is moving.</strong> The 2026 Amazon Boardman settlement
       ($20.5M, Oregon nitrate) is the first eight-figure direct-hyperscaler water settlement —
       pushing exposure beyond stormwater into groundwater and nutrient contamination.</li>
@@ -264,30 +266,46 @@ def build_cwa_tab() -> str:
 </div>"""
 
     theories = dash._build_cwa_theories_html(dash.CWA_APPLICATION_THEORIES)
-
     explainer = md(dash._cwa_statute_explainer_md())
 
-    # Category filter checkboxes (all on by default).
+    # Section 1: historical cases — category filter checkboxes.
+    # Adjacent cases all moved to section 2, so filters cover datacenter/industrial/precedent.
+    hist_cats = sorted(
+        {c.get("category") for c in historical if c.get("category")},
+        key=lambda k: dash.CWA_CATEGORY_ORDER.get(k, 9),
+    )
     cat_boxes = "".join(
         f'<label class="chip-check"><input type="checkbox" class="cwa-cat" '
-        f'value="{k}" checked> {esc(v)}</label>'
-        for k, v in dash.CWA_CATEGORY_LABELS.items()
+        f'value="{k}" checked> {esc(dash.CWA_CATEGORY_LABELS.get(k, k))}</label>'
+        for k in hist_cats
     )
 
-    # Sort like the app: category order, then year descending; wrap each card in
-    # a div carrying machine-readable category + end-year for client-side filtering.
-    sorted_cases = sorted(
-        cases,
+    sorted_hist = sorted(
+        historical,
         key=lambda c: (
             dash.CWA_CATEGORY_ORDER.get(c.get("category"), 9),
             -dash._cwa_year_end(c.get("year", "")),
         ),
     )
-    case_cards = "".join(
+    hist_cards = "".join(
         f'<div class="cwa-case" data-category="{esc(c.get("category",""))}" '
         f'data-yearend="{dash._cwa_year_end(c.get("year",""))}">'
         f'{dash._build_cwa_case_html(c)}</div>'
-        for c in sorted_cases
+        for c in sorted_hist
+    )
+
+    # Section 2: potential/active cases — no client-side filter needed (12 cards).
+    sorted_pot = sorted(
+        potential,
+        key=lambda c: (
+            dash.CWA_CATEGORY_ORDER.get(c.get("category"), 9),
+            -dash._cwa_year_end(c.get("year", "")),
+        ),
+    )
+    pot_cards = "".join(
+        f'<div class="cwa-potential-case">'
+        f'{dash._build_cwa_case_html(c)}</div>'
+        for c in sorted_pot
     )
 
     cat_labels_json = json.dumps(dash.CWA_CATEGORY_LABELS)
@@ -295,10 +313,10 @@ def build_cwa_tab() -> str:
 
     return f"""
 <section class="panel">
-  <h2>Clean Water Act Investigations</h2>
-  <p class="lead">Enforcement actions and landmark court rulings under the Clean Water Act,
-  organized by what they actually tell us about how the law applies to data center water use
-  and cooling discharges.</p>
+  <h2>Clean Water Act — Historical Record &amp; Potential Exposure</h2>
+  <p class="lead">Two views on the CWA and data centers: the enforcement record that has
+  actually built (penalties, settlements, court rulings), and specific named sites where
+  active proceedings or matching circumstances suggest CWA exposure is next.</p>
   {insights}
   <details class="lazy">
     <summary>Prioritized CWA-application theories — what could attach to a data center</summary>
@@ -310,18 +328,37 @@ def build_cwa_tab() -> str:
     <summary>What is a Clean Water Act investigation? — statute, authority, and why it's deployed</summary>
     <div class="explainer-md">{explainer}</div>
   </details>
+
+  <h3>Part 1 — Historical CWA Enforcement Record</h3>
+  <p><strong>{len(historical)} cases</strong> — enforcement actions, penalties, settlements,
+  and landmark court rulings that have <strong>actually occurred</strong>.
+  <strong>Industrial cases are legal analogs</strong> — the enforcement pattern for
+  operations similar to data centers, but against other industries, not data centers.
+  Precedent rulings define CWA's legal scope for future enforcement.</p>
   <div class="cwa-filters">
     <div class="cwa-cats">{cat_boxes}</div>
     <label class="chip-check"><input type="checkbox" id="cwa-recent"> 2020 onward only</label>
   </div>
   <p class="count-line" id="cwa-count"></p>
-  <div id="cwa-cases">{case_cards}</div>
-  <p class="src-note">Dataset last updated {esc(last_updated)}.</p>
+  <div id="cwa-cases">{hist_cards}</div>
+
+  <hr>
+  <h3>Part 2 — Active &amp; Potential CWA Exposure at Named Data Center Sites</h3>
+  <p><strong>{len(potential)} named data center sites</strong> where regulatory proceedings
+  are active (pending permit applications, ongoing investigations, active citizen suits)
+  or where the factual circumstances match the historical enforcement patterns above —
+  but <strong>no formal CWA enforcement action has been issued yet</strong>.
+  Use the theories panel above to trace which CWA hook applies to each site.</p>
+  <div id="cwa-potential">{pot_cards}</div>
+
+  <p class="src-note">Dataset last updated {esc(last_updated)}.
+  Total: {len(cases)} entries ({len(historical)} historical enforcement,
+  {len(potential)} active/potential).</p>
 </section>
 <script>
   window.CWA_CAT_LABELS = {cat_labels_json};
   window.CWA_CAT_ORDER = {cat_order_json};
-  window.CWA_TOTAL = {len(cases)};
+  window.CWA_TOTAL = {len(historical)};
 </script>
 """
 

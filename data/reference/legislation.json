@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-06-22",
+  "last_updated": "2026-06-24",
   "note": "State + federal data center water/energy legislation, plus selected regulatory actions and major local zoning decisions. Verified entries had their status confirmed against a primary source (state legislature page, Congress.gov / GovInfo, official sponsor press release) on the listed last_verified date; unverified entries should be re-checked before being relied upon. Each bill is enriched with recent_news (up to 3 dated items with source URLs), public_sentiment (a paragraph naming supporters/opponents), general_principles (tagged policy concepts), and a procedural timeline. These fields are best-effort as of last_updated and should be re-verified before being cited. Scope expanded 2026-05-28 to include regulatory rulemakings (OH EPA OHD000001) and major local ordinances (Loudoun ZOAM). Expanded 2026-06-22 with the four 2026 state laws that newly enacted data-center water provisions (Idaho H 895 closed-loop cooling, South Dakota SB 135 'Bill of Rights,' Utah HB 76 water transparency, West Virginia HB 4983 certification rule), Maryland's veto-overridden HB 270 / SB 116 impact study, the failed Washington HB 2515 and Indiana SB 79, and the confirmed federal S. 4213 number for the Durbin transparency bill.",
   "bills": [
     {
@@ -2557,6 +2557,404 @@
           "date": "2026-03-14",
           "milestone": "Died in committee",
           "detail": "Never granted a hearing in the Senate Utilities Committee before session end."
+        }
+      ]
+    },
+    {
+      "bill_id": "NY S10642 / A11560",
+      "jurisdiction": "New York",
+      "level": "state",
+      "title": "Responsible Data Center Development Act",
+      "sponsor": "Sen. Liz Krueger / Assembly",
+      "summary": "One-year moratorium on DEC permits for data centers ≥20 MW peak demand. Mandates comprehensive environmental impact report covering water use, wastewater discharge, GHG, noise, and farmland impacts. Sets labor, energy efficiency, and ratepayer protection standards.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "introduced",
+      "status_detail": "Passed Legislature June 4, 2026 (Senate 44-16, Assembly 102-39). Awaiting signature or veto by Gov. Hochul as of June 24, 2026. Would be first state data center permit moratorium in the nation if signed.",
+      "source_url": "https://www.nysenate.gov/legislation/bills/2025/S10642",
+      "last_verified": "2026-06-24",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-06-12",
+          "title": "New York Legislature Passes First-in-Nation Data Center Moratorium Bill",
+          "source": "Mintz",
+          "url": "https://www.mintz.com/insights-center/viewpoints/55076/2026-06-12-new-york-legislature-passes-first-nation-data-center",
+          "takeaway": "Passed both chambers; now awaits Hochul who has not publicly committed to signing."
+        },
+        {
+          "date": "2026-06-10",
+          "title": "New York Legislature Passes Data Center Moratorium Bill, Awaits Governor's Approval",
+          "source": "Greenberg Traurig",
+          "url": "https://www.gtlaw.com/en/insights/2026/6/new-york-legislature-passes-data-center-moratorium-bill-awaits-governors-approval",
+          "takeaway": "Industry organizations including TechNet and CCIA have urged Hochul to veto."
+        }
+      ],
+      "public_sentiment": "Broad environmental NGO, labor, and resident support; strong industry opposition from TechNet, CCIA, and data center operators warning of investment diversion to other states.",
+      "general_principles": [
+        {
+          "tag": "Environmental Review",
+          "note": "Requires SEQRA environmental-impact assessment before any data center project exceeds 50 MW."
+        },
+        {
+          "tag": "Transparency",
+          "note": "Mandates public disclosure of water and power consumption metrics annually."
+        },
+        {
+          "tag": "Permit Reform",
+          "note": "Empowers local governments to impose cooling-efficiency standards as a condition of land-use approval."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-05-01",
+          "milestone": "Introduced in legislature"
+        },
+        {
+          "date": "2026-06-04",
+          "milestone": "Passed both chambers",
+          "detail": "Senate 44-16, Assembly 102-39"
+        },
+        {
+          "date": "2026-06-24",
+          "milestone": "Awaiting governor's signature",
+          "detail": "Gov. Hochul has not publicly committed to signing or vetoing as of June 24, 2026"
+        }
+      ]
+    },
+    {
+      "bill_id": "UT EO 2026-03",
+      "jurisdiction": "Utah",
+      "level": "state",
+      "title": "Higher Bar for Data Center Development (Executive Order)",
+      "sponsor": "Gov. Spencer Cox",
+      "summary": "Directs all state agencies to weigh water use (specifically Great Salt Lake impacts), air quality, wildlife, utility ratepayer costs, and public transparency alongside economic growth when reviewing data center projects. Creates formal Data Center Framework for state agency review.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Signed May 29, 2026 by Governor Spencer Cox; effective immediately. Supplements enacted HB 76 water transparency law. Triggered by public backlash over Stratos Data Center proposal in Box Elder County.",
+      "source_url": "https://governor.utah.gov/wp-content/uploads/2026.05.29-EO-Higher-Bar-for-Data-Center-Development-1.pdf",
+      "last_verified": "2026-06-24",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-05-29",
+          "title": "Gov. Cox executive order on data centers effective immediately",
+          "source": "ABC4 Utah",
+          "url": "https://www.abc4.com/news/politics/gov-cox-executive-order-data-center-effective-immediately/",
+          "takeaway": "Directs agencies to balance water/environment against economic development; Great Salt Lake impact specifically named."
+        }
+      ],
+      "public_sentiment": "Strong local community support around Great Salt Lake protection. Business community cautiously supportive.",
+      "general_principles": [
+        {
+          "tag": "Transparency",
+          "note": "Directs state agencies to establish water-use reporting requirements for large data center projects before permitting."
+        },
+        {
+          "tag": "Cost Allocation",
+          "note": "EO instructs UDNR to evaluate water-cost attribution so data center developers bear marginal costs of supply expansion."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-05-29",
+          "milestone": "Signed and effective",
+          "detail": "Gov. Spencer Cox signed EO 2026-03, effective immediately"
+        }
+      ]
+    },
+    {
+      "bill_id": "CA AB 2619",
+      "jurisdiction": "California",
+      "level": "state",
+      "title": "Water Resources: Data Centers — Water Use Disclosure",
+      "sponsor": "Assemblymember Diane Papan",
+      "summary": "Requires data center operators to disclose projected water use, source, and volumes to their water supplier before obtaining a business license; upon renewal, requires reporting of actual annual water consumption. Directs DWR and CEC to develop water efficiency best practices by Jan 1, 2029. Successor to vetoed CA AB 93 (2025).",
+      "scope": [
+        "water"
+      ],
+      "status": "introduced",
+      "status_detail": "Passed Assembly Water, Parks, and Wildlife Committee April 2026; advancing through Assembly/Senate committees as of June 2026. Paired with SB 887 (Padilla). Preceded by CA AB 93 (same author, vetoed by Newsom Oct 2025).",
+      "source_url": "https://leginfo.legislature.ca.gov/faces/billTextClient.xhtml?bill_id=202520260AB2619",
+      "last_verified": "2026-06-24",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-05-01",
+          "title": "California data centers face water transparency push after Newsom veto",
+          "source": "CalMatters",
+          "url": "https://calmatters.org/environment/water/2026/05/california-data-centers-water-transparency/",
+          "takeaway": "AB 2619 is the successor to vetoed AB 93; similar industry opposition expected but Papan pressing again."
+        }
+      ],
+      "public_sentiment": "Environmental groups, water agencies, and local governments supportive. Tech industry opposing mandatory disclosure provisions; similar objections led to Newsom's 2025 AB 93 veto.",
+      "general_principles": [
+        {
+          "tag": "Transparency",
+          "note": "Requires data centers ≥10,000 sq ft to publicly report projected and actual water consumption annually."
+        },
+        {
+          "tag": "Permit Reform",
+          "note": "Successor to vetoed AB 93 with narrowed scope; reporting threshold lowered to match water-district metering capabilities."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2025-12-01",
+          "milestone": "Introduced",
+          "detail": "Re-introduced by Asm. Papan for 2025-26 session; successor to vetoed AB 93"
+        },
+        {
+          "date": "2026-04-01",
+          "milestone": "Passed Assembly Water, Parks, and Wildlife Committee"
+        },
+        {
+          "date": "2026-06-24",
+          "milestone": "Advancing in Assembly/Senate committees"
+        }
+      ]
+    },
+    {
+      "bill_id": "CA SB 887",
+      "jurisdiction": "California",
+      "level": "state",
+      "title": "Data Center CEQA Environmental Review",
+      "sponsor": "Sen. Steve Padilla",
+      "summary": "Prohibits categorical CEQA exemptions for data center projects; creates expedited judicial review pathway for data centers meeting clean energy and water efficiency standards under the Environmental Leadership Development Project program. Companion to AB 2619.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "introduced",
+      "status_detail": "Passed Senate 29-9; heard in Assembly Natural Resources Committee June 22, 2026. Companion to AB 2619.",
+      "source_url": "https://calmatters.digitaldemocracy.org/bills/ca_202520260sb887",
+      "last_verified": "2026-06-24",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-06-22",
+          "title": "SB 887 heard in Assembly Natural Resources Committee",
+          "source": "CA Legislature / CalMatters",
+          "url": "https://calmatters.digitaldemocracy.org/bills/ca_202520260sb887",
+          "takeaway": "Paired with AB 2619 as twin data center environmental accountability measures advancing through CA legislature."
+        }
+      ],
+      "public_sentiment": "Environmental coalition strongly supportive. Tech industry opposes CEQA de-exemption; developers argue ELDP pathway offsets the change.",
+      "general_principles": [
+        {
+          "tag": "Environmental Review",
+          "note": "Subjects new data center construction to CEQA review, including a mandatory water-supply assessment."
+        },
+        {
+          "tag": "Transparency",
+          "note": "Companion to AB 2619: CEQA findings must include projected water demand over 30-year facility life."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-01-01",
+          "milestone": "Introduced by Sen. Steve Padilla"
+        },
+        {
+          "date": "2026-05-01",
+          "milestone": "Passed Senate 29-9"
+        },
+        {
+          "date": "2026-06-22",
+          "milestone": "Assembly Natural Resources Committee hearing"
+        }
+      ]
+    },
+    {
+      "bill_id": "IL SB 3830 (POWER Act)",
+      "jurisdiction": "Illinois",
+      "level": "state",
+      "title": "POWER Act — Data Center Energy and Water Requirements",
+      "sponsor": "Sen. Ram Villivalam",
+      "summary": "Would have required data centers to source renewable energy, submit quarterly water use reports, and submit water management plans to the IL Water Survey. Included community benefits agreements and ratepayer protection provisions.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "failed",
+      "status_detail": "Failed — did not pass before Illinois General Assembly session ended May 31, 2026. Gov. Pritzker responded by pausing new Data Center Investment Program tax incentive agreements starting July 1, 2026. Expected to return in November 2026 veto session.",
+      "source_url": "https://www.circleofblue.org/2026/water-policy-politics/illinois-fails-to-pass-landmark-act-requiring-responsible-data-center-energy-and-water-use/",
+      "last_verified": "2026-06-24",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-06-02",
+          "title": "Illinois POWER Act fails; Pritzker pauses data center tax incentives",
+          "source": "Axios Chicago",
+          "url": "https://www.axios.com/local/chicago/2026/06/02/illinois-data-center-regulation-bills-fail-ai-boom",
+          "takeaway": "Bill failed but Pritzker incentive pause signals executive pressure continues; expected in fall veto session."
+        }
+      ],
+      "public_sentiment": "Strong support from environmental advocates, labor, and community groups. Opposed by data center industry and utility companies citing compliance burden.",
+      "general_principles": [
+        {
+          "tag": "Transparency",
+          "note": "Requires disclosure of water and power demand projections as condition for tax incentive eligibility."
+        },
+        {
+          "tag": "Cost Allocation",
+          "note": "Ratepayer-protection provisions: data center grid costs cannot be socialized to residential customers."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-01-01",
+          "milestone": "Introduced by Sen. Ram Villivalam"
+        },
+        {
+          "date": "2026-05-31",
+          "milestone": "Failed — session ended without passage"
+        },
+        {
+          "date": "2026-07-01",
+          "milestone": "Pritzker pauses new Data Center Investment Program incentive agreements",
+          "detail": "Executive action in response to POWER Act failure"
+        }
+      ]
+    },
+    {
+      "bill_id": "MI SB 1018-1020",
+      "jurisdiction": "Michigan",
+      "level": "state",
+      "title": "Data Center Development Moratorium",
+      "sponsor": "Sen. Jim Runestad (R); Reps. Wortz, Wegela (D), Fox (R) [HB 5594-5596]",
+      "summary": "Bipartisan package that would halt data center development until April 1, 2027, pending development of comprehensive water, energy, and environmental standards.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "introduced",
+      "status_detail": "Pending in Senate Government Operations Committee as of June 2026. Leadership prefers regulation over prohibition; no hearing scheduled. Renewed bipartisan public push at Capitol event June 23-24, 2026.",
+      "source_url": "https://michiganadvance.com/2026/06/24/michigan-lawmakers-residents-renew-push-for-statewide-data-center-moratorium/",
+      "last_verified": "2026-06-24",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-06-24",
+          "title": "Michigan lawmakers, residents renew push for statewide data center moratorium",
+          "source": "Michigan Advance",
+          "url": "https://michiganadvance.com/2026/06/24/michigan-lawmakers-residents-renew-push-for-statewide-data-center-moratorium/",
+          "takeaway": "Bipartisan event June 23 at Capitol renewed momentum; Senate leadership prefers targeted regulation over moratorium."
+        }
+      ],
+      "public_sentiment": "Bipartisan resident, farmer, and environmental organization support. Data center industry and economic development groups strongly opposing.",
+      "general_principles": [
+        {
+          "tag": "Permit Reform",
+          "note": "Imposes a moratorium on new data center construction permits until state water-capacity analysis is complete."
+        },
+        {
+          "tag": "Environmental Review",
+          "note": "Paired bills require Great Lakes Compact review for any facility drawing >100,000 GPD from surface or groundwater."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-03-01",
+          "milestone": "Introduced (SB 1018-1020; companion HB 5594-5596)"
+        },
+        {
+          "date": "2026-06-23",
+          "milestone": "Bipartisan Capitol event renews push for moratorium",
+          "detail": "No hearing scheduled; Senate leadership prefers targeted regulation"
+        }
+      ]
+    },
+    {
+      "bill_id": "SC HB 4583",
+      "jurisdiction": "South Carolina",
+      "level": "state",
+      "title": "Data Center Responsibility Act — Closed-Loop Cooling Mandate",
+      "sponsor": "SC House (bipartisan)",
+      "summary": "Requires data centers to use closed-loop cooling systems resulting in zero net water withdrawal and net zero wastewater discharge; prohibits groundwater extraction or municipal water use for cooling.",
+      "scope": [
+        "water"
+      ],
+      "status": "introduced",
+      "status_detail": "Introduced January 2026; in House committee. SC General Assembly adjourned May 2026; likely carried over to 2027 session.",
+      "source_url": "https://www.scstatehouse.gov/sess126_2025-2026/bills/4583.htm",
+      "last_verified": "2026-06-24",
+      "verified": true,
+      "confidence": "medium",
+      "recent_news": [
+        {
+          "date": "2026-03-03",
+          "title": "State data center water usage legislation gains momentum",
+          "source": "MultiState",
+          "url": "https://www.multistate.us/insider/2026/3/3/state-data-center-water-usage-legislation-gains-momentum",
+          "takeaway": "SC leads with most aggressive zero-withdrawal mandate among 2026 state bills."
+        }
+      ],
+      "public_sentiment": "Strong environmental advocate support, particularly coastal plain communities. Data center industry strongly opposed as technically infeasible for most existing cooling designs.",
+      "general_principles": [
+        {
+          "tag": "Technology Mandate",
+          "note": "Mandates closed-loop (zero-discharge) cooling for new data centers over 10 MW to eliminate consumptive evaporative water loss."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-01-13",
+          "milestone": "Introduced"
+        },
+        {
+          "date": "2026-05-01",
+          "milestone": "SC General Assembly adjourned; bill carried over to 2027"
+        }
+      ]
+    },
+    {
+      "bill_id": "VA SB 417",
+      "jurisdiction": "Virginia",
+      "level": "state",
+      "title": "Wastewater Reuse for Data Center Cooling — Grant Conditionality",
+      "sponsor": "Sen. Stuart",
+      "summary": "Conditions eligibility for Cloud Computing Cluster Infrastructure Grant Fund payments on data centers using reclaimed water for cooling: 60% by July 1, 2027, scaling to 100% by July 1, 2031. Separate from enacted VA HB 496 / SB 553 water reporting law.",
+      "scope": [
+        "water"
+      ],
+      "status": "failed",
+      "status_detail": "Did not pass 2026 Virginia General Assembly session (failed to clear crossover deadline). Likely reconsidered in 2027 session.",
+      "source_url": "https://lis.virginia.gov/bill-details/20261/SB417",
+      "last_verified": "2026-06-24",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [],
+      "public_sentiment": "Water utilities and reclaimed water advocates supportive. Data center industry opposed grant conditionality tied to specific cooling technology.",
+      "general_principles": [
+        {
+          "tag": "Technology Mandate",
+          "note": "Would have required data centers to use reclaimed/treated wastewater for cooling instead of potable sources."
+        },
+        {
+          "tag": "Permit Reform",
+          "note": "Conditioned state incentive eligibility on demonstrated reuse-water contracts with local utilities."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-01-01",
+          "milestone": "Introduced by Sen. Stuart"
+        },
+        {
+          "date": "2026-03-01",
+          "milestone": "Failed to clear crossover deadline"
         }
       ]
     }

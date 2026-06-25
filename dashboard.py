@@ -1762,16 +1762,18 @@ def _cwa_datacenter_insights(cases: list[dict]) -> dict:
     }
 
 
-def render_cwa_datacenter_insights():
+def render_cwa_datacenter_insights(cases: list[dict] | None = None):
     """Headline 'what this record tells data centers' panel.
 
-    Computed live from the dataset so the counts move with the cases, then
-    framed around the tracker's mission: the operational CWA exposure for a
-    data center lands on the *receiving* WWTP permit — which is exactly what
-    this project monitors via EPA ECHO DMR.
+    Pass ``cases`` to scope the computation (e.g., historical-only subset).
+    When omitted, loads the full dataset — kept for backward compatibility.
+    Computed live so counts move with the dataset; framed around the tracker's
+    mission: operational CWA exposure lands on the *receiving* WWTP permit.
     """
-    payload = load_cwa_investigations()
-    stats = _cwa_datacenter_insights(payload.get("cases", []))
+    if cases is None:
+        payload = load_cwa_investigations()
+        cases = payload.get("cases", [])
+    stats = _cwa_datacenter_insights(cases)
     total = stats["total"]
     if not total:
         return
@@ -1779,17 +1781,17 @@ def render_cwa_datacenter_insights():
         st.markdown("#### What this record tells data centers")
         st.markdown(
             f"- **The permittee shield.** {stats['contractor_permittee']} of "
-            f"{total} direct data-center cases name a construction contractor "
-            "or subcontractor — not the hyperscaler — as the party on the "
-            "permit. Operators routinely sit one entity removed from the "
+            f"{total} resolved data-center enforcement cases name a construction "
+            "contractor or subcontractor — not the hyperscaler — as the party "
+            "on the permit. Operators routinely sit one entity removed from the "
             "permittee, which is why direct enforcement against them is thin."
         )
         st.markdown(
             f"- **CWA risk is front-loaded into construction.** Construction "
             "stormwater, sediment, and erosion under the §402 Construction "
             f"General Permit is the most common touchpoint — it appears in "
-            f"{stats['construction_stormwater']} of {total} cases, far more "
-            "than operational cooling-water discharge."
+            f"{stats['construction_stormwater']} of {total} historical cases, "
+            "far more than operational cooling-water discharge."
         )
         st.markdown(
             "- **The liability frontier is moving.** The 2026 Amazon Boardman "
@@ -1808,19 +1810,23 @@ def render_cwa_datacenter_insights():
 
 
 def render_cwa_tracker():
-    """Render the Clean Water Act historic investigations panel.
+    """Render the Clean Water Act investigations panel.
 
-    Three categories: direct data-center cases (rare), large-industrial-user
-    enforcement (closest practical analogs), and landmark precedent cases that
-    set the legal doctrines for what CWA actually reaches. Cases are sorted
-    most-recent-first within each category so the freshest enforcement bubbles
-    to the top.
+    Split into two sections:
+    1. Historical enforcement record — enforcement actions, penalties,
+       settlements, and landmark rulings that have actually occurred.
+       Industrial cases are the closest legal analogs to data center
+       operations; precedent rulings define CWA's legal scope.
+    2. Active & potential exposure — named data center sites where
+       proceedings are pending or circumstances match historical patterns
+       but no formal CWA enforcement has been issued yet.
     """
-    st.subheader("Clean Water Act Investigations")
+    st.subheader("Clean Water Act — Historical Record & Potential Exposure")
     st.markdown(
-        "Enforcement actions and landmark court rulings under the Clean Water "
-        "Act, organized by what they actually tell us about how the law applies "
-        "to data center water use and cooling discharges."
+        "Two views on the CWA and data centers: the enforcement record that has "
+        "actually built (penalties, settlements, court rulings), and specific "
+        "named sites where active proceedings or matching circumstances suggest "
+        "CWA exposure is next."
     )
 
     payload = load_cwa_investigations()
@@ -1830,10 +1836,13 @@ def render_cwa_tracker():
         st.info(note)
         return
 
-    # Headline synthesis — the computed "so what" before the case list.
-    render_cwa_datacenter_insights()
+    historical = [c for c in cases if c.get("display_section", "historical") == "historical"]
+    potential = [c for c in cases if c.get("display_section") == "potential"]
 
-    # Forward-looking companion: where enforcement could realistically go next.
+    # Headline synthesis — computed over historical enforcement cases only.
+    render_cwa_datacenter_insights(historical)
+
+    # Forward-looking bridge from historical record to potential exposure.
     render_cwa_application_theories()
 
     with st.expander(
@@ -1842,14 +1851,30 @@ def render_cwa_tracker():
     ):
         st.markdown(_cwa_statute_explainer_md())
 
-    # Filter controls — category multiselect + 2020+ toggle. Defaults show
-    # everything so first-time visitors see the full dataset.
+    # ── SECTION 1: HISTORICAL ENFORCEMENT RECORD ──────────────────────────
+    st.markdown("---")
+    st.markdown("### Part 1 — Historical CWA Enforcement Record")
+    st.markdown(
+        f"**{len(historical)} cases** — enforcement actions, penalties, settlements, "
+        "and landmark court rulings that have **actually occurred**. "
+        "**Industrial cases are legal analogs** — they show the enforcement pattern "
+        "for operations similar to data centers, but are enforcement against *other* "
+        "industries, not data centers themselves. "
+        "Precedent rulings define the legal scope for future CWA enforcement."
+    )
+
+    # Adjacent cases all moved to section 2 (potential), so only
+    # datacenter/industrial/precedent remain here.
+    hist_cats = sorted(
+        {c.get("category") for c in historical if c.get("category")},
+        key=lambda k: CWA_CATEGORY_ORDER.get(k, 9),
+    )
     filter_cols = st.columns([3, 1])
     with filter_cols[0]:
         selected_categories = st.multiselect(
             "Filter by category",
-            options=list(CWA_CATEGORY_LABELS.keys()),
-            default=list(CWA_CATEGORY_LABELS.keys()),
+            options=hist_cats,
+            default=hist_cats,
             format_func=lambda k: CWA_CATEGORY_LABELS.get(k, k.title()),
             key="cwa_category_filter",
         )
@@ -1861,40 +1886,61 @@ def render_cwa_tracker():
             help="Show only cases with an end year of 2020 or later.",
         )
 
-    filtered = [c for c in cases if c.get("category") in selected_categories]
+    filtered_hist = [c for c in historical if c.get("category") in selected_categories]
     if recent_only:
-        filtered = [c for c in filtered if _cwa_year_end(c.get("year", "")) >= 2020]
+        filtered_hist = [
+            c for c in filtered_hist if _cwa_year_end(c.get("year", "")) >= 2020
+        ]
 
-    if not filtered:
+    if filtered_hist:
+        st.markdown(
+            f"**Showing {len(filtered_hist)} of {len(historical)} historical cases** "
+            f"— {_cwa_summary(filtered_hist)}"
+        )
+        sorted_hist = sorted(
+            filtered_hist,
+            key=lambda c: (
+                CWA_CATEGORY_ORDER.get(c.get("category"), 9),
+                -_cwa_year_end(c.get("year", "")),
+            ),
+        )
+        st.markdown(
+            "".join(_build_cwa_case_html(case) for case in sorted_hist),
+            unsafe_allow_html=True,
+        )
+    else:
         st.info("No cases match the current filter. Try widening the category or year selection.")
-        return
 
+    # ── SECTION 2: ACTIVE & POTENTIAL EXPOSURE ─────────────────────────────
+    st.markdown("---")
+    st.markdown("### Part 2 — Active & Potential CWA Exposure at Named Data Center Sites")
     st.markdown(
-        f"**Showing {len(filtered)} of {len(cases)} cases** — {_cwa_summary(filtered)}"
+        f"**{len(potential)} named data center sites** where regulatory proceedings "
+        "are active (pending permit applications, ongoing investigations, active "
+        "citizen suits) or where the factual circumstances match the historical "
+        "enforcement patterns above — but **no formal CWA enforcement action has "
+        "been issued yet**. Use the theories panel above to trace which CWA hook "
+        "applies to each site."
     )
 
-    # Sort: category order, then year descending (most recent first).
-    sorted_cases = sorted(
-        filtered,
+    sorted_pot = sorted(
+        potential,
         key=lambda c: (
             CWA_CATEGORY_ORDER.get(c.get("category"), 9),
             -_cwa_year_end(c.get("year", "")),
         ),
     )
-    # One markdown blob for all case cards (49 → 1 component) — same
-    # consolidation as render_legislation_tracker; each card is a self-contained
-    # <div class="bill-card">, so the joined output renders identically.
     st.markdown(
-        "".join(_build_cwa_case_html(case) for case in sorted_cases),
+        "".join(_build_cwa_case_html(case) for case in sorted_pot),
         unsafe_allow_html=True,
     )
 
     last_updated = payload.get("last_updated") or "unknown"
-    note = payload.get("note", "")
-    caption = f"Dataset last updated {last_updated}."
-    if note:
-        caption += " " + note
-    st.caption(caption)
+    st.caption(
+        f"Dataset last updated {last_updated}. "
+        f"Total: {len(cases)} entries "
+        f"({len(historical)} historical enforcement, {len(potential)} active/potential)."
+    )
 
 
 def _build_cwa_case_html(case: dict) -> str:
