@@ -206,6 +206,25 @@ full deep-research fan-out can burn millions of tokens and return nothing.
 Deep-research / multi-agent workflows are **explicit user opt-in only**,
 with a stated cost expectation.
 
+**Check CLAUDE.md and AGENTS.md before spawning an Explore agent for a
+"state of the project" question.** CLAUDE.md carries the scraper-status
+table, architecture, and data-tier classification — most broad questions
+about what's working/blocked/missing are already answered there. The
+correct pattern for codebase-state questions:
+
+1. Read CLAUDE.md architecture + scraper table (~1 Read call).
+2. Read `errors.md` for open blockers (~1 Read call).
+3. Read the relevant `backlog.md` section for what's missing (~1 Read call).
+4. One `Bash` grep for a specific config value (e.g. `grep "target_permits" config.py`).
+
+This covers ~90% of the information an Explore agent would return at ~15%
+of the token cost. The Explore agent earns its cost only when the answer
+space is **genuinely unknown across many files** (e.g. "find all callers
+of this function I'm about to refactor"). Measured 2026-06-25: Explore
+agent returned ~30–40% waste — test counts, completed backlog items, and
+`DocumentRecord` field lists — for a "what's blocked and why" question
+where the scraper-status table in CLAUDE.md already had the answer.
+
 **Never spawn an agent to resolve merge conflicts in files you were just editing.**
 Measured in this repo (2026-06-24): resolving 8-file merge conflict via agent
 cost ~105k tokens (28.9k parent + 76.2k child, 59 tool uses). Correct cost
