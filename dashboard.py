@@ -1897,6 +1897,15 @@ def render_water_news():
         return
 
     all_tags = sorted({t for item in items for t in item.get("tags", [])})
+    recent_date = max(
+        (item.get("date", "") for item in items if item.get("date")), default="—"
+    )
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Headlines", len(items))
+    c2.metric("Topics", len(all_tags))
+    c3.metric("Most recent", recent_date)
+    st.divider()
+
     selected = st.multiselect(
         "Filter by topic",
         options=all_tags,
@@ -3062,55 +3071,109 @@ _STATUS_LABEL = {
     "not_built":  "Not built",
     "policy_gap": "Policy gap",
 }
+_STATUS_BADGE = {
+    "working":    ("color:#2e8b57;background:#f0fdf4;border:1px solid #86efac", "Working"),
+    "partial":    ("color:#b45309;background:#fffbeb;border:1px solid #fde68a", "Partial"),
+    "blocked":    ("color:#c41e3a;background:#fff1f2;border:1px solid #fecaca", "Blocked"),
+    "coming":     ("color:#7c3aed;background:#f5f3ff;border:1px solid #ddd6fe", "Coming"),
+    "not_built":  ("color:#6b7280;background:#f9fafb;border:1px solid #e5e7eb", "Not built"),
+    "policy_gap": ("color:#6b7280;background:#f9fafb;border:1px solid #e5e7eb", "Policy gap"),
+}
+_BARRIER_COLORS = {
+    "structural": ("#c41e3a", "#fff1f2"),
+    "legal":      ("#b45309", "#fffbeb"),
+    "policy":     ("#3182bd", "#eff3ff"),
+}
 
 
 def render_sources_tab():
-    sc = SOURCES_DATA["scorecard"]
+    st.subheader("Data Access & Coverage")
+    st.markdown(
+        "Where this tracker gets its data, what's blocked, and what's coming. "
+        "Every entry traces back to a public portal or regulatory dataset."
+    )
 
+    sc = SOURCES_DATA["scorecard"]
     col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Sources accessible", sc["accessible"], help="Active data pipelines")
+    col1.metric("Sources accessible", sc["accessible"], help="Active data pipelines returning records")
     col2.metric("Hard-blocked", sc["blocked"], help="NDA · WAF · voluntary-only · no mandate")
     col3.metric("Unlocking soon", sc["coming"], help="HB 496 · OHD000001 · EIA 923")
     col4.metric("Build queue", sc["build_queue"], help="Data available, scraper not yet built")
 
     st.divider()
-    st.markdown("#### Source status by level")
+    st.markdown('<h3 class="solution-cat-header">Source status by level</h3>', unsafe_allow_html=True)
 
+    # Build source table as one HTML block so badge styling is consistent with
+    # the rest of the app (pills, not backtick code marks).
+    rows = []
     current_level = None
     for src in SOURCES_DATA["sources"]:
-        if src["level"] != current_level:
-            current_level = src["level"]
-            st.markdown(f"**{current_level}**")
-
+        lvl = src["level"]
+        if lvl != current_level:
+            current_level = lvl
+            rows.append(
+                f'<div style="font-weight:700;color:#08519c;font-size:.83rem;'
+                f'text-transform:uppercase;letter-spacing:.06em;'
+                f'padding:.55rem 0 .15rem;margin-top:.6rem;'
+                f'border-bottom:1px solid #e5e7eb;">{html.escape(lvl)}</div>'
+            )
+        badge_style, badge_label = _STATUS_BADGE.get(
+            src["status"], ("color:#555;background:#f9fafb;border:1px solid #e5e7eb", src["status"])
+        )
         dot = _STATUS_DOT.get(src["status"], "⚪")
-        label = _STATUS_LABEL.get(src["status"], src["status"])
-        c_dot, c_name, c_badge, c_action = st.columns([0.25, 3.5, 1.25, 1.5])
-        c_dot.markdown(dot)
-        c_name.markdown(f"**{src['name']}**  \n{src['note']}")
-        c_badge.markdown(f"`{label}`")
-        c_action.caption(src["action"])
+        rows.append(
+            f'<div style="display:flex;align-items:baseline;gap:.75rem;'
+            f'padding:.45rem 0;border-bottom:1px solid #f1f5f9;">'
+            f'<span style="font-size:.85rem;flex:0 0 1.1rem;">{dot}</span>'
+            f'<div style="flex:1;min-width:0;">'
+            f'<span style="font-weight:600;color:#1a1a2e;font-size:.9rem;">{html.escape(src["name"])}</span>'
+            f'<span style="color:#6b7280;font-size:.82rem;margin-left:.4rem;">{html.escape(src["note"])}</span>'
+            f'</div>'
+            f'<span style="{badge_style};border-radius:999px;padding:.12rem .55rem;'
+            f'font-size:.75rem;font-weight:700;white-space:nowrap;">{badge_label}</span>'
+            f'<span style="color:#6b7280;font-size:.78rem;flex:0 0 8rem;'
+            f'text-align:right;">{html.escape(src["action"])}</span>'
+            f'</div>'
+        )
+    st.markdown("".join(rows), unsafe_allow_html=True)
 
     st.divider()
-    st.markdown("#### Structural barriers that scraping alone can't fix")
+    st.markdown(
+        '<h3 class="solution-cat-header">Structural barriers scraping alone can\'t fix</h3>',
+        unsafe_allow_html=True,
+    )
 
     b_cols = st.columns(3)
-    kind_fn = {"structural": st.error, "legal": st.warning, "policy": st.info}
     for col, barrier in zip(b_cols, SOURCES_DATA["barriers"]):
+        color, bg = _BARRIER_COLORS.get(barrier["kind"], ("#555", "#f5f5f5"))
         with col:
-            fn = kind_fn.get(barrier["kind"], st.info)
-            fn(
-                f"**{barrier['title']}**\n\n{barrier['body']}\n\n"
-                f"*Workaround: {barrier['workaround']}*"
+            st.markdown(
+                f'<div style="border-left:3px solid {color};background:{bg};'
+                f'padding:.65rem .9rem;border-radius:0 .4rem .4rem 0;margin-bottom:.4rem;">'
+                f'<strong style="color:#1a1a2e;">{html.escape(barrier["title"])}</strong>'
+                f'<p style="margin:.35rem 0;font-size:.88rem;color:#1a1a2e;">{html.escape(barrier["body"])}</p>'
+                f'<p style="margin:0;font-size:.82rem;color:#555;font-style:italic;">'
+                f'Workaround: {html.escape(barrier["workaround"])}</p>'
+                f'</div>',
+                unsafe_allow_html=True,
             )
 
     st.divider()
-    st.markdown("#### Upcoming data unlocks")
+    st.markdown('<h3 class="solution-cat-header">Upcoming data unlocks</h3>', unsafe_allow_html=True)
 
+    timeline_html = []
     for item in SOURCES_DATA["timeline"]:
-        icon = "🟣" if item["color"] == "purple" else "🟢"
-        st.markdown(
-            f"{icon} **{item['title']}** · *{item['date']}*  \n{item['desc']}"
+        date_color = "#7c3aed" if item["color"] == "purple" else "#2e8b57"
+        timeline_html.append(
+            f'<div class="timeline-event">'
+            f'<div class="timeline-date" style="min-width:7rem;color:{date_color};">'
+            f'{html.escape(item["date"])}</div>'
+            f'<div class="timeline-body">'
+            f'<strong>{html.escape(item["title"])}</strong>'
+            f'<div class="timeline-detail">{html.escape(item["desc"])}</div>'
+            f'</div></div>'
         )
+    st.markdown("".join(timeline_html), unsafe_allow_html=True)
 
     df = load_data()
     if not df.empty:
@@ -3121,6 +3184,7 @@ def render_sources_tab():
             "dc_water_data.csv",
             "text/csv",
         )
+    st.caption("Reference dataset — updated as new sources come online.")
 
 
 # --- Main App ---
