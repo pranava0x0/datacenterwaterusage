@@ -37,17 +37,17 @@ class TestStaticBuild:
 
     def test_five_tabs_present(self):
         html = _html()
-        for tab in ("legislation", "cwa", "news", "solutions", "data"):
+        for tab in ("legislation", "cwa", "news", "solutions", "sources"):
             assert f'data-tab="{tab}"' in html
-        for pid in ("panel-legislation", "panel-cwa", "panel-news", "panel-solutions", "panel-data"):
+        for pid in ("panel-legislation", "panel-cwa", "panel-news", "panel-solutions", "panel-sources"):
             assert f'id="{pid}"' in html
 
     def test_three_tabs_present(self):
-        # Alias kept for backwards compatibility — five tabs now exist, these three must be present.
+        # Core tabs that must always be present.
         html = _html()
-        for tab in ("legislation", "cwa", "data"):
+        for tab in ("legislation", "cwa", "sources"):
             assert f'data-tab="{tab}"' in html
-        for pid in ("panel-legislation", "panel-cwa", "panel-data"):
+        for pid in ("panel-legislation", "panel-cwa", "panel-sources"):
             assert f'id="{pid}"' in html
 
     def test_chartjs_sri_pinned(self):
@@ -115,12 +115,14 @@ class TestStaticBuild:
         assert "33 U.S.C." in html
         assert "law.cornell.edu/uscode/text/33/1251" in html
 
-    def test_chart_data_embedded(self):
-        # The flow chart reads embedded JSON, not a runtime fetch.
+    def test_sources_tab_scorecard_embedded(self):
+        # Sources tab: scorecard counts and source-level headers must render.
         html = _html()
-        assert 'id="flowChart"' in html
-        assert "BROAD RUN" in html  # facility name resolved from the data
-        assert '"limit": 11' in html  # VA0091383 permit-limit line
+        assert 'class="src-table"' in html
+        assert "Federal" in html
+        assert "Virginia" in html
+        assert "Unlocking soon" in html
+        assert "HB 496 / SB 553" in html
 
     def test_collapsed_panels_take_no_space(self):
         # Regression guard for the closed-<details> layout bug: closed lazy

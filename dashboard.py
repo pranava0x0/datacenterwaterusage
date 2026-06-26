@@ -878,6 +878,112 @@ MASLEY_COMPARISONS = [
 ]
 
 
+SOURCES_DATA: dict = {
+    "scorecard": {
+        "accessible": 7,
+        "blocked": 4,
+        "coming": 3,
+        "build_queue": 6,
+    },
+    "sources": [
+        # Federal
+        {"level": "Federal", "name": "EPA ECHO DMR", "note": "8 WWTP permits · aggregate, not per-facility", "status": "working", "action": "Add permits"},
+        {"level": "Federal", "name": "EPA ECHO NAICS", "note": "NAICS 518210 facility discovery · intermittent 500s", "status": "working", "action": "Monitor"},
+        {"level": "Federal", "name": "EIA Form 923 §8D", "note": "Plant-level thermoelectric cooling · indirect footprint", "status": "not_built", "action": "Build scraper"},
+        {"level": "Federal", "name": "EPA FRS cross-reference", "note": "Links facilities across 90+ EPA databases", "status": "not_built", "action": "Build utility"},
+        {"level": "Federal", "name": "HR 6984 / S. 4213", "note": "Federal DC water disclosure mandate · not enacted", "status": "policy_gap", "action": "Monitor"},
+        # Virginia
+        {"level": "Virginia", "name": "Loudoun Water ACFR", "note": "~1.6B gal/yr aggregate · annual only · no per-DC breakdown", "status": "working", "action": "Expand utilities"},
+        {"level": "Virginia", "name": "PWC Water IUS", "note": "56 DCs · ERU proxy, not metered consumption", "status": "working", "action": "Annual update"},
+        {"level": "Virginia", "name": "HB 496 / SB 553 reports", "note": "Monthly utility DC volumes · reporting channel unconfirmed", "status": "coming", "action": "Watch SWCB / DEQ"},
+        {"level": "Virginia", "name": "DEQ ArcGIS / VWP", "note": "Permit metadata only · no flow in ArcGIS layers", "status": "partial", "action": "Metadata only"},
+        {"level": "Virginia", "name": "DEQ VPDES Excel", "note": "WAF 403 block · stormwater-only permits anyway", "status": "blocked", "action": "Wait / retry"},
+        # Ohio
+        {"level": "Ohio", "name": "EPA ECHO DMR (OH)", "note": "4 Columbus-area WWTP permits · same aggregation limit", "status": "working", "action": "Add permits"},
+        {"level": "Ohio", "name": "OHD000001 DMRs", "note": "First per-DC direct mandate · public comment closed", "status": "coming", "action": "Awaiting finalization"},
+        {"level": "Ohio", "name": "Central OH Water Study", "note": "Demand projections 40 → 90 MGD (2030 → 2050)", "status": "working", "action": "Annual update"},
+        # Local / Utility
+        {"level": "Local / Utility", "name": "Water service contracts", "note": "Per-DC monthly volumes · NDA-blocked in 25 of 31 VA localities", "status": "blocked", "action": "No FOIA path"},
+        {"level": "Local / Utility", "name": "Zoning applications", "note": "Pre-construction water estimates · variable quality", "status": "partial", "action": "Expand coverage"},
+        # Private (voluntary)
+        {"level": "Private (voluntary)", "name": "Operator water claims", "note": "29 verbatim quotes · 5 independently assessed", "status": "working", "action": "Annual refresh"},
+        {"level": "Private (voluntary)", "name": "CDP questionnaires", "note": "Structured water security filings · MSFT / GOOG / META file", "status": "not_built", "action": "Build ingest"},
+        {"level": "Private (voluntary)", "name": "FracTracker DC database", "note": "1,400+ sites · cooling type (air / evaporative / hybrid)", "status": "not_built", "action": "Build ingest"},
+        {"level": "Private (voluntary)", "name": "PJM Large Loads 2026", "note": "≥50 MW DC loads in PJM territory · electricity proxy", "status": "not_built", "action": "Build ingest"},
+    ],
+    "barriers": [
+        {
+            "title": "WWTP aggregation",
+            "body": (
+                "EPA ECHO measures flow at receiving wastewater treatment plants. "
+                "All dischargers — Amazon, hospitals, hotels — sum into one monthly "
+                "number. No federal mechanism disaggregates per data center."
+            ),
+            "workaround": "Add WWTP permits as DC clusters grow; long-term unlock is OHD000001 direct DMRs.",
+            "kind": "structural",
+        },
+        {
+            "title": "NDA wall (VA local)",
+            "body": (
+                "25 of 31 Virginia localities signed NDAs. Water volumes, cooling "
+                "targets, and rate structures are contractually shielded. FOIA "
+                "exemptions apply in Virginia."
+            ),
+            "workaround": "Utility ACFRs (aggregate) + HB 496 / SB 553 monthly reports (aggregate, July 2026).",
+            "kind": "legal",
+        },
+        {
+            "title": "Voluntary-only private",
+            "body": (
+                "All private water data is self-reported national/global totals. "
+                "No SEC rule requires facility-level water reporting for tech "
+                "companies. No independent verification path exists."
+            ),
+            "workaround": "CDP questionnaires + FracTracker cooling type + PJM electricity proxy.",
+            "kind": "policy",
+        },
+    ],
+    "timeline": [
+        {
+            "date": "Jul 2026",
+            "title": "HB 496 / SB 553 effective",
+            "desc": (
+                "VA utilities must report monthly DC water volumes. First reports expected "
+                "Aug–Sept. Confirm channel (SWCB vs. DEQ) before building scraper."
+            ),
+            "color": "purple",
+        },
+        {
+            "date": "TBD 2026",
+            "title": "Ohio OHD000001 finalized",
+            "desc": (
+                "First state mandate requiring DMR from data centers directly. "
+                "Add new permit numbers to epa_echo_target_permits when published."
+            ),
+            "color": "purple",
+        },
+        {
+            "date": "Buildable now",
+            "title": "EIA Form 923 §8D — indirect water",
+            "desc": (
+                "2024 data published Sept 2025. Unlocks indirect thermoelectric "
+                "footprint (~80% of DC total). High-priority build."
+            ),
+            "color": "green",
+        },
+        {
+            "date": "Buildable now",
+            "title": "EPA FRS cross-reference + CDP ingest",
+            "desc": (
+                "Both APIs confirmed. FRS stabilizes facility dedup; CDP adds "
+                "structured voluntary disclosures from MSFT / GOOG / META."
+            ),
+            "color": "green",
+        },
+    ],
+}
+
+
 def compute_household_equivalent(gallons_per_year: int, gpd: int = 200) -> int:
     """Convert annual gallons to equivalent number of households served.
 
@@ -1741,27 +1847,38 @@ def _build_news_item_html(item: dict) -> str:
     cross_tab = item.get("cross_ref_tab")
     cross_note = item.get("cross_ref_note", "")
 
+    _title_style = "font-weight:700;font-size:1rem;display:block;margin-bottom:0.3rem;"
     headline = (
-        f'<a href="{esc(url)}" target="_blank" rel="noopener" class="news-title">{title}</a>'
-        if url else f'<span class="news-title">{title}</span>'
+        f'<a href="{esc(url)}" target="_blank" rel="noopener" class="news-title"'
+        f' style="{_title_style}color:#08519c;text-decoration:none;">{title}</a>'
+        if url else
+        f'<span class="news-title" style="{_title_style}color:#1a1a2e;">{title}</span>'
     )
     meta = " · ".join(b for b in (outlet, date_str) if b)
     tags_html = "".join(
-        f'<span class="news-tag" style="color:{NEWS_TAG_COLORS.get(t, "#555")}">'
+        f'<span class="news-tag" style="color:{NEWS_TAG_COLORS.get(t, "#555")};'
+        f'font-size:0.78rem;font-weight:600;padding:1px 8px;border-radius:999px;'
+        f'background:#eff3ff;margin-right:4px;display:inline-block;">'
         f'{esc(NEWS_TAG_LABELS.get(t, t))}</span>'
         for t in tags
     )
     cross_html = (
-        f'<div class="news-crossref">→ {esc(cross_note)}</div>'
+        f'<div class="news-crossref" style="color:#08519c;font-size:0.82rem;margin-top:0.3rem;">'
+        f'→ {esc(cross_note)}</div>'
         if cross_tab and cross_note else ""
     )
     tags_str = ",".join(tags)
+    # meta is already html-escaped (outlet + date_str were individually escaped above);
+    # do not wrap in esc() again or &#x27; becomes &amp;#x27; and renders as literal text.
     return (
-        f'<div class="news-card" data-tags="{esc(tags_str)}">'
+        f'<div class="news-card" data-tags="{esc(tags_str)}" style="'
+        f'border:1px solid #d6e4f0;border-radius:0.5rem;padding:0.9rem 1.1rem;'
+        f'margin-bottom:0.75rem;background:#fff;'
+        f'box-shadow:0 1px 2px rgba(15,23,42,.04);">'
         f'{headline}'
-        f'<div class="news-meta">{esc(meta)}</div>'
-        f'<div class="news-summary">{summary}</div>'
-        f'<div class="news-tags">{tags_html}</div>'
+        f'<div class="news-meta" style="color:#4b5563;font-size:0.85rem;margin-bottom:0.4rem;">{meta}</div>'
+        f'<div class="news-summary" style="color:#1a1a2e;font-size:0.9rem;margin-bottom:0.4rem;line-height:1.5;">{summary}</div>'
+        f'<div class="news-tags" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:0.35rem;">{tags_html}</div>'
         f'{cross_html}'
         f'</div>'
     )
@@ -1781,6 +1898,15 @@ def render_water_news():
         return
 
     all_tags = sorted({t for item in items for t in item.get("tags", [])})
+    recent_date = max(
+        (item.get("date", "") for item in items if item.get("date")), default="—"
+    )
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Headlines", len(items))
+    c2.metric("Topics", len(all_tags))
+    c3.metric("Most recent", recent_date)
+    st.divider()
+
     selected = st.multiselect(
         "Filter by topic",
         options=all_tags,
@@ -1790,7 +1916,7 @@ def render_water_news():
     )
     selected_set = set(selected)
     filtered = [i for i in items if any(t in selected_set for t in i.get("tags", []))]
-    st.markdown(f"**{len(filtered)} of {len(items)} items**")
+    st.markdown(f"**Showing {len(filtered)} of {len(items)} items**")
     st.markdown(
         "".join(_build_news_item_html(i) for i in filtered),
         unsafe_allow_html=True,
@@ -1867,6 +1993,43 @@ def render_water_solutions():
     if not categories:
         st.info("Solutions dataset not loaded.")
         return
+
+    all_sols = [s for cat in categories for s in cat.get("solutions", [])]
+    n_deployed = sum(1 for s in all_sols if s.get("status") == "deployed")
+    n_pilot    = sum(1 for s in all_sols if s.get("status") == "pilot")
+    n_proposed = sum(1 for s in all_sols if s.get("status") == "proposed")
+    n_mandate  = sum(1 for s in all_sols if s.get("actor_type") in ("state", "federal"))
+    n_utility  = sum(1 for s in all_sols if s.get("actor_type") == "utility")
+    n_industry = sum(1 for s in all_sols if s.get("actor_type") == "industry")
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Deployed", n_deployed, help="Operating at scale in at least one jurisdiction")
+    c2.metric("Pilot / in progress", n_pilot, help="Signed into law or actively under way, not yet at scale")
+    c3.metric("Proposed", n_proposed, help="Pending legislation or emerging best practice")
+
+    c4, c5, c6 = st.columns(3)
+    c4.metric("State / federal mandate", n_mandate, help="Legally required by a state or federal regulator")
+    c5.metric("Utility-driven", n_utility, help="Water utility programs and policies")
+    c6.metric("Industry voluntary", n_industry, help="Self-imposed by operators; no independent verification path")
+
+    pct_deployed = round(n_deployed / len(all_sols) * 100) if all_sols else 0
+    st.markdown(
+        f'<div style="background:#eff3ff;border-left:4px solid #3182bd;border-radius:0 .5rem .5rem 0;'
+        f'padding:.75rem 1rem;margin:.5rem 0 1rem;">'
+        f'<strong>Key patterns:</strong>'
+        f'<ul style="margin:.35rem 0 0;padding-left:1.2rem;color:#1a1a2e;">'
+        f'<li>{pct_deployed}% of tracked solutions are already deployed somewhere — the tools exist; '
+        f'the gap is mandate coverage and independent measurement.</li>'
+        f'<li>All {n_mandate} state/federal mandates and all {n_utility} utility programs have at least '
+        f'one deployed or active-pilot example. Voluntary industry solutions ({n_industry}) have no '
+        f'independent verification path.</li>'
+        f'<li>The critical unlock is closing the measurement gap: OHD000001 direct DMRs (Ohio) '
+        f'and HB 496 monthly utility reports (Virginia, eff. July 2026) are the two pending mandates '
+        f'that would make operator claims checkable.</li>'
+        f'</ul></div>',
+        unsafe_allow_html=True,
+    )
+    st.divider()
 
     for cat in categories:
         st.markdown(
@@ -2891,6 +3054,140 @@ def render_data_table(df: pd.DataFrame, compact: bool = False):
     )
 
 
+# --- Sources tab ---
+
+_STATUS_DOT = {
+    "working":    "🟢",
+    "partial":    "🟡",
+    "blocked":    "🔴",
+    "coming":     "🟣",
+    "not_built":  "⚪",
+    "policy_gap": "⚪",
+}
+_STATUS_LABEL = {
+    "working":    "Working",
+    "partial":    "Partial",
+    "blocked":    "Blocked",
+    "coming":     "Coming",
+    "not_built":  "Not built",
+    "policy_gap": "Policy gap",
+}
+_STATUS_BADGE = {
+    "working":    ("color:#2e8b57;background:#f0fdf4;border:1px solid #86efac", "Working"),
+    "partial":    ("color:#b45309;background:#fffbeb;border:1px solid #fde68a", "Partial"),
+    "blocked":    ("color:#c41e3a;background:#fff1f2;border:1px solid #fecaca", "Blocked"),
+    "coming":     ("color:#7c3aed;background:#f5f3ff;border:1px solid #ddd6fe", "Coming"),
+    "not_built":  ("color:#6b7280;background:#f9fafb;border:1px solid #e5e7eb", "Not built"),
+    "policy_gap": ("color:#6b7280;background:#f9fafb;border:1px solid #e5e7eb", "Policy gap"),
+}
+_BARRIER_COLORS = {
+    "structural": ("#c41e3a", "#fff1f2"),
+    "legal":      ("#b45309", "#fffbeb"),
+    "policy":     ("#3182bd", "#eff3ff"),
+}
+
+
+def render_sources_tab():
+    st.subheader("Data Access & Coverage")
+    st.markdown(
+        "Where this tracker gets its data, what's blocked, and what's coming. "
+        "Every entry traces back to a public portal or regulatory dataset."
+    )
+
+    sc = SOURCES_DATA["scorecard"]
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("Sources accessible", sc["accessible"], help="Active data pipelines returning records")
+    col2.metric("Hard-blocked", sc["blocked"], help="NDA · WAF · voluntary-only · no mandate")
+    col3.metric("Unlocking soon", sc["coming"], help="HB 496 · OHD000001 · EIA 923")
+    col4.metric("Build queue", sc["build_queue"], help="Data available, scraper not yet built")
+
+    st.divider()
+    st.markdown('<h3 class="solution-cat-header">Source status by level</h3>', unsafe_allow_html=True)
+
+    # Build source table as one HTML block so badge styling is consistent with
+    # the rest of the app (pills, not backtick code marks).
+    rows = []
+    current_level = None
+    for src in SOURCES_DATA["sources"]:
+        lvl = src["level"]
+        if lvl != current_level:
+            current_level = lvl
+            rows.append(
+                f'<div style="font-weight:700;color:#08519c;font-size:.83rem;'
+                f'text-transform:uppercase;letter-spacing:.06em;'
+                f'padding:.55rem 0 .15rem;margin-top:.6rem;'
+                f'border-bottom:1px solid #e5e7eb;">{html.escape(lvl)}</div>'
+            )
+        badge_style, badge_label = _STATUS_BADGE.get(
+            src["status"], ("color:#555;background:#f9fafb;border:1px solid #e5e7eb", src["status"])
+        )
+        dot = _STATUS_DOT.get(src["status"], "⚪")
+        rows.append(
+            f'<div style="display:flex;align-items:baseline;gap:.75rem;'
+            f'padding:.45rem 0;border-bottom:1px solid #f1f5f9;">'
+            f'<span style="font-size:.85rem;flex:0 0 1.1rem;">{dot}</span>'
+            f'<div style="flex:1;min-width:0;">'
+            f'<span style="font-weight:600;color:#1a1a2e;font-size:.9rem;">{html.escape(src["name"])}</span>'
+            f'<span style="color:#6b7280;font-size:.82rem;margin-left:.4rem;">{html.escape(src["note"])}</span>'
+            f'</div>'
+            f'<span style="{badge_style};border-radius:999px;padding:.12rem .55rem;'
+            f'font-size:.75rem;font-weight:700;white-space:nowrap;">{badge_label}</span>'
+            f'<span style="color:#6b7280;font-size:.78rem;flex:0 0 8rem;'
+            f'text-align:right;">{html.escape(src["action"])}</span>'
+            f'</div>'
+        )
+    st.markdown("".join(rows), unsafe_allow_html=True)
+
+    st.divider()
+    st.markdown(
+        '<h3 class="solution-cat-header">Structural barriers scraping alone can\'t fix</h3>',
+        unsafe_allow_html=True,
+    )
+
+    b_cols = st.columns(3)
+    for col, barrier in zip(b_cols, SOURCES_DATA["barriers"]):
+        color, bg = _BARRIER_COLORS.get(barrier["kind"], ("#555", "#f5f5f5"))
+        with col:
+            st.markdown(
+                f'<div style="border-left:3px solid {color};background:{bg};'
+                f'padding:.65rem .9rem;border-radius:0 .4rem .4rem 0;margin-bottom:.4rem;">'
+                f'<strong style="color:#1a1a2e;">{html.escape(barrier["title"])}</strong>'
+                f'<p style="margin:.35rem 0;font-size:.88rem;color:#1a1a2e;">{html.escape(barrier["body"])}</p>'
+                f'<p style="margin:0;font-size:.82rem;color:#555;font-style:italic;">'
+                f'Workaround: {html.escape(barrier["workaround"])}</p>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
+
+    st.divider()
+    st.markdown('<h3 class="solution-cat-header">Upcoming data unlocks</h3>', unsafe_allow_html=True)
+
+    timeline_html = []
+    for item in SOURCES_DATA["timeline"]:
+        date_color = "#7c3aed" if item["color"] == "purple" else "#2e8b57"
+        timeline_html.append(
+            f'<div class="timeline-event">'
+            f'<div class="timeline-date" style="min-width:7rem;color:{date_color};">'
+            f'{html.escape(item["date"])}</div>'
+            f'<div class="timeline-body">'
+            f'<strong>{html.escape(item["title"])}</strong>'
+            f'<div class="timeline-detail">{html.escape(item["desc"])}</div>'
+            f'</div></div>'
+        )
+    st.markdown("".join(timeline_html), unsafe_allow_html=True)
+
+    df = load_data()
+    if not df.empty:
+        st.divider()
+        st.download_button(
+            "Download raw records (CSV)",
+            df.to_csv(index=False),
+            "dc_water_data.csv",
+            "text/csv",
+        )
+    st.caption("Reference dataset — updated as new sources come online.")
+
+
 # --- Main App ---
 
 
@@ -2911,8 +3208,8 @@ def main():
             "via public regulatory data."
         )
 
-    tab_legislation, tab_cwa, tab_news, tab_solutions, tab_data = st.tabs(
-        ["Legislation", "CWA Cases", "News", "Solutions", "Data"]
+    tab_legislation, tab_cwa, tab_news, tab_solutions, tab_sources = st.tabs(
+        ["Legislation", "CWA Cases", "News", "Solutions", "Sources"]
     )
 
     # --- CWA Cases tab ---
@@ -2953,83 +3250,16 @@ def main():
         ):
             render_company_water_claims()
 
-    # --- Data tab ---
-    with tab_data:
-        df = load_data()
-        if df.empty:
-            st.warning(
-                "No data found. Run the scraping pipeline first:\n\n"
-                "```bash\npython main.py --scraper epa_echo --limit 50\n```"
-            )
-            return
+    # --- Sources tab ---
+    with tab_sources:
+        render_sources_tab()
 
-        # Eager: freshness, filters, hero, flow chart, local context.
-        render_data_freshness(df)
-        filtered_df = render_inline_filters(df)
-
-        if is_mobile or is_tablet:
-            render_hero_compact(filtered_df)
-        else:
-            render_hero(filtered_df)
-
-        render_flow_chart(filtered_df, cfg)
-
-        if is_mobile:
-            with st.expander("How does this compare?"):
-                render_local_context(is_mobile=True)
-        else:
-            render_local_context(is_mobile=False)
-
-        # Lazy panels — toggle to load. Skipped during cold start to keep
-        # first paint fast; each render_* call is the heavy work.
-        st.markdown("---")
-        st.caption("Optional views — toggle to load:")
-
-        if not is_mobile and not is_tablet:
-            if st.toggle(
-                "Records by Source chart",
-                value=False,
-                key="lazy_breakdown",
-            ):
-                render_source_breakdown(filtered_df, cfg)
-
-        if not is_mobile:
-            if st.toggle(
-                "Seasonal Patterns heatmap",
-                value=False,
-                key="lazy_heatmap",
-            ):
-                render_seasonal_heatmap(filtered_df, cfg)
-
-        if st.toggle(
-            "Transparency Scorecard",
-            value=False,
-            key="lazy_scorecard",
-        ):
-            render_transparency_scorecard()
-
-        if st.toggle(
-            "Per-query water estimates explainer",
-            value=False,
-            key="lazy_perquery",
-        ):
-            render_per_query_explainer()
-
-        if st.toggle(
-            "Records table",
-            value=False,
-            key="lazy_table",
-        ):
-            render_data_table(filtered_df, compact=(is_mobile or is_tablet))
-
-        # Mobile download button (sidebar not visible on mobile).
-        if is_mobile and not filtered_df.empty:
-            st.download_button(
-                "Download CSV",
-                filtered_df.to_csv(index=False),
-                "dc_water_data.csv",
-                "text/csv",
-            )
+    # --- Flow data (developer preview, hidden until live map tab ships) ---
+    # render_data_freshness, render_inline_filters, render_hero,
+    # render_flow_chart, render_local_context, render_source_breakdown,
+    # render_seasonal_heatmap, render_transparency_scorecard,
+    # render_per_query_explainer, render_data_table are all preserved;
+    # wire them to the live-map tab when it is built.
 
 
 if __name__ == "__main__":

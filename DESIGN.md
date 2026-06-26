@@ -1,7 +1,7 @@
 # DESIGN.md — Visual language
 
-> Water as resource, not metaphor. The dashboard is about real data
-> centers and real watersheds; the aesthetic should evoke the subject
+> Water as resource, not metaphor. The dashboard tracks real data
+> centers and real watersheds; the aesthetic evokes the subject
 > matter quietly, never decoratively.
 
 ---
@@ -14,12 +14,16 @@
 2. **Blue palette anchored to deep water.** Primary `#08519c` (deep
    blue) reads as authoritative and watery without going into pool /
    bathtub territory.
-3. **Texture, not pattern.** A near-invisible droplet motif on the
-   page background gives surface to the canvas; large explicit
-   illustrations would distract.
+3. **Infrastructure texture, not illustration.** The page background
+   carries a near-invisible pipe-and-droplet tile: two pipe segments
+   (L-shape + T-junction) with circular fittings at every joint, plus
+   four teardrop droplets — all ≤7% opacity. Motif reads as texture,
+   not art. Does not appear in the static site (`pages/index.html`).
 4. **Status reads at a glance.** Color carries semantic meaning —
-   green = enacted / blue = introduced / red = failed/vetoed. Never use
-   palette colors for decoration that conflict with these signals.
+   green = enacted / working, blue = introduced, red = failed / vetoed /
+   blocked, amber = partial / pending, purple = coming soon.
+   Never use palette colors decoratively in ways that conflict with
+   these signals.
 5. **Plot-data ink dominates.** Backgrounds, decorations, and chrome
    sit at ≤10% opacity. Anything above that is showing real data.
 
@@ -31,80 +35,239 @@ Defined in `dashboard.py:COLORS`.
 
 | Token | Hex | Used for |
 |---|---|---|
-| primary | `#08519c` | Headings, Introduced status pill, local-context card border, range-bar end |
-| secondary | `#3182bd` | Mid-blue accents |
-| tertiary | `#6baed6` | Light-blue accents |
-| light | `#bdd7e7` | Range bar gradient start |
-| bg | `#eff3ff` | Light card backgrounds, info-box fill |
-| success | `#2e8b57` | Enacted pill, Delivered assessment |
-| warning | `#d4a017` | Partial / Contested assessment |
-| danger | `#c41e3a` | Failed / Vetoed pill, Shortfall assessment, permit-limit line |
+| primary | `#08519c` | Headings, Introduced pill, section accent borders, pipe motif |
+| secondary | `#3182bd` | Mid-blue accents, h1 wave underline, `.solution-cat-header` left border |
+| tertiary | `#6baed6` | Light-blue accents, hr gradient end |
+| light | `#bdd7e7` | Range bar gradient start, outline chip border |
+| bg | `#eff3ff` | Light card backgrounds, info-box fill, principle chips |
+| success | `#2e8b57` | Enacted pill, Working source badge, Delivered assessment |
+| warning | `#d4a017` (`#b45309` text) | Partial / Pending / Contested |
+| danger | `#c41e3a` | Failed / Vetoed / Blocked, Shortfall assessment |
+| purple | `#7c3aed` | Coming-soon source badge, upcoming-unlock timeline |
 | text | `#1a1a2e` | Body text |
 
-Page surface uses `#f5f9fc` — a near-white with a barely-perceptible blue tint.
+Page surface: `#f5f9fc` — near-white with a barely-perceptible blue tint.
 
 ---
 
-## 3. Background — the water texture
+## 3. Background — water & pipe texture
 
-The Streamlit app container carries an inline SVG droplet pattern,
-injected via `utils/device.py:_RESPONSIVE_CSS` and applied by
-`inject_responsive_css()` at the top of every render:
+**200×200 px SVG tile** in `assets/components.css`, loaded at module
+import as `utils/device.py:_RESPONSIVE_CSS`, injected by
+`inject_responsive_css()` in `main()`:
 
-- 120×120 px tile, four small teardrop ellipses per tile, all at
-  ~5% opacity.
-- `background-attachment: fixed` so scrolling doesn't shear the
-  texture against content motion.
-- Pattern color is `primary` (`#08519c`), low alpha — reads as water,
-  not as pixels.
+- Two pipe segments (L-shape top-left, T-junction bottom-right),
+  `stroke:#08519c` at 6.5% opacity, `stroke-linecap:round`.
+- Five circular fittings at pipe joints/ends, `fill:#08519c` 7.5% opacity.
+- Four teardrop ellipses at open corners, `fill:#08519c` 7.5% opacity.
+- `background-attachment:fixed` so scrolling doesn't shear the texture.
 
-A faint wave decoration sits beneath the `h1` title — a short SVG
-sine-wave underline at `secondary` (`#3182bd`) blue, low alpha. One
-hint of motion, no animation.
+**h1 wave underline** — 80px double-amplitude SVG sinusoid at `#3182bd`,
+opacity 0.65, `stroke-width:1.5`, repeating on `x`, anchored `left bottom`.
+
+**Horizontal rules** — `st.divider()` maps to `.stApp hr`. Pipe-flow
+gradient: `#08519c → #3182bd → #6baed6 → transparent`, `height:2px`,
+`border-radius:1px`, no `border`.
 
 ---
 
 ## 4. Typography
 
-- **System serif for h1** when long (browser default `serif` stack);
-  system sans for h2/h3/body. No web fonts — keeps cold-start on
-  stlite/github.io reasonable.
-- Bill cards: bill_id **`1.05rem` bold**; status pill **`0.78rem`
-  letter-spacing 0.02em**; summary inherits body size.
-- `st.caption` is the right primitive for any attribution / sponsor /
-  source-link line; never hand-roll a `<span style="font-size:0.9em">`.
+- **System sans-serif for all text.** No web fonts — cold-start on
+  GitHub Pages must stay under 50 KB of blocking resources.
+- `st.subheader()` = h2 — used **once per tab** as the tab title.
+  Never use it for section headers within a tab.
+- `h3.solution-cat-header` — section / group headers within a tab
+  (pipe-left-border accent). See §9.
+- Sub-group level dividers (e.g., "Federal" / "Virginia" within the
+  source table) — small-caps style, `#08519c`, 0.83rem. Not a
+  `.solution-cat-header`; these are inside an existing section.
+- `st.caption()` — attribution, source links, dataset-last-updated
+  footer. Never hand-roll a `<span style="font-size:small">`.
 
 ---
 
-## 5. Components
+## 5. Tab anatomy — standard structure
 
-- **Bill card** (`_render_bill_card`) — `st.container(border=True)`;
-  bill_id (bold) and status pill (colored rounded-rect, 999px radius)
-  in a flex row; summary as a paragraph; sponsor + Source link as
-  `st.caption`.
-- **Claim card** (`_render_water_claim_card`) — same border treatment;
-  verbatim quote in italic curly quotes; attribution + optional
-  `Project: <id>` as `st.caption`; delivered-vs-promised uses the
-  semantic Streamlit boxes (`st.success` / `st.warning` / `st.error`).
-- **Local context card** (`.context-card`) — 4 px left border in
-  `primary`; large number (`1.8rem` bold); comparison text; source
-  note in muted gray.
-- **Hero metrics** (`st.metric`) — 4-column on desktop, 2-column on
-  mobile/tablet.
-- **Lazy toggles** (`st.toggle`) — heavy panels (timeline, claims,
-  source breakdown, heatmap, scorecard, per-query explainer, records
-  table) load only on user opt-in.
+Every content tab follows this pattern (in order):
+
+```
+st.subheader("Tab Title")              # exactly one per tab, at the top
+st.markdown("One-liner description.")  # always present
+[summary panel]                        # always present — see §6
+[filter controls, if filterable]       # st.multiselect with explicit key=
+[count line, if filterable]            # "**N of M items**"
+st.divider()
+[content: cards / sections]
+st.caption(f"Dataset last updated {last_updated}.")  # bottom of every tab
+```
+
+Tabs without user-facing filters (Sources) omit the filter and count
+lines, but keep all other elements including the summary panel and caption.
 
 ---
 
-## 6. Don'ts
+## 6. Summary panels — "what's the overall picture?"
+
+Every content tab leads with a panel that answers the overview question
+before the user scrolls into the card list. Panel shape varies by data type:
+
+| Tab | Panel |
+|---|---|
+| Legislation | Principles panel (cross-bill taxonomy counts) + theme grid (6 themes) |
+| CWA Cases | Datacenter insights callout + application-theories table |
+| News | 3-metric row: Headlines / Topics / Most recent date |
+| Solutions | 6-metric row (Deployed/Pilot/Proposed × Mandate/Utility/Industry) + key-patterns callout |
+| Sources | 4-metric scorecard: Accessible / Blocked / Unlocking / Queue |
+
+These panels are rendered by dedicated builder functions so the same
+logic runs in both the Streamlit app and `build_site.py`.
+
+---
+
+## 7. Card system
+
+Three card variants are used across tabs — they look nearly identical
+but are rendered differently:
+
+| Card class | Border | Shadow | Tab |
+|---|---|---|---|
+| `.bill-card` | `1px solid #cbd5e1` | `0 1px 2px rgba(15,23,42,.04)` | Legislation, CWA Cases |
+| `.solution-card` | `1px solid #d6e4f0` | `0 1px 2px rgba(15,23,42,.04)` | Solutions |
+| news card (inline styled) | `1px solid #d6e4f0` | none | News |
+
+All three: `border-radius:0.5rem`, `padding:~1rem`, `background:#fff`.
+
+**Inside every card (consistent across all three):**
+- **Title** — bold, 1rem–1.05rem, `color:#1a1a2e`
+- **Status / type badges** — see §8
+- **Body** — 0.9rem, `color:#1a1a2e`, `line-height:1.5`
+- **Meta line** — 0.82–0.85rem, `color:#4b5563`; source link in `#08519c`
+- **Stat / example callout** — left-border block (`.solution-example`,
+  `.cwa-pathway`, `.cwa-takeaway`). See §10 for colors.
+- **Cross-ref arrow** — `→ link text`, `color:#08519c`, `font-size:.82rem`
+- **Expand toggle** — `▸ Details — ...` in `#08519c`, via `<details>` native
+
+---
+
+## 8. Badge / pill system
+
+Two distinct shapes encode two distinct things:
+
+| Shape | Used for | Key CSS |
+|---|---|---|
+| **Filled pill** | Primary status (Enacted, Blocked, Deployed…) | solid `background`, `color:#fff`, `border-radius:999px`, `.78rem`, weight 700 |
+| **Outline chip** | Type tags, principle chips, scope labels | light `background`, dark `color`, `border:1px solid mid`, `border-radius:999px`, `.75rem`, weight 600 |
+| **Tinted pill** | Source-row status in Sources tab | light `background-tint` of the status color + matching `border`, dark `color`, `border-radius:999px`, `.75rem` |
+
+**Never** use Markdown backtick code marks (`` `label` ``) for status.
+Backticks render as `<code>` elements and look like inline code.
+
+Status color semantics (applies to all pill variants):
+
+| Status | Text color | Background | Border |
+|---|---|---|---|
+| Working / Enacted | `#2e8b57` | `#f0fdf4` | `#86efac` |
+| Partial / Pending | `#b45309` | `#fffbeb` | `#fde68a` |
+| Blocked / Failed | `#c41e3a` | `#fff1f2` | `#fecaca` |
+| Coming soon | `#7c3aed` | `#f5f3ff` | `#ddd6fe` |
+| Not built / Gap | `#6b7280` | `#f9fafb` | `#e5e7eb` |
+
+---
+
+## 9. Section headings within tabs
+
+When a tab has sub-groups (e.g., "Policy & Regulatory / Technology &
+Operational" in Solutions; "Federal / Virginia / Ohio" in Sources),
+each group header uses `.solution-cat-header`:
+
+```html
+<h3 class="solution-cat-header">Group Name</h3>
+```
+
+CSS in `assets/components.css`:
+```css
+.solution-cat-header {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #08519c;
+    border-left: 4px solid #3182bd;
+    padding-left: 0.7rem;
+    margin: 1.2rem 0 0.3rem;
+}
+```
+
+Emit via `st.markdown('<h3 class="solution-cat-header">…</h3>', unsafe_allow_html=True)`.
+
+Do **not** use `#### Heading` markdown — that renders as h4, which is smaller
+and carries no pipe accent. Do **not** use `st.subheader` for section headers;
+that's reserved for the one tab-level title.
+
+---
+
+## 10. Barrier / callout cards
+
+Semantic callouts (barriers, pathway explanations, key-patterns) always use
+the left-border HTML pattern — **never** `st.error / st.warning / st.info`
+except for genuine user-facing error states (empty dataset, network failure):
+
+```html
+<div style="border-left:3px solid {color};background:{bg};
+            padding:.65rem .9rem;border-radius:0 .4rem .4rem 0;">
+  <strong style="color:#1a1a2e;">{title}</strong>
+  <p style="margin:.35rem 0;font-size:.88rem;color:#1a1a2e;">{body}</p>
+</div>
+```
+
+Semantic colors (matches §8 status palette):
+
+| Kind | Border | Background |
+|---|---|---|
+| Error / structural barrier | `#c41e3a` | `#fff1f2` |
+| Warning / legal / policy concern | `#b45309` | `#fffbeb` |
+| Info / pending CWA pathway | `#3182bd` | `#eff3ff` |
+| Success / enacted / takeaway | `#2e8b57` | `#f0fdf4` |
+
+---
+
+## 11. Timeline rows
+
+Chronological event lists use `.timeline-event` CSS classes (defined in
+`assets/components.css`):
+
+```html
+<div class="timeline-event">
+  <div class="timeline-date" style="color:{color};">{date}</div>
+  <div class="timeline-body">
+    <strong>{title}</strong>
+    <div class="timeline-detail">{desc}</div>
+  </div>
+</div>
+```
+
+Date column color: `#2e8b57` for enacted/live events, `#7c3aed` for coming-soon.
+
+**Never** use `{emoji} **bold** · *italic*\n{desc}` inline markdown for
+timeline items — the CSS class approach renders consistently and is
+easier to restyle without touching every call site.
+
+---
+
+## 12. Don'ts
 
 - No animated rain, falling droplets, wave loops, or parallax.
-- No turquoise / aqua / teal. Stay in the blue family of the existing
-  palette.
-- No drop shadows on cards — borders only.
-- No background that competes with data tables or charts for visual
-  weight.
-- No emoji in headers (the body uses 💧 in `page_icon` only).
-- No purely decorative color — every color in a card or pill should
-  encode meaning.
+- No turquoise / aqua / teal. Stay in the blue family of the palette.
+- No backtick code marks (`` `status` ``) for status badges — use
+  styled HTML spans with the tinted-pill pattern.
+- No `st.error / st.warning / st.info` as design elements. Those are
+  for genuine user-facing error states only. Use the left-border HTML
+  callout pattern for semantic annotations.
+- No `#### heading` markdown for section headers within a tab. Use
+  `h3.solution-cat-header` (pipe accent, `#08519c`).
+- No `st.subheader` for sub-group headers within a tab — one per tab,
+  for the tab title only.
+- No emoji in headers.
+- No purely decorative color — every color in a card or pill encodes
+  meaning.
+- No web fonts — system sans-serif only.
+- No drop shadows heavier than `0 1px 2px rgba(15,23,42,.04)`.

@@ -76,6 +76,48 @@ Last reviewed: 2026-05-28 (External Tracker Survey added — see section below t
 
 ## High Priority
 
+### Data Tab Redesign — 4-Section Data Access Map (highest priority, 2026-06-25)
+
+The Data tab needs a full redesign. The current flow-chart view is preserved behind a developer toggle (`dev_flow_data`) until the new layout ships. The new design frames **data access opacity itself** as the story, not just the data we have.
+
+**Context:** Analysis session 2026-06-25 mapped all 20+ sources across five levels. The core finding: the fundamental precision ceiling is structural (WWTP aggregation, NDA wall), not technical — the redesign should make that legible to users.
+
+**Four-section structure:**
+
+**A — Data Access Map (new hero)**
+Replace the flow chart as the first thing users see. A compact matrix: data source × status (working / partial / blocked / coming / missing). Key headline: "X of Y possible sources are accessible today." Makes the access problem the story.
+- Sources to show: EPA ECHO DMR (working, WWTP aggregate), EIA 923 (missing — build), EPA FRS (missing — build), HB 496/SB 553 (coming July 2026), OHD000001 (coming), ArcGIS layers (partial — metadata only), ACFR utilities (working), NDA contracts (blocked), CDP questionnaires (partial), FracTracker (missing), PJM Large Loads (missing).
+
+**B — What We Can Measure (current data, reframed)**
+The EPA ECHO DMR flow chart and utility aggregates — but with explicit framing: *"These are WWTP totals, not individual data center readings."* Show the precision gap alongside the data. Seasonal heatmap and local context cards stay here.
+
+**C — What's Blocked and Why (new)**
+Named blockers at each level with plain-English explanation and best available workaround:
+- Federal: WWTP aggregation (workaround: add more permits; long-term: OHD000001 direct DMRs)
+- Virginia: NDA wall in 25/31 localities (workaround: utility ACFRs + HB 496 aggregate reports)
+- Ohio: OHD000001 not yet final (workaround: receiving WWTP permits, ODNR withdrawal)
+- Private: no independent verification path (workaround: CDP + FracTracker cooling type)
+
+**D — Coming Data (new)**
+Timeline of confirmed upcoming unlocks:
+- HB 496/SB 553 monthly reports — est. Aug/Sept 2026 (monitor SWCB/DEQ portal)
+- Ohio OHD000001 finalization — pending (watch EPA ECHO for new permit numbers)
+- EIA Form 923 §8D indirect water — buildable now (2024 data available)
+- EPA FRS cross-reference — buildable now (API confirmed)
+
+**Dependencies before building:**
+1. Confirm HB 496/SB 553 reporting channel (SWCB vs. DEQ vs. local zoning) — first step
+2. Build EIA 923 scraper (backlog: "Dashboard Panel 1: The Two Water Footprints")
+3. Build EPA FRS utility (backlog: "EPA FRS Cross-Reference Module")
+4. FracTracker CSV ingest for cooling type field
+
+**Static site note:** `build_site.py` will also need a `_build_data_access_map_html()` builder and updated `_build_data_tab_html()` to mirror the 4-section structure. The current flow chart HTML builders stay in place (used by Section B).
+
+**Sample prompt:**
+> Redesign the Data tab in dashboard.py using a 4-section layout: (A) a data-access map showing all 20+ sources by status (working/partial/blocked/coming/missing) as a compact table with color-coded badges, (B) the existing EPA ECHO flow chart and ACFR utility data reframed as "WWTP aggregates, not individual DC readings" with an explicit precision-gap note, (C) a "What's blocked and why" section with named blockers at federal/state/local/private levels and their best available workarounds, and (D) a "Coming data" timeline anchored to confirmed unlock dates (HB 496 Aug 2026, OHD000001, EIA 923). Mirror the new structure in build_site.py. The existing flow-data toggle (key="dev_flow_data") should remain as a developer escape hatch throughout the transition.
+
+---
+
 ### Dashboard Panel 1: The Two Water Footprints (highest impact, moderate effort)
 Side-by-side view: direct on-site cooling water vs. indirect thermoelectric water from electricity generation. Sources: EPA ECHO DMR (already scraped) + EIA Form 923 (backlog). Headline framing: "80% of a data center's water footprint never touches the data center building."
 
@@ -129,6 +171,25 @@ This "both numbers are true" spine could anchor the Phase 2 landing page / scrol
 ---
 
 ## Medium Priority
+
+### UX table / layout issues noted 2026-06-25 (cross-tab audit)
+
+During the Solutions redesign session the following UX issues were catalogued but not fixed. Fix in order of user-facing impact.
+
+**1. Sources tab column squish (medium)**
+`render_sources_tab()` uses `st.columns([0.25, 3.5, 1.25, 1.5])` for each source row. On screens ≤ 900 px (tablets, iPad landscape) all four columns collapse to near-zero width, making the badge and action columns unreadable. Fix: replace the per-row `st.columns` layout with a single `st.markdown` HTML table rendered via `unsafe_allow_html=True`, matching the static site's `.src-table` pattern.
+
+**2. CWA tab — 78+ cards all at full height (medium)**
+As the case count grows, the CWA tab becomes an unbroken scroll. Users can't skim case headings without reading every card. Fix: add a "compact view" toggle (`st.toggle("Compact view")`) that collapses cards to heading + pill row only, with an expand-all button. The static site uses `<details class="lazy">` natively; the Streamlit app should mirror it.
+
+**3. News tab — filter resets on every tab switch (low)**
+The `st.multiselect("Filter by topic", default=all_tags)` re-selects every tag whenever the user switches away and back. Streamlit persists widget state by `key=`; adding `key="news_tag_filter"` is already in place but the `default=all_tags` overrides it on re-render. Fix: store selection in `st.session_state` and only initialize once.
+
+**4. Legislation tab — default shows all 8+ tags simultaneously (low)**
+Opening the filter defaults to every tag checked, so the filter chip row provides no visual hierarchy signal. Consider defaulting to empty (show all, no chips checked) or to the top 3 most-common tags. Needs user research first — log it but don't change defaults without a clear preference signal.
+
+**Sample prompt for item 1:**
+> In `dashboard.py`, replace the `st.columns` layout in `render_sources_tab()` with a single `st.markdown` block emitting an HTML table (class `src-table`). Table columns: dot (12px) / source name + note / status badge / action. Rows are grouped by level using `<tr class="src-level-hdr">` spanning all columns. Add `.src-table` CSS to `assets/components.css` mirroring the existing static-site styles. Run `python3 -m pytest -q` before and after.
 
 ### JLARC Data Centers in Virginia Report
 The December 2024 JLARC study found data center water use is sustainable but growing. Contains aggregate statistics, policy recommendations, and analysis of water impact. Reference material.
