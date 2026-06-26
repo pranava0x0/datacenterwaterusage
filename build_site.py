@@ -798,9 +798,50 @@ def build_solutions_tab() -> str:
     categories = payload.get("categories", [])
     last_updated = payload.get("last_updated") or "unknown"
 
+    all_sols = [s for cat in categories for s in cat.get("solutions", [])]
+    n_deployed = sum(1 for s in all_sols if s.get("status") == "deployed")
+    n_pilot    = sum(1 for s in all_sols if s.get("status") == "pilot")
+    n_proposed = sum(1 for s in all_sols if s.get("status") == "proposed")
+    n_mandate  = sum(1 for s in all_sols if s.get("actor_type") in ("state", "federal"))
+    n_utility  = sum(1 for s in all_sols if s.get("actor_type") == "utility")
+    n_industry = sum(1 for s in all_sols if s.get("actor_type") == "industry")
+    pct = round(n_deployed / len(all_sols) * 100) if all_sols else 0
+
+    stats_html = (
+        f'<div class="hero" style="grid-template-columns:repeat(3,1fr)">'
+        f'<div class="metric"><div class="metric-label">Deployed</div>'
+        f'<div class="metric-value">{n_deployed}</div></div>'
+        f'<div class="metric"><div class="metric-label">Pilot / in progress</div>'
+        f'<div class="metric-value">{n_pilot}</div></div>'
+        f'<div class="metric"><div class="metric-label">Proposed</div>'
+        f'<div class="metric-value">{n_proposed}</div></div>'
+        f'</div>'
+        f'<div class="hero" style="grid-template-columns:repeat(3,1fr);margin-top:-.25rem">'
+        f'<div class="metric"><div class="metric-label">State / federal mandate</div>'
+        f'<div class="metric-value">{n_mandate}</div></div>'
+        f'<div class="metric"><div class="metric-label">Utility-driven</div>'
+        f'<div class="metric-value">{n_utility}</div></div>'
+        f'<div class="metric"><div class="metric-label">Industry voluntary</div>'
+        f'<div class="metric-value">{n_industry}</div></div>'
+        f'</div>'
+        f'<div class="insights">'
+        f'<strong>Key patterns:</strong>'
+        f'<ul>'
+        f'<li>{pct}% of tracked solutions are already deployed somewhere — the tools exist; '
+        f'the gap is mandate coverage and independent measurement.</li>'
+        f'<li>All {n_mandate} state/federal mandates and all {n_utility} utility programs have '
+        f'at least one deployed or active-pilot example. Voluntary industry solutions ({n_industry}) '
+        f'have no independent verification path.</li>'
+        f'<li>The critical unlock: OHD000001 direct DMRs (Ohio) and HB&nbsp;496 monthly utility '
+        f'reports (Virginia, eff. July 2026) are the two pending mandates that would make '
+        f'operator claims independently checkable.</li>'
+        f'</ul></div>'
+        f'<hr>'
+    )
+
     status_order = {"deployed": 0, "pilot": 1, "proposed": 2}
     sections = []
-    total_solutions = 0
+    total_solutions = len(all_sols)
     for cat in categories:
         label = cat.get("label", "")
         desc = cat.get("description", "")
@@ -808,7 +849,6 @@ def build_solutions_tab() -> str:
             cat.get("solutions", []),
             key=lambda s: status_order.get(s.get("status", "proposed"), 9),
         )
-        total_solutions += len(sols)
         cards_html = "".join(dash._build_solution_card_html(s) for s in sols)
         sections.append(
             f'<h3 class="solution-cat-header">{esc(label)}</h3>'
@@ -822,8 +862,7 @@ def build_solutions_tab() -> str:
   <p class="lead">Solutions to data center water challenges documented across this tracker —
   organized by who is driving them: state and federal regulators, water utilities, and
   industry operators. Status badges indicate real-world deployment stage.</p>
-  <p class="count-line"><strong>{total_solutions} solutions</strong> across
-  {len(categories)} categories</p>
+  {stats_html}
   {"".join(sections)}
   <p class="src-note">Dataset last updated {esc(last_updated)}. Deployment status
   is as of the dataset date; check source links for current status.</p>
@@ -938,13 +977,14 @@ body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   color:var(--ink);line-height:1.55;
   background-color:#f5f9fc;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><g fill='%2308519c' fill-opacity='0.055'><ellipse cx='22' cy='18' rx='2' ry='3'/><ellipse cx='88' cy='42' rx='1.6' ry='2.4'/><ellipse cx='55' cy='78' rx='2.2' ry='3.3'/><ellipse cx='100' cy='100' rx='1.4' ry='2.1'/></g></svg>");
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g stroke='%2308519c' fill='none' stroke-opacity='0.065' stroke-linecap='round'><path d='M8 50H55V90' stroke-width='2.8'/><path d='M115 135H185 M150 105V135' stroke-width='2.8'/></g><g fill='%2308519c' fill-opacity='0.075'><circle cx='8' cy='50' r='4'/><circle cx='55' cy='90' r='4'/><circle cx='115' cy='135' r='4'/><circle cx='185' cy='135' r='4'/><circle cx='150' cy='105' r='4'/><ellipse cx='88' cy='22' rx='2' ry='3'/><ellipse cx='178' cy='68' rx='1.6' ry='2.4'/><ellipse cx='28' cy='155' rx='2.2' ry='3.3'/><ellipse cx='108' cy='188' rx='1.5' ry='2.2'/></g></svg>");
   background-attachment:fixed;
 }
 .wrap{max-width:1040px;margin:0 auto;padding:1.25rem 1.25rem 4rem}
 h1{font-size:1.9rem;margin:0 0 .2rem;padding-bottom:.4rem;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 6' preserveAspectRatio='none'><path d='M0 3 Q 15 0, 30 3 T 60 3' fill='none' stroke='%233182bd' stroke-width='1.2' stroke-opacity='0.55'/></svg>");
-  background-repeat:repeat-x;background-position:left bottom;background-size:60px 6px}
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 8' preserveAspectRatio='none'><path d='M0 4 Q 10 0, 20 4 T 40 4 T 60 4 T 80 4' fill='none' stroke='%233182bd' stroke-width='1.5' stroke-opacity='0.65'/></svg>");
+  background-repeat:repeat-x;background-position:left bottom;background-size:80px 8px}
+hr{border:none;height:2px;background:linear-gradient(90deg,var(--blue) 0%,var(--blue2) 25%,#6baed6 60%,transparent 100%);margin:1rem 0;border-radius:1px}
 .tagline{color:var(--muted);margin:0 0 1rem;font-size:.95rem}
 h2{font-size:1.5rem;margin:.2rem 0 .5rem}
 h3{font-size:1.2rem;margin:1rem 0 .5rem}

@@ -1984,6 +1984,43 @@ def render_water_solutions():
         st.info("Solutions dataset not loaded.")
         return
 
+    all_sols = [s for cat in categories for s in cat.get("solutions", [])]
+    n_deployed = sum(1 for s in all_sols if s.get("status") == "deployed")
+    n_pilot    = sum(1 for s in all_sols if s.get("status") == "pilot")
+    n_proposed = sum(1 for s in all_sols if s.get("status") == "proposed")
+    n_mandate  = sum(1 for s in all_sols if s.get("actor_type") in ("state", "federal"))
+    n_utility  = sum(1 for s in all_sols if s.get("actor_type") == "utility")
+    n_industry = sum(1 for s in all_sols if s.get("actor_type") == "industry")
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Deployed", n_deployed, help="Operating at scale in at least one jurisdiction")
+    c2.metric("Pilot / in progress", n_pilot, help="Signed into law or actively under way, not yet at scale")
+    c3.metric("Proposed", n_proposed, help="Pending legislation or emerging best practice")
+
+    c4, c5, c6 = st.columns(3)
+    c4.metric("State / federal mandate", n_mandate, help="Legally required by a state or federal regulator")
+    c5.metric("Utility-driven", n_utility, help="Water utility programs and policies")
+    c6.metric("Industry voluntary", n_industry, help="Self-imposed by operators; no independent verification path")
+
+    pct_deployed = round(n_deployed / len(all_sols) * 100) if all_sols else 0
+    st.markdown(
+        f'<div style="background:#eff3ff;border-left:4px solid #3182bd;border-radius:0 .5rem .5rem 0;'
+        f'padding:.75rem 1rem;margin:.5rem 0 1rem;">'
+        f'<strong>Key patterns:</strong>'
+        f'<ul style="margin:.35rem 0 0;padding-left:1.2rem;color:#1a1a2e;">'
+        f'<li>{pct_deployed}% of tracked solutions are already deployed somewhere — the tools exist; '
+        f'the gap is mandate coverage and independent measurement.</li>'
+        f'<li>All {n_mandate} state/federal mandates and all {n_utility} utility programs have at least '
+        f'one deployed or active-pilot example. Voluntary industry solutions ({n_industry}) have no '
+        f'independent verification path.</li>'
+        f'<li>The critical unlock is closing the measurement gap: OHD000001 direct DMRs (Ohio) '
+        f'and HB 496 monthly utility reports (Virginia, eff. July 2026) are the two pending mandates '
+        f'that would make operator claims checkable.</li>'
+        f'</ul></div>',
+        unsafe_allow_html=True,
+    )
+    st.divider()
+
     for cat in categories:
         st.markdown(
             f'<h3 class="solution-cat-header">{html.escape(cat.get("label", ""))}</h3>'

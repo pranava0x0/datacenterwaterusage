@@ -65,7 +65,7 @@
           "example": "Comment period closed January 2025; permit finalization pending as of June 2026. If enacted, it would create the first direct federal-level DC water monitoring dataset, complementing the WWTP-level data this project already tracks via EPA ECHO.",
           "source_url": "https://epa.ohio.gov/",
           "cross_ref_tab": "data",
-          "cross_ref_note": "OHD000001 tracked by oh_epa_general_permit scraper — see Data tab"
+          "cross_ref_note": "OHD000001 tracked by oh_epa_general_permit scraper — see Sources tab"
         },
         {
           "id": "ny-s10642-seqra-review",
@@ -96,7 +96,7 @@
           "example": "Loudoun Water ACFR 2023: 899M gal potable + 736M gal reclaimed delivered to data centers annually. Reclaimed water is 45% of total DC supply — the highest reclaimed fraction of any US data center utility cluster tracked here.",
           "source_url": "https://www.loudounwater.org/about/comprehensive-annual-financial-reports",
           "cross_ref_tab": "data",
-          "cross_ref_note": "Loudoun Water ACFR data tracked in Data tab"
+          "cross_ref_note": "Loudoun Water ACFR data tracked in Sources tab"
         },
         {
           "id": "pwc-eru-demand-planning",
@@ -108,7 +108,7 @@
           "example": "2024 survey: 56 data centers hold 3,276 ERUs = ~478M gal/yr (avg 58.5 ERU per facility). ERU allocations are reviewed with each expansion permit, creating a cumulative demand ledger that's used to size infrastructure upgrades.",
           "source_url": "https://www.pwcsa.org/",
           "cross_ref_tab": "data",
-          "cross_ref_note": "Prince William Water IUS data in Data tab"
+          "cross_ref_note": "Prince William Water IUS data in Sources tab"
         },
         {
           "id": "central-ohio-regional-forecasting",
@@ -120,7 +120,7 @@
           "example": "March 2025 study projects industrial demand: ~10 MGD (2024) → 40 MGD (2030) → 90 MGD (2050). Intel New Albany campus alone: ~6 MGD. Study is informing $2B+ in regional water infrastructure planning.",
           "source_url": "https://epa.ohio.gov/",
           "cross_ref_tab": "data",
-          "cross_ref_note": "Central Ohio projections in Data tab"
+          "cross_ref_note": "Central Ohio projections in Sources tab"
         },
         {
           "id": "utility-aggregate-metering",
@@ -132,7 +132,7 @@
           "example": "Loudoun Water ACFR 2023: 1.635B gal to data centers (~15% of total utility sales). Fairfax Water supplies ~18 MGD wholesale to Loudoun. Virginia HB 496 will formalize and extend this to monthly reports.",
           "source_url": "https://www.loudounwater.org/about/comprehensive-annual-financial-reports",
           "cross_ref_tab": "data",
-          "cross_ref_note": "Loudoun Water and Fairfax Water data in Data tab"
+          "cross_ref_note": "Loudoun Water and Fairfax Water data in Sources tab"
         }
       ]
     },
@@ -163,7 +163,7 @@
           "example": "Loudoun Water: 736M gal/yr reclaimed delivered to data centers (45% of total DC supply). Google's Prineville, OR campus uses 100% reclaimed water for cooling. Reclaimed water WUE is identical to potable — the gain is purely in source substitution.",
           "source_url": null,
           "cross_ref_tab": "data",
-          "cross_ref_note": "Loudoun Water reclaimed volumes in Data tab"
+          "cross_ref_note": "Loudoun Water reclaimed volumes in Sources tab"
         },
         {
           "id": "direct-liquid-cooling",

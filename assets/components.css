@@ -35,24 +35,32 @@
     color: #08519c !important;
 }
 
-/* --- Water aesthetic: page surface + droplet texture + wave underline --- */
-/* See DESIGN.md for the rules. Pattern uses an inline SVG of four teardrop
-   ellipses per 120x120 tile at ~5% opacity over a near-white #f5f9fc surface.
-   background-attachment: fixed so the texture doesn't shear during scroll. */
+/* --- Water aesthetic: page surface + pipe/droplet texture + wave underline --- */
+/* 200×200 tile: two pipe segments (L-shape top-left, T-junction bottom-right)
+   with circular fittings + four teardrop droplets. All at ~6-7% opacity so
+   the infrastructure motif reads as texture, not illustration (DESIGN.md §1). */
 [data-testid="stAppViewContainer"] > .main,
 .stApp {
     background-color: #f5f9fc;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><g fill='%2308519c' fill-opacity='0.055'><ellipse cx='22' cy='18' rx='2' ry='3'/><ellipse cx='88' cy='42' rx='1.6' ry='2.4'/><ellipse cx='55' cy='78' rx='2.2' ry='3.3'/><ellipse cx='100' cy='100' rx='1.4' ry='2.1'/></g></svg>");
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g stroke='%2308519c' fill='none' stroke-opacity='0.065' stroke-linecap='round'><path d='M8 50H55V90' stroke-width='2.8'/><path d='M115 135H185 M150 105V135' stroke-width='2.8'/></g><g fill='%2308519c' fill-opacity='0.075'><circle cx='8' cy='50' r='4'/><circle cx='55' cy='90' r='4'/><circle cx='115' cy='135' r='4'/><circle cx='185' cy='135' r='4'/><circle cx='150' cy='105' r='4'/><ellipse cx='88' cy='22' rx='2' ry='3'/><ellipse cx='178' cy='68' rx='1.6' ry='2.4'/><ellipse cx='28' cy='155' rx='2.2' ry='3.3'/><ellipse cx='108' cy='188' rx='1.5' ry='2.2'/></g></svg>");
     background-repeat: repeat;
     background-attachment: fixed;
 }
-/* Single hint-of-motion wave underline beneath the h1 title only. */
+/* Wave underline beneath h1 — double-amplitude sinusoid for more presence. */
 .stApp h1 {
     padding-bottom: 0.4rem;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 6' preserveAspectRatio='none'><path d='M0 3 Q 15 0, 30 3 T 60 3' fill='none' stroke='%233182bd' stroke-width='1.2' stroke-opacity='0.55'/></svg>");
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 8' preserveAspectRatio='none'><path d='M0 4 Q 10 0, 20 4 T 40 4 T 60 4 T 80 4' fill='none' stroke='%233182bd' stroke-width='1.5' stroke-opacity='0.65'/></svg>");
     background-repeat: repeat-x;
     background-position: left bottom;
-    background-size: 60px 6px;
+    background-size: 80px 8px;
+}
+/* Pipe-style horizontal rules: water flowing left to right, fading out. */
+.stApp hr {
+    border: none;
+    height: 2px;
+    background: linear-gradient(90deg, #08519c 0%, #3182bd 25%, #6baed6 60%, transparent 100%);
+    margin: 1rem 0;
+    border-radius: 1px;
 }
 
 /* --- Base: tighten default Streamlit padding --- */
@@ -580,4 +588,68 @@
 .theme-card-examples {
     font-size: .78rem;
     color: #999;
+}
+/* --- Solution cards (Solutions tab) --- */
+.solution-card {
+    border: 1px solid #d6e4f0;
+    border-radius: 0.5rem;
+    padding: 0.9rem 1.1rem;
+    margin-bottom: 0.75rem;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+.solution-badge {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 0.15rem 0.65rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.45rem;
+}
+.solution-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #1a1a2e;
+    margin-bottom: 0.3rem;
+}
+.solution-actor {
+    font-size: 0.82rem;
+    color: #4b5563;
+    margin-bottom: 0.5rem;
+}
+.solution-actor a { color: #08519c; }
+.solution-desc {
+    font-size: 0.9rem;
+    color: #1a1a2e;
+    line-height: 1.5;
+    margin-bottom: 0.4rem;
+}
+.solution-example {
+    background: #eff3ff;
+    border-left: 3px solid #3182bd;
+    padding: 0.4rem 0.65rem;
+    border-radius: 0 0.25rem 0.25rem 0;
+    font-size: 0.85rem;
+    color: #1a1a2e;
+    margin-bottom: 0.4rem;
+    line-height: 1.45;
+}
+.solution-crossref {
+    font-size: 0.82rem;
+    color: #08519c;
+    margin-top: 0.2rem;
+}
+.solution-cat-header {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #08519c;
+    border-left: 4px solid #3182bd;
+    padding-left: 0.7rem;
+    margin: 1.2rem 0 0.3rem;
+}
+.solution-cat-desc {
+    font-size: 0.88rem;
+    color: #4b5563;
+    margin: 0 0 0.75rem 0.1rem;
 }
