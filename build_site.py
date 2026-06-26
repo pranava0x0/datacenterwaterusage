@@ -831,6 +831,102 @@ def build_solutions_tab() -> str:
 
 
 # --------------------------------------------------------------------------
+# Sources tab
+# --------------------------------------------------------------------------
+
+_SRC_BADGE = {
+    "working":    ("sb-green",  "Working"),
+    "partial":    ("sb-amber",  "Partial"),
+    "blocked":    ("sb-red",    "Blocked"),
+    "coming":     ("sb-purple", "Coming"),
+    "not_built":  ("sb-gray",   "Not built"),
+    "policy_gap": ("sb-gray",   "Policy gap"),
+}
+
+
+def build_sources_tab() -> str:
+    sc = dash.SOURCES_DATA["scorecard"]
+
+    hero = "".join(
+        f'<div class="metric"><div class="metric-label">{lbl}</div>'
+        f'<div class="metric-value">{val}</div>'
+        f'<div class="metric-sub">{sub}</div></div>'
+        for lbl, val, sub in [
+            ("Sources accessible", sc["accessible"], "active data pipelines"),
+            ("Hard-blocked",       sc["blocked"],    "NDA · WAF · voluntary-only · no mandate"),
+            ("Unlocking soon",     sc["coming"],     "HB 496 · OHD000001 · EIA 923"),
+            ("Build queue",        sc["build_queue"], "data exists, scraper pending"),
+        ]
+    )
+
+    current_level = None
+    rows = []
+    for src in dash.SOURCES_DATA["sources"]:
+        if src["level"] != current_level:
+            current_level = src["level"]
+            rows.append(
+                f'<tr class="src-level-hdr"><td colspan="4">{esc(src["level"])}</td></tr>'
+            )
+        badge_cls, badge_lbl = _SRC_BADGE.get(src["status"], ("sb-gray", src["status"]))
+        rows.append(
+            f'<tr>'
+            f'<td class="src-dot src-dot-{esc(src["status"])}">●</td>'
+            f'<td class="src-name">{esc(src["name"])}'
+            f'<span class="src-note-inline"> — {esc(src["note"])}</span></td>'
+            f'<td><span class="src-badge {esc(badge_cls)}">{esc(badge_lbl)}</span></td>'
+            f'<td class="src-action">{esc(src["action"])}</td>'
+            f'</tr>'
+        )
+
+    barriers = "".join(
+        f'<div class="barrier-card barrier-{esc(b["kind"])}">'
+        f'<div class="barrier-title">{esc(b["title"])}</div>'
+        f'<div class="barrier-body">{esc(b["body"])}</div>'
+        f'<div class="barrier-workaround">Workaround: {esc(b["workaround"])}</div>'
+        f'</div>'
+        for b in dash.SOURCES_DATA["barriers"]
+    )
+
+    tl_rows = "".join(
+        f'<div class="tl-row">'
+        f'<div class="tl-date">{esc(item["date"])}</div>'
+        f'<div class="tl-spine">'
+        f'<span class="tl-dot tl-dot-{esc(item["color"])}">●</span>'
+        f'<span class="tl-line"></span></div>'
+        f'<div><div class="tl-title">{esc(item["title"])}</div>'
+        f'<div class="tl-desc">{esc(item["desc"])}</div></div>'
+        f'</div>'
+        for item in dash.SOURCES_DATA["timeline"]
+    )
+
+    return f"""
+<section class="panel">
+  <h2>Data Sources</h2>
+  <p class="lead">Status of all known data pipelines for tracking data center water
+  consumption — what's working, what's blocked, and what's coming.</p>
+  <div class="hero src-hero">{hero}</div>
+</section>
+
+<section class="panel">
+  <h3>Source status by level</h3>
+  <div class="table-wrap">
+    <table class="src-table"><tbody>{"".join(rows)}</tbody></table>
+  </div>
+</section>
+
+<section class="panel">
+  <h3>Structural barriers that scraping alone can't fix</h3>
+  <div class="barrier-grid">{barriers}</div>
+</section>
+
+<section class="panel">
+  <h3>Upcoming data unlocks</h3>
+  <div class="tl">{tl_rows}</div>
+</section>
+"""
+
+
+# --------------------------------------------------------------------------
 # Assembly
 # --------------------------------------------------------------------------
 
@@ -966,6 +1062,40 @@ a.news-title{color:var(--blue)}
   padding:.4rem .65rem;margin:.4rem 0;border-radius:0 .25rem .25rem 0;color:#333}
 .solution-crossref{font-size:.82rem;color:#666;font-style:italic;margin-top:.35rem}
 
+/* Sources tab */
+.src-hero .metric-sub{font-size:.75rem;color:var(--muted);margin-top:.1rem}
+.src-table{width:100%;border-collapse:collapse;font-size:.88rem}
+.src-table tr{border-bottom:.5px solid #e5e7eb}
+.src-level-hdr td{font-size:.78rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--muted);background:#f1f5f9;padding:.35rem .6rem}
+.src-dot{width:1.5rem;text-align:center;font-size:.7rem;padding:.45rem .2rem}
+.src-dot-working{color:#3B6D11}.src-dot-partial{color:#854F0B}
+.src-dot-blocked{color:#A32D2D}.src-dot-coming{color:#534AB7}
+.src-dot-not_built,.src-dot-policy_gap{color:#9ca3af}
+.src-name{padding:.45rem .4rem;font-weight:600}
+.src-note-inline{font-weight:400;color:var(--muted);font-size:.82rem}
+.src-badge{display:inline-block;border-radius:999px;padding:.15rem .6rem;font-size:.75rem;font-weight:700}
+.sb-green{background:#EAF3DE;color:#3B6D11}.sb-amber{background:#FAEEDA;color:#854F0B}
+.sb-red{background:#FCEBEB;color:#A32D2D}.sb-purple{background:#EEEDFE;color:#534AB7}
+.sb-gray{background:#F1EFE8;color:#5F5E5A}
+.src-action{font-size:.8rem;color:var(--muted);white-space:nowrap;padding:.45rem .3rem}
+.barrier-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin:.5rem 0}
+.barrier-card{padding:.9rem 1rem;border-radius:.5rem;border:1px solid #e2e8f0;border-left:3px solid}
+.barrier-structural{border-left-color:#E24B4A;background:#fef2f2}
+.barrier-legal{border-left-color:#EF9F27;background:#fffbeb}
+.barrier-policy{border-left-color:#7F77DD;background:#EEEDFE}
+.barrier-title{font-weight:700;font-size:.9rem;margin-bottom:.3rem}
+.barrier-body{font-size:.85rem;color:#444;line-height:1.45;margin-bottom:.4rem}
+.barrier-workaround{font-size:.8rem;color:#3B6D11;font-style:italic}
+.tl{display:flex;flex-direction:column}
+.tl-row{display:grid;grid-template-columns:90px 16px 1fr;gap:.6rem;align-items:start;padding-bottom:.9rem}
+.tl-date{font-size:.8rem;color:var(--muted);text-align:right;padding-top:.1rem}
+.tl-spine{display:flex;flex-direction:column;align-items:center}
+.tl-dot{font-size:.65rem;line-height:1}.tl-dot-purple{color:#7F77DD}.tl-dot-green{color:#3B6D11}
+.tl-line{width:1px;background:#e5e7eb;flex:1;min-height:24px;margin:.1rem 0}
+.tl-title{font-weight:700;font-size:.9rem}
+.tl-desc{font-size:.85rem;color:#444;margin:.15rem 0 0;line-height:1.4}
+
 @media (max-width:760px){
   .wrap{padding:.75rem .75rem 3rem}
   h1{font-size:1.35rem}
@@ -982,11 +1112,13 @@ a.news-title{color:var(--blue)}
   /* Collapse long filter chip rows behind a scrollable strip instead of a
      half-screen wall of checkboxes. */
   .cwa-types{max-height:7.5rem;overflow-y:auto}
+  .barrier-grid{grid-template-columns:1fr}
+  .tl-row{grid-template-columns:70px 14px 1fr}
 }
 """
 
 
-def build_js(chart_data: dict) -> str:
+def build_js() -> str:
     return """
 // --- Tabs ---
 const tabs = document.querySelectorAll('.tab');
@@ -994,7 +1126,6 @@ const panels = document.querySelectorAll('.tabpanel');
 tabs.forEach(t => t.addEventListener('click', () => {
   tabs.forEach(x => x.setAttribute('aria-selected', x === t ? 'true' : 'false'));
   panels.forEach(p => p.hidden = (p.id !== 'panel-' + t.dataset.tab));
-  if (t.dataset.tab === 'data') initCharts();
 }));
 
 // --- Legislation filtering ---
@@ -1115,45 +1246,9 @@ function applyNewsFilter(){
 }
 document.querySelectorAll('.news-tag-filter').forEach(c => c.addEventListener('change', applyNewsFilter));
 
-// --- Charts (lazy: only build once the Data tab is shown) ---
-const CHART_DATA = __CHART_DATA__;
-let chartsBuilt = false;
-const PALETTE = ['#08519c','#3182bd','#6baed6','#9ecae1','#c6dbef'];
-function initCharts(){
-  if (chartsBuilt || typeof Chart === 'undefined') return;
-  chartsBuilt = true;
-  const flow = CHART_DATA.flow;
-  const flowEl = document.getElementById('flowChart');
-  if (flowEl && flow.series.length){
-    const ds = flow.series.map((s,i) => ({
-      label: s.name, data: s.data, borderColor: PALETTE[i % PALETTE.length],
-      backgroundColor: PALETTE[i % PALETTE.length], tension:.2, spanGaps:true, pointRadius:3
-    }));
-    if (flow.limit != null){
-      ds.push({label:'Permit Limit ('+flow.limit+' MGD)',
-        data: flow.labels.map(()=>flow.limit), borderColor:'#c41e3a', borderDash:[6,4],
-        pointRadius:0, borderWidth:1.5});
-    }
-    new Chart(flowEl, {type:'line', data:{labels:flow.labels, datasets:ds},
-      options:{responsive:true, maintainAspectRatio:false,
-        plugins:{legend:{position:'bottom'}},
-        scales:{y:{title:{display:true,text:'Flow (MGD)'}},
-                x:{title:{display:true,text:'Monitoring Period'}}}}});
-  }
-  const src = CHART_DATA.source;
-  const srcEl = document.getElementById('sourceChart');
-  if (srcEl && src.labels.length){
-    new Chart(srcEl, {type:'bar',
-      data:{labels:src.labels, datasets:[{label:'Records', data:src.values,
-        backgroundColor:'#3182bd'}]},
-      options:{indexAxis:'y', responsive:true, maintainAspectRatio:false,
-        plugins:{legend:{display:false}, title:{display:true, text:'Records by Source'}}}});
-  }
-}
-// Charts inside <details> need a resize nudge when first opened.
-document.querySelectorAll('details.lazy').forEach(d =>
-  d.addEventListener('toggle', () => { if (d.open) initCharts(); }));
-""".replace("__CHART_DATA__", json.dumps(chart_data))
+"""
+# Chart initialisation (initCharts, CHART_DATA, PALETTE) lives here when
+# the live-map tab ships. Removed with the Data→Sources tab rename (2026-06-25).
 
 
 LLMS_TXT_PATH = BASE_DIR / "pages" / "llms.txt"
@@ -1258,8 +1353,8 @@ def build_html() -> str:
     cwa = build_cwa_tab()
     news = build_news_tab()
     solutions = build_solutions_tab()
-    data_html, chart_data = build_data_tab()
-    js = build_js(chart_data)
+    sources_html = build_sources_tab()
+    js = build_js()
     built = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     return f"""<!doctype html>
@@ -1284,14 +1379,14 @@ def build_html() -> str:
     <button class="tab" role="tab" data-tab="cwa" aria-selected="false">CWA Cases</button>
     <button class="tab" role="tab" data-tab="news" aria-selected="false">News</button>
     <button class="tab" role="tab" data-tab="solutions" aria-selected="false">Solutions</button>
-    <button class="tab" role="tab" data-tab="data" aria-selected="false">Data</button>
+    <button class="tab" role="tab" data-tab="sources" aria-selected="false">Sources</button>
   </div>
 
   <div class="tabpanel" id="panel-legislation" role="tabpanel">{legislation}</div>
   <div class="tabpanel" id="panel-cwa" role="tabpanel" hidden>{cwa}</div>
   <div class="tabpanel" id="panel-news" role="tabpanel" hidden>{news}</div>
   <div class="tabpanel" id="panel-solutions" role="tabpanel" hidden>{solutions}</div>
-  <div class="tabpanel" id="panel-data" role="tabpanel" hidden>{data_html}</div>
+  <div class="tabpanel" id="panel-sources" role="tabpanel" hidden>{sources_html}</div>
 
   <p class="src-note">Static build {built} · Sources: EPA ECHO DMR, VA DEQ, Ohio EPA,
   Loudoun Water. Data center cooling water tracked via receiving WWTP flow ·

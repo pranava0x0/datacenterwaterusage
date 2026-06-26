@@ -878,6 +878,112 @@ MASLEY_COMPARISONS = [
 ]
 
 
+SOURCES_DATA: dict = {
+    "scorecard": {
+        "accessible": 7,
+        "blocked": 4,
+        "coming": 3,
+        "build_queue": 6,
+    },
+    "sources": [
+        # Federal
+        {"level": "Federal", "name": "EPA ECHO DMR", "note": "8 WWTP permits · aggregate, not per-facility", "status": "working", "action": "Add permits"},
+        {"level": "Federal", "name": "EPA ECHO NAICS", "note": "NAICS 518210 facility discovery · intermittent 500s", "status": "working", "action": "Monitor"},
+        {"level": "Federal", "name": "EIA Form 923 §8D", "note": "Plant-level thermoelectric cooling · indirect footprint", "status": "not_built", "action": "Build scraper"},
+        {"level": "Federal", "name": "EPA FRS cross-reference", "note": "Links facilities across 90+ EPA databases", "status": "not_built", "action": "Build utility"},
+        {"level": "Federal", "name": "HR 6984 / S. 4213", "note": "Federal DC water disclosure mandate · not enacted", "status": "policy_gap", "action": "Monitor"},
+        # Virginia
+        {"level": "Virginia", "name": "Loudoun Water ACFR", "note": "~1.6B gal/yr aggregate · annual only · no per-DC breakdown", "status": "working", "action": "Expand utilities"},
+        {"level": "Virginia", "name": "PWC Water IUS", "note": "56 DCs · ERU proxy, not metered consumption", "status": "working", "action": "Annual update"},
+        {"level": "Virginia", "name": "HB 496 / SB 553 reports", "note": "Monthly utility DC volumes · reporting channel unconfirmed", "status": "coming", "action": "Watch SWCB / DEQ"},
+        {"level": "Virginia", "name": "DEQ ArcGIS / VWP", "note": "Permit metadata only · no flow in ArcGIS layers", "status": "partial", "action": "Metadata only"},
+        {"level": "Virginia", "name": "DEQ VPDES Excel", "note": "WAF 403 block · stormwater-only permits anyway", "status": "blocked", "action": "Wait / retry"},
+        # Ohio
+        {"level": "Ohio", "name": "EPA ECHO DMR (OH)", "note": "4 Columbus-area WWTP permits · same aggregation limit", "status": "working", "action": "Add permits"},
+        {"level": "Ohio", "name": "OHD000001 DMRs", "note": "First per-DC direct mandate · public comment closed", "status": "coming", "action": "Awaiting finalization"},
+        {"level": "Ohio", "name": "Central OH Water Study", "note": "Demand projections 40 → 90 MGD (2030 → 2050)", "status": "working", "action": "Annual update"},
+        # Local / Utility
+        {"level": "Local / Utility", "name": "Water service contracts", "note": "Per-DC monthly volumes · NDA-blocked in 25 of 31 VA localities", "status": "blocked", "action": "No FOIA path"},
+        {"level": "Local / Utility", "name": "Zoning applications", "note": "Pre-construction water estimates · variable quality", "status": "partial", "action": "Expand coverage"},
+        # Private (voluntary)
+        {"level": "Private (voluntary)", "name": "Operator water claims", "note": "29 verbatim quotes · 5 independently assessed", "status": "working", "action": "Annual refresh"},
+        {"level": "Private (voluntary)", "name": "CDP questionnaires", "note": "Structured water security filings · MSFT / GOOG / META file", "status": "not_built", "action": "Build ingest"},
+        {"level": "Private (voluntary)", "name": "FracTracker DC database", "note": "1,400+ sites · cooling type (air / evaporative / hybrid)", "status": "not_built", "action": "Build ingest"},
+        {"level": "Private (voluntary)", "name": "PJM Large Loads 2026", "note": "≥50 MW DC loads in PJM territory · electricity proxy", "status": "not_built", "action": "Build ingest"},
+    ],
+    "barriers": [
+        {
+            "title": "WWTP aggregation",
+            "body": (
+                "EPA ECHO measures flow at receiving wastewater treatment plants. "
+                "All dischargers — Amazon, hospitals, hotels — sum into one monthly "
+                "number. No federal mechanism disaggregates per data center."
+            ),
+            "workaround": "Add WWTP permits as DC clusters grow; long-term unlock is OHD000001 direct DMRs.",
+            "kind": "structural",
+        },
+        {
+            "title": "NDA wall (VA local)",
+            "body": (
+                "25 of 31 Virginia localities signed NDAs. Water volumes, cooling "
+                "targets, and rate structures are contractually shielded. FOIA "
+                "exemptions apply in Virginia."
+            ),
+            "workaround": "Utility ACFRs (aggregate) + HB 496 / SB 553 monthly reports (aggregate, July 2026).",
+            "kind": "legal",
+        },
+        {
+            "title": "Voluntary-only private",
+            "body": (
+                "All private water data is self-reported national/global totals. "
+                "No SEC rule requires facility-level water reporting for tech "
+                "companies. No independent verification path exists."
+            ),
+            "workaround": "CDP questionnaires + FracTracker cooling type + PJM electricity proxy.",
+            "kind": "policy",
+        },
+    ],
+    "timeline": [
+        {
+            "date": "Jul 2026",
+            "title": "HB 496 / SB 553 effective",
+            "desc": (
+                "VA utilities must report monthly DC water volumes. First reports expected "
+                "Aug–Sept. Confirm channel (SWCB vs. DEQ) before building scraper."
+            ),
+            "color": "purple",
+        },
+        {
+            "date": "TBD 2026",
+            "title": "Ohio OHD000001 finalized",
+            "desc": (
+                "First state mandate requiring DMR from data centers directly. "
+                "Add new permit numbers to epa_echo_target_permits when published."
+            ),
+            "color": "purple",
+        },
+        {
+            "date": "Buildable now",
+            "title": "EIA Form 923 §8D — indirect water",
+            "desc": (
+                "2024 data published Sept 2025. Unlocks indirect thermoelectric "
+                "footprint (~80% of DC total). High-priority build."
+            ),
+            "color": "green",
+        },
+        {
+            "date": "Buildable now",
+            "title": "EPA FRS cross-reference + CDP ingest",
+            "desc": (
+                "Both APIs confirmed. FRS stabilizes facility dedup; CDP adds "
+                "structured voluntary disclosures from MSFT / GOOG / META."
+            ),
+            "color": "green",
+        },
+    ],
+}
+
+
 def compute_household_equivalent(gallons_per_year: int, gpd: int = 200) -> int:
     """Convert annual gallons to equivalent number of households served.
 
@@ -2891,6 +2997,85 @@ def render_data_table(df: pd.DataFrame, compact: bool = False):
     )
 
 
+# --- Sources tab ---
+
+_STATUS_DOT = {
+    "working":    "🟢",
+    "partial":    "🟡",
+    "blocked":    "🔴",
+    "coming":     "🟣",
+    "not_built":  "⚪",
+    "policy_gap": "⚪",
+}
+_STATUS_LABEL = {
+    "working":    "Working",
+    "partial":    "Partial",
+    "blocked":    "Blocked",
+    "coming":     "Coming",
+    "not_built":  "Not built",
+    "policy_gap": "Policy gap",
+}
+
+
+def render_sources_tab():
+    sc = SOURCES_DATA["scorecard"]
+
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("Sources accessible", sc["accessible"], help="Active data pipelines")
+    col2.metric("Hard-blocked", sc["blocked"], help="NDA · WAF · voluntary-only · no mandate")
+    col3.metric("Unlocking soon", sc["coming"], help="HB 496 · OHD000001 · EIA 923")
+    col4.metric("Build queue", sc["build_queue"], help="Data available, scraper not yet built")
+
+    st.divider()
+    st.markdown("#### Source status by level")
+
+    current_level = None
+    for src in SOURCES_DATA["sources"]:
+        if src["level"] != current_level:
+            current_level = src["level"]
+            st.markdown(f"**{current_level}**")
+
+        dot = _STATUS_DOT.get(src["status"], "⚪")
+        label = _STATUS_LABEL.get(src["status"], src["status"])
+        c_dot, c_name, c_badge, c_action = st.columns([0.25, 3.5, 1.25, 1.5])
+        c_dot.markdown(dot)
+        c_name.markdown(f"**{src['name']}**  \n{src['note']}")
+        c_badge.markdown(f"`{label}`")
+        c_action.caption(src["action"])
+
+    st.divider()
+    st.markdown("#### Structural barriers that scraping alone can't fix")
+
+    b_cols = st.columns(3)
+    kind_fn = {"structural": st.error, "legal": st.warning, "policy": st.info}
+    for col, barrier in zip(b_cols, SOURCES_DATA["barriers"]):
+        with col:
+            fn = kind_fn.get(barrier["kind"], st.info)
+            fn(
+                f"**{barrier['title']}**\n\n{barrier['body']}\n\n"
+                f"*Workaround: {barrier['workaround']}*"
+            )
+
+    st.divider()
+    st.markdown("#### Upcoming data unlocks")
+
+    for item in SOURCES_DATA["timeline"]:
+        icon = "🟣" if item["color"] == "purple" else "🟢"
+        st.markdown(
+            f"{icon} **{item['title']}** · *{item['date']}*  \n{item['desc']}"
+        )
+
+    df = load_data()
+    if not df.empty:
+        st.divider()
+        st.download_button(
+            "Download raw records (CSV)",
+            df.to_csv(index=False),
+            "dc_water_data.csv",
+            "text/csv",
+        )
+
+
 # --- Main App ---
 
 
@@ -2911,8 +3096,8 @@ def main():
             "via public regulatory data."
         )
 
-    tab_legislation, tab_cwa, tab_news, tab_solutions, tab_data = st.tabs(
-        ["Legislation", "CWA Cases", "News", "Solutions", "Data"]
+    tab_legislation, tab_cwa, tab_news, tab_solutions, tab_sources = st.tabs(
+        ["Legislation", "CWA Cases", "News", "Solutions", "Sources"]
     )
 
     # --- CWA Cases tab ---
@@ -2953,83 +3138,16 @@ def main():
         ):
             render_company_water_claims()
 
-    # --- Data tab ---
-    with tab_data:
-        df = load_data()
-        if df.empty:
-            st.warning(
-                "No data found. Run the scraping pipeline first:\n\n"
-                "```bash\npython main.py --scraper epa_echo --limit 50\n```"
-            )
-            return
+    # --- Sources tab ---
+    with tab_sources:
+        render_sources_tab()
 
-        # Eager: freshness, filters, hero, flow chart, local context.
-        render_data_freshness(df)
-        filtered_df = render_inline_filters(df)
-
-        if is_mobile or is_tablet:
-            render_hero_compact(filtered_df)
-        else:
-            render_hero(filtered_df)
-
-        render_flow_chart(filtered_df, cfg)
-
-        if is_mobile:
-            with st.expander("How does this compare?"):
-                render_local_context(is_mobile=True)
-        else:
-            render_local_context(is_mobile=False)
-
-        # Lazy panels — toggle to load. Skipped during cold start to keep
-        # first paint fast; each render_* call is the heavy work.
-        st.markdown("---")
-        st.caption("Optional views — toggle to load:")
-
-        if not is_mobile and not is_tablet:
-            if st.toggle(
-                "Records by Source chart",
-                value=False,
-                key="lazy_breakdown",
-            ):
-                render_source_breakdown(filtered_df, cfg)
-
-        if not is_mobile:
-            if st.toggle(
-                "Seasonal Patterns heatmap",
-                value=False,
-                key="lazy_heatmap",
-            ):
-                render_seasonal_heatmap(filtered_df, cfg)
-
-        if st.toggle(
-            "Transparency Scorecard",
-            value=False,
-            key="lazy_scorecard",
-        ):
-            render_transparency_scorecard()
-
-        if st.toggle(
-            "Per-query water estimates explainer",
-            value=False,
-            key="lazy_perquery",
-        ):
-            render_per_query_explainer()
-
-        if st.toggle(
-            "Records table",
-            value=False,
-            key="lazy_table",
-        ):
-            render_data_table(filtered_df, compact=(is_mobile or is_tablet))
-
-        # Mobile download button (sidebar not visible on mobile).
-        if is_mobile and not filtered_df.empty:
-            st.download_button(
-                "Download CSV",
-                filtered_df.to_csv(index=False),
-                "dc_water_data.csv",
-                "text/csv",
-            )
+    # --- Flow data (developer preview, hidden until live map tab ships) ---
+    # render_data_freshness, render_inline_filters, render_hero,
+    # render_flow_chart, render_local_context, render_source_breakdown,
+    # render_seasonal_heatmap, render_transparency_scorecard,
+    # render_per_query_explainer, render_data_table are all preserved;
+    # wire them to the live-map tab when it is built.
 
 
 if __name__ == "__main__":
