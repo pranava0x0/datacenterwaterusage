@@ -1847,27 +1847,37 @@ def _build_news_item_html(item: dict) -> str:
     cross_tab = item.get("cross_ref_tab")
     cross_note = item.get("cross_ref_note", "")
 
+    _title_style = "font-weight:600;font-size:1rem;display:block;margin-bottom:4px;"
     headline = (
-        f'<a href="{esc(url)}" target="_blank" rel="noopener" class="news-title">{title}</a>'
-        if url else f'<span class="news-title">{title}</span>'
+        f'<a href="{esc(url)}" target="_blank" rel="noopener" class="news-title"'
+        f' style="{_title_style}color:#08519c;text-decoration:none;">{title}</a>'
+        if url else
+        f'<span class="news-title" style="{_title_style}color:#1a1a2e;">{title}</span>'
     )
     meta = " · ".join(b for b in (outlet, date_str) if b)
     tags_html = "".join(
-        f'<span class="news-tag" style="color:{NEWS_TAG_COLORS.get(t, "#555")}">'
+        f'<span class="news-tag" style="color:{NEWS_TAG_COLORS.get(t, "#555")};'
+        f'font-size:0.78rem;font-weight:600;padding:1px 8px;border-radius:999px;'
+        f'background:#eff3ff;margin-right:4px;display:inline-block;">'
         f'{esc(NEWS_TAG_LABELS.get(t, t))}</span>'
         for t in tags
     )
     cross_html = (
-        f'<div class="news-crossref">→ {esc(cross_note)}</div>'
+        f'<div class="news-crossref" style="color:#08519c;font-size:0.82rem;margin-top:4px;">'
+        f'→ {esc(cross_note)}</div>'
         if cross_tab and cross_note else ""
     )
     tags_str = ",".join(tags)
+    # meta is already html-escaped (outlet + date_str were individually escaped above);
+    # do not wrap in esc() again or &#x27; becomes &amp;#x27; and renders as literal text.
     return (
-        f'<div class="news-card" data-tags="{esc(tags_str)}">'
+        f'<div class="news-card" data-tags="{esc(tags_str)}" style="'
+        f'border:1px solid #d6e4f0;border-radius:6px;padding:12px 14px;'
+        f'margin-bottom:10px;background:#fff;">'
         f'{headline}'
-        f'<div class="news-meta">{esc(meta)}</div>'
-        f'<div class="news-summary">{summary}</div>'
-        f'<div class="news-tags">{tags_html}</div>'
+        f'<div class="news-meta" style="color:#555;font-size:0.82rem;margin-bottom:6px;">{meta}</div>'
+        f'<div class="news-summary" style="color:#1a1a2e;font-size:0.9rem;margin-bottom:8px;line-height:1.45;">{summary}</div>'
+        f'<div class="news-tags" style="display:flex;flex-wrap:wrap;gap:2px;">{tags_html}</div>'
         f'{cross_html}'
         f'</div>'
     )
