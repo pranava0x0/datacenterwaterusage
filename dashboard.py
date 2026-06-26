@@ -1847,7 +1847,7 @@ def _build_news_item_html(item: dict) -> str:
     cross_tab = item.get("cross_ref_tab")
     cross_note = item.get("cross_ref_note", "")
 
-    _title_style = "font-weight:600;font-size:1rem;display:block;margin-bottom:4px;"
+    _title_style = "font-weight:700;font-size:1rem;display:block;margin-bottom:0.3rem;"
     headline = (
         f'<a href="{esc(url)}" target="_blank" rel="noopener" class="news-title"'
         f' style="{_title_style}color:#08519c;text-decoration:none;">{title}</a>'
@@ -1863,7 +1863,7 @@ def _build_news_item_html(item: dict) -> str:
         for t in tags
     )
     cross_html = (
-        f'<div class="news-crossref" style="color:#08519c;font-size:0.82rem;margin-top:4px;">'
+        f'<div class="news-crossref" style="color:#08519c;font-size:0.82rem;margin-top:0.3rem;">'
         f'→ {esc(cross_note)}</div>'
         if cross_tab and cross_note else ""
     )
@@ -1872,12 +1872,13 @@ def _build_news_item_html(item: dict) -> str:
     # do not wrap in esc() again or &#x27; becomes &amp;#x27; and renders as literal text.
     return (
         f'<div class="news-card" data-tags="{esc(tags_str)}" style="'
-        f'border:1px solid #d6e4f0;border-radius:6px;padding:12px 14px;'
-        f'margin-bottom:10px;background:#fff;">'
+        f'border:1px solid #d6e4f0;border-radius:0.5rem;padding:0.9rem 1.1rem;'
+        f'margin-bottom:0.75rem;background:#fff;'
+        f'box-shadow:0 1px 2px rgba(15,23,42,.04);">'
         f'{headline}'
-        f'<div class="news-meta" style="color:#555;font-size:0.82rem;margin-bottom:6px;">{meta}</div>'
-        f'<div class="news-summary" style="color:#1a1a2e;font-size:0.9rem;margin-bottom:8px;line-height:1.45;">{summary}</div>'
-        f'<div class="news-tags" style="display:flex;flex-wrap:wrap;gap:2px;">{tags_html}</div>'
+        f'<div class="news-meta" style="color:#4b5563;font-size:0.85rem;margin-bottom:0.4rem;">{meta}</div>'
+        f'<div class="news-summary" style="color:#1a1a2e;font-size:0.9rem;margin-bottom:0.4rem;line-height:1.5;">{summary}</div>'
+        f'<div class="news-tags" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:0.35rem;">{tags_html}</div>'
         f'{cross_html}'
         f'</div>'
     )
@@ -1915,7 +1916,7 @@ def render_water_news():
     )
     selected_set = set(selected)
     filtered = [i for i in items if any(t in selected_set for t in i.get("tags", []))]
-    st.markdown(f"**{len(filtered)} of {len(items)} items**")
+    st.markdown(f"**Showing {len(filtered)} of {len(items)} items**")
     st.markdown(
         "".join(_build_news_item_html(i) for i in filtered),
         unsafe_allow_html=True,
