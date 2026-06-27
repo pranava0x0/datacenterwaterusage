@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-26",
+  "last_updated": "2026-06-27",
   "source_repo": "pranava0x0/datacentercommunitybenefits",
   "source_path": "docs/data/claims.json",
   "live_dashboard": "https://pranava0x0.github.io/datacentercommunitybenefits/",
@@ -17,7 +17,11 @@
     "qts": "QTS",
     "crusoe": "Crusoe",
     "coreweave": "CoreWeave",
-    "nebius": "Nebius"
+    "nebius": "Nebius",
+    "switch": "Switch",
+    "edgeconnex": "EdgeConneX",
+    "vantage": "Vantage Data Centers",
+    "compass": "Compass Data Centers"
   },
   "claims": [
     {
@@ -379,6 +383,57 @@
       "captured_at": "2026-05-16",
       "published_at": "2026-04-09",
       "project_id": "xai-memphis-tn"
+    },
+    {
+      "id": "switch-water-net-positive-2x",
+      "company_slug": "switch",
+      "theme": "water",
+      "statement": "Switch will replenish and restore up to two times more water than it uses operationally.",
+      "source_url": "https://www.switch.com/sustainability/",
+      "source_title": "Switch — Green Data Center / Sustainability (net positive water strategy)",
+      "captured_at": "2026-06-27"
+    },
+    {
+      "id": "switch-water-100-percent-recycled",
+      "company_slug": "switch",
+      "theme": "water",
+      "statement": "Switch identifies and leads water improvement projects in the communities where we operate to allow us to run our campuses on 100% recycled water.",
+      "source_url": "https://www.switch.com/sustainability/",
+      "source_title": "Switch — Sustainability (100% recycled water campuses)",
+      "captured_at": "2026-06-27"
+    },
+    {
+      "id": "edgeconnex-water-neutral-2030",
+      "company_slug": "edgeconnex",
+      "theme": "water",
+      "statement": "Become a carbon-, waste-, and water-neutral data center provider by the year 2030.",
+      "source_url": "https://www.edgeconnex.com/company/sustainability/",
+      "source_title": "EdgeConneX — Sustainability (water-neutral by 2030 goal)",
+      "captured_at": "2026-06-27",
+      "metric": {
+        "value": 2030.0,
+        "unit": "year",
+        "kind": "water_neutral_target"
+      }
+    },
+    {
+      "id": "vantage-water-positivity-near-zero",
+      "company_slug": "vantage",
+      "theme": "water",
+      "statement": "Vantage is also committing to water positivity for new data centers, which is just one of several sustainability goals we have to ensure responsible growth around the world.",
+      "source_url": "https://blog.vantage-dc.com/2026/04/22/cooling-without-the-drain-how-closed-loop-systems-cut-day-to-day-water-use/",
+      "source_title": "Vantage Data Centers — Cooling Without the Drain: How Closed-Loop Systems Cut Day-to-Day Water Use",
+      "captured_at": "2026-06-27",
+      "published_at": "2026-04-22"
+    },
+    {
+      "id": "compass-water-zero-airside-mandate",
+      "company_slug": "compass",
+      "theme": "water",
+      "statement": "Since day one, Compass saw a zero-water solution as a mandate.",
+      "source_url": "https://www.compassdatacenters.com/a-zero-water-solution-to-support-the-global-data-demand/",
+      "source_title": "Compass Data Centers — The Pathway to Net Zero Water Data Center (Adil Attlassy, CTO)",
+      "captured_at": "2026-06-27"
     }
   ]
 }
