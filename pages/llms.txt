@@ -2,26 +2,26 @@
 
 > Tracking data center water consumption in Virginia & Ohio via public regulatory data (EPA ECHO DMR flow at receiving wastewater treatment plants, state permit portals, utility financial reports), plus three curated national datasets: data-center water legislation, Clean Water Act cases relevant to data centers, and company water claims.
 
-Static build 2026-06-26. Dashboard: https://pranava0x0.github.io/datacenterwaterusage/ · Source: https://github.com/pranava0x0/datacenterwaterusage
+Static build 2026-06-27. Dashboard: https://pranava0x0.github.io/datacenterwaterusage/ · Source: https://github.com/pranava0x0/datacenterwaterusage
 
 ## Key numbers
 
-- 51 bills tracked — 12 Enacted · 29 Introduced · 10 Failed / Vetoed
+- 53 bills tracked — 12 Enacted · 30 Introduced · 11 Failed / Vetoed
 - 78 Clean Water Act cases — 20 Data Center · 15 Data-Center Adjacent · 32 Industrial Water · 11 Landmark Precedent
 - Core finding: data centers rarely hold their own discharge permits; operational water shows up at the receiving municipal treatment plant, so the pipeline tracks WWTP NPDES permits via EPA ECHO.
 
 ## Key principles across tracked legislation
 
-- **Transparency** (25 bills, 5 enacted): Make data-center water/energy use publicly visible instead of proprietary. Examples: VA HB 496 / SB 553, UT HB 76, WV HB 4983.
-- **Disclosure** (23 bills, 6 enacted): Require operators or utilities to file specific consumption reports. Examples: VA HB 496 / SB 553, TX SB 6, OR HB 3546.
-- **Cost allocation** (21 bills, 5 enacted): Make data centers pay the infrastructure and rate costs they cause. Examples: MN HF 16, TX SB 6, OR HB 3546.
+- **Transparency** (26 bills, 5 enacted): Make data-center water/energy use publicly visible instead of proprietary. Examples: VA HB 496 / SB 553, UT HB 76, WV HB 4983.
+- **Disclosure** (24 bills, 6 enacted): Require operators or utilities to file specific consumption reports. Examples: VA HB 496 / SB 553, TX SB 6, OR HB 3546.
+- **Cost allocation** (22 bills, 5 enacted): Make data centers pay the infrastructure and rate costs they cause. Examples: MN HF 16, TX SB 6, OR HB 3546.
 - **Permit oversight** (20 bills, 8 enacted): Give regulators or localities approval leverage over siting and use. Examples: VA HB 496 / SB 553, TX SB 6, Loudoun County ZOAM 2025.
-- **Conservation** (15 bills, 5 enacted): Mandate or incentivize lower water/energy consumption outright. Examples: MN HF 16, OR HB 3546, ID H 895.
+- **Conservation** (16 bills, 5 enacted): Mandate or incentivize lower water/energy consumption outright. Examples: MN HF 16, OR HB 3546, ID H 895.
 - **Preemptive review** (11 bills, 3 enacted): Force evaluation of impacts before construction, not after. Examples: MN HF 16, Loudoun County ZOAM 2025, Denver CB 26-0431.
+- **Best-practice guidance** (8 bills, 1 enacted): Codify model standards and guidance rather than hard mandates. Examples: Loudoun County ZOAM 2025, US HR 5332, IL SB 4016 / HB 5513.
 - **Federal coordination** (8 bills): Standardize metrics and oversight across states at the federal level. Examples: CA AB 1577, US HR 6984, US HR 5332.
-- **Best-practice guidance** (7 bills, 1 enacted): Codify model standards and guidance rather than hard mandates. Examples: Loudoun County ZOAM 2025, US HR 5332, IL SB 4016 / HB 5513.
+- **Anti-corporate-welfare** (7 bills): Condition or repeal subsidies and tax exemptions. Examples: SC H 4583, NC HB 1063, AL SB 270.
 - **Closed-loop cooling** (7 bills, 2 enacted): Require sealed cooling systems with minimal net water draw. Examples: MN HF 16, ID H 895, SC H 4583.
-- **Anti-corporate-welfare** (6 bills): Condition or repeal subsidies and tax exemptions. Examples: SC H 4583, NC HB 1063, AL SB 270.
 - **Moratorium** (5 bills, 1 enacted): Pause new data-center development until safeguards exist. Examples: Denver CB 26-0431, NY S9144 / A10141, US S. 4214.
 - **NDA prohibition** (4 bills): Ban the non-disclosure agreements that hide water deals from the public. Examples: OH HB 784, IL SB 4016 / HB 5513, US HR 8488.
 - **Strict liability** (3 bills): Attach direct, non-waivable liability for violations or harms. Examples: SC H 4583, US HR 8488, KS SB 400.
@@ -53,6 +53,7 @@ Static build 2026-06-26. Dashboard: https://pranava0x0.github.io/datacenterwater
 - US HR 8488 (Federal (US)) — Introduced — Requires AI data center developers to publicly disclose proposed sites at least 180 days before any definitive development step. Mandates community engagement, multilingual outreach, and disclosure of projected electricity use, water consumption, cooling demands, and environmental impacts. Restricts NDAs and treats violations as unfair or deceptive practices under the FTC Act. Source: https://www.congress.gov/bill/119th-congress/house-bill/8488
 - US S. — Data Center Water and Energy Transparency Act (Durbin; number TBD) (Federal (US)) — Introduced — Would require data-center operators to report actual energy and water consumption (plus five-year pre-construction estimates) to their states; states would aggregate/anonymize data for EPA, DOE, and USDA, who would issue joint regional reports and could fine non-compliance. Source: https://www.durbin.senate.gov/newsroom/press-releases/as-utility-costs-rise-durbin-introduces-new-legislation-to-bring-transparency-to-energy-and-water-consumption-by-data-centers
 - IL SB 4016 / HB 5513 (Illinois) — Introduced — Requires data centers to pay for their own energy infrastructure and invest in renewable generation, disclose annual water consumption (intake + discharge) to the Illinois DNR beginning Jan. 1, 2027, identify and monitor likely pollutants in discharges to WWTPs, ban NDAs between local governments and DC operators, and mandate transparent community-benefit agreements. Source: https://www.ilga.gov/Legislation/BillStatus?DocNum=4016&GAID=18&DocTypeID=SB&SessionID=114&GA=104
+- IA HF 2690 (Iowa) — Introduced — Requires data centers to file quarterly water-use reports with the Iowa DNR (volume, source, and efficiency) and quarterly energy reports with the Iowa Utilities Commission, with the reported information posted publicly online within 30 days; also requires a separate electric tariff so data-center costs are not shifted onto other ratepayers. Source: https://www.legis.iowa.gov/docs/publications/LGI/91/HF2690.pdf
 - MI SB 762 (Michigan) — Introduced — Requires the Michigan Public Service Commission to publish annual public reports of each data center's water usage (by service area) and electricity consumption (in GWh) beginning in 2027. Source: https://legislature.mi.gov/Bills/Bill?ObjectName=2025-SB-0762
 - MI SB 1018-1020 (Michigan) — Introduced — Bipartisan package that would halt data center development until April 1, 2027, pending development of comprehensive water, energy, and environmental standards. Source: https://michiganadvance.com/2026/06/24/michigan-lawmakers-residents-renew-push-for-statewide-data-center-moratorium/
 - NJ S3379 (New Jersey) — Introduced — Requires data center owners/operators to submit semi-annual water and energy usage reports to the NJ Board of Public Utilities for three years. Reports must cover total kWh, IT-equipment energy, water input (cubic meters), and source. State-incentivized facilities must also report PUE, WUE, and renewable energy factor. BPU publishes facility data within 30 days; performance metrics released only in anonymized aggregated form (n≥5). Source: https://pub.njleg.gov/Bills/2026/S3500/3379_I1.HTM
@@ -71,6 +72,7 @@ Static build 2026-06-26. Dashboard: https://pranava0x0.github.io/datacenterwater
 - VA SB 417 (Virginia) — Introduced — Conditions eligibility for Cloud Computing Cluster Infrastructure Grant Fund awards on the data center using treated (reclaimed) wastewater rather than potable water in its cooling systems — an incentive-based approach rather than a cooling-technology mandate. Source: https://lis.virginia.gov/bill-details/20261/SB417
 - CA AB 93 (California) — Failed / Vetoed — Would have required annual water-use disclosure by data centers. Source: 
 - CO SB26-102 (Colorado) — Failed / Vetoed — Would have required operators of new large-load data centers to comply with operational water management requirements and to report annual electricity and water consumption to the Colorado Department of Public Health and Environment (first reports due June 30, 2028). Killed in committee at the sponsor's request. Source: https://leg.colorado.gov/bills/SB26-102
+- CT SB 245 (Connecticut) — Failed / Vetoed — Would have repealed Connecticut's data-center tax incentives (PA 21-1) and conditioned data centers on meeting the state's clean-electricity standard (100% clean by 2040), paying prevailing wage, and meeting a sustainable-design / green-building standard; framed by the committee around data centers' water and energy use. Source: https://www.cga.ct.gov/2026/JFR/S/PDF/2026SB-00245-R00ET-JFR.PDF
 - GA SB 421 (Georgia) — Failed / Vetoed — Would have barred Georgia local governments, authorities, and political subdivisions from entering NDAs concealing a data center's water or electricity usage. Source: https://legiscan.com/GA/bill/SB421/2025
 - IL SB 3830 (POWER Act) (Illinois) — Failed / Vetoed — Would have required data centers to source renewable energy, submit quarterly water use reports, and submit water management plans to the IL Water Survey. Included community benefits agreements and ratepayer protection provisions. Source: https://www.circleofblue.org/2026/water-policy-politics/illinois-fails-to-pass-landmark-act-requiring-responsible-data-center-energy-and-water-use/
 - IN SB 79 (Indiana) — Failed / Vetoed — Would have created an Indiana Utility Regulatory Commission working group to forecast data-center electricity demand (report by Oct. 31, 2026), required operators to file quarterly electricity-use reports the IURC publishes online, and required local governments to obtain projected power and water-use disclosures plus a site assessment before issuing data-center permits. Source: https://iga.in.gov/legislative/2026/bills/senate/79

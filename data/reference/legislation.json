@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-06-24",
-  "note": "State + federal data center water/energy legislation, plus selected regulatory actions and major local zoning decisions. Verified entries had their status confirmed against a primary source (state legislature page, Congress.gov / GovInfo, official sponsor press release) on the listed last_verified date; unverified entries should be re-checked before being relied upon. Each bill is enriched with recent_news (up to 3 dated items with source URLs), public_sentiment (a paragraph naming supporters/opponents), general_principles (tagged policy concepts), and a procedural timeline. These fields are best-effort as of last_updated and should be re-verified before being cited. Scope expanded 2026-05-28 to include regulatory rulemakings (OH EPA OHD000001) and major local ordinances (Loudoun ZOAM) that function as de facto data-center policy.",
+  "last_updated": "2026-06-27",
+  "note": "State + federal data center water/energy legislation, plus selected regulatory actions and major local zoning decisions. Verified entries had their status confirmed against a primary source (state legislature page, Congress.gov / GovInfo, official sponsor press release) on the listed last_verified date; unverified entries should be re-checked before being relied upon. June 27, 2026 additions: IA HF 2690 (water + energy reporting and a separate data-center electric tariff; introduced) and CT SB 245 (would have repealed Connecticut's data-center tax incentives and added clean-energy/sustainability conditions; failed — died on the Senate calendar). Each bill is enriched with recent_news (up to 3 dated items with source URLs), public_sentiment (a paragraph naming supporters/opponents), general_principles (tagged policy concepts), and a procedural timeline. These fields are best-effort as of last_updated and should be re-verified before being cited. Scope expanded 2026-05-28 to include regulatory rulemakings (OH EPA OHD000001) and major local ordinances (Loudoun ZOAM) that function as de facto data-center policy.",
   "bills": [
     {
       "bill_id": "VA HB 496 / SB 553",
@@ -3303,6 +3303,123 @@
           "date": "2027-05-21",
           "milestone": "Scheduled expiration",
           "detail": "Council may extend or shorten"
+        }
+      ]
+    },
+    {
+      "bill_id": "IA HF 2690",
+      "jurisdiction": "Iowa",
+      "level": "state",
+      "title": "Data center water and energy use reporting and tariff requirements",
+      "sponsor": "House Committee on Commerce",
+      "summary": "Requires data centers to file quarterly water-use reports with the Iowa DNR (volume, source, and efficiency) and quarterly energy reports with the Iowa Utilities Commission, with the reported information posted publicly online within 30 days; also requires a separate electric tariff so data-center costs are not shifted onto other ratepayers.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "introduced",
+      "status_detail": "Introduced in the 2026 session (91st General Assembly) as a committee bill from the House Committee on Commerce; a more comprehensive successor to the earlier HF 2447 reporting bill. Bill text confirmed on legis.iowa.gov; final session disposition not re-checked — re-verify before relying.",
+      "source_url": "https://www.legis.iowa.gov/docs/publications/LGI/91/HF2690.pdf",
+      "last_verified": "2026-06-27",
+      "verified": false,
+      "confidence": "medium",
+      "recent_news": [
+        {
+          "date": "2026-02-19",
+          "title": "Iowa bill would require data centers to report water and energy use",
+          "source": "Axios Des Moines",
+          "url": "https://www.axios.com/local/des-moines/2026/02/19/iowa-lawmakers-push-data-center-transparency",
+          "takeaway": "Lawmakers pushed a data-center transparency package requiring quarterly water reports to the DNR and energy reports to the Iowa Utilities Commission, with the data posted publicly online."
+        },
+        {
+          "date": "2026-03-01",
+          "title": "Transparency Needed for Data Centers",
+          "source": "Sierra Club Iowa",
+          "url": "https://www.sierraclub.org/iowa/blog/2026/03/transparency-needed-data-centers",
+          "takeaway": "Advocates framed the bill as a fix for Iowa's data-center secrecy, citing a single Google data center that used roughly 1 billion gallons of water in 2024 (date approximated to month)."
+        }
+      ],
+      "public_sentiment": "Backed by Sierra Club Iowa, consumer advocates, and ratepayer groups who point to a Google Council Bluffs facility's ~1 billion gallons of water in 2024 and warn of cost-shifting onto residential customers; data-center developers and economic-development boosters resist mandatory public disclosure and a separate tariff class as a competitiveness risk.",
+      "general_principles": [
+        {
+          "tag": "Transparency",
+          "note": "Mandates public posting of data-center water and energy figures online within 30 days of reporting."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "Requires quarterly water reports to the DNR and quarterly energy reports to the Iowa Utilities Commission."
+        },
+        {
+          "tag": "Cost allocation",
+          "note": "Directs a separate electric tariff so data-center demand costs are not shifted onto other ratepayers."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-02-19",
+          "milestone": "Introduced",
+          "detail": "Committee bill introduced by the House Committee on Commerce during the 2026 session."
+        }
+      ]
+    },
+    {
+      "bill_id": "CT SB 245",
+      "jurisdiction": "Connecticut",
+      "level": "state",
+      "title": "Eliminating data center tax incentives and adding clean-energy and sustainability conditions",
+      "sponsor": "Energy and Technology Committee",
+      "summary": "Would have repealed Connecticut's data-center tax incentives (PA 21-1) and conditioned data centers on meeting the state's clean-electricity standard (100% clean by 2040), paying prevailing wage, and meeting a sustainable-design / green-building standard; framed by the committee around data centers' water and energy use.",
+      "scope": [
+        "energy",
+        "water"
+      ],
+      "status": "failed",
+      "status_detail": "Reported out of the Energy and Technology Committee on a Joint Favorable Report (March 2026) but died on the Senate calendar without a floor vote; the 2026 General Assembly adjourned sine die. Failure confirmed via CT Mirror's list of bills that did not pass.",
+      "source_url": "https://www.cga.ct.gov/2026/JFR/S/PDF/2026SB-00245-R00ET-JFR.PDF",
+      "last_verified": "2026-06-27",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-05-11",
+          "title": "CT bills that didn't pass in 2026: School cellphones, data centers, evictions",
+          "source": "CT Mirror",
+          "url": "https://ctmirror.org/2026/05/11/ct-2026-bills-that-didnt-pass/",
+          "takeaway": "SB 245 died on the calendar without a Senate vote; lawmakers said interest faded as Connecticut's high electricity costs already deterred developers — only one company had qualified for the incentives since 2021."
+        },
+        {
+          "date": "2026-05-11",
+          "title": "Here are some CT bills that didn't pass in 2026: School cellphones, data centers, evictions",
+          "source": "Connecticut Public",
+          "url": "https://www.ctpublic.org/news/2026-05-11/ct-bills-failed-2026-school-cellphones-data-centers-evictions",
+          "takeaway": "Public-radio recap confirms the data-center incentive-repeal bill was among measures that stalled at session's end."
+        }
+      ],
+      "public_sentiment": "AARP Connecticut supported eliminating state data-center tax incentives, and environmental groups (Environment America's CT chapter, river advocates) pushed paired water and energy efficiency standards; the Connecticut Business and Industry Association opposed repeal, arguing large capital projects need years of incentive certainty. Lawmakers ultimately let it lapse as high in-state electricity prices were already cooling developer interest.",
+      "general_principles": [
+        {
+          "tag": "Anti-corporate-welfare",
+          "note": "Core aim was repealing the data-center tax incentives enacted under PA 21-1."
+        },
+        {
+          "tag": "Best-practice guidance",
+          "note": "Would have required a sustainable-design / green-building standard and clean-electricity compliance as a condition of operating."
+        },
+        {
+          "tag": "Conservation",
+          "note": "Committee framed the measure around curbing data centers' water and energy use as the sector strained state climate goals."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-03-01",
+          "milestone": "Joint Favorable Report",
+          "detail": "Reported favorably out of the Energy and Technology Committee (March 2026; date approximated to month)."
+        },
+        {
+          "date": "2026-05-06",
+          "milestone": "Died on the calendar",
+          "detail": "2026 General Assembly adjourned sine die without a Senate floor vote on SB 245."
         }
       ]
     }
