@@ -1765,42 +1765,48 @@ def _build_principles_html(principles: list[dict]) -> str:
 
 # --- Legislation Themes ---
 
+# Each theme card aggregates one or more tags from the closed principle
+# taxonomy (keys of LEGISLATION_PRINCIPLE_DESCRIPTIONS). The grid counts
+# unique bills carrying ANY of the card's tags. `tags` must stay a subset of
+# the taxonomy — test-enforced, because a tag that drifts out of the taxonomy
+# silently renders a 0 (that exact bug shipped: 5 of 6 cards showed 0 while
+# the dataset held 22 cost-allocation and ~21 permit/moratorium bills).
 LEGISLATION_THEME_DEFINITIONS = [
     {
-        "tag": "Transparency",
+        "tags": ("Transparency", "Disclosure", "NDA prohibition"),
         "label": "Transparency & Disclosure",
         "color": "#08519c",
         "description": "Require data centers to publicly report actual or projected water consumption to regulators and the public.",
     },
     {
-        "tag": "Environmental Review",
-        "label": "Environmental Review",
+        "tags": ("Preemptive review",),
+        "label": "Pre-Construction Review",
         "color": "#2e8b57",
-        "description": "Subject new construction to CEQA/SEQRA impact assessment, including a mandatory water-supply analysis.",
+        "description": "Force evaluation of water-supply and environmental impacts before construction is approved, not after.",
     },
     {
-        "tag": "Technology Mandate",
-        "label": "Technology Mandates",
+        "tags": ("Closed-loop cooling", "Conservation"),
+        "label": "Technology & Conservation Mandates",
         "color": "#c41e3a",
-        "description": "Require closed-loop, reclaimed-water, or non-consumptive cooling as a permit condition.",
+        "description": "Require closed-loop, reclaimed-water, or non-consumptive cooling, or mandate lower consumption outright.",
     },
     {
-        "tag": "Cost Allocation",
+        "tags": ("Cost allocation",),
         "label": "Cost Allocation",
         "color": "#d4a017",
         "description": "Ensure data centers bear the marginal cost of water-supply infrastructure they trigger, not residential ratepayers.",
     },
     {
-        "tag": "Permit Reform",
+        "tags": ("Permit oversight", "Moratorium"),
         "label": "Permit Reform & Moratoria",
         "color": "#6b3fa0",
-        "description": "Impose construction moratoria or water-compatibility reviews before new permits, giving regulators time to assess cumulative demand.",
+        "description": "Impose construction moratoria or approval leverage over siting before new permits, giving regulators time to assess cumulative demand.",
     },
     {
-        "tag": "Consumer Protection",
-        "label": "Consumer Protection",
+        "tags": ("Anti-corporate-welfare",),
+        "label": "Subsidy Conditions & Repeal",
         "color": "#1a7a8a",
-        "description": "Prevent data center grid and water infrastructure costs from being socialized to residential ratepayers.",
+        "description": "Condition or repeal the tax exemptions and subsidies that currently socialize data-center infrastructure costs.",
     },
 ]
 
@@ -1824,8 +1830,13 @@ def _build_legislation_themes_html(bills: list[dict]) -> str:
 
     cards = []
     for theme in LEGISLATION_THEME_DEFINITIONS:
-        tag = theme["tag"]
-        ids = tag_bills.get(tag, [])
+        # Unique bills carrying ANY of the theme's taxonomy tags, keeping
+        # dataset order and de-duplicating bills tagged with several of them.
+        ids = list(
+            dict.fromkeys(
+                bid for tag in theme["tags"] for bid in tag_bills.get(tag, [])
+            )
+        )
         count = len(ids)
         examples = ", ".join(ids[:3])
         if len(ids) > 3:

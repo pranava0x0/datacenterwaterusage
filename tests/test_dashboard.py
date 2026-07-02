@@ -1436,3 +1436,57 @@ class TestDcWaterConflictsSchema:
             assert "Which statutory readings could apply" in out
             first = s["applicable_readings"][0]["reading_id"]
             assert f'href="#reading-{first}"' in out
+
+
+class TestLegislationThemeGrid:
+    """The 6-card theme grid must aggregate real taxonomy tags — a tag that
+    drifts out of LEGISLATION_PRINCIPLE_DESCRIPTIONS silently renders a 0
+    (shipped bug, caught 2026-07-02: 5 of 6 cards showed 0 while the dataset
+    held 22 cost-allocation and ~21 permit/moratorium bills)."""
+
+    def test_theme_tags_are_valid_taxonomy_tags(self):
+        import dashboard as dash
+
+        for theme in dash.LEGISLATION_THEME_DEFINITIONS:
+            assert theme["tags"], theme["label"]
+            for tag in theme["tags"]:
+                assert tag in dash.LEGISLATION_PRINCIPLE_DESCRIPTIONS, (
+                    f"{theme['label']}: tag {tag!r} not in the closed taxonomy"
+                )
+
+    def test_every_theme_counts_at_least_one_bill(self):
+        import dashboard as dash
+
+        bills = dash.load_legislation().get("bills", [])
+        tagged = {
+            p.get("tag")
+            for b in bills
+            for p in b.get("general_principles", [])
+            if isinstance(p, dict)
+        }
+        for theme in dash.LEGISLATION_THEME_DEFINITIONS:
+            assert any(t in tagged for t in theme["tags"]), (
+                f"{theme['label']} matches no bill in the dataset"
+            )
+
+    def test_grid_html_counts_match_data(self):
+        import re
+
+        import dashboard as dash
+
+        bills = dash.load_legislation().get("bills", [])
+        out = dash._build_legislation_themes_html(bills)
+        rendered = [int(m) for m in re.findall(r'theme-card-count[^>]*>(\d+)<', out)]
+        expected = []
+        for theme in dash.LEGISLATION_THEME_DEFINITIONS:
+            n = sum(
+                1
+                for b in bills
+                if any(
+                    isinstance(p, dict) and p.get("tag") in theme["tags"]
+                    for p in b.get("general_principles", [])
+                )
+            )
+            expected.append(n)
+        assert rendered == expected
+        assert all(n > 0 for n in rendered), rendered
