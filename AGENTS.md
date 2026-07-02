@@ -254,6 +254,54 @@ large budget.
 - Agent's final report should state: what it found, what it couldn't verify,
   and what was deliberately excluded — absences matter as much as hits.
 
+### Standing rule: evaluate and log every agent use
+
+At the end of any session that spawned agents (research, Explore, or
+otherwise), **evaluate each agent run and append the verdict to the
+"Agent-use evaluation log" below** (and mirror durable lessons into the
+assistant's persistent memory). This is not optional bookkeeping — the
+measured entries in this file are what keep future sessions from repeating
+the ~3-4× waste patterns. Score each run on:
+
+1. **Quality** — did the output survive verification and get used? What did
+   it correct or catch that inline work would have missed?
+2. **Token efficiency** — subagent tokens vs. a realistic inline estimate
+   (tokens per verified fact/entry is a good unit).
+3. **Necessity** — could 1-3 direct WebSearch/Read/grep calls have landed
+   the same result? If yes, log it as an anti-pattern with numbers.
+
+### Agent-use evaluation log
+
+**2026-07-02 — two parallel background research agents (water-authorities
+expansion). Verdict: both justified; keep this pattern.**
+
+- *Agent A — verify 10 non-CWA historical cases (SDWA/TSCA/RCRA/RHA):*
+  56.2k subagent tokens, 14 tool uses, ~3.5 min. 10/10 candidates
+  adjudicated; correctly REJECTED one seeded candidate (W.R. Grace/Acton as
+  a SDWA §1431 order — unsupported) and substituted a verified landmark
+  (Trinity American v. EPA, 4th Cir. 1998); corrected two dates/figures
+  (Interfaith affirmance is 2005, 3M penalty $1,521,481) and flagged the
+  moved TSCA 8(a)(7) deadlines. All 10 became dataset entries.
+- *Agent B — verify 18 DC sites with water pushback:* 71.7k subagent
+  tokens, 22 tool uses, ~4.5 min. 17/18 verified plus 2 extras found;
+  caught a factual error in the seeding prompt (West Des Moines "quarter of
+  city water" is false — ~6% in July 2022; the "quarter" belongs to The
+  Dalles) and corrected an existing dataset framing (Meta Richland Parish's
+  23 MGD is a supply authorization, not a discharge limit). All entries
+  became the dc_water_conflicts.json roster.
+- *Efficiency:* ~128k combined subagent tokens for 28 verified,
+  source-cited entries (~4.6k/entry). The inline equivalent was ~36
+  serialized WebSearch/WebFetch calls dumping raw results into the main
+  context — comparable-or-worse token cost with none of the parallelism
+  (schema + migration code shipped while the agents ran).
+- *Necessity:* yes for both — multi-step, many-source verification with
+  only-the-conclusion-matters output is exactly the step-4 case on the
+  escalation ladder. Neither was answerable from repo files or 1-3 direct
+  calls.
+- *Improvement for next time:* seed prompts with claim + entity and let the
+  agent find the figures — two seeded numbers were wrong and were only
+  caught because the prompt said "verify, don't confirm."
+
 ---
 
 ## What NOT to do

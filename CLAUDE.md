@@ -91,6 +91,11 @@ Python-based scraping and data extraction pipeline that finds documents related 
   - **No secrets or PII in committed data.** `local_file_path` is stored repo-relative (see SEC-001 in `issues.md`); never commit absolute home paths, tokens, or credentials.
 - When a security item is fixed, add a regression test (e.g., `tests/test_csv_writer.py`) and note it in `errors.md`/`issues.md` so it can't silently regress.
 
+### 11. Agent-Use Accountability
+- **Every session that spawns agents (research, Explore, or otherwise) must end by evaluating each run**: quality of results, token efficiency (subagent tokens per verified fact/entry is the working unit), and whether an agent was needed at all versus 1-3 direct WebSearch/Read/grep calls.
+- **Save the evaluation**: append a dated entry to AGENTS.md § "Agent-use evaluation log" (the standing rule and scoring rubric live there), and mirror durable lessons into the assistant's persistent memory so they survive across sessions.
+- Measured to date — anti-patterns: merge-conflict agents (~105k vs ~30k inline, 2026-06-24); Explore agents for questions CLAUDE.md already answers (~30-40% waste, 2026-06-25). Good pattern: parallel background research agents for multi-source verification (~4.6k tokens per verified entry, 2026-07-02).
+
 ---
 
 ## Architecture
