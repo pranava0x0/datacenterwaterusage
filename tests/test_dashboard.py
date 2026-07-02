@@ -1244,3 +1244,195 @@ class TestCWAApplicationTheories:
         out = _build_cwa_theories_html(evil)
         assert "<script>x</script>" not in out
         assert "&lt;script&gt;" in out
+
+
+# ---------------------------------------------------------------------------
+# Water-authorities registry + statute mapping (2026-07-02 schema)
+# ---------------------------------------------------------------------------
+
+
+class TestWaterAuthoritiesSchema:
+    """Schema + referential integrity for data/reference/water_authorities.json
+    and the per-case `authorities` mapping it anchors."""
+
+    @staticmethod
+    def _payload():
+        import dashboard as dash
+
+        return dash.load_water_authorities()
+
+    @staticmethod
+    def _cases():
+        import dashboard as dash
+
+        return dash.load_cwa_investigations().get("cases", [])
+
+    def test_readings_well_formed_and_unique(self):
+        import dashboard as dash
+
+        payload = self._payload()
+        readings = payload["readings"]
+        assert readings, "authorities registry is empty"
+        ids = [r["reading_id"] for r in readings]
+        assert len(ids) == len(set(ids)), "duplicate reading_id"
+        statutes = payload["statutes"]
+        for r in readings:
+            for field in (
+                "reading_id", "statute", "section", "name", "agency",
+                "what_it_covers", "dc_applicability", "example_case_ids",
+            ):
+                assert r.get(field), f"{r.get('reading_id')} missing {field}"
+            assert r["statute"] in dash.WATER_STATUTE_ORDER, r["reading_id"]
+            assert r["statute"] in statutes, r["reading_id"]
+            # DC applicability is the point of the registry — keep it substantive.
+            assert len(r["dc_applicability"]) > 80, r["reading_id"]
+
+    def test_statute_metadata_complete(self):
+        import dashboard as dash
+
+        statutes = self._payload()["statutes"]
+        assert set(statutes) == set(dash.WATER_STATUTE_ORDER)
+        for code, meta in statutes.items():
+            assert meta.get("name"), code
+            assert meta.get("full_name"), code
+            assert meta.get("url", "").startswith("http"), code
+            assert code in dash.WATER_STATUTE_COLORS, code
+
+    def test_example_case_ids_resolve(self):
+        ids = {c["case_id"] for c in self._cases()}
+        for r in self._payload()["readings"]:
+            for cid in r["example_case_ids"]:
+                assert cid in ids, f"{r['reading_id']}: unknown example case {cid}"
+
+    def test_every_case_has_valid_authorities(self):
+        # Every case must carry the `authorities` mapping (may be empty only
+        # for pure administrative-law precedent), and every id must resolve.
+        valid = {r["reading_id"] for r in self._payload()["readings"]}
+        for c in self._cases():
+            assert "authorities" in c, f"{c['case_id']} missing authorities"
+            assert isinstance(c["authorities"], list), c["case_id"]
+            for a in c["authorities"]:
+                assert a in valid, f"{c['case_id']}: unknown reading {a}"
+
+    def test_case_statutes_derivation(self):
+        import dashboard as dash
+
+        rbi = dash._readings_by_id(self._payload())
+        cases = {c["case_id"]: c for c in self._cases()}
+        # Multi-statute case: DuPont spans SDWA + TSCA + RCRA.
+        assert dash._case_statutes(
+            cases["DuPont-WashingtonWorks-PFOA-2005-2009"], rbi
+        ) == ["SDWA", "TSCA", "RCRA"]
+        # Fallback: a case with no mapped authorities reads as CWA.
+        assert dash._case_statutes({"authorities": []}, rbi) == ["CWA"]
+
+    def test_non_cwa_statutes_represented(self):
+        # The 2026-07-02 expansion's reason to exist: the record must include
+        # historical cases under each non-CWA statute in the registry.
+        import dashboard as dash
+
+        rbi = dash._readings_by_id(self._payload())
+        covered = set()
+        for c in self._cases():
+            covered.update(dash._case_statutes(c, rbi))
+        assert covered == set(dash.WATER_STATUTE_ORDER), (
+            f"statutes with no cases: {set(dash.WATER_STATUTE_ORDER) - covered}"
+        )
+
+    def test_reading_card_builder(self):
+        import dashboard as dash
+
+        payload = self._payload()
+        ids = {c["case_id"] for c in self._cases()}
+        for r in payload["readings"]:
+            out = dash._build_reading_card_html(r, ids)
+            assert f'id="reading-{r["reading_id"]}"' in out
+            assert "How it could apply to a data center" in out
+            # Example-case links resolve to in-page case anchors.
+            assert f'href="#cwa-{r["example_case_ids"][0]}"' in out
+
+    def test_case_card_gains_statute_pills_and_hooks(self):
+        import dashboard as dash
+
+        payload = self._payload()
+        rbi = dash._readings_by_id(payload)
+        ids = {c["case_id"] for c in self._cases()}
+        case = next(
+            c for c in self._cases()
+            if c["case_id"] == "Flint-MI-SDWA-1431-2016"
+        )
+        out = dash._build_cwa_case_html(case, ids, rbi)
+        assert ">SDWA</span>" in out
+        assert 'href="#reading-sdwa-1431-emergency"' in out
+        # Without the registry the card renders as before (no hooks row).
+        legacy = dash._build_cwa_case_html(case, ids)
+        assert "Statutory hooks" not in legacy
+
+
+class TestDcWaterConflictsSchema:
+    """Schema + referential integrity for data/reference/dc_water_conflicts.json."""
+
+    @staticmethod
+    def _sites():
+        import dashboard as dash
+
+        return dash.load_dc_water_conflicts().get("sites", [])
+
+    @staticmethod
+    def _reading_ids():
+        import dashboard as dash
+
+        return {r["reading_id"] for r in dash.load_water_authorities()["readings"]}
+
+    @staticmethod
+    def _case_ids():
+        import dashboard as dash
+
+        return {c["case_id"] for c in dash.load_cwa_investigations()["cases"]}
+
+    def test_sites_well_formed_and_unique(self):
+        sites = self._sites()
+        assert sites, "conflict-site roster is empty"
+        ids = [s["site_id"] for s in sites]
+        assert len(ids) == len(set(ids)), "duplicate site_id"
+        for s in sites:
+            for field in (
+                "site_id", "site", "operator", "location", "issue_summary",
+                "pushback_summary", "status_2026", "applicable_readings",
+                "sources",
+            ):
+                assert s.get(field) or field == "applicable_readings", (
+                    f"{s.get('site_id')} missing {field}"
+                )
+            assert s["applicable_readings"], f"{s['site_id']} maps no readings"
+            for src in s["sources"]:
+                assert src.get("title"), s["site_id"]
+                assert src.get("url", "").startswith("http"), s["site_id"]
+
+    def test_site_mappings_resolve(self):
+        reading_ids = self._reading_ids()
+        case_ids = self._case_ids()
+        for s in self._sites():
+            for ar in s["applicable_readings"]:
+                assert ar["reading_id"] in reading_ids, (
+                    f"{s['site_id']}: unknown reading {ar.get('reading_id')}"
+                )
+                assert len(ar.get("how", "")) > 40, (
+                    f"{s['site_id']}/{ar['reading_id']} needs a substantive 'how'"
+                )
+                for a in ar.get("analogous_cases", []):
+                    assert a in case_ids, f"{s['site_id']}: unknown analog {a}"
+            for cid in s.get("related_case_ids", []):
+                assert cid in case_ids, f"{s['site_id']}: unknown related {cid}"
+
+    def test_conflict_site_card_builder(self):
+        import dashboard as dash
+
+        rbi = dash._readings_by_id(dash.load_water_authorities())
+        case_ids = self._case_ids()
+        for s in self._sites():
+            out = dash._build_conflict_site_html(s, rbi, case_ids)
+            assert f'id="site-{s["site_id"]}"' in out
+            assert "Which statutory readings could apply" in out
+            first = s["applicable_readings"][0]["reading_id"]
+            assert f'href="#reading-{first}"' in out
