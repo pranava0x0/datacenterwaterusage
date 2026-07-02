@@ -430,7 +430,7 @@ def build_cwa_tab() -> str:
   <p><strong>{n_readings} statutory readings</strong> across the CWA, SDWA, TSCA, RCRA,
   and the Rivers &amp; Harbors Act — each card explains what the authority historically
   covered, how it could apply to a data-center fact pattern, and which cases below show
-  it in use. Case and site cards link back here via their <em>statutory hooks</em> rows.</p>
+  it in use. Case and site cards link back here via their <em>statute applicability</em> rows.</p>
   <details class="lazy">
     <summary>Open the toolkit — {n_readings} readings grouped by statute</summary>
     <div id="water-toolkit">{toolkit}</div>

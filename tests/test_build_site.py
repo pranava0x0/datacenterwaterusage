@@ -209,7 +209,7 @@ class TestCwaAccordion:
         # collapsed <details>; takeaway and CWA pathway stay visible.
         html = _html()
         cases = dashboard.load_cwa_investigations().get("cases", [])
-        assert html.count("Details — violation, outcome, sources") == len(cases)
+        assert html.count("Details — full statute citation, sources") == len(cases)
         # Pathway blocks remain OUTSIDE the details (visible by default).
         pending = [c for c in cases if c.get("cwa_applied") in ("pending", "not-applied")]
         assert html.count("How the CWA could apply") == len(pending)

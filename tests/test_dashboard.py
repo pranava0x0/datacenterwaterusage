@@ -1366,7 +1366,7 @@ class TestWaterAuthoritiesSchema:
         assert 'href="#reading-sdwa-1431-emergency"' in out
         # Without the registry the card renders as before (no hooks row).
         legacy = dash._build_cwa_case_html(case, ids)
-        assert "Statutory hooks" not in legacy
+        assert "Statute applicability" not in legacy
 
 
 class TestDcWaterConflictsSchema:

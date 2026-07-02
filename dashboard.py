@@ -2656,7 +2656,7 @@ def render_cwa_tracker():
         "across the CWA, SDWA, TSCA, RCRA, and the Rivers & Harbors Act — each "
         "card explains what the authority historically covered, how it could "
         "apply to a data-center fact pattern, and which cases below show it in "
-        "use. Case and site cards link back here via the *statutory hooks* rows."
+        "use. Case and site cards link back here via the *statute applicability* rows."
     )
     st.markdown(
         _build_authorities_html(authorities_payload, all_ids),
@@ -2883,7 +2883,7 @@ def _case_hooks_html(case: dict, readings_by_id: dict) -> str:
     if not links:
         return ""
     return (
-        '<div class="cwa-analogs">Statutory hooks: '
+        '<div class="cwa-analogs">Statute applicability: '
         f'{" · ".join(links)}</div>'
     )
 
@@ -3174,17 +3174,21 @@ def _build_cwa_case_html(
     # outcome, sources) lives in a collapsed <details> so 73 cards stay
     # scannable, especially on mobile — the cwa_instrument pill row already
     # summarizes the statute line.
+    # Reading order (user-tested 2026-07-02): what happened (violation), how
+    # it ended (outcome), why it matters here (relevance), then the statute-
+    # applicability note (hooks + pathway). Only the verbose statute citation
+    # and sources stay collapsed.
     sections = []
     detail_sections = []
     if cwa_section:
         detail_sections.append(f'<div class="cwa-section-line">{cwa_section}</div>')
     if violation:
-        detail_sections.append(
+        sections.append(
             '<div class="bill-section-label">Violation</div>'
             f'<p class="bill-sentiment">{violation}</p>'
         )
     if outcome:
-        detail_sections.append(
+        sections.append(
             '<div class="bill-section-label">Outcome</div>'
             f'<p class="bill-sentiment">{outcome}</p>'
         )
@@ -3246,7 +3250,7 @@ def _build_cwa_case_html(
         # deployed artifact is the static site.
         sections.append(
             '<details class="bill-card-details">'
-            '<summary>Details — violation, outcome, sources</summary>'
+            '<summary>Details — full statute citation, sources</summary>'
             f'{"".join(detail_sections)}'
             '</details>'
         )
