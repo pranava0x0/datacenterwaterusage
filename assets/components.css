@@ -478,6 +478,30 @@
 .cwa-analogs a {
     color: #08519c;
 }
+/* Water-authorities toolkit (statute-grouped reading cards) */
+.statute-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.05rem;
+    color: #1a1a2e;
+    margin: 1.2rem 0 0.1rem;
+}
+.statute-meta {
+    font-size: 0.85rem;
+    color: #4b5563;
+    margin: 0 0 0.5rem;
+}
+.statute-meta a {
+    color: #08519c;
+}
+/* Conflict-site cards: one block per applicable statutory reading */
+.conflict-reading {
+    margin: 0.35rem 0 0.55rem;
+}
+.conflict-reading > strong a {
+    color: #08519c;
+}
 .cwa-section-line {
     color: #08519c;
     font-weight: 600;

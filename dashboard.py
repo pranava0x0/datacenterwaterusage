@@ -36,6 +36,8 @@ JSON_PATH = BASE_DIR / "data" / "output" / "results.json"
 LEGISLATION_PATH = BASE_DIR / "data" / "reference" / "legislation.json"
 COMPANY_WATER_CLAIMS_PATH = BASE_DIR / "data" / "reference" / "company_water_claims.json"
 CWA_INVESTIGATIONS_PATH = BASE_DIR / "data" / "reference" / "cwa_investigations.json"
+WATER_AUTHORITIES_PATH = BASE_DIR / "data" / "reference" / "water_authorities.json"
+DC_WATER_CONFLICTS_PATH = BASE_DIR / "data" / "reference" / "dc_water_conflicts.json"
 WATER_NEWS_PATH = BASE_DIR / "data" / "reference" / "water_news.json"
 WATER_SOLUTIONS_PATH = BASE_DIR / "data" / "reference" / "water_solutions.json"
 
@@ -211,6 +213,50 @@ def load_cwa_investigations(path: Path = CWA_INVESTIGATIONS_PATH) -> dict:
     file change (mtime/size) rather than a fixed TTL.
     """
     return _load_cwa_investigations_cached(str(path), _file_signature(path))
+
+
+@st.cache_data
+def _load_water_authorities_cached(path_str: str, signature: tuple) -> dict:
+    p = Path(path_str)
+    if not p.exists():
+        return {"last_updated": None, "statutes": {}, "readings": []}
+    with open(p, encoding="utf-8") as f:
+        payload = json.load(f)
+    payload.setdefault("statutes", {})
+    payload.setdefault("readings", [])
+    return payload
+
+
+def load_water_authorities(path: Path = WATER_AUTHORITIES_PATH) -> dict:
+    """Load the statutory water-authority readings registry.
+
+    Returns {"last_updated", "statutes": {code: meta}, "readings": [...]}.
+    Each reading is one specific statutory hook (e.g. CWA §404, SDWA §1431)
+    with its data-center applicability and example case_ids. Tolerates a
+    missing file; cache busts on file change.
+    """
+    return _load_water_authorities_cached(str(path), _file_signature(path))
+
+
+@st.cache_data
+def _load_dc_water_conflicts_cached(path_str: str, signature: tuple) -> dict:
+    p = Path(path_str)
+    if not p.exists():
+        return {"last_updated": None, "sites": []}
+    with open(p, encoding="utf-8") as f:
+        payload = json.load(f)
+    payload.setdefault("sites", [])
+    return payload
+
+
+def load_dc_water_conflicts(path: Path = DC_WATER_CONFLICTS_PATH) -> dict:
+    """Load the roster of data-center sites with documented water conflicts.
+
+    Returns {"last_updated", "sites": [...]}; each site maps its fact pattern
+    to applicable statutory readings and analogous historical cases.
+    Tolerates a missing file; cache busts on file change.
+    """
+    return _load_dc_water_conflicts_cached(str(path), _file_signature(path))
 
 
 @st.cache_data
@@ -2075,15 +2121,30 @@ CWA_CASE_TYPE_LABELS = {
     "potw-sewer": "Treatment plants & sewers (POTW)",
     "groundwater": "Groundwater & aquifers",
     "spills-contamination": "Spills, PFAS & contamination",
-    "water-supply": "Water supply & billing",
+    "water-supply": "Water supply & drinking water",
     "legal-doctrine": "Citizen suits & court doctrine",
 }
 
-# Did the Clean Water Act actually get used in this case?
+# Did the Clean Water Act actually get used in this case? ("not-applied" also
+# covers cases that ran under a different federal water authority — the
+# statute pills derived from `authorities` say which one.)
 CWA_STATUS_LABELS = {
     "applied": "CWA applied",
     "pending": "CWA potential",
     "not-applied": "No CWA action",
+}
+
+# Display order and pill colors for the federal water statutes covered by the
+# authorities registry (data/reference/water_authorities.json). A case's
+# statute pills are DERIVED from its `authorities` reading_ids — each reading
+# belongs to exactly one statute — so the mapping can't drift per-case.
+WATER_STATUTE_ORDER = ["CWA", "SDWA", "TSCA", "RCRA", "RHA"]
+WATER_STATUTE_COLORS = {
+    "CWA": "#08519c",
+    "SDWA": "#2e8b57",
+    "TSCA": "#7c3aed",
+    "RCRA": "#b45309",
+    "RHA": "#475569",
 }
 CWA_STATUS_COLORS = {
     "applied": COLORS["success"],
@@ -2549,12 +2610,15 @@ def render_cwa_tracker():
        proceedings are pending or circumstances match historical patterns
        but no formal CWA enforcement has been issued yet.
     """
-    st.subheader("Clean Water Act — Historical Record & Potential Exposure")
+    st.subheader("Federal Water Law & Data Centers — Authorities, Record, Exposure")
     st.markdown(
-        "Two views on the CWA and data centers: the enforcement record that has "
-        "actually built (penalties, settlements, court rulings), and specific "
-        "named sites where active proceedings or matching circumstances suggest "
-        "CWA exposure is next."
+        "Three views on federal water law and data centers: the **statutory "
+        "toolkit** (every EPA / Army Corps water authority — CWA, SDWA, TSCA, "
+        "RCRA, Rivers & Harbors Act — and how each could reach a data center), "
+        "the **historical record** that has actually built under those "
+        "authorities (penalties, settlements, court rulings), and the **named "
+        "sites** where water conflicts are live. The mappings overlap by "
+        "design — one fact pattern can trigger several readings."
     )
 
     payload = load_cwa_investigations()
@@ -2563,6 +2627,9 @@ def render_cwa_tracker():
         note = payload.get("note") or "Dataset not found or empty."
         st.info(note)
         return
+
+    authorities_payload = load_water_authorities()
+    readings_by_id = _readings_by_id(authorities_payload)
 
     historical = [c for c in cases if c.get("display_section", "historical") == "historical"]
     potential = [c for c in cases if c.get("display_section") == "potential"]
@@ -2579,20 +2646,46 @@ def render_cwa_tracker():
     ):
         st.markdown(_cwa_statute_explainer_md())
 
-    # ── SECTION 1: HISTORICAL ENFORCEMENT RECORD ──────────────────────────
+    all_ids = {c.get("case_id") for c in cases}
+
+    # ── SECTION 1: THE STATUTORY TOOLKIT ──────────────────────────────────
     st.markdown("---")
-    st.markdown("### Part 1 — Historical CWA Enforcement Record")
+    st.markdown("### Part 1 — The Federal Water-Law Toolkit")
+    st.markdown(
+        f"**{len(authorities_payload.get('readings', []))} statutory readings** "
+        "across the CWA, SDWA, TSCA, RCRA, and the Rivers & Harbors Act — each "
+        "card explains what the authority historically covered, how it could "
+        "apply to a data-center fact pattern, and which cases below show it in "
+        "use. Case and site cards link back here via the *statutory hooks* rows."
+    )
+    st.markdown(
+        _build_authorities_html(authorities_payload, all_ids),
+        unsafe_allow_html=True,
+    )
+
+    # ── SECTION 2: HISTORICAL ENFORCEMENT RECORD ──────────────────────────
+    st.markdown("---")
+    st.markdown("### Part 2 — Historical Enforcement Record")
     st.markdown(
         f"**{len(historical)} cases** — enforcement actions, penalties, settlements, "
-        "and landmark court rulings that have **actually occurred**. "
+        "landmark court rulings, and standing rulemakings that have **actually "
+        "occurred**, under the CWA and the other federal water authorities above. "
         "**Industrial cases are legal analogs** — they show the enforcement pattern "
         "for operations similar to data centers, but are enforcement against *other* "
         "industries, not data centers themselves. "
-        "Precedent rulings define the legal scope for future CWA enforcement."
+        "Precedent rulings define the legal scope for future enforcement."
     )
 
     # Filter controls. Primary axis: project type (what kind of water issue);
-    # secondary: case group (who it involves) + 2020+ toggle.
+    # secondary: statute + case group (who it involves) + 2020+ toggle.
+    selected_statutes = st.multiselect(
+        "Filter by statute",
+        options=WATER_STATUTE_ORDER,
+        default=WATER_STATUTE_ORDER,
+        format_func=lambda k: f"{k} — "
+        + authorities_payload.get("statutes", {}).get(k, {}).get("name", k),
+        key="cwa_statute_filter",
+    )
     selected_types = st.multiselect(
         "Filter by project type",
         options=list(CWA_CASE_TYPE_LABELS.keys()),
@@ -2628,13 +2721,15 @@ def render_cwa_tracker():
         for c in historical
         if c.get("category") in selected_categories
         and c.get("case_type") in selected_types
+        and any(
+            s in selected_statutes for s in _case_statutes(c, readings_by_id)
+        )
     ]
     if recent_only:
         filtered_hist = [
             c for c in filtered_hist if _cwa_year_end(c.get("year", "")) >= 2020
         ]
 
-    all_ids = {c.get("case_id") for c in cases}
     if filtered_hist:
         st.markdown(
             f"**Showing {len(filtered_hist)} of {len(historical)} historical cases** "
@@ -2648,15 +2743,18 @@ def render_cwa_tracker():
             ),
         )
         st.markdown(
-            "".join(_build_cwa_case_html(case, all_ids) for case in sorted_hist),
+            "".join(
+                _build_cwa_case_html(case, all_ids, readings_by_id)
+                for case in sorted_hist
+            ),
             unsafe_allow_html=True,
         )
     else:
         st.info("No cases match the current filter. Try widening the category or year selection.")
 
-    # ── SECTION 2: ACTIVE & POTENTIAL EXPOSURE ─────────────────────────────
+    # ── SECTION 3: ACTIVE & POTENTIAL EXPOSURE ─────────────────────────────
     st.markdown("---")
-    st.markdown("### Part 2 — Active & Potential CWA Exposure at Named Data Center Sites")
+    st.markdown("### Part 3 — Active & Potential CWA Exposure at Named Data Center Sites")
     st.markdown(
         f"**{len(potential)} named data center sites** where regulatory proceedings "
         "are active (pending permit applications, ongoing investigations, active "
@@ -2676,9 +2774,40 @@ def render_cwa_tracker():
     # One markdown blob for all case cards — each card is a self-contained
     # <div class="bill-card">, so the joined output renders identically.
     st.markdown(
-        "".join(_build_cwa_case_html(case, all_ids) for case in sorted_pot),
+        "".join(
+            _build_cwa_case_html(case, all_ids, readings_by_id)
+            for case in sorted_pot
+        ),
         unsafe_allow_html=True,
     )
+
+    # ── SECTION 4: DC SITES WITH WATER CONFLICTS ──────────────────────────
+    conflicts_payload = load_dc_water_conflicts()
+    sites = conflicts_payload.get("sites", [])
+    if sites:
+        st.markdown("---")
+        st.markdown(
+            "### Part 4 — Data-Center Sites with Reported Water Issues "
+            "or Pushback"
+        )
+        st.markdown(
+            f"**{len(sites)} named sites** with documented water problems or "
+            "community pushback — supply strain, dried wells, discharge "
+            "fights, secrecy, moratoriums. Each card maps the fact pattern to "
+            "the statutory readings from Part 1 that could reach it, citing "
+            "the historical cases that show each reading in use. Readings "
+            "overlap by design."
+        )
+        st.markdown(
+            "".join(
+                _build_conflict_site_html(s, readings_by_id, all_ids)
+                for s in sites
+            ),
+            unsafe_allow_html=True,
+        )
+        conflicts_updated = conflicts_payload.get("last_updated")
+        if conflicts_updated:
+            st.caption(f"Site roster last updated {conflicts_updated}.")
 
     last_updated = payload.get("last_updated") or "unknown"
     st.caption(
@@ -2701,12 +2830,280 @@ def _cwa_case_caption(case_id: str) -> str:
     return f"{caption} ({year})" if year else caption
 
 
-def _build_cwa_case_html(case: dict, case_ids: set[str] | None = None) -> str:
+def _readings_by_id(payload: dict | None = None) -> dict:
+    """reading_id → reading dict from the water-authorities registry."""
+    if payload is None:
+        payload = load_water_authorities()
+    return {r["reading_id"]: r for r in payload.get("readings", [])}
+
+
+def _case_statutes(case: dict, readings_by_id: dict) -> list[str]:
+    """Derive a case's statute list from its `authorities` reading_ids.
+
+    Ordered by WATER_STATUTE_ORDER, de-duplicated. Falls back to ["CWA"] for
+    cases with no mapped authorities (e.g. pure administrative-law precedent
+    like Loper Bright, carried in this record for its CWA consequences).
+    """
+    statutes = {
+        readings_by_id[a]["statute"]
+        for a in case.get("authorities", [])
+        if a in readings_by_id
+    }
+    if not statutes:
+        return ["CWA"]
+    return [s for s in WATER_STATUTE_ORDER if s in statutes] + sorted(
+        statutes - set(WATER_STATUTE_ORDER)
+    )
+
+
+def _statute_pill_html(statute: str) -> str:
+    color = WATER_STATUTE_COLORS.get(statute, COLORS["secondary"])
+    return (
+        f'<span class="cwa-status-pill" style="background:{color}">'
+        f"{html.escape(statute)}</span>"
+    )
+
+
+def _reading_link_html(reading: dict) -> str:
+    """In-page anchor link to one reading card in the authorities section."""
+    esc = html.escape
+    return (
+        f'<a href="#reading-{esc(reading["reading_id"])}">'
+        f'{esc(reading["statute"])} — {esc(reading["name"])}</a>'
+    )
+
+
+def _case_hooks_html(case: dict, readings_by_id: dict) -> str:
+    """'Statutory hooks' cross-link row for a case card (may be empty)."""
+    links = [
+        _reading_link_html(readings_by_id[a])
+        for a in case.get("authorities", [])
+        if a in readings_by_id
+    ]
+    if not links:
+        return ""
+    return (
+        '<div class="cwa-analogs">Statutory hooks: '
+        f'{" · ".join(links)}</div>'
+    )
+
+
+def _build_reading_card_html(
+    reading: dict, case_ids: set[str] | None = None,
+    case_captions: dict | None = None,
+) -> str:
+    """One statutory-reading card for the water-law toolkit section.
+
+    Anchored as #reading-<reading_id> so case cards and conflict-site cards
+    can cross-link to it. Example cases link back to their #cwa-<id> anchors
+    when the case exists in the dataset.
+    """
+    esc = html.escape
+    statute = reading.get("statute", "")
+    head = (
+        '<div class="bill-card-head">'
+        f'<span class="bill-card-id">{esc(reading.get("name", ""))}</span>'
+        f'<span class="bill-card-pill" '
+        f'style="background:{WATER_STATUTE_COLORS.get(statute, COLORS["secondary"])}">'
+        f"{esc(statute)}</span>"
+        "</div>"
+    )
+    class_bits = [
+        f'<span class="cwa-instrument">{esc(reading.get("section", ""))}</span>',
+        f'<span class="cwa-type-pill">{esc(reading.get("agency", ""))}</span>',
+    ]
+    class_row = f'<div class="cwa-class-row">{"".join(class_bits)}</div>'
+    sections = [
+        '<div class="bill-section-label">What it covers — historical use</div>'
+        f'<p class="bill-sentiment">{esc(reading.get("what_it_covers", ""))}</p>',
+        '<div class="bill-section-label">How it could apply to a data center</div>'
+        f'<p class="cwa-takeaway">{esc(reading.get("dc_applicability", ""))}</p>',
+    ]
+    examples = reading.get("example_case_ids", [])
+    if examples:
+        links = []
+        for cid in examples:
+            caption = esc(
+                (case_captions or {}).get(cid) or _cwa_case_caption(cid)
+            )
+            if case_ids is not None and cid in case_ids:
+                links.append(f'<a href="#cwa-{esc(cid)}">{caption}</a>')
+            else:
+                links.append(caption)
+        sections.append(
+            '<div class="cwa-analogs">Cases in this record using this hook: '
+            f'{" · ".join(links)}</div>'
+        )
+    return (
+        f'<div class="bill-card" id="reading-{esc(reading["reading_id"])}">'
+        f'{head}{class_row}{"".join(sections)}</div>'
+    )
+
+
+def _build_authorities_html(payload: dict, case_ids: set[str] | None = None) -> str:
+    """The full water-law toolkit: reading cards grouped by statute."""
+    esc = html.escape
+    statutes_meta = payload.get("statutes", {})
+    readings = payload.get("readings", [])
+    order = {s: i for i, s in enumerate(WATER_STATUTE_ORDER)}
+    blocks = []
+    seen = []
+    for r in readings:
+        if r["statute"] not in seen:
+            seen.append(r["statute"])
+    seen.sort(key=lambda s: order.get(s, 99))
+    for statute in seen:
+        meta = statutes_meta.get(statute, {})
+        title = esc(meta.get("name", statute))
+        full = esc(meta.get("full_name", ""))
+        agencies = esc(meta.get("agencies", ""))
+        url = meta.get("url", "")
+        full_html = (
+            f'<a href="{esc(url)}" target="_blank" rel="noopener">{full}</a>'
+            if url
+            else full
+        )
+        blocks.append(
+            f'<h4 class="statute-head">{_statute_pill_html(statute)} '
+            f"{title}</h4>"
+            f'<p class="statute-meta">{full_html}'
+            f'{" · Administered by: " + agencies if agencies else ""}</p>'
+        )
+        blocks.extend(
+            _build_reading_card_html(r, case_ids)
+            for r in readings
+            if r["statute"] == statute
+        )
+    return "".join(blocks)
+
+
+def _build_conflict_site_html(
+    site: dict, readings_by_id: dict, case_ids: set[str] | None = None
+) -> str:
+    """One data-center conflict-site card: fact pattern → readings → cases."""
+    esc = html.escape
+    head = (
+        f'<div class="bill-card-head">'
+        f'<span class="bill-card-id">{esc(site.get("site", ""))}</span>'
+        f'<span class="bill-card-pill" style="background:{COLORS["primary"]}">'
+        "DC site</span>"
+        "</div>"
+    )
+    class_bits = []
+    if site.get("location"):
+        class_bits.append(
+            f'<span class="cwa-type-pill">{esc(site["location"])}</span>'
+        )
+    statutes = [
+        s
+        for s in WATER_STATUTE_ORDER
+        if any(
+            readings_by_id.get(ar.get("reading_id"), {}).get("statute") == s
+            for ar in site.get("applicable_readings", [])
+        )
+    ]
+    class_bits.extend(_statute_pill_html(s) for s in statutes)
+    if site.get("status_2026"):
+        class_bits.append(
+            f'<span class="cwa-instrument">{esc(site["status_2026"])}</span>'
+        )
+    class_row = f'<div class="cwa-class-row">{"".join(class_bits)}</div>'
+
+    sections = []
+    if site.get("issue_summary"):
+        sections.append(
+            '<div class="bill-section-label">Water issue</div>'
+            f'<p class="bill-sentiment">{esc(site["issue_summary"])}</p>'
+        )
+    if site.get("pushback_summary"):
+        sections.append(
+            '<div class="bill-section-label">Pushback & response</div>'
+            f'<p class="bill-sentiment">{esc(site["pushback_summary"])}</p>'
+        )
+    readings = site.get("applicable_readings", [])
+    if readings:
+        items = []
+        for ar in readings:
+            reading = readings_by_id.get(ar.get("reading_id"))
+            label = (
+                _reading_link_html(reading)
+                if reading
+                else esc(ar.get("reading_id", ""))
+            )
+            analog_html = ""
+            analogs = ar.get("analogous_cases", [])
+            if analogs:
+                links = []
+                for a in analogs:
+                    caption = esc(_cwa_case_caption(a))
+                    if case_ids is not None and a in case_ids:
+                        links.append(f'<a href="#cwa-{esc(a)}">{caption}</a>')
+                    else:
+                        links.append(caption)
+                analog_html = (
+                    '<div class="cwa-analogs">Historical cases: '
+                    f'{" · ".join(links)}</div>'
+                )
+            items.append(
+                f'<div class="conflict-reading"><strong>{label}</strong>'
+                f'<div class="cwa-pathway">{esc(ar.get("how", ""))}'
+                f"{analog_html}</div></div>"
+            )
+        sections.append(
+            '<div class="bill-section-label">'
+            "Which statutory readings could apply</div>"
+            f'{"".join(items)}'
+        )
+    detail_sections = []
+    related = site.get("related_case_ids", [])
+    if related:
+        links = []
+        for cid in related:
+            caption = esc(_cwa_case_caption(cid))
+            if case_ids is not None and cid in case_ids:
+                links.append(f'<a href="#cwa-{esc(cid)}">{caption}</a>')
+            else:
+                links.append(caption)
+        detail_sections.append(
+            '<div class="cwa-analogs">Tracked case entries for this site: '
+            f'{" · ".join(links)}</div>'
+        )
+    sources = site.get("sources", [])
+    if sources:
+        items = [
+            f'<a href="{esc(s.get("url", ""))}" target="_blank" '
+            f'rel="noopener">{esc(s.get("title", "Source"))}</a>'
+            for s in sources
+        ]
+        detail_sections.append(
+            '<div class="bill-section-label">Sources</div>'
+            f'<div class="cwa-sources">{" · ".join(items)}</div>'
+        )
+    if detail_sections:
+        sections.append(
+            '<details class="bill-card-details">'
+            "<summary>Details — tracked cases, sources</summary>"
+            f'{"".join(detail_sections)}'
+            "</details>"
+        )
+    anchor = esc(site.get("site_id", ""))
+    return (
+        f'<div class="bill-card" id="site-{anchor}">'
+        f'{head}{class_row}{"".join(sections)}</div>'
+    )
+
+
+def _build_cwa_case_html(
+    case: dict,
+    case_ids: set[str] | None = None,
+    readings_by_id: dict | None = None,
+) -> str:
     """Build the complete HTML for one CWA case card as a single markdown blob.
 
     case_ids, when given, is the set of all case_ids in the dataset — used to
     render analogous_cases as in-page anchors (#cwa-<id>) only when the target
-    card actually exists.
+    card actually exists. readings_by_id, when given, adds derived statute
+    pills and 'Statutory hooks' anchor links into the authorities toolkit.
     """
     esc = html.escape
     cat_colors = _cwa_category_colors()
@@ -2755,6 +3152,10 @@ def _build_cwa_case_html(case: dict, case_ids: set[str] | None = None) -> str:
     status_color = CWA_STATUS_COLORS.get(status, COLORS["secondary"])
     instrument = esc(case.get("cwa_instrument", ""))
     class_bits = []
+    if readings_by_id is not None:
+        class_bits.extend(
+            _statute_pill_html(s) for s in _case_statutes(case, readings_by_id)
+        )
     if type_label:
         class_bits.append(f'<span class="cwa-type-pill">{esc(type_label)}</span>')
     if status_label:
@@ -2792,6 +3193,10 @@ def _build_cwa_case_html(case: dict, case_ids: set[str] | None = None) -> str:
             '<div class="bill-section-label">Relevance to data centers</div>'
             f'<p class="cwa-takeaway">{takeaway}</p>'
         )
+    if readings_by_id is not None:
+        hooks = _case_hooks_html(case, readings_by_id)
+        if hooks:
+            sections.append(hooks)
     # For cases where the CWA was NOT applied (or is only potential): how it
     # could apply, with cross-links to the historic cases that show the path.
     pathway = case.get("cwa_pathway", "")
@@ -3209,7 +3614,7 @@ def main():
         )
 
     tab_legislation, tab_cwa, tab_news, tab_solutions, tab_sources = st.tabs(
-        ["Legislation", "CWA Cases", "News", "Solutions", "Sources"]
+        ["Legislation", "Water Cases", "News", "Solutions", "Sources"]
     )
 
     # --- CWA Cases tab ---
