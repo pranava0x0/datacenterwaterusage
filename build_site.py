@@ -437,7 +437,8 @@ def build_cwa_tab() -> str:
   </details>
 
   <hr>
-  <h3>Part 2 — Historical Enforcement Record</h3>
+  <details class="lazy" open>
+  <summary><strong>Part 2 — Historical Enforcement Record ({len(historical)} cases)</strong></summary>
   <p><strong>{len(historical)} cases</strong> — enforcement actions, penalties, settlements,
   landmark court rulings, and standing rulemakings that have <strong>actually
   occurred</strong>, under the CWA and the other federal water authorities above.
@@ -459,18 +460,22 @@ def build_cwa_tab() -> str:
   </div>
   <p class="count-line" id="cwa-count"></p>
   <div id="cwa-cases">{hist_cards}</div>
+  </details>
 
   <hr>
-  <h3>Part 3 — Active &amp; Potential CWA Exposure at Named Data Center Sites</h3>
+  <details class="lazy">
+  <summary><strong>Part 3 — Active &amp; Potential CWA Exposure at Named Data Center Sites ({len(potential)})</strong></summary>
   <p><strong>{len(potential)} named data center sites</strong> where regulatory proceedings
   are active (pending permit applications, ongoing investigations, active citizen suits)
   or where the factual circumstances match the historical enforcement patterns above —
   but <strong>no formal CWA enforcement action has been issued yet</strong>.
   Use the theories panel above to trace which CWA hook applies to each site.</p>
   <div id="cwa-potential">{pot_cards}</div>
+  </details>
 
   <hr>
-  <h3>Part 4 — Data-Center Sites with Reported Water Issues or Pushback</h3>
+  <details class="lazy">
+  <summary><strong>Part 4 — Data-Center Sites with Reported Water Issues or Pushback ({len(conflict_sites)})</strong></summary>
   <p><strong>{len(conflict_sites)} named sites</strong> with documented water problems or
   community pushback — supply strain, dried wells, discharge fights, secrecy,
   moratoriums. Each card maps the fact pattern to the statutory readings from Part 1
@@ -478,6 +483,7 @@ def build_cwa_tab() -> str:
   Readings overlap by design.</p>
   <div id="dc-conflicts">{site_cards}</div>
   <p class="src-note">Site roster last updated {esc(conflicts_updated)}.</p>
+  </details>
 
   <p class="src-note">Dataset last updated {esc(last_updated)}.
   Total: {len(cases)} entries ({len(historical)} historical enforcement,
@@ -895,7 +901,7 @@ def build_solutions_tab() -> str:
     status_order = {"deployed": 0, "pilot": 1, "proposed": 2}
     sections = []
     total_solutions = len(all_sols)
-    for cat in categories:
+    for i, cat in enumerate(categories):
         label = cat.get("label", "")
         desc = cat.get("description", "")
         sols = sorted(
@@ -903,10 +909,14 @@ def build_solutions_tab() -> str:
             key=lambda s: status_order.get(s.get("status", "proposed"), 9),
         )
         cards_html = "".join(dash._build_solution_card_html(s) for s in sols)
+        # Accordion per category (first open) — the tab was one long scroll.
         sections.append(
-            f'<h3 class="solution-cat-header">{esc(label)}</h3>'
+            f'<details class="lazy"{" open" if i == 0 else ""}>'
+            f'<summary><span class="solution-cat-header" style="border:none;padding-left:0">'
+            f'{esc(label)} ({len(sols)})</span></summary>'
             f'<p class="solution-cat-desc">{esc(desc)}</p>'
             f'{cards_html}'
+            f'</details>'
         )
 
     return f"""
@@ -1216,10 +1226,11 @@ def build_js() -> str:
 // --- Tabs ---
 const tabs = document.querySelectorAll('.tab');
 const panels = document.querySelectorAll('.tabpanel');
-tabs.forEach(t => t.addEventListener('click', () => {
-  tabs.forEach(x => x.setAttribute('aria-selected', x === t ? 'true' : 'false'));
-  panels.forEach(p => p.hidden = (p.id !== 'panel-' + t.dataset.tab));
-}));
+function activateTab(name){
+  tabs.forEach(x => x.setAttribute('aria-selected', x.dataset.tab === name ? 'true' : 'false'));
+  panels.forEach(p => p.hidden = (p.id !== 'panel-' + name));
+}
+tabs.forEach(t => t.addEventListener('click', () => activateTab(t.dataset.tab)));
 
 // --- Legislation filtering ---
 // Node lists are cached once at load: the cards are static, and re-querying
@@ -1292,31 +1303,40 @@ function applyCwaFilter(){
   c.addEventListener('change', applyCwaFilter));
 if (cwaCount) applyCwaFilter();
 
-// --- In-page anchor links vs. active filters ---
-// The principles panel and the CWA "historic examples" links target cards by
-// id. If a filter currently hides the target, the browser can't scroll to it
-// — so on click, reset that tab's filters first, then let the anchor land.
+// --- In-page anchor links: cross-tab deep links ---
+// Bill / case / reading / site anchors can live on ANOTHER tab (e.g. a
+// Solutions-card quote citing "SD SB 135" links into the Legislation tab),
+// inside a collapsed <details>, or behind an active filter. On click:
+// switch to the owning tab, open ancestor accordions, reset filters that
+// hide the target, then scroll to it ourselves (the browser's default
+// fragment jump can't cross a hidden tab panel).
 document.addEventListener('click', e => {
-  const a = e.target.closest('a[href^="#bill-"], a[href^="#cwa-"], a[href^="#reading-"]');
+  const a = e.target.closest(
+    'a[href^="#bill-"], a[href^="#cwa-"], a[href^="#reading-"], a[href^="#site-"]');
   if (!a) return;
   const target = document.getElementById(a.getAttribute('href').slice(1));
   if (!target) return;
-  // Anchors inside a collapsed <details> (the Part 1 toolkit) can't be
+  e.preventDefault();
+  const panel = target.closest('.tabpanel');
+  if (panel && panel.hidden) activateTab(panel.id.replace('panel-', ''));
+  // Anchors inside a collapsed <details> (toolkit, part accordions) can't be
   // scrolled to in all browsers — open the ancestors first.
   let det = target.closest('details');
   while (det) { det.open = true; det = det.parentElement && det.parentElement.closest('details'); }
   const wrap = target.closest('.leg-bill, .cwa-case');
-  if (!wrap || !wrap.hidden) return;
-  if (wrap.classList.contains('leg-bill')) {
-    legChecks.forEach(c => { c.checked = true; });
-    applyLegFilter();
-  } else {
-    cwaCatChecks.forEach(c => { c.checked = true; });
-    cwaTypeChecks.forEach(c => { c.checked = true; });
-    cwaStatuteChecks.forEach(c => { c.checked = true; });
-    document.getElementById('cwa-recent').checked = false;
-    applyCwaFilter();
+  if (wrap && wrap.hidden) {
+    if (wrap.classList.contains('leg-bill')) {
+      legChecks.forEach(c => { c.checked = true; });
+      applyLegFilter();
+    } else {
+      cwaCatChecks.forEach(c => { c.checked = true; });
+      cwaTypeChecks.forEach(c => { c.checked = true; });
+      cwaStatuteChecks.forEach(c => { c.checked = true; });
+      document.getElementById('cwa-recent').checked = false;
+      applyCwaFilter();
+    }
   }
+  target.scrollIntoView({behavior: 'smooth', block: 'start'});
 });
 
 // --- Records table state filter ---
