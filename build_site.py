@@ -1311,10 +1311,14 @@ if (cwaCount) applyCwaFilter();
 // hide the target, then scroll to it ourselves (the browser's default
 // fragment jump can't cross a hidden tab panel).
 document.addEventListener('click', e => {
-  const a = e.target.closest(
-    'a[href^="#bill-"], a[href^="#cwa-"], a[href^="#reading-"], a[href^="#site-"]');
-  if (!a) return;
-  const target = document.getElementById(a.getAttribute('href').slice(1));
+  // Respect modifier/middle clicks (new tab, etc.) — let the browser handle them.
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  // Prefix-agnostic: any in-page anchor whose target exists gets the
+  // cross-tab treatment, so new card families deep-link without JS changes.
+  const a = e.target.closest('a[href^="#"]');
+  if (!a || a.getAttribute('href').length < 2) return;
+  const id = a.getAttribute('href').slice(1);
+  const target = document.getElementById(id);
   if (!target) return;
   e.preventDefault();
   const panel = target.closest('.tabpanel');
@@ -1336,6 +1340,9 @@ document.addEventListener('click', e => {
       applyCwaFilter();
     }
   }
+  // Preserve fragment/history semantics the native jump would have given:
+  // the URL is shareable and Back returns here.
+  history.pushState(null, '', '#' + id);
   target.scrollIntoView({behavior: 'smooth', block: 'start'});
 });
 
@@ -1414,7 +1421,8 @@ def build_llms_txt() -> str:
         "## Key numbers",
         "",
         f"- {len(bills)} bills tracked — {dash._legislation_status_summary(bills)}",
-        f"- {len(cases)} Clean Water Act cases — {dash._cwa_summary(cases)}",
+        f"- {len(cases)} federal water enforcement cases "
+        f"(CWA, SDWA, TSCA, RCRA, RHA) — {dash._cwa_summary(cases)}",
         "- Core finding: data centers rarely hold their own discharge permits; "
         "operational water shows up at the receiving municipal treatment plant, "
         "so the pipeline tracks WWTP NPDES permits via EPA ECHO.",

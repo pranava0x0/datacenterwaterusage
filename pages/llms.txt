@@ -2,12 +2,12 @@
 
 > Tracking data center water consumption in Virginia & Ohio via public regulatory data (EPA ECHO DMR flow at receiving wastewater treatment plants, state permit portals, utility financial reports), plus curated national datasets: data-center water legislation, federal water-law cases relevant to data centers (CWA, SDWA, TSCA, RCRA, Rivers & Harbors Act) with a statutory-readings mapping, data-center sites with documented water conflicts, and company water claims.
 
-Static build 2026-07-02. Dashboard: https://pranava0x0.github.io/datacenterwaterusage/ · Source: https://github.com/pranava0x0/datacenterwaterusage
+Static build 2026-07-05. Dashboard: https://pranava0x0.github.io/datacenterwaterusage/ · Source: https://github.com/pranava0x0/datacenterwaterusage
 
 ## Key numbers
 
 - 53 bills tracked — 12 Enacted · 30 Introduced · 11 Failed / Vetoed
-- 88 Clean Water Act cases — 20 Data Center · 15 Data-Center Adjacent · 36 Industrial Water · 17 Landmark Precedent
+- 88 federal water enforcement cases (CWA, SDWA, TSCA, RCRA, RHA) — 20 Data Center · 15 Data-Center Adjacent · 36 Industrial Water · 17 Landmark Precedent
 - Core finding: data centers rarely hold their own discharge permits; operational water shows up at the receiving municipal treatment plant, so the pipeline tracks WWTP NPDES permits via EPA ECHO.
 
 ## Key principles across tracked legislation

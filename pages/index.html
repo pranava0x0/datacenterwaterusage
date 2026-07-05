@@ -1135,7 +1135,7 @@ a.news-title{color:var(--blue)}
 </section>
 </div>
 
-  <p class="src-note">Static build 2026-07-02 · Sources: EPA ECHO DMR, VA DEQ, Ohio EPA,
+  <p class="src-note">Static build 2026-07-05 · Sources: EPA ECHO DMR, VA DEQ, Ohio EPA,
   Loudoun Water. Data center cooling water tracked via receiving WWTP flow ·
   <a href="llms.txt">llms.txt</a> (LLM-friendly summary) ·
   <a href="https://github.com/pranava0x0/datacenterwaterusage" target="_blank" rel="noopener">source</a></p>
@@ -1230,10 +1230,14 @@ if (cwaCount) applyCwaFilter();
 // hide the target, then scroll to it ourselves (the browser's default
 // fragment jump can't cross a hidden tab panel).
 document.addEventListener('click', e => {
-  const a = e.target.closest(
-    'a[href^="#bill-"], a[href^="#cwa-"], a[href^="#reading-"], a[href^="#site-"]');
-  if (!a) return;
-  const target = document.getElementById(a.getAttribute('href').slice(1));
+  // Respect modifier/middle clicks (new tab, etc.) — let the browser handle them.
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  // Prefix-agnostic: any in-page anchor whose target exists gets the
+  // cross-tab treatment, so new card families deep-link without JS changes.
+  const a = e.target.closest('a[href^="#"]');
+  if (!a || a.getAttribute('href').length < 2) return;
+  const id = a.getAttribute('href').slice(1);
+  const target = document.getElementById(id);
   if (!target) return;
   e.preventDefault();
   const panel = target.closest('.tabpanel');
@@ -1255,6 +1259,9 @@ document.addEventListener('click', e => {
       applyCwaFilter();
     }
   }
+  // Preserve fragment/history semantics the native jump would have given:
+  // the URL is shareable and Back returns here.
+  history.pushState(null, '', '#' + id);
   target.scrollIntoView({behavior: 'smooth', block: 'start'});
 });
 

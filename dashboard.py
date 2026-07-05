@@ -1917,20 +1917,45 @@ def _cross_ref_link_map() -> list[tuple[str, str]]:
     return sorted(pairs, key=lambda p: -len(p[0]))
 
 
-def _linkify_refs(text: str, link_map: list[tuple[str, str]] | None = None) -> str:
+# Manual memo for the linkify matcher: the map spans three datasets and the
+# compiled alternation regex has ~250 branches, so rebuilding per card (~48
+# calls per build/rerun) measurably slows rendering. Keyed on the source
+# files' signatures so edits still bust it, mirroring the loader caches.
+_CROSS_REF_MATCHER_CACHE: dict = {"sig": None, "by_display": {}, "pattern": None}
+
+
+def _cross_ref_matcher() -> tuple[dict, "re.Pattern | None"]:
+    """(escaped display → anchor, compiled alternation) built once per data change."""
+    sig = (
+        _file_signature(LEGISLATION_PATH),
+        _file_signature(DC_WATER_CONFLICTS_PATH),
+        _file_signature(CWA_INVESTIGATIONS_PATH),
+    )
+    if _CROSS_REF_MATCHER_CACHE["sig"] != sig:
+        link_map = _cross_ref_link_map()
+        by_display = {html.escape(d): a for d, a in link_map}
+        # link_map is longest-first; alternation is leftmost-first, so the
+        # most specific reference wins.
+        pattern = (
+            re.compile("|".join(re.escape(html.escape(d)) for d, _ in link_map))
+            if link_map
+            else None
+        )
+        _CROSS_REF_MATCHER_CACHE.update(
+            sig=sig, by_display=by_display, pattern=pattern
+        )
+    return _CROSS_REF_MATCHER_CACHE["by_display"], _CROSS_REF_MATCHER_CACHE["pattern"]
+
+
+def _linkify_refs(text: str) -> str:
     """HTML-escape ``text`` and turn known bill/site/case references into
     in-page anchor links (single pass, so already-linked text is never
     re-matched). The static site's anchor handler switches to the owning tab.
     """
-    if link_map is None:
-        link_map = _cross_ref_link_map()
     escaped = html.escape(text)
-    if not link_map:
+    by_display, pattern = _cross_ref_matcher()
+    if pattern is None:
         return escaped
-    by_display = {html.escape(d): a for d, a in link_map}
-    pattern = re.compile(
-        "|".join(re.escape(html.escape(d)) for d, _ in link_map)
-    )
     return pattern.sub(
         lambda m: f'<a href="{by_display[m.group(0)]}">{m.group(0)}</a>',
         escaped,
@@ -2047,7 +2072,7 @@ def _build_solution_card_html(sol: dict) -> str:
     actor_type = (sol.get("actor_type") or "").lower()
     actor = esc(sol.get("actor", ""))
     description = esc(sol.get("description", ""))
-    example = esc(sol.get("example", ""))
+    example = sol.get("example", "")
     url = sol.get("source_url") or ""
     cross_tab = sol.get("cross_ref_tab")
     cross_note = sol.get("cross_ref_note", "")
@@ -2074,7 +2099,7 @@ def _build_solution_card_html(sol: dict) -> str:
     )
     if example:
         example_html = (
-            f'<div class="solution-example">{_linkify_refs(sol.get("example", ""))}'
+            f'<div class="solution-example">{_linkify_refs(example)}'
             f'{cross_html}</div>'
         )
         cross_html = ""
@@ -2911,6 +2936,13 @@ def _readings_by_id(payload: dict | None = None) -> dict:
     return {r["reading_id"]: r for r in payload.get("readings", [])}
 
 
+def _ordered_statutes(statutes: set[str]) -> list[str]:
+    """Order a statute set by WATER_STATUTE_ORDER, unknown codes last."""
+    return [s for s in WATER_STATUTE_ORDER if s in statutes] + sorted(
+        statutes - set(WATER_STATUTE_ORDER)
+    )
+
+
 def _case_statutes(case: dict, readings_by_id: dict) -> list[str]:
     """Derive a case's statute list from its `authorities` reading_ids.
 
@@ -2925,16 +2957,52 @@ def _case_statutes(case: dict, readings_by_id: dict) -> list[str]:
     }
     if not statutes:
         return ["CWA"]
-    return [s for s in WATER_STATUTE_ORDER if s in statutes] + sorted(
-        statutes - set(WATER_STATUTE_ORDER)
+    return _ordered_statutes(statutes)
+
+
+def _statute_pill_html(statute: str, css_class: str = "cwa-status-pill") -> str:
+    color = WATER_STATUTE_COLORS.get(statute, COLORS["secondary"])
+    return (
+        f'<span class="{css_class}" style="background:{color}">'
+        f"{html.escape(statute)}</span>"
     )
 
 
-def _statute_pill_html(statute: str) -> str:
-    color = WATER_STATUTE_COLORS.get(statute, COLORS["secondary"])
+def _case_links_html(case_ids_to_link: list[str], case_ids: set[str] | None) -> str:
+    """' · '-joined case captions, each an in-page #cwa-<id> anchor when the
+    target card exists in the dataset. The single source of the anchor/caption
+    format used by reading cards, case cards, and conflict-site cards."""
+    links = []
+    for cid in case_ids_to_link:
+        caption = html.escape(_cwa_case_caption(cid))
+        if case_ids is not None and cid in case_ids:
+            links.append(f'<a href="#cwa-{html.escape(cid)}">{caption}</a>')
+        else:
+            links.append(caption)
+    return " · ".join(links)
+
+
+def _sources_html(sources: list[dict]) -> str:
+    """Labeled 'Sources' block shared by case and conflict-site cards."""
+    if not sources:
+        return ""
+    esc = html.escape
+    items = []
+    for s in sources:
+        title = esc(s.get("title", "Source"))
+        url = s.get("url", "")
+        stype = esc(s.get("type", ""))
+        link = (
+            f'<a href="{esc(url)}" target="_blank" rel="noopener">{title}</a>'
+            if url
+            else title
+        )
+        if stype:
+            link += f' <span class="cwa-source-type">({stype})</span>'
+        items.append(link)
     return (
-        f'<span class="cwa-status-pill" style="background:{color}">'
-        f"{html.escape(statute)}</span>"
+        '<div class="bill-section-label">Sources</div>'
+        f'<div class="cwa-sources">{" · ".join(items)}</div>'
     )
 
 
@@ -2964,7 +3032,6 @@ def _case_hooks_html(case: dict, readings_by_id: dict) -> str:
 
 def _build_reading_card_html(
     reading: dict, case_ids: set[str] | None = None,
-    case_captions: dict | None = None,
 ) -> str:
     """One statutory-reading card for the water-law toolkit section.
 
@@ -2977,9 +3044,7 @@ def _build_reading_card_html(
     head = (
         '<div class="bill-card-head">'
         f'<span class="bill-card-id">{esc(reading.get("name", ""))}</span>'
-        f'<span class="bill-card-pill" '
-        f'style="background:{WATER_STATUTE_COLORS.get(statute, COLORS["secondary"])}">'
-        f"{esc(statute)}</span>"
+        f'{_statute_pill_html(statute, css_class="bill-card-pill")}'
         "</div>"
     )
     class_bits = [
@@ -2995,18 +3060,9 @@ def _build_reading_card_html(
     ]
     examples = reading.get("example_case_ids", [])
     if examples:
-        links = []
-        for cid in examples:
-            caption = esc(
-                (case_captions or {}).get(cid) or _cwa_case_caption(cid)
-            )
-            if case_ids is not None and cid in case_ids:
-                links.append(f'<a href="#cwa-{esc(cid)}">{caption}</a>')
-            else:
-                links.append(caption)
         sections.append(
             '<div class="cwa-analogs">Cases in this record using this hook: '
-            f'{" · ".join(links)}</div>'
+            f'{_case_links_html(examples, case_ids)}</div>'
         )
     return (
         f'<div class="bill-card" id="reading-{esc(reading["reading_id"])}">'
@@ -3068,14 +3124,13 @@ def _build_conflict_site_html(
         class_bits.append(
             f'<span class="cwa-type-pill">{esc(site["location"])}</span>'
         )
-    statutes = [
-        s
-        for s in WATER_STATUTE_ORDER
-        if any(
-            readings_by_id.get(ar.get("reading_id"), {}).get("statute") == s
+    statutes = _ordered_statutes(
+        {
+            readings_by_id[ar["reading_id"]]["statute"]
             for ar in site.get("applicable_readings", [])
-        )
-    ]
+            if ar.get("reading_id") in readings_by_id
+        }
+    )
     class_bits.extend(_statute_pill_html(s) for s in statutes)
     if site.get("status_2026"):
         class_bits.append(
@@ -3107,16 +3162,9 @@ def _build_conflict_site_html(
             analog_html = ""
             analogs = ar.get("analogous_cases", [])
             if analogs:
-                links = []
-                for a in analogs:
-                    caption = esc(_cwa_case_caption(a))
-                    if case_ids is not None and a in case_ids:
-                        links.append(f'<a href="#cwa-{esc(a)}">{caption}</a>')
-                    else:
-                        links.append(caption)
                 analog_html = (
                     '<div class="cwa-analogs">Historical cases: '
-                    f'{" · ".join(links)}</div>'
+                    f'{_case_links_html(analogs, case_ids)}</div>'
                 )
             items.append(
                 f'<div class="conflict-reading"><strong>{label}</strong>'
@@ -3131,28 +3179,13 @@ def _build_conflict_site_html(
     detail_sections = []
     related = site.get("related_case_ids", [])
     if related:
-        links = []
-        for cid in related:
-            caption = esc(_cwa_case_caption(cid))
-            if case_ids is not None and cid in case_ids:
-                links.append(f'<a href="#cwa-{esc(cid)}">{caption}</a>')
-            else:
-                links.append(caption)
         detail_sections.append(
             '<div class="cwa-analogs">Tracked case entries for this site: '
-            f'{" · ".join(links)}</div>'
+            f'{_case_links_html(related, case_ids)}</div>'
         )
-    sources = site.get("sources", [])
-    if sources:
-        items = [
-            f'<a href="{esc(s.get("url", ""))}" target="_blank" '
-            f'rel="noopener">{esc(s.get("title", "Source"))}</a>'
-            for s in sources
-        ]
-        detail_sections.append(
-            '<div class="bill-section-label">Sources</div>'
-            f'<div class="cwa-sources">{" · ".join(items)}</div>'
-        )
+    sources_block = _sources_html(site.get("sources", []))
+    if sources_block:
+        detail_sections.append(sources_block)
     if detail_sections:
         sections.append(
             '<details class="bill-card-details">'
@@ -3282,39 +3315,17 @@ def _build_cwa_case_html(
         analog_html = ""
         analogs = case.get("analogous_cases", [])
         if analogs:
-            links = []
-            for a in analogs:
-                caption = esc(_cwa_case_caption(a))
-                if case_ids is not None and a in case_ids:
-                    links.append(f'<a href="#cwa-{esc(a)}">{caption}</a>')
-                else:
-                    links.append(caption)
             analog_html = (
                 '<div class="cwa-analogs">Historic examples in this record: '
-                f'{" · ".join(links)}</div>'
+                f'{_case_links_html(analogs, case_ids)}</div>'
             )
         sections.append(
             '<div class="bill-section-label">How the CWA could apply</div>'
             f'<div class="cwa-pathway">{esc(pathway)}{analog_html}</div>'
         )
-    if sources:
-        items = []
-        for s in sources:
-            title = esc(s.get("title", "Source"))
-            url = s.get("url", "")
-            stype = esc(s.get("type", ""))
-            link = (
-                f'<a href="{esc(url)}" target="_blank" rel="noopener">{title}</a>'
-                if url
-                else title
-            )
-            if stype:
-                link += f' <span class="cwa-source-type">({stype})</span>'
-            items.append(link)
-        detail_sections.append(
-            '<div class="bill-section-label">Sources</div>'
-            f'<div class="cwa-sources">{" · ".join(items)}</div>'
-        )
+    sources_block = _sources_html(sources)
+    if sources_block:
+        detail_sections.append(sources_block)
 
     if detail_sections:
         # Native <details> is ideal on the static page. Known limitation in
