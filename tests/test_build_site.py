@@ -73,9 +73,14 @@ class TestStaticBuild:
         html = _html()
         bills = dashboard.load_legislation().get("bills", [])
         claims = dashboard.load_company_water_claims().get("claims", [])
-        # CWA cards reuse the .bill-card base, so bill-card count == bills + cases.
+        # CWA cards, authority reading cards, and conflict-site cards all reuse
+        # the .bill-card base, so bill-card count == bills + cases + readings + sites.
         cases = dashboard.load_cwa_investigations().get("cases", [])
-        assert html.count('class="bill-card"') == len(bills) + len(cases)
+        readings = dashboard.load_water_authorities().get("readings", [])
+        sites = dashboard.load_dc_water_conflicts().get("sites", [])
+        assert html.count('class="bill-card"') == (
+            len(bills) + len(cases) + len(readings) + len(sites)
+        )
         assert html.count('class="claim-card"') == len(claims)
 
     def test_new_research_cases_render(self):
@@ -106,7 +111,11 @@ class TestStaticBuild:
         historical = [c for c in cases if c.get("display_section", "historical") == "historical"]
         bills = dashboard.load_legislation().get("bills", [])
         assert html.count('class="cwa-case"') == len(historical)
-        assert html.count('class="bill-card"') == len(bills) + len(cases)
+        readings = dashboard.load_water_authorities().get("readings", [])
+        sites = dashboard.load_dc_water_conflicts().get("sites", [])
+        assert html.count('class="bill-card"') == (
+            len(bills) + len(cases) + len(readings) + len(sites)
+        )
 
     def test_markdown_blobs_converted(self):
         # The statute explainer is markdown in the source; it must arrive as HTML
@@ -200,7 +209,7 @@ class TestCwaAccordion:
         # collapsed <details>; takeaway and CWA pathway stay visible.
         html = _html()
         cases = dashboard.load_cwa_investigations().get("cases", [])
-        assert html.count("Details — violation, outcome, sources") == len(cases)
+        assert html.count("Details — full statute citation, sources") == len(cases)
         # Pathway blocks remain OUTSIDE the details (visible by default).
         pending = [c for c in cases if c.get("cwa_applied") in ("pending", "not-applied")]
         assert html.count("How the CWA could apply") == len(pending)
@@ -215,7 +224,13 @@ class TestLlmsTxt:
             assert b["bill_id"] in txt, f"llms.txt missing bill {b['bill_id']}"
         for c in dashboard.load_cwa_investigations().get("cases", []):
             assert c["case_id"] in txt, f"llms.txt missing case {c['case_id']}"
+        for r in dashboard.load_water_authorities().get("readings", []):
+            assert r["reading_id"] in txt, f"llms.txt missing reading {r['reading_id']}"
+        for s in dashboard.load_dc_water_conflicts().get("sites", []):
+            assert s["site_id"] in txt, f"llms.txt missing site {s['site_id']}"
         assert "## Key principles across tracked legislation" in txt
+        assert "## Federal water-law toolkit (statutory readings)" in txt
+        assert "## Data-center sites with documented water conflicts" in txt
         assert build_site.REPO_URL in txt
 
     def test_site_links_llms_txt(self):

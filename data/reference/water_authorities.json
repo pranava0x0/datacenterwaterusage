@@ -1,0 +1,238 @@
+{
+  "last_updated": "2026-07-02",
+  "note": "Registry of federal water-authority 'readings' — specific statutory hooks under the CWA, SDWA, TSCA, RCRA, and Rivers & Harbors Act, each mapped to (a) what it historically covered, (b) how it could reach a data-center fact pattern, and (c) the historical cases in cwa_investigations.json that show the hook in use. Readings deliberately overlap: one fact pattern (e.g., PFAS in cooling blowdown reaching a drinking-water well) can trigger several readings at once. reading_ids are referenced from cwa_investigations.json (authorities) and dc_water_conflicts.json (applicable_readings).",
+  "statutes": {
+    "CWA": {
+      "name": "Clean Water Act",
+      "full_name": "Federal Water Pollution Control Act, 33 U.S.C. §§1251–1389",
+      "agencies": "EPA + delegated state programs; U.S. Army Corps of Engineers (§404)",
+      "url": "https://www.law.cornell.edu/uscode/text/33/chapter-26"
+    },
+    "SDWA": {
+      "name": "Safe Drinking Water Act",
+      "full_name": "Safe Drinking Water Act, 42 U.S.C. §§300f–300j-27",
+      "agencies": "EPA + primacy states",
+      "url": "https://www.law.cornell.edu/uscode/text/42/chapter-6A/subchapter-XII"
+    },
+    "TSCA": {
+      "name": "Toxic Substances Control Act",
+      "full_name": "Toxic Substances Control Act, 15 U.S.C. §§2601–2697",
+      "agencies": "EPA",
+      "url": "https://www.law.cornell.edu/uscode/text/15/chapter-53"
+    },
+    "RCRA": {
+      "name": "Resource Conservation and Recovery Act",
+      "full_name": "Resource Conservation and Recovery Act, 42 U.S.C. §§6901–6992k",
+      "agencies": "EPA + authorized states",
+      "url": "https://www.law.cornell.edu/uscode/text/42/chapter-82"
+    },
+    "RHA": {
+      "name": "Rivers and Harbors Act",
+      "full_name": "Rivers and Harbors Appropriation Act of 1899, 33 U.S.C. §§401–467",
+      "agencies": "U.S. Army Corps of Engineers",
+      "url": "https://www.law.cornell.edu/uscode/text/33/403"
+    }
+  },
+  "readings": [
+    {
+      "reading_id": "cwa-402-npdes",
+      "statute": "CWA",
+      "section": "§402 / 33 U.S.C. §1342 (with §301, 33 U.S.C. §1311)",
+      "name": "NPDES permit for direct discharge",
+      "agency": "EPA / delegated state programs (VPDES, TPDES, SPDES…)",
+      "what_it_covers": "The core CWA machine: §301 makes any point-source discharge of a pollutant to a water of the United States unlawful unless authorized by a §402 NPDES permit with numeric effluent limits, monitoring (DMRs), and reporting. Most enforcement in this record — from Smithfield's $12.6M judgment to routine state NOVs — is §402/§301 enforcement.",
+      "dc_applicability": "Applies whenever a data center discharges cooling-tower blowdown, on-site treatment effluent, or process water directly to surface water rather than to a sewer. The AWS Lake Anna VPDES draft permit is the first direct cooling-discharge NPDES action at a hyperscaler campus; the Homer City PA draft permit covers cooling outfalls at a DC power plant. Once a campus holds its own NPDES permit, every exceedance is ECHO-visible and enforceable — including by citizen suit.",
+      "example_case_ids": ["Smithfield-Pagan-River-1997", "AWS-LakeAnnaVA-VPDES-cooling-discharge-2026", "HomerCity-IndianaCounty-PA-NPDES-2026", "Hanover-Foods-2025", "PortOfMorrow-DEQ-OR-2024"]
+    },
+    {
+      "reading_id": "cwa-402-construction-stormwater",
+      "statute": "CWA",
+      "section": "§402 Construction General Permit",
+      "name": "Construction stormwater (CGP)",
+      "agency": "EPA / delegated states",
+      "what_it_covers": "Land disturbance over one acre requires coverage under a construction general permit with a SWPPP, erosion/sediment BMPs, and inspection records. This is the single most-enforced CWA program against large construction projects.",
+      "dc_applicability": "The primary CWA touchpoint for data centers today: multi-hundred-acre campus build-outs generate sediment-laden runoff, and every documented DC stormwater enforcement (Google Stillwater OK, Microsoft Boydton VA, QTS Fayetteville GA, Johns Hopkins DSAI) arose here. Enforcement usually names the general contractor — the permittee — not the operator.",
+      "example_case_ids": ["Google-Stillwater-OK-stormwater-2025", "Microsoft-Boydton-VA-2023", "QTS-Fayetteville-GA-2024", "JohnsHopkins-DSAI-Baltimore-2025", "Energix-VA-2024"]
+    },
+    {
+      "reading_id": "cwa-402-industrial-stormwater",
+      "statute": "CWA",
+      "section": "§402 Multi-Sector General Permit",
+      "name": "Industrial stormwater (MSGP)",
+      "agency": "EPA / delegated states",
+      "what_it_covers": "Operating industrial facilities with materials or equipment exposed to rain need MSGP coverage with benchmark monitoring for pollutants in site runoff.",
+      "dc_applicability": "Post-construction exposure for campuses with exposed fuel farms, chemical storage, switchyards, and equipment yards. Most operating data centers hold only this near-empty stormwater permit — which is why the operational record is thin — but benchmark exceedances are public and enforceable.",
+      "example_case_ids": ["Google-Stillwater-OK-stormwater-2025"]
+    },
+    {
+      "reading_id": "cwa-404-dredge-fill",
+      "statute": "CWA",
+      "section": "§404 / 33 U.S.C. §1344",
+      "name": "Dredge-and-fill of wetlands and streams",
+      "agency": "U.S. Army Corps of Engineers (EPA veto under §404(c))",
+      "what_it_covers": "Placing fill in jurisdictional wetlands or streams requires a Corps permit — an individual permit for larger impacts or a nationwide permit (NWP) for smaller ones. Sackett (2023) narrowed which wetlands are jurisdictional; unpermitted fill draws cease-work orders and restoration liability.",
+      "dc_applicability": "Site-grading at greenfield campuses regularly crosses wetlands and headwater streams: Google's three pending §404 individual permit applications (Project Raspberry and Loch in VA, Port of Little Rock AR at 16.8 acres), the SDC ATLA Douglas County GA application with ~1 mile of stream impacts, and the Amazon New Carlisle IN cease-work order all sit here. The 2026 NWP 39 reissuance expressly enumerates data centers.",
+      "example_case_ids": ["Amazon-NewCarlisle-IN-wetlands-2025", "Google-ProjectRaspberry-VA-2026", "Google-LittleRock-AR-2026", "SDC-ATLA-DouglasCounty-GA-404-401-2025", "USACE-NWP39-DataCenters-2026", "Sackett-v-EPA-2023"]
+    },
+    {
+      "reading_id": "cwa-401-certification",
+      "statute": "CWA",
+      "section": "§401 / 33 U.S.C. §1341",
+      "name": "State water-quality certification",
+      "agency": "State environmental agencies",
+      "what_it_covers": "Any federal permit that may result in a discharge (a §404 fill permit, a FERC license) needs the state to certify the project meets state water-quality standards. States can condition or deny certification — an independent veto point — and courts have vacated deficient certifications.",
+      "dc_applicability": "Every data-center §404 permit needs a companion §401 certification, so state agencies (and commenters in the state proceeding) get leverage even where federal jurisdiction survives Sackett only barely. The SDC ATLA GA matter pairs §404 with a contested §401; the 4th Circuit's WV vacatur shows certifications are litigable.",
+      "example_case_ids": ["SierraClub-WVDEP-401-2023", "SDC-ATLA-DouglasCounty-GA-404-401-2025", "Amazon-NewCarlisle-IN-wetlands-2025"]
+    },
+    {
+      "reading_id": "cwa-307-pretreatment",
+      "statute": "CWA",
+      "section": "§307(b) / 33 U.S.C. §1317 (40 C.F.R. Part 403)",
+      "name": "Pretreatment — industrial users of sewers",
+      "agency": "Receiving POTW (locally enforced), EPA/state oversight",
+      "what_it_covers": "Industrial users discharging to a municipal sewer must meet national prohibitions (no pass-through or interference) and locally issued industrial-user permits with local limits. The POTW enforces; EPA enforces against POTWs whose pretreatment programs fail.",
+      "dc_applicability": "The regime that most directly governs operating data centers: cooling-tower blowdown (concentrated dissolved solids, biocides, corrosion inhibitors) goes to the sewer under an industrial-user permit. High-volume DC loading can cause POTW pass-through — putting the plant in violation of its own NPDES permit, as at Port of Morrow OR. IU permits and local limits are FOIA-able.",
+      "example_case_ids": ["Swift-Beef-Grand-Island-2011", "Yuengling-Pottsville-2016", "Reading-WWTP-2024", "PortOfMorrow-DEQ-OR-2024", "Agri-Star-Postville-IA-2024-2025"]
+    },
+    {
+      "reading_id": "cwa-316-cooling",
+      "statute": "CWA",
+      "section": "§316(a)/(b) / 33 U.S.C. §1326",
+      "name": "Thermal discharge and cooling-water intake",
+      "agency": "EPA / delegated states (via NPDES)",
+      "what_it_covers": "Heat is a regulated pollutant: §316(a) governs thermal discharge variances and §316(b) requires cooling-water intake structures to reflect the best technology available for minimizing fish impingement and entrainment. Historically applied to power plants (Brayton Point's forced closed-cycle retrofit; Greenidge's bitcoin-era findings).",
+      "dc_applicability": "Bites hardest where a campus takes surface water for once-through or evaporative cooling, or pairs with on-site generation — the full power-plant profile. The AWS Lake Anna draft permit and the Homer City DC power plant put §316 review squarely into data-center permitting for the first time.",
+      "example_case_ids": ["Brayton-Point-Dominion-2003-2007", "Entergy-v-Riverkeeper-2009", "Greenidge-SenecaLake-NY-2025", "AWS-LakeAnnaVA-VPDES-cooling-discharge-2026", "HomerCity-IndianaCounty-PA-NPDES-2026"]
+    },
+    {
+      "reading_id": "cwa-311-spills",
+      "statute": "CWA",
+      "section": "§311 / 33 U.S.C. §1321 (SPCC, 40 C.F.R. Part 112)",
+      "name": "Oil and hazardous-substance spills; SPCC plans",
+      "agency": "EPA (spill prevention), Coast Guard/EPA (response), DOJ (penalties)",
+      "what_it_covers": "Prohibits harmful-quantity discharges of oil or listed hazardous substances to waters of the U.S., requires Spill Prevention, Control and Countermeasure plans for facilities storing oil above thresholds, and carries per-barrel civil (and negligence-based criminal) penalties — the Plains Pipeline and East Palestine lines.",
+      "dc_applicability": "Data centers keep multi-million-gallon diesel fuel farms for backup generators — squarely SPCC-regulated. A tank or transfer release reaching a stream is legally identical to the pipeline cases, including the duty-to-report trap. The Johns Hopkins DSAI matter already pairs construction stormwater with a §311 diesel element.",
+      "example_case_ids": ["Plains-Pipeline-Santa-Barbara-2020", "Norfolk-Southern-East-Palestine-2024", "JohnsHopkins-DSAI-Baltimore-2025"]
+    },
+    {
+      "reading_id": "cwa-303-wqs",
+      "statute": "CWA",
+      "section": "§303 / 33 U.S.C. §1313 (antidegradation, TMDLs)",
+      "name": "Water-quality standards and antidegradation review",
+      "agency": "States (EPA approval)",
+      "what_it_covers": "States set designated uses and criteria for each water; new or expanded discharges into high-quality (Tier 2) waters trigger an antidegradation alternatives analysis, and impaired waters get TMDL load caps that flow into permit limits.",
+      "dc_applicability": "A procedural lever at the siting stage: a proposed new DC outfall into high-quality water must survive an alternatives analysis (e.g., closed-loop or dry cooling), and a discharge into a TMDL-capped watershed inherits tighter limits. Raised by commenters in the Lake Anna proceeding.",
+      "example_case_ids": ["AWS-LakeAnnaVA-VPDES-cooling-discharge-2026"]
+    },
+    {
+      "reading_id": "cwa-402-maui-groundwater",
+      "statute": "CWA",
+      "section": "§402 via County of Maui (2020)",
+      "name": "‘Functional equivalent’ discharge through groundwater",
+      "agency": "EPA / delegated states; heavily citizen-suit driven",
+      "what_it_covers": "County of Maui v. Hawaii Wildlife Fund held that a discharge that travels through groundwater but is the functional equivalent of a direct discharge to surface water still needs an NPDES permit — injection wells, leach fields, and land application can't launder a point source.",
+      "dc_applicability": "Closes the loophole for campuses that dispose of blowdown or treated effluent via injection wells, drywells, rapid-infiltration basins, or land application near streams: if it reaches surface water, Maui says permit it. Fact-intensive (distance, travel time), but the most potent novel theory for inland campuses over shallow aquifers.",
+      "example_case_ids": ["County-of-Maui-v-Hawaii-Wildlife-Fund-2020", "Maui-remand-DHaw-2021"]
+    },
+    {
+      "reading_id": "cwa-505-citizen-suit",
+      "statute": "CWA",
+      "section": "§505 / 33 U.S.C. §1365",
+      "name": "Citizen suits",
+      "agency": "Private plaintiffs (riverkeepers, residents) in federal court",
+      "what_it_covers": "Any citizen may sue a discharger for ongoing permit violations (or EPA for non-discretionary failures) after 60-day notice, with civil penalties payable to the Treasury and fee-shifting. Riverkeeper groups built much of the modern enforcement record this way; Port of Tacoma and CERF v. Naples set current scope/mootness limits.",
+      "dc_applicability": "The enforcement backstop when agencies stand down: DMR exceedances at a DC's own NPDES permit, at its contractor's CGP coverage, or at the receiving POTW are all citizen-suit predicates — and this tracker's ECHO SNC/DMR pull is exactly the evidence base a §505 notice letter needs. QTS Fayetteville and TransGas Adams Fork began as riverkeeper notices.",
+      "example_case_ids": ["Atlanta-RMClayton-CRK-2024-2026", "QTS-Fayetteville-GA-2024", "TransGas-AdamsFork-WV-2025", "PortOfTacoma-v-PugetSoundkeeper-9thCir-2024", "CERF-v-Naples-9thCir-2024"]
+    },
+    {
+      "reading_id": "sdwa-1431-emergency",
+      "statute": "SDWA",
+      "section": "§1431 / 42 U.S.C. §300i",
+      "name": "Emergency powers — imminent endangerment of drinking water",
+      "agency": "EPA (direct federal order authority)",
+      "what_it_covers": "When a contaminant present in or likely to enter a public water system or underground source of drinking water may present an imminent and substantial endangerment, EPA can issue immediate administrative orders or sue — without waiting for state action or a permit violation. Used against DuPont for PFOA in Ohio Valley drinking water and in Flint (2016).",
+      "dc_applicability": "The fastest federal hook if a data-center-linked contaminant (fuel release, cooling-chemistry constituents, construction-driven nitrate or sediment) shows up in wells or a public system's source water. The Amazon Boardman nitrate fact pattern — contaminated domestic wells near DC-hosting farmland — is exactly the §1431 profile, and EPA has pledged investigation of the Meta Newton County GA well complaints.",
+      "example_case_ids": ["Flint-MI-SDWA-1431-2016", "DuPont-WashingtonWorks-PFOA-2005-2009", "Trinity-American-v-EPA-SDWA-1431-1998", "Amazon-Boardman-OR-nitrate-2026", "Meta-MorganCo-GA-investigation-2026"]
+    },
+    {
+      "reading_id": "sdwa-uic-classv",
+      "statute": "SDWA",
+      "section": "Part C UIC / 42 U.S.C. §300h (40 C.F.R. Parts 144–147)",
+      "name": "Underground Injection Control — Class V wells",
+      "agency": "EPA / primacy states",
+      "what_it_covers": "Any subsurface fluid emplacement is an 'injection well.' Class V covers shallow, non-hazardous injection — stormwater drywells, aquifer recharge, cooling-water return-flow wells, large septic systems. Wells that may endanger an underground source of drinking water can be closed or permitted with conditions; EPA banned entire well subclasses (motor-vehicle waste wells, 1999) where the endangerment was categorical.",
+      "dc_applicability": "Directly regulates common campus infrastructure: stormwater drywells and infiltration galleries, geothermal/aquifer-thermal cooling return wells, and any on-site disposal of treated effluent to the subsurface are Class V wells requiring inventory, rule authorization, or permits — an underused federal hook over inland campuses that never touch surface water.",
+      "example_case_ids": ["EPA-UIC-ClassV-MotorVehicleWells-1999"]
+    },
+    {
+      "reading_id": "sdwa-1424e-sole-source-aquifer",
+      "statute": "SDWA",
+      "section": "§1424(e) / 42 U.S.C. §300h-3(e)",
+      "name": "Sole-source aquifer project review",
+      "agency": "EPA",
+      "what_it_covers": "Where EPA has designated an aquifer as the sole or principal drinking-water source for an area (Edwards Aquifer, 1975, was the first), no federal financial assistance may go to a project that EPA determines may contaminate the aquifer. A review trigger, not a general permit program.",
+      "dc_applicability": "Reaches data-center projects only through a federal-funding hook — federally backed loans, grants, or infrastructure assistance for a campus or its supporting utilities over a designated aquifer trigger EPA review. Relevant to Texas Hill Country and San Antonio-area siting over the Edwards, and to any federally financed AI-infrastructure build-out.",
+      "example_case_ids": ["Edwards-Aquifer-SoleSource-Designation-1975"]
+    },
+    {
+      "reading_id": "sdwa-pws-compliance",
+      "statute": "SDWA",
+      "section": "Part B / 42 U.S.C. §300g (national primary drinking water regulations)",
+      "name": "Public water system regulation and enforcement",
+      "agency": "EPA / primacy states",
+      "what_it_covers": "Systems serving 25+ people or 15+ connections are public water systems bound by maximum contaminant levels, monitoring, and reporting; chronic violators face escalating enforcement up to court-appointed receivership (Alisal Water).",
+      "dc_applicability": "Two directions: (1) a large campus with its own wells serving hundreds of workers can itself become a regulated PWS; (2) the small municipal systems that serve mega-campuses take on PWS compliance risk when DC demand strains capacity or forces new sources — the Richland Parish LA and Bessemer AL supply fights are about systems absorbing that risk.",
+      "example_case_ids": ["US-v-Alisal-Water-Corp-2005", "Flint-MI-SDWA-1431-2016"]
+    },
+    {
+      "reading_id": "sdwa-source-water-protection",
+      "statute": "SDWA",
+      "section": "§§1452–1453 (source water assessment); state wellhead protection",
+      "name": "Source-water and wellhead protection",
+      "agency": "States (EPA-approved programs)",
+      "what_it_covers": "Every state maintains EPA-approved source-water assessments delineating the recharge and intake zones that feed public systems; many states and localities layer land-use restrictions (wellhead protection ordinances, recharge-zone rules) on top. Largely non-regulatory federally, but the assessments are the evidentiary backbone for local fights.",
+      "dc_applicability": "The mapping layer for siting fights: a campus, fuel farm, or drainfield inside a delineated source-water protection area gives residents and utilities a concrete, government-authored basis to object — the posture of the Occoquan Reservoir objections to the PW Digital Gateway and the aquifer-recharge zoning fights in Texas and Georgia.",
+      "example_case_ids": ["Google-Berkeley-SC-Middendorf-aquifer-2019", "CorpusChristi-SintonTX-EvangelineAquifer-wells-2026"]
+    },
+    {
+      "reading_id": "tsca-8e-substantial-risk",
+      "statute": "TSCA",
+      "section": "§8(e) / 15 U.S.C. §2607(e)",
+      "name": "Substantial-risk information reporting",
+      "agency": "EPA",
+      "what_it_covers": "Anyone who manufactures, processes, or distributes a chemical and obtains information reasonably supporting a conclusion of substantial risk to health or the environment must tell EPA immediately. DuPont's failure to report PFOA blood and drinking-water data drew what was then the largest civil administrative penalty in EPA history ($10.25M + $6.25M SEPs, 2005); 3M settled similar PFAS non-reporting in 2006.",
+      "dc_applicability": "Reaches the chemical suppliers behind data-center water chemistry — cooling-tower biocides, corrosion inhibitors, film-forming additives, and legacy AFFF fire suppressants. If a supplier or large processor learns its formulation is contaminating water near campuses and sits on it, that is the DuPont fact pattern.",
+      "example_case_ids": ["DuPont-WashingtonWorks-PFOA-2005-2009", "3M-TSCA-8e-PFAS-2006"]
+    },
+    {
+      "reading_id": "tsca-8a7-pfas-reporting",
+      "statute": "TSCA",
+      "section": "§8(a)(7) / 15 U.S.C. §2607(a)(7) (40 C.F.R. Part 705)",
+      "name": "One-time PFAS manufacture/import reporting",
+      "agency": "EPA",
+      "what_it_covers": "The 2023 rule requires anyone who manufactured or imported PFAS (including in articles) since 2011 to report uses, volumes, byproducts, exposure, and disposal — no de minimis exemption. The resulting dataset maps who put which PFAS where.",
+      "dc_applicability": "Indirect but growing: imported electrical equipment, coolants (some immersion-cooling fluids are PFAS), and fire-suppression stocks can pull vendors into reporting, and the public dataset gives water advocates a way to trace PFAS found near a campus back to a supply chain as NPDES PFAS limits tighten (see the Chemours Washington Works effluent-limits consent agreement).",
+      "example_case_ids": ["TSCA-PFAS-Reporting-Rule-2023", "Chemours-Washington-Works-PFAS-2023"]
+    },
+    {
+      "reading_id": "rcra-7002-7003-endangerment",
+      "statute": "RCRA",
+      "section": "§§7002–7003 / 42 U.S.C. §§6972(a)(1)(B), 6973",
+      "name": "Imminent-and-substantial-endangerment actions (solid waste → groundwater)",
+      "agency": "EPA (§7003) and citizen plaintiffs (§7002(a)(1)(B))",
+      "what_it_covers": "Where the handling or disposal of any solid or hazardous waste may present an imminent and substantial endangerment, EPA or any citizen can obtain injunctive cleanup orders — no permit violation needed and no CWA jurisdictional water required. Interfaith v. Honeywell forced a ~$400M chromium cleanup on this theory.",
+      "dc_applicability": "The gap-filler where Sackett cuts off CWA jurisdiction: contamination migrating through soil and groundwater from fuel releases, construction fill, sludge, or spent cooling-treatment chemicals at a campus can support a §7002(a)(1)(B) citizen suit even with no surface-water connection at all — the same post-Sackett role Maui plays for connected waters.",
+      "example_case_ids": ["Interfaith-v-Honeywell-RCRA-2003-2005", "Amazon-Boardman-OR-nitrate-2026"]
+    },
+    {
+      "reading_id": "rha-10-structures",
+      "statute": "RHA",
+      "section": "§10 / 33 U.S.C. §403 (and §13 refuse)",
+      "name": "Structures and obstructions in navigable waters",
+      "agency": "U.S. Army Corps of Engineers",
+      "what_it_covers": "Building any structure in, or affecting the course/capacity of, traditionally navigable waters requires a Corps §10 permit — intakes, outfall structures, piers, pipeline crossings. Republic Steel (1960) read the Act to reach industrial deposits that reduce channel depth. Unlike CWA §404, §10 jurisdiction was untouched by Sackett.",
+      "dc_applicability": "Any data-center or DC-power-plant cooling intake or outfall structure placed in a navigable river or lake needs §10 authorization on top of NPDES/§404 — a second, Sackett-proof Corps permit gate (relevant to Lake Anna-style surface-water cooling and river-supplied campuses).",
+      "example_case_ids": ["US-v-Republic-Steel-RHA-1960", "AWS-LakeAnnaVA-VPDES-cooling-discharge-2026"]
+    }
+  ]
+}

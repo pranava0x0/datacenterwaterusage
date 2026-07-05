@@ -294,6 +294,10 @@ def build_company_claims() -> str:
 def build_cwa_tab() -> str:
     payload = dash.load_cwa_investigations()
     cases = payload.get("cases", [])
+    authorities_payload = dash.load_water_authorities()
+    readings_by_id = dash._readings_by_id(authorities_payload)
+    conflicts_payload = dash.load_dc_water_conflicts()
+    conflict_sites = conflicts_payload.get("sites", [])
     historical = [c for c in cases if c.get("display_section", "historical") == "historical"]
     potential = [c for c in cases if c.get("display_section") == "potential"]
     stats = dash._cwa_datacenter_insights(historical)
@@ -345,6 +349,13 @@ def build_cwa_tab() -> str:
         f'value="{k}" checked> {esc(dash.CWA_CATEGORY_LABELS.get(k, k))}</label>'
         for k in hist_cats
     )
+    statute_boxes = "".join(
+        f'<label class="chip-check"><input type="checkbox" class="cwa-statute" '
+        f'value="{k}" checked> {esc(k)} — '
+        f'{esc(authorities_payload.get("statutes", {}).get(k, {}).get("name", k))}'
+        "</label>"
+        for k in dash.WATER_STATUTE_ORDER
+    )
 
     # Sort like the app: category order, then year descending; wrap each card in
     # a div carrying machine-readable category + type + end-year for filtering.
@@ -359,8 +370,9 @@ def build_cwa_tab() -> str:
     hist_cards = "".join(
         f'<div class="cwa-case" data-category="{esc(c.get("category",""))}" '
         f'data-casetype="{esc(c.get("case_type",""))}" '
+        f'data-statutes="{esc(" ".join(dash._case_statutes(c, readings_by_id)))}" '
         f'data-yearend="{dash._cwa_year_end(c.get("year",""))}">'
-        f'{dash._build_cwa_case_html(c, all_ids)}</div>'
+        f'{dash._build_cwa_case_html(c, all_ids, readings_by_id)}</div>'
         for c in sorted_hist
     )
 
@@ -374,19 +386,34 @@ def build_cwa_tab() -> str:
     )
     pot_cards = "".join(
         f'<div class="cwa-potential-case">'
-        f'{dash._build_cwa_case_html(c, all_ids)}</div>'
+        f'{dash._build_cwa_case_html(c, all_ids, readings_by_id)}</div>'
         for c in sorted_pot
     )
+
+    # Part 1: the statutory toolkit (reading cards grouped by statute).
+    toolkit = dash._build_authorities_html(authorities_payload, all_ids)
+    n_readings = len(authorities_payload.get("readings", []))
+
+    # Part 4: DC sites with documented water conflicts.
+    site_cards = "".join(
+        dash._build_conflict_site_html(s, readings_by_id, all_ids)
+        for s in conflict_sites
+    )
+    conflicts_updated = conflicts_payload.get("last_updated") or "unknown"
 
     cat_labels_json = json.dumps(dash.CWA_CATEGORY_LABELS)
     cat_order_json = json.dumps(dash.CWA_CATEGORY_ORDER)
 
     return f"""
 <section class="panel">
-  <h2>Clean Water Act — Historical Record &amp; Potential Exposure</h2>
-  <p class="lead">Two views on the CWA and data centers: the enforcement record that has
-  actually built (penalties, settlements, court rulings), and specific named sites where
-  active proceedings or matching circumstances suggest CWA exposure is next.</p>
+  <h2>Federal Water Law &amp; Data Centers — Authorities, Record, Exposure</h2>
+  <p class="lead">Three views on federal water law and data centers: the <strong>statutory
+  toolkit</strong> (every EPA / Army Corps water authority — CWA, SDWA, TSCA, RCRA,
+  Rivers &amp; Harbors Act — and how each could reach a data center), the
+  <strong>historical record</strong> built under those authorities (penalties,
+  settlements, court rulings), and the <strong>named sites</strong> where water
+  conflicts are live. The mappings overlap by design — one fact pattern can trigger
+  several readings.</p>
   {insights}
   <details class="lazy">
     <summary>Prioritized CWA-application theories — what could attach to a data center</summary>
@@ -399,12 +426,29 @@ def build_cwa_tab() -> str:
     <div class="explainer-md">{explainer}</div>
   </details>
 
-  <h3>Part 1 — Historical CWA Enforcement Record</h3>
+  <h3>Part 1 — The Federal Water-Law Toolkit</h3>
+  <p><strong>{n_readings} statutory readings</strong> across the CWA, SDWA, TSCA, RCRA,
+  and the Rivers &amp; Harbors Act — each card explains what the authority historically
+  covered, how it could apply to a data-center fact pattern, and which cases below show
+  it in use. Case and site cards link back here via their <em>statute applicability</em> rows.</p>
+  <details class="lazy">
+    <summary>Open the toolkit — {n_readings} readings grouped by statute</summary>
+    <div id="water-toolkit">{toolkit}</div>
+  </details>
+
+  <hr>
+  <details class="lazy" open>
+  <summary><strong>Part 2 — Historical Enforcement Record ({len(historical)} cases)</strong></summary>
   <p><strong>{len(historical)} cases</strong> — enforcement actions, penalties, settlements,
-  and landmark court rulings that have <strong>actually occurred</strong>.
+  landmark court rulings, and standing rulemakings that have <strong>actually
+  occurred</strong>, under the CWA and the other federal water authorities above.
   <strong>Industrial cases are legal analogs</strong> — the enforcement pattern for
   operations similar to data centers, but against other industries, not data centers.
-  Precedent rulings define CWA's legal scope for future enforcement.</p>
+  Precedent rulings define the legal scope for future enforcement.</p>
+  <div class="cwa-filters">
+    <span class="filter-label">Statute:</span>
+    <div class="cwa-types">{statute_boxes}</div>
+  </div>
   <div class="cwa-filters">
     <span class="filter-label">Project type:</span>
     <div class="cwa-types">{type_boxes}</div>
@@ -416,15 +460,30 @@ def build_cwa_tab() -> str:
   </div>
   <p class="count-line" id="cwa-count"></p>
   <div id="cwa-cases">{hist_cards}</div>
+  </details>
 
   <hr>
-  <h3>Part 2 — Active &amp; Potential CWA Exposure at Named Data Center Sites</h3>
+  <details class="lazy">
+  <summary><strong>Part 3 — Active &amp; Potential CWA Exposure at Named Data Center Sites ({len(potential)})</strong></summary>
   <p><strong>{len(potential)} named data center sites</strong> where regulatory proceedings
   are active (pending permit applications, ongoing investigations, active citizen suits)
   or where the factual circumstances match the historical enforcement patterns above —
   but <strong>no formal CWA enforcement action has been issued yet</strong>.
   Use the theories panel above to trace which CWA hook applies to each site.</p>
   <div id="cwa-potential">{pot_cards}</div>
+  </details>
+
+  <hr>
+  <details class="lazy">
+  <summary><strong>Part 4 — Data-Center Sites with Reported Water Issues or Pushback ({len(conflict_sites)})</strong></summary>
+  <p><strong>{len(conflict_sites)} named sites</strong> with documented water problems or
+  community pushback — supply strain, dried wells, discharge fights, secrecy,
+  moratoriums. Each card maps the fact pattern to the statutory readings from Part 1
+  that could reach it, citing the historical cases that show each reading in use.
+  Readings overlap by design.</p>
+  <div id="dc-conflicts">{site_cards}</div>
+  <p class="src-note">Site roster last updated {esc(conflicts_updated)}.</p>
+  </details>
 
   <p class="src-note">Dataset last updated {esc(last_updated)}.
   Total: {len(cases)} entries ({len(historical)} historical enforcement,
@@ -842,7 +901,7 @@ def build_solutions_tab() -> str:
     status_order = {"deployed": 0, "pilot": 1, "proposed": 2}
     sections = []
     total_solutions = len(all_sols)
-    for cat in categories:
+    for i, cat in enumerate(categories):
         label = cat.get("label", "")
         desc = cat.get("description", "")
         sols = sorted(
@@ -850,10 +909,14 @@ def build_solutions_tab() -> str:
             key=lambda s: status_order.get(s.get("status", "proposed"), 9),
         )
         cards_html = "".join(dash._build_solution_card_html(s) for s in sols)
+        # Accordion per category (first open) — the tab was one long scroll.
         sections.append(
-            f'<h3 class="solution-cat-header">{esc(label)}</h3>'
+            f'<details class="lazy"{" open" if i == 0 else ""}>'
+            f'<summary><span class="solution-cat-header" style="border:none;padding-left:0">'
+            f'{esc(label)} ({len(sols)})</span></summary>'
             f'<p class="solution-cat-desc">{esc(desc)}</p>'
             f'{cards_html}'
+            f'</details>'
         )
 
     return f"""
@@ -1163,10 +1226,11 @@ def build_js() -> str:
 // --- Tabs ---
 const tabs = document.querySelectorAll('.tab');
 const panels = document.querySelectorAll('.tabpanel');
-tabs.forEach(t => t.addEventListener('click', () => {
-  tabs.forEach(x => x.setAttribute('aria-selected', x === t ? 'true' : 'false'));
-  panels.forEach(p => p.hidden = (p.id !== 'panel-' + t.dataset.tab));
-}));
+function activateTab(name){
+  tabs.forEach(x => x.setAttribute('aria-selected', x.dataset.tab === name ? 'true' : 'false'));
+  panels.forEach(p => p.hidden = (p.id !== 'panel-' + name));
+}
+tabs.forEach(t => t.addEventListener('click', () => activateTab(t.dataset.tab)));
 
 // --- Legislation filtering ---
 // Node lists are cached once at load: the cards are static, and re-querying
@@ -1208,16 +1272,21 @@ const cwaCount = document.getElementById('cwa-count');
 const cwaCases = [...document.querySelectorAll('.cwa-case')];
 const cwaCatChecks = [...document.querySelectorAll('.cwa-cat')];
 const cwaTypeChecks = [...document.querySelectorAll('.cwa-type')];
+const cwaStatuteChecks = [...document.querySelectorAll('.cwa-statute')];
 function applyCwaFilter(){
   const cats = new Set(cwaCatChecks.filter(c => c.checked).map(c => c.value));
   const types = new Set(cwaTypeChecks.filter(c => c.checked).map(c => c.value));
+  const statutes = new Set(cwaStatuteChecks.filter(c => c.checked).map(c => c.value));
   const recent = document.getElementById('cwa-recent').checked;
   const counts = {};
   let shown = 0;
   cwaCases.forEach(el => {
     const cat = el.dataset.category;
     const ye = parseInt(el.dataset.yearend, 10) || 0;
-    const ok = cats.has(cat) && types.has(el.dataset.casetype) && (!recent || ye >= 2020);
+    const caseStatutes = (el.dataset.statutes || '').split(' ');
+    const ok = cats.has(cat) && types.has(el.dataset.casetype)
+      && caseStatutes.some(s => statutes.has(s))
+      && (!recent || ye >= 2020);
     el.hidden = !ok;
     if (ok){ shown++; counts[cat] = (counts[cat]||0)+1; }
   });
@@ -1229,30 +1298,52 @@ function applyCwaFilter(){
   cwaCount.innerHTML = '<strong>Showing ' + shown + ' of ' + window.CWA_TOTAL +
     ' cases</strong>' + (summary ? ' — ' + summary : '');
 }
-[...cwaCatChecks, ...cwaTypeChecks, document.getElementById('cwa-recent')].forEach(c =>
+[...cwaCatChecks, ...cwaTypeChecks, ...cwaStatuteChecks,
+ document.getElementById('cwa-recent')].forEach(c =>
   c.addEventListener('change', applyCwaFilter));
 if (cwaCount) applyCwaFilter();
 
-// --- In-page anchor links vs. active filters ---
-// The principles panel and the CWA "historic examples" links target cards by
-// id. If a filter currently hides the target, the browser can't scroll to it
-// — so on click, reset that tab's filters first, then let the anchor land.
+// --- In-page anchor links: cross-tab deep links ---
+// Bill / case / reading / site anchors can live on ANOTHER tab (e.g. a
+// Solutions-card quote citing "SD SB 135" links into the Legislation tab),
+// inside a collapsed <details>, or behind an active filter. On click:
+// switch to the owning tab, open ancestor accordions, reset filters that
+// hide the target, then scroll to it ourselves (the browser's default
+// fragment jump can't cross a hidden tab panel).
 document.addEventListener('click', e => {
-  const a = e.target.closest('a[href^="#bill-"], a[href^="#cwa-"]');
-  if (!a) return;
-  const target = document.getElementById(a.getAttribute('href').slice(1));
+  // Respect modifier/middle clicks (new tab, etc.) — let the browser handle them.
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  // Prefix-agnostic: any in-page anchor whose target exists gets the
+  // cross-tab treatment, so new card families deep-link without JS changes.
+  const a = e.target.closest('a[href^="#"]');
+  if (!a || a.getAttribute('href').length < 2) return;
+  const id = a.getAttribute('href').slice(1);
+  const target = document.getElementById(id);
   if (!target) return;
+  e.preventDefault();
+  const panel = target.closest('.tabpanel');
+  if (panel && panel.hidden) activateTab(panel.id.replace('panel-', ''));
+  // Anchors inside a collapsed <details> (toolkit, part accordions) can't be
+  // scrolled to in all browsers — open the ancestors first.
+  let det = target.closest('details');
+  while (det) { det.open = true; det = det.parentElement && det.parentElement.closest('details'); }
   const wrap = target.closest('.leg-bill, .cwa-case');
-  if (!wrap || !wrap.hidden) return;
-  if (wrap.classList.contains('leg-bill')) {
-    legChecks.forEach(c => { c.checked = true; });
-    applyLegFilter();
-  } else {
-    cwaCatChecks.forEach(c => { c.checked = true; });
-    cwaTypeChecks.forEach(c => { c.checked = true; });
-    document.getElementById('cwa-recent').checked = false;
-    applyCwaFilter();
+  if (wrap && wrap.hidden) {
+    if (wrap.classList.contains('leg-bill')) {
+      legChecks.forEach(c => { c.checked = true; });
+      applyLegFilter();
+    } else {
+      cwaCatChecks.forEach(c => { c.checked = true; });
+      cwaTypeChecks.forEach(c => { c.checked = true; });
+      cwaStatuteChecks.forEach(c => { c.checked = true; });
+      document.getElementById('cwa-recent').checked = false;
+      applyCwaFilter();
+    }
   }
+  // Preserve fragment/history semantics the native jump would have given:
+  // the URL is shareable and Back returns here.
+  history.pushState(null, '', '#' + id);
+  target.scrollIntoView({behavior: 'smooth', block: 'start'});
 });
 
 // --- Records table state filter ---
@@ -1307,6 +1398,11 @@ def build_llms_txt() -> str:
     bills = leg.get("bills", [])
     cwa = dash.load_cwa_investigations()
     cases = cwa.get("cases", [])
+    authorities = dash.load_water_authorities()
+    readings = authorities.get("readings", [])
+    readings_by_id = dash._readings_by_id(authorities)
+    conflicts = dash.load_dc_water_conflicts()
+    conflict_sites = conflicts.get("sites", [])
     built = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     lines = [
@@ -1314,16 +1410,19 @@ def build_llms_txt() -> str:
         "",
         "> Tracking data center water consumption in Virginia & Ohio via public "
         "regulatory data (EPA ECHO DMR flow at receiving wastewater treatment "
-        "plants, state permit portals, utility financial reports), plus three "
-        "curated national datasets: data-center water legislation, Clean Water "
-        "Act cases relevant to data centers, and company water claims.",
+        "plants, state permit portals, utility financial reports), plus curated "
+        "national datasets: data-center water legislation, federal water-law "
+        "cases relevant to data centers (CWA, SDWA, TSCA, RCRA, Rivers & "
+        "Harbors Act) with a statutory-readings mapping, data-center sites with "
+        "documented water conflicts, and company water claims.",
         "",
         f"Static build {built}. Dashboard: {SITE_URL} · Source: {REPO_URL}",
         "",
         "## Key numbers",
         "",
         f"- {len(bills)} bills tracked — {dash._legislation_status_summary(bills)}",
-        f"- {len(cases)} Clean Water Act cases — {dash._cwa_summary(cases)}",
+        f"- {len(cases)} federal water enforcement cases "
+        f"(CWA, SDWA, TSCA, RCRA, RHA) — {dash._cwa_summary(cases)}",
         "- Core finding: data centers rarely hold their own discharge permits; "
         "operational water shows up at the receiving municipal treatment plant, "
         "so the pipeline tracks WWTP NPDES permits via EPA ECHO.",
@@ -1353,7 +1452,16 @@ def build_llms_txt() -> str:
             f"{b.get('summary')} Source: {b.get('source_url')}"
         )
 
-    lines += ["", "## Clean Water Act cases", ""]
+    lines += ["", "## Federal water-law toolkit (statutory readings)", ""]
+    for r in readings:
+        examples = ", ".join(r.get("example_case_ids", []))
+        lines.append(
+            f"- {r['reading_id']} — {r['statute']} {r.get('section', '')} "
+            f"({r.get('name', '')}): {r.get('dc_applicability', '')}"
+            + (f" Example cases: {examples}." if examples else "")
+        )
+
+    lines += ["", "## Water enforcement cases (CWA, SDWA, TSCA, RCRA, RHA)", ""]
     for c in sorted(
         cases,
         key=lambda c: (
@@ -1364,14 +1472,31 @@ def build_llms_txt() -> str:
         cat = dash.CWA_CATEGORY_LABELS.get(c.get("category"), "?")
         ctype = dash.CWA_CASE_TYPE_LABELS.get(c.get("case_type"), "?")
         status = dash.CWA_STATUS_LABELS.get(c.get("cwa_applied"), "?")
+        statutes = "/".join(dash._case_statutes(c, readings_by_id))
         case_sources = c.get("sources") or []
         src = case_sources[0].get("url", "") if case_sources else ""
         line = (
-            f"- {c.get('case_id')} ({c.get('year')}) — {cat} / {ctype} / {status} "
+            f"- {c.get('case_id')} ({c.get('year')}) — {statutes} — {cat} / {ctype} / {status} "
             f"— {c.get('cwa_instrument', '')}. {c.get('takeaway', '')}"
         )
         if c.get("cwa_pathway"):
             line += f" How the CWA could apply: {c['cwa_pathway']}"
+        if src:
+            line += f" Source: {src}"
+        lines.append(line)
+
+    lines += ["", "## Data-center sites with documented water conflicts", ""]
+    for s in conflict_sites:
+        reading_ids = ", ".join(
+            ar.get("reading_id", "") for ar in s.get("applicable_readings", [])
+        )
+        site_sources = s.get("sources") or []
+        src = site_sources[0].get("url", "") if site_sources else ""
+        line = (
+            f"- {s.get('site_id')} — {s.get('site')} ({s.get('location')}): "
+            f"{s.get('issue_summary', '')} Status: {s.get('status_2026', '')}"
+            + (f" Applicable readings: {reading_ids}." if reading_ids else "")
+        )
         if src:
             line += f" Source: {src}"
         lines.append(line)
@@ -1381,7 +1506,9 @@ def build_llms_txt() -> str:
         "## Data files",
         "",
         f"- Legislation dataset: {REPO_URL}/blob/main/data/reference/legislation.json",
-        f"- CWA cases dataset: {REPO_URL}/blob/main/data/reference/cwa_investigations.json",
+        f"- Water cases dataset: {REPO_URL}/blob/main/data/reference/cwa_investigations.json",
+        f"- Water authorities (statutory readings): {REPO_URL}/blob/main/data/reference/water_authorities.json",
+        f"- DC water-conflict sites: {REPO_URL}/blob/main/data/reference/dc_water_conflicts.json",
         f"- Company water claims: {REPO_URL}/blob/main/data/reference/company_water_claims.json",
         "",
     ]
@@ -1416,7 +1543,7 @@ def build_html() -> str:
 
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" data-tab="legislation" aria-selected="true">Legislation</button>
-    <button class="tab" role="tab" data-tab="cwa" aria-selected="false">CWA Cases</button>
+    <button class="tab" role="tab" data-tab="cwa" aria-selected="false">Water Cases</button>
     <button class="tab" role="tab" data-tab="news" aria-selected="false">News</button>
     <button class="tab" role="tab" data-tab="solutions" aria-selected="false">Solutions</button>
     <button class="tab" role="tab" data-tab="sources" aria-selected="false">Sources</button>
