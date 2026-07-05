@@ -643,3 +643,8 @@ These are large data-center water stories with no formal CWA enforcement action 
 - ODNR Water Withdrawal Facility Viewer has historical annual volumes by facility.
 - Central Ohio Regional Water Study (March 2025) projects industrial water demand growing to >40 MGD by 2030, ~90 MGD by 2050. Intel's New Albany chip campus will need 6 MGD alone starting ~2030. Columbus building $1.6B fourth water treatment plant.
 - New Albany/Licking County is the densest Ohio data center cluster (Google, Meta, Amazon).
+
+## Explicit cross_ref_targets for news/solution cross-references (from PR #17 code review)
+- **Priority**: low
+- **What**: `_linkify_refs` resolves cross-references by prose-substring matching against canonical bill ids / case captions / site names. Rewording a note or renaming a caption silently un-links it, and authors must embed exact canonical strings. Replace with an explicit `cross_ref_targets: [bill_id|case_id|site_id]` field on news/solution items, rendered as links directly; keep linkify only as a fallback. Add a test that every cross_ref_note containing a canonical id actually produced a link in the built page.
+- **Sample prompt**: "Add cross_ref_targets fields to water_news.json and water_solutions.json entries, render them as deep links in _build_news_item_html/_build_solution_card_html, and test that no cross-reference silently un-links."
