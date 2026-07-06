@@ -1351,6 +1351,30 @@ class TestWaterAuthoritiesSchema:
             # Example-case links resolve to in-page case anchors.
             assert f'href="#cwa-{r["example_case_ids"][0]}"' in out
 
+    def test_authorities_html_jumpnav_and_accordion(self):
+        # 2026-07-07: reaching a specific act (e.g. RHA, listed last) used to
+        # mean scrolling past every earlier statute's reading cards. Each
+        # statute is now a collapsed-by-default accordion with a jump-nav
+        # pill above it that opens the target before the browser scrolls.
+        import dashboard as dash
+
+        payload = self._payload()
+        ids = {c["case_id"] for c in self._cases()}
+        out = dash._build_authorities_html(payload, ids)
+        statutes = sorted(
+            {r["statute"] for r in payload["readings"]},
+            key=lambda s: dash.WATER_STATUTE_ORDER.index(s),
+        )
+        assert out.count('class="statute-group"') == len(statutes)
+        for s in statutes:
+            # Jump pill targets the group's anchor and opens it in one click.
+            assert f'href="#statute-{s}"' in out
+            assert f"getElementById('statute-{s}')" in out
+            # Collapsed by default: no `open` attribute on the <details>.
+            assert f'<details class="statute-group" id="statute-{s}">' in out
+        # Reading-card count is untouched by the new wrapper.
+        assert out.count('id="reading-') == len(payload["readings"])
+
     def test_case_card_gains_statute_pills_and_hooks(self):
         import dashboard as dash
 

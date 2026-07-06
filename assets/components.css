@@ -489,6 +489,56 @@
     color: #08519c;
 }
 /* Water-authorities toolkit (statute-grouped reading cards) */
+/* Jump-nav: one pill per statute above the accordion, so a specific act is
+   one click away instead of a scroll past every earlier one (2026-07-07). */
+.statute-jumpnav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0.7rem 0 1rem;
+}
+.statute-jump {
+    color: #fff;
+    border-radius: 999px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+}
+.statute-jump:hover {
+    filter: brightness(0.92);
+}
+.statute-jump-count {
+    font-weight: 400;
+    opacity: 0.85;
+    margin-left: 0.2rem;
+}
+/* Each statute is a collapsed-by-default accordion; the jump-nav pills open
+   the matching one via onclick before the browser scrolls to its anchor. */
+.statute-group {
+    margin: 0 0 0.5rem;
+}
+.statute-group > summary.statute-head {
+    cursor: pointer;
+    list-style: none;
+}
+.statute-group > summary.statute-head::marker,
+.statute-group > summary.statute-head::-webkit-details-marker {
+    display: none;
+}
+.statute-group > summary.statute-head::before {
+    content: "▸";
+    display: inline-block;
+    color: #4b5563;
+    font-size: 0.85rem;
+    transition: transform 0.15s ease;
+}
+.statute-group[open] > summary.statute-head::before {
+    transform: rotate(90deg);
+}
 .statute-head {
     display: flex;
     align-items: center;
@@ -496,6 +546,12 @@
     font-size: 1.05rem;
     color: #1a1a2e;
     margin: 1.2rem 0 0.1rem;
+    min-height: 44px;
+}
+.statute-count {
+    color: #4b5563;
+    font-weight: 400;
+    font-size: 0.9rem;
 }
 .statute-meta {
     font-size: 0.85rem;

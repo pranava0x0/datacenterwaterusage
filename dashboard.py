@@ -2764,7 +2764,9 @@ def render_cwa_tracker():
             "across the CWA, SDWA, TSCA, RCRA, and the Rivers & Harbors Act — each "
             "card explains what the authority historically covered, how it could "
             "apply to a data-center fact pattern, and which cases below show it in "
-            "use. Case and site cards link back here via the *statute applicability* rows."
+            "use. Case and site cards link back here via the *statute applicability* rows. "
+            "Jump straight to an act with the pills below instead of scrolling — each "
+            "statute is collapsed until you open it."
         )
         st.markdown(
             _build_authorities_html(authorities_payload, all_ids),
@@ -3069,17 +3071,36 @@ def _build_reading_card_html(
 
 
 def _build_authorities_html(payload: dict, case_ids: set[str] | None = None) -> str:
-    """The full water-law toolkit: reading cards grouped by statute."""
+    """The full water-law toolkit: reading cards grouped by statute.
+
+    Each statute is a collapsed-by-default <details> accordion (20 readings
+    across 5 statutes was a long scroll to reach e.g. RHA at the bottom), and
+    a jump-nav row of statute pills sits above them — clicking one scrolls
+    straight to that statute's summary AND opens it in one click via the
+    inline onclick, so reaching any single act never requires scrolling past
+    the others first (2026-07-07).
+    """
     esc = html.escape
     statutes_meta = payload.get("statutes", {})
     readings = payload.get("readings", [])
     order = {s: i for i, s in enumerate(WATER_STATUTE_ORDER)}
-    blocks = []
     seen = []
     for r in readings:
         if r["statute"] not in seen:
             seen.append(r["statute"])
     seen.sort(key=lambda s: order.get(s, 99))
+    counts = {s: sum(1 for r in readings if r["statute"] == s) for s in seen}
+
+    nav_links = "".join(
+        f'<a class="statute-jump" href="#statute-{esc(s)}" '
+        f'style="background:{WATER_STATUTE_COLORS.get(s, COLORS["secondary"])}" '
+        f"onclick=\"var d=document.getElementById('statute-{esc(s)}'); "
+        'if(d) d.open=true;">'
+        f"{esc(s)} <span class=\"statute-jump-count\">({counts[s]})</span></a>"
+        for s in seen
+    )
+    blocks = [f'<div class="statute-jumpnav">{nav_links}</div>']
+
     for statute in seen:
         meta = statutes_meta.get(statute, {})
         title = esc(meta.get("name", statute))
@@ -3091,16 +3112,20 @@ def _build_authorities_html(payload: dict, case_ids: set[str] | None = None) -> 
             if url
             else full
         )
-        blocks.append(
-            f'<h4 class="statute-head">{_statute_pill_html(statute)} '
-            f"{title}</h4>"
-            f'<p class="statute-meta">{full_html}'
-            f'{" · Administered by: " + agencies if agencies else ""}</p>'
-        )
-        blocks.extend(
+        cards = "".join(
             _build_reading_card_html(r, case_ids)
             for r in readings
             if r["statute"] == statute
+        )
+        blocks.append(
+            f'<details class="statute-group" id="statute-{esc(statute)}">'
+            f'<summary class="statute-head">{_statute_pill_html(statute)} '
+            f'{title} <span class="statute-count">'
+            f'({counts[statute]})</span></summary>'
+            f'<p class="statute-meta">{full_html}'
+            f'{" · Administered by: " + agencies if agencies else ""}</p>'
+            f"{cards}"
+            "</details>"
         )
     return "".join(blocks)
 
