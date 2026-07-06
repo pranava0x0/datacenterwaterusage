@@ -1,7 +1,85 @@
 {
-  "last_updated": "2026-07-05",
+  "last_updated": "2026-07-06",
   "description": "Curated headlines about data center water use, regulation, enforcement, and solutions — linked to the tracker's datasets where possible.",
   "items": [
+    {
+      "id": "itif-water-problem-soluble-2026-07",
+      "date": "2026-07",
+      "title": "ITIF Report: Data Center Water Problem Is 'Soluble' But Needs Coordinated State Policy",
+      "outlet": "Information Technology and Innovation Foundation (ITIF)",
+      "summary": "An ITIF report by Robin Gaster argues data centers directly consumed ~17.4 billion gallons for cooling in 2023 versus ~211 billion gallons indirectly through electricity generation (about 12x more), and that water stress is regional (Pacific Northwest power generation uses 2.1 gal/kWh vs. 0.13 gal/kWh in solar-heavy California) rather than a uniform national problem. It recommends mandatory standardized water-use disclosure, watershed-based performance standards instead of technology mandates, integrated water-energy agency review, and a federal role limited to metrics/R&D/procurement rather than preempting state water law.",
+      "tags": [
+        "research",
+        "policy"
+      ],
+      "source_url": "https://itif.org/publications/2026/07/06/the-data-center-water-problem-is-soluble/"
+    },
+    {
+      "id": "indiana-counties-restrictions-2026-07",
+      "date": "2026-07",
+      "title": "Nearly One-Third of Indiana Counties Now Restrict Data Centers",
+      "outlet": "WFYI Public Media",
+      "summary": "An Indiana University Environmental Resilience Institute tally found 11 Indiana counties have passed data-center zoning ordinances, at least 17 have enacted temporary moratoriums, and two (Marshall and Cass counties) have full bans — making Indiana one of the most restricted states for new data-center siting. Cited drivers include water, electricity, land, noise, and air-quality concerns; the Indianapolis Metropolitan Development Commission separately voted 5-3 to recommend new zoning rules, and Meta's $10 billion Lebanon, IN project and a contested Martinsville-Brightwood project were cited as flashpoints.",
+      "tags": [
+        "policy",
+        "regulation"
+      ],
+      "source_url": "https://www.wfyi.org/statewide/2026-07-06/indiana-counties-data-center-moratoriums-bans-2026"
+    },
+    {
+      "id": "spartanburg-sc-moratorium-2026-06",
+      "date": "2026-06",
+      "title": "Spartanburg County, SC Freezes Data-Center Applications for One Year Amid Water/Air Permit Fight",
+      "outlet": "Post and Courier / Fox Carolina",
+      "summary": "Spartanburg County Council unanimously passed first reading of a 12-month data-center application moratorium on June 22, 2026, invoking the 'pending ordinance doctrine' to immediately freeze new applications — including a proposed Lighthouse Data Centers/Wharton Digital project at 300 Jones Road. The vote came days before SC DES held a June 25 public hearing on air and water discharge permits and increased power demand for the separate, already-under-construction Valara Holdings data center at the former Kohler plant site, which is exempt from the new moratorium. Part of a broader wave: several other SC counties have enacted or begun similar pauses in the absence of statewide rules.",
+      "tags": [
+        "regulation",
+        "policy"
+      ],
+      "source_url": "https://www.postandcourier.com/spartanburg/news/spartanburg-county-data-center-moratorium-vote/article_e0eba019-fc7a-45ef-bc5d-46cb02e56a3f.html"
+    },
+    {
+      "id": "amazon-water-disclosure-2026-06",
+      "date": "2026-06",
+      "title": "Amazon Discloses First-Ever Global Data Center Water Use Figure: 2.5 Billion Gallons in 2025",
+      "outlet": "Latitude Media",
+      "summary": "Amazon disclosed for the first time that its global data centers used 2.5 billion gallons of water in 2025, reporting a water usage effectiveness of 0.03 gallons/kWh — a 52% efficiency improvement since 2021 — and claiming it returned roughly two-thirds of that water to communities through infrastructure investment. AWS says its total water withdrawal decreased from 2024 to 2025 even as data center capacity expanded, a reversal of the industry-wide trend; the disclosure puts Amazon alongside Google, Meta, and Microsoft in publishing aggregate water figures (though still only company-wide totals, not facility-level).",
+      "tags": [
+        "data",
+        "policy"
+      ],
+      "source_url": "https://www.latitudemedia.com/news/amazon-finally-reports-its-annual-water-use-at-data-centers/",
+      "cross_ref_tab": "solutions",
+      "cross_ref_note": "Substantiates the existing wue-reporting solution entry in the Solutions tab"
+    },
+    {
+      "id": "ny-responsible-dc-act-permit-moratorium-2026-06",
+      "date": "2026-06",
+      "title": "New York's Passed Data Center Bill Is a One-Year DEC Permit Moratorium, Not Just a SEQRA Trigger",
+      "outlet": "Greenberg Traurig",
+      "summary": "Legal analysis of the Responsible Data Center Development Act (A11560/S10642), passed by the legislature in early June and awaiting Gov. Hochul's signature, clarifies the bill imposes a one-year moratorium on new DEC permits/approvals for data centers of 20+ MW (exempting projects that have already started construction) — a stronger mechanism than a SEQRA environmental-review trigger alone. It requires water- and wastewater-impact disclosure at mandatory public hearings, a statewide environmental review of water use/discharge/thermal impacts, utility cost-recovery rules so data centers (not ratepayers) bear water-infrastructure upgrade costs, and host-community benefit programs addressing water impacts and cooling technology.",
+      "tags": [
+        "regulation",
+        "policy"
+      ],
+      "source_url": "https://www.gtlaw.com/en/insights/2026/6/new-york-legislature-passes-data-center-moratorium-bill-awaits-governors-approval",
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "Clarifies the mechanism for NY S10642/A11560 in the Legislation tab is a DEC permit moratorium, not only a SEQRA review trigger"
+    },
+    {
+      "id": "fayette-county-ga-qts-metering-2026-05",
+      "date": "2026-05",
+      "title": "Missed Water Meter Let Georgia QTS Data Center Rack Up $147,000 Unbilled Bill",
+      "outlet": "The Citizen (Fayette County, GA)",
+      "summary": "A water meter serving Quality Technology Services' (QTS, owned by Blackstone) 615-acre 'Project Excalibur' data center campus in Fayetteville, Fayette County, GA was missed during the county's transition to smart advanced metering infrastructure, leaving roughly 13-15 million gallons of usage over six months uncaptured until residents in a nearby subdivision reported falling water pressure. Fayette County billed QTS about $147,000 retroactively (no fine was imposed), and county officials characterized it as an administrative oversight during the meter-system changeover rather than unauthorized water use.",
+      "tags": [
+        "data",
+        "regulation"
+      ],
+      "source_url": "https://thecitizen.com/2026/05/11/behind-fayettes-qts-water-controversy-a-missed-meter-8000-workers-and-a-massive-construction-project/",
+      "cross_ref_tab": "cwa",
+      "cross_ref_note": "Same incident tracked in Water Cases: QTS-Fayette-GA-unbilled-water-2026"
+    },
     {
       "id": "florida-sb484-effective-2026-07",
       "date": "2026-07",

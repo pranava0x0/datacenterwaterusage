@@ -302,6 +302,59 @@ expansion). Verdict: both justified; keep this pattern.**
   agent find the figures — two seeded numbers were wrong and were only
   caught because the prompt said "verify, don't confirm."
 
+**2026-07-06 — four parallel open-discovery research agents (news, solutions,
+general CWA cases, SDWA/TSCA cases). Verdict: justified, but materially less
+token-efficient than the 2026-07-02 seeded-verification pattern — log the gap
+so future sessions prefer seeding when a candidate list already exists.**
+
+- *Agent A — news discovery:* 99.7k subagent tokens, 33 tool uses, ~3 min.
+  Found 6 verified new items (dropped ~5 more as unverifiable — an Snopes-flagged
+  Utah water-use claim, a paywalled SC outlet, a snippet-only AWWA reference —
+  correctly excluded per "verify, don't confirm"). All 6 became `water_news.json`
+  entries.
+- *Agent B — solutions discovery:* 120.8k subagent tokens, 50 tool uses, ~5.6
+  min. Found 2 verified new solutions, plus caught that Amazon's first-ever
+  aggregate water disclosure substantiates (rather than duplicates) the
+  existing `wue-reporting` entry, and flagged two backlog-worthy gaps (FL SB
+  484, MN HF 16 have no `water_solutions.json` entry despite being tracked in
+  `legislation.json`) instead of forcing weak new entries. Both new solutions
+  used as-is.
+- *Agent C — general CWA case discovery:* 145.9k subagent tokens, 35 tool
+  uses, ~4 min. Found 3 candidates; correctly flagged one (QTS Fayetteville
+  citizen-suit escalation) as the *same* dispute maturing rather than a new
+  case — followed that recommendation and updated the existing
+  `QTS-Fayetteville-GA-2024` entry instead of minting a duplicate. The other 2
+  became new cases.
+- *Agent D — SDWA/TSCA case discovery:* 130.7k subagent tokens, 46 tool uses,
+  ~4.5 min. Found 3 verified cases (Chemours $450M multi-statute settlement,
+  Westchester JWW SDWA consent decree, CJT Group §1431 order); explicitly
+  excluded a real-but-weak candidate (Fort Mojave manganese order — no
+  data-center nexus, single-source corroboration) rather than padding the count.
+- *Efficiency:* ~497k combined subagent tokens for 13 new entries + 1 updated
+  entry (~35.5k tokens/entry) — **~7-8x worse than the 2026-07-02 pattern's
+  4.6k/entry.** Root cause: these agents did unconstrained discovery ("find
+  anything new") rather than adjudicating a pre-seeded candidate list, so a
+  large share of tokens went to searches that were correctly rejected rather
+  than to verifying known claims. Each agent also paid a fixed cost reading
+  the full existing dataset (88 cases, 20 authorities) for dedup before
+  searching.
+- *Necessity:* justified for the open-ended "what's new" asks (news, general
+  cases) — multi-source discovery across an unbounded search space is exactly
+  the delegate-it case. Less clearly justified for the SDWA/TSCA agent, which
+  had a narrow, well-defined target (2 statutes, ~7 known reading_ids) and
+  might have been tightened into a single more targeted agent rather than a
+  fully independent parallel run.
+- *Good inline decision (no agent used):* the same session also renamed a UI
+  label, restructured a card into collapsed-by-default `<details>`, and fixed
+  two tests — done by reading the exact functions/tests directly rather than
+  delegating, since the scope was fully known upfront. Right call per the
+  escalation ladder.
+- *Improvement for next time:* when the ask is "find more like these 5
+  existing failure modes" rather than pure open discovery, seed the agent with
+  the existing category/date boundaries up front (as done here) but consider
+  narrowing scope further (e.g. one agent per statute, not per broad topic) to
+  cut the search-then-reject overhead that drove the 7-8x token gap.
+
 ---
 
 ## What NOT to do
