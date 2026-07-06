@@ -1513,7 +1513,7 @@ def build_llms_txt() -> str:
             f"— {c.get('cwa_instrument', '')}. {c.get('takeaway', '')}"
         )
         if c.get("cwa_pathway"):
-            line += f" How the CWA could apply: {c['cwa_pathway']}"
+            line += f" How {statutes} could apply: {c['cwa_pathway']}"
         if src:
             line += f" Source: {src}"
         lines.append(line)

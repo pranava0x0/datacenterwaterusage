@@ -881,7 +881,7 @@ class TestCWAInvestigations:
             assert 'class="cwa-type-pill"' in html_str, c["case_id"]
             assert 'class="cwa-status-pill"' in html_str, c["case_id"]
             if c["cwa_applied"] in ("pending", "not-applied"):
-                assert "How the CWA could apply" in html_str, c["case_id"]
+                assert "How statutes could apply" in html_str, c["case_id"]
                 first_analog = c["analogous_cases"][0]
                 assert f'href="#cwa-{first_analog}"' in html_str, c["case_id"]
 

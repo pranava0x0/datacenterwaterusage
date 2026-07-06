@@ -3274,26 +3274,21 @@ def _build_cwa_case_html(
         f'<div class="cwa-class-row">{"".join(class_bits)}</div>' if class_bits else ""
     )
 
-    # Visible by default: the takeaway (why this case matters here) and the
-    # CWA pathway. The longer narrative (full statute cite, violation,
-    # outcome, sources) lives in a collapsed <details> so 73 cards stay
-    # scannable, especially on mobile — the cwa_instrument pill row already
-    # summarizes the statute line.
-    # Reading order (user-tested 2026-07-02): what happened (violation), how
-    # it ended (outcome), why it matters here (relevance), then the statute-
-    # applicability note (hooks + pathway). Only the verbose statute citation
-    # and sources stay collapsed.
+    # Visible by default: only the head, classification pills, and the
+    # takeaway (the precomputed "why this matters here" sentence) — mirrors
+    # how the Part 4 conflict-site cards stay scannable at a glance. The full
+    # narrative (violation, outcome, statute applicability + pathway, full
+    # statute citation, sources) lives behind one <details> toggle so a page
+    # of 87+ cards doesn't read as a wall of always-open text (2026-07-06).
     sections = []
     detail_sections = []
-    if cwa_section:
-        detail_sections.append(f'<div class="cwa-section-line">{cwa_section}</div>')
     if violation:
-        sections.append(
+        detail_sections.append(
             '<div class="bill-section-label">Violation</div>'
             f'<p class="bill-sentiment">{violation}</p>'
         )
     if outcome:
-        sections.append(
+        detail_sections.append(
             '<div class="bill-section-label">Outcome</div>'
             f'<p class="bill-sentiment">{outcome}</p>'
         )
@@ -3302,12 +3297,15 @@ def _build_cwa_case_html(
             '<div class="bill-section-label">Relevance to data centers</div>'
             f'<p class="cwa-takeaway">{takeaway}</p>'
         )
+    hooks = ""
     if readings_by_id is not None:
         hooks = _case_hooks_html(case, readings_by_id)
-        if hooks:
-            sections.append(hooks)
-    # For cases where the CWA was NOT applied (or is only potential): how it
-    # could apply, with cross-links to the historic cases that show the path.
+    # For cases where the statute was NOT applied (or is only potential): how
+    # each mapped statute could apply, with cross-links to the historic cases
+    # that show the path. The hooks row (one link per authority) is folded
+    # into this section — right under the header — so "how statutes could
+    # apply" actually enumerates each one, instead of a single blended
+    # sentence with no per-statute breakdown.
     pathway = case.get("cwa_pathway", "")
     if pathway:
         analog_html = ""
@@ -3317,10 +3315,15 @@ def _build_cwa_case_html(
                 '<div class="cwa-analogs">Historic examples in this record: '
                 f'{_case_links_html(analogs, case_ids)}</div>'
             )
-        sections.append(
-            '<div class="bill-section-label">How the CWA could apply</div>'
+        detail_sections.append(
+            '<div class="bill-section-label">How statutes could apply</div>'
+            f'{hooks}'
             f'<div class="cwa-pathway">{esc(pathway)}{analog_html}</div>'
         )
+    elif hooks:
+        detail_sections.append(hooks)
+    if cwa_section:
+        detail_sections.append(f'<div class="cwa-section-line">{cwa_section}</div>')
     sources_block = _sources_html(sources)
     if sources_block:
         detail_sections.append(sources_block)
@@ -3333,7 +3336,7 @@ def _build_cwa_case_html(
         # deployed artifact is the static site.
         sections.append(
             '<details class="bill-card-details">'
-            '<summary>Details — full statute citation, sources</summary>'
+            '<summary>Details — violation, outcome, statute applicability &amp; sources</summary>'
             f'{"".join(detail_sections)}'
             '</details>'
         )
