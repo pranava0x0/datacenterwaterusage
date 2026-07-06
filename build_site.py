@@ -426,64 +426,67 @@ def build_cwa_tab() -> str:
     <div class="explainer-md">{explainer}</div>
   </details>
 
-  <h3>Part 1 — The Federal Water-Law Toolkit</h3>
-  <p><strong>{n_readings} statutory readings</strong> across the CWA, SDWA, TSCA, RCRA,
-  and the Rivers &amp; Harbors Act — each card explains what the authority historically
-  covered, how it could apply to a data-center fact pattern, and which cases below show
-  it in use. Case and site cards link back here via their <em>statute applicability</em> rows.</p>
-  <details class="lazy">
-    <summary>Open the toolkit — {n_readings} readings grouped by statute</summary>
+  <div class="subtabs" role="tablist" aria-label="Water Cases sections">
+    <button class="subtab" role="tab" data-subtab="cwa-p1" aria-selected="false">Part 1 · Toolkit ({n_readings})</button>
+    <button class="subtab" role="tab" data-subtab="cwa-p2" aria-selected="true">Part 2 · Historical Record ({len(historical)})</button>
+    <button class="subtab" role="tab" data-subtab="cwa-p3" aria-selected="false">Part 3 · Active/Potential Exposure ({len(potential)})</button>
+    <button class="subtab" role="tab" data-subtab="cwa-p4" aria-selected="false">Part 4 · DC Water Conflicts ({len(conflict_sites)})</button>
+  </div>
+
+  <div class="subtabpanel" id="panel-cwa-p1" hidden>
+    <h3>Part 1 — The Federal Water-Law Toolkit</h3>
+    <p><strong>{n_readings} statutory readings</strong> across the CWA, SDWA, TSCA, RCRA,
+    and the Rivers &amp; Harbors Act — each card explains what the authority historically
+    covered, how it could apply to a data-center fact pattern, and which cases below show
+    it in use. Case and site cards link back here via their <em>statute applicability</em> rows.</p>
     <div id="water-toolkit">{toolkit}</div>
-  </details>
-
-  <hr>
-  <details class="lazy" open>
-  <summary><strong>Part 2 — Historical Enforcement Record ({len(historical)} cases)</strong></summary>
-  <p><strong>{len(historical)} cases</strong> — enforcement actions, penalties, settlements,
-  landmark court rulings, and standing rulemakings that have <strong>actually
-  occurred</strong>, under the CWA and the other federal water authorities above.
-  <strong>Industrial cases are legal analogs</strong> — the enforcement pattern for
-  operations similar to data centers, but against other industries, not data centers.
-  Precedent rulings define the legal scope for future enforcement.</p>
-  <div class="cwa-filters">
-    <span class="filter-label">Statute:</span>
-    <div class="cwa-types">{statute_boxes}</div>
   </div>
-  <div class="cwa-filters">
-    <span class="filter-label">Project type:</span>
-    <div class="cwa-types">{type_boxes}</div>
-  </div>
-  <div class="cwa-filters">
-    <span class="filter-label">Case group:</span>
-    <div class="cwa-cats">{cat_boxes}</div>
-    <label class="chip-check"><input type="checkbox" id="cwa-recent"> 2020 onward only</label>
-  </div>
-  <p class="count-line" id="cwa-count"></p>
-  <div id="cwa-cases">{hist_cards}</div>
-  </details>
 
-  <hr>
-  <details class="lazy">
-  <summary><strong>Part 3 — Active &amp; Potential CWA Exposure at Named Data Center Sites ({len(potential)})</strong></summary>
-  <p><strong>{len(potential)} named data center sites</strong> where regulatory proceedings
-  are active (pending permit applications, ongoing investigations, active citizen suits)
-  or where the factual circumstances match the historical enforcement patterns above —
-  but <strong>no formal CWA enforcement action has been issued yet</strong>.
-  Use the theories panel above to trace which CWA hook applies to each site.</p>
-  <div id="cwa-potential">{pot_cards}</div>
-  </details>
+  <div class="subtabpanel" id="panel-cwa-p2">
+    <h3>Part 2 — Historical Enforcement Record ({len(historical)} cases)</h3>
+    <p><strong>{len(historical)} cases</strong> — enforcement actions, penalties, settlements,
+    landmark court rulings, and standing rulemakings that have <strong>actually
+    occurred</strong>, under the CWA and the other federal water authorities above.
+    <strong>Industrial cases are legal analogs</strong> — the enforcement pattern for
+    operations similar to data centers, but against other industries, not data centers.
+    Precedent rulings define the legal scope for future enforcement.</p>
+    <div class="cwa-filters">
+      <span class="filter-label">Statute:</span>
+      <div class="cwa-types">{statute_boxes}</div>
+    </div>
+    <div class="cwa-filters">
+      <span class="filter-label">Project type:</span>
+      <div class="cwa-types">{type_boxes}</div>
+    </div>
+    <div class="cwa-filters">
+      <span class="filter-label">Case group:</span>
+      <div class="cwa-cats">{cat_boxes}</div>
+      <label class="chip-check"><input type="checkbox" id="cwa-recent"> 2020 onward only</label>
+    </div>
+    <p class="count-line" id="cwa-count"></p>
+    <div id="cwa-cases">{hist_cards}</div>
+  </div>
 
-  <hr>
-  <details class="lazy">
-  <summary><strong>Part 4 — Data-Center Sites with Reported Water Issues or Pushback ({len(conflict_sites)})</strong></summary>
-  <p><strong>{len(conflict_sites)} named sites</strong> with documented water problems or
-  community pushback — supply strain, dried wells, discharge fights, secrecy,
-  moratoriums. Each card maps the fact pattern to the statutory readings from Part 1
-  that could reach it, citing the historical cases that show each reading in use.
-  Readings overlap by design.</p>
-  <div id="dc-conflicts">{site_cards}</div>
-  <p class="src-note">Site roster last updated {esc(conflicts_updated)}.</p>
-  </details>
+  <div class="subtabpanel" id="panel-cwa-p3" hidden>
+    <h3>Part 3 — Active &amp; Potential CWA Exposure at Named Data Center Sites ({len(potential)})</h3>
+    <p><strong>{len(potential)} named data center sites</strong> where regulatory proceedings
+    are active (pending permit applications, ongoing investigations, active citizen suits)
+    or where the factual circumstances match the historical enforcement patterns above —
+    but <strong>no formal CWA enforcement action has been issued yet</strong>.
+    Use the theories panel above to trace which CWA hook applies to each site.</p>
+    <div id="cwa-potential">{pot_cards}</div>
+  </div>
+
+  <div class="subtabpanel" id="panel-cwa-p4" hidden>
+    <h3>Part 4 — Data-Center Sites with Reported Water Issues or Pushback ({len(conflict_sites)})</h3>
+    <p><strong>{len(conflict_sites)} named sites</strong> with documented water problems or
+    community pushback — supply strain, dried wells, discharge fights, secrecy,
+    moratoriums. Each card maps the fact pattern to the statutory readings from Part 1
+    that could reach it, citing the historical cases that show each reading in use.
+    Readings overlap by design.</p>
+    <div id="dc-conflicts">{site_cards}</div>
+    <p class="src-note">Site roster last updated {esc(conflicts_updated)}.</p>
+  </div>
 
   <p class="src-note">Dataset last updated {esc(last_updated)}.
   Total: {len(cases)} entries ({len(historical)} historical enforcement,
@@ -1066,6 +1069,16 @@ a{color:var(--blue)}
 .tab[aria-selected="true"]{color:var(--blue);border-bottom-color:var(--blue)}
 .tabpanel[hidden]{display:none}
 
+/* Sub-tabs (e.g. Water Cases Part 1-4) — same mechanics as the top-level
+   tabs, one visual size down, so a section is one click away instead of a
+   scroll past every earlier part. */
+.subtabs{display:flex;gap:.25rem;border-bottom:1px solid #d6e2ee;margin:.75rem 0 1rem;flex-wrap:wrap}
+.subtab{appearance:none;border:0;background:#eef6ff;color:var(--muted);cursor:pointer;
+  padding:.5rem .85rem;border-radius:.4rem .4rem 0 0;font:inherit;font-weight:600;
+  font-size:.92rem;min-height:44px}
+.subtab[aria-selected="true"]{color:#fff;background:var(--blue)}
+.subtabpanel[hidden]{display:none}
+
 .panel{margin-bottom:1.25rem}
 details.lazy{border:1px solid #cbd5e1;border-radius:.5rem;background:#fff;margin:.6rem 0;
   box-shadow:0 1px 2px rgba(15,23,42,.04)}
@@ -1232,6 +1245,15 @@ function activateTab(name){
 }
 tabs.forEach(t => t.addEventListener('click', () => activateTab(t.dataset.tab)));
 
+// --- Sub-tabs (Water Cases Part 1-4) ---
+const subtabs = document.querySelectorAll('.subtab');
+const subpanels = document.querySelectorAll('.subtabpanel');
+function activateSubtab(name){
+  subtabs.forEach(x => x.setAttribute('aria-selected', x.dataset.subtab === name ? 'true' : 'false'));
+  subpanels.forEach(p => p.hidden = (p.id !== 'panel-' + name));
+}
+subtabs.forEach(t => t.addEventListener('click', () => activateSubtab(t.dataset.subtab)));
+
 // --- Legislation filtering ---
 // Node lists are cached once at load: the cards are static, and re-querying
 // the DOM on every checkbox change triggers needless reflow work on
@@ -1306,10 +1328,11 @@ if (cwaCount) applyCwaFilter();
 // --- In-page anchor links: cross-tab deep links ---
 // Bill / case / reading / site anchors can live on ANOTHER tab (e.g. a
 // Solutions-card quote citing "SD SB 135" links into the Legislation tab),
-// inside a collapsed <details>, or behind an active filter. On click:
-// switch to the owning tab, open ancestor accordions, reset filters that
-// hide the target, then scroll to it ourselves (the browser's default
-// fragment jump can't cross a hidden tab panel).
+// in another Water Cases sub-tab (Part 1-4), inside a collapsed <details>,
+// or behind an active filter. On click: switch to the owning tab and
+// sub-tab, open ancestor <details>, reset filters that hide the target,
+// then scroll to it ourselves (the browser's default fragment jump can't
+// cross a hidden tab panel).
 document.addEventListener('click', e => {
   // Respect modifier/middle clicks (new tab, etc.) — let the browser handle them.
   if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
@@ -1323,8 +1346,10 @@ document.addEventListener('click', e => {
   e.preventDefault();
   const panel = target.closest('.tabpanel');
   if (panel && panel.hidden) activateTab(panel.id.replace('panel-', ''));
-  // Anchors inside a collapsed <details> (toolkit, part accordions) can't be
-  // scrolled to in all browsers — open the ancestors first.
+  const subpanel = target.closest('.subtabpanel');
+  if (subpanel && subpanel.hidden) activateSubtab(subpanel.id.replace('panel-', ''));
+  // Anchors inside a collapsed <details> (e.g. a case's statute-citation
+  // block) can't be scrolled to in all browsers — open the ancestors first.
   let det = target.closest('details');
   while (det) { det.open = true; det = det.parentElement && det.parentElement.closest('details'); }
   const wrap = target.closest('.leg-bill, .cwa-case');
