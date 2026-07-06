@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-07-02",
+  "last_updated": "2026-07-06",
   "note": "Clean Water Act enforcement actions and landmark precedent cases relevant to data center water use and cooling discharge. Four categories: 'datacenter' = direct CWA actions against named hyperscale operators or their contractors, including state permit enforcement and §404 permit applications with significant wetland/stream impacts (e.g. Amazon Boardman nitrate settlement, Google §404 applications in VA and AR); 'adjacent' = water-relevant actions at data-center sites where the binding or active enforcement sits OUTSIDE the CWA — a Clean Air Act suit, a local well-permitting action, a §404 citizen suit over data-center power infrastructure, or a permitted-but-paused voluntary water commitment; 'industrial' = enforcement against large industrial water users that are the closest practical analogs (cooling water §316(a)/(b), pretreatment, sewer-system consent decrees, PFAS, CAFO discharges); 'precedent' = Supreme Court and federal appellate rulings that set the legal scope of the CWA, including Loper Bright (2024) ending Chevron deference and Lewis v. US (5th Cir. 2023) applying Sackett. Comprehensive coverage for 2020-present, with foundational earlier cases retained as benchmarks (Smithfield 1997, Tyson 2003, Brayton Point 2003-2007). Direct hyperscaler enforcement remains thin because operators usually sit behind contractor-permittee structures and discharge to municipal sewers — the industrial cases show what enforcement looks like once that shield slips. The Amazon Boardman 2026 $20.5M nitrate settlement is the first eight-figure direct-hyperscaler water settlement. The Port of Morrow OR DEQ enforcement ($727K, 2024) is the largest state-level penalty at a WWTP explicitly identified as receiving data center wastewater. Google's concurrent §404 applications in VA (Project Raspberry, Project Loch) and AR (Port of Little Rock, 16.8 ac wetlands) mark a new wave of federal permitting scrutiny on data center construction in sensitive watersheds. July 2, 2026 expansion: the dataset now spans federal water authorities beyond the CWA — 10 historical SDWA / TSCA / RCRA / Rivers-and-Harbors-Act cases and rulemakings (DuPont Washington Works PFOA, 3M TSCA 8(e), Flint and Trinity American SDWA 1431, Alisal receivership, Edwards sole-source-aquifer designation, the 1999 UIC Class V rule, Interfaith v. Honeywell RCRA 7002, US v. Republic Steel RHA 10/13, and the TSCA 8(a)(7) PFAS reporting rule) — and every case carries an 'authorities' list of reading_ids from data/reference/water_authorities.json mapping it to the statutory readings it used or could trigger (overlap intentional).",
   "cases": [
     {
@@ -432,10 +432,10 @@
       "case_id": "QTS-Fayetteville-GA-2024",
       "category": "datacenter",
       "respondent": "QTS Realty Trust — Fayette County / Fayetteville, Georgia hyperscale data center campus (Sandy Creek / Lake Bennett watershed)",
-      "year": "2024",
+      "year": "2024-2026",
       "cwa_section": "Mixed — Flint Riverkeeper invoked the U.S. Clean Water Act (Sec. 402 NPDES construction general permit) plus Georgia Erosion & Sedimentation Act sediment-control standards; engagement was through citizen monitoring and notification to Georgia EPD rather than a formal §505 citizen suit filing.",
       "violation_summary": "Flint Riverkeeper documented repeated discharge of heavily sediment-laden water — including flocculant-treated runoff — onto neighboring private property and into Sandy Creek during rain events from summer 2023 through spring 2024, with monitoring data showing sediment 'many, many times allowable limits.' Riverkeeper escalated to the City of Fayetteville in March 2024 and to Georgia EPD that spring after city/developer remediation lagged. This is a Riverkeeper-driven CWA enforcement-style action, not a filed lawsuit.",
-      "outcome": "PENDING / partially resolved — A stop-work order plus developer-installed erosion-control upgrades resulted in at least one >2-inch rain event with 'no detectable pollution' by mid-2024. No formal NOV, consent order, or civil penalty against QTS has been publicly confirmed; monitoring is ongoing. Separately, in May 2025 QTS paid ~$147,000 in retroactive water bills for ~29M gallons of unbilled construction water (a billing dispute, not CWA enforcement).",
+      "outcome": "PENDING / partially resolved — A stop-work order plus developer-installed erosion-control upgrades resulted in at least one >2-inch rain event with 'no detectable pollution' by mid-2024. No formal NOV, consent order, or civil penalty against QTS has been publicly confirmed; monitoring is ongoing. Separately, in May 2025 QTS paid ~$147,000 in retroactive water bills for ~29M gallons of unbilled construction water (a billing dispute, not CWA enforcement). The dispute escalated on May 28, 2026, when counsel for Flint Riverkeeper and adjacent landowners sent a formal CWA §505(b) 60-day notice of intent to sue to QTS and its contractors (Clayco, HITT Contracting, Brasfield & Gorrie) and subcontractors, documenting turbidity exceedances above the permit's 50 NTU outfall limit on at least 51 separate rain-event dates from February 2024 through May 2026 (including a 259 NTU reading in March 2026) plus three dry-day discharges from pond pumping, and alleging unpermitted §404 fill from redeposited excavated material into the stream and adjacent wetlands. Plaintiffs' counsel stated intent to file a federal citizen suit on or about July 27, 2026 if the dispute isn't resolved within the notice period — open as of this writing.",
       "takeaway": "QTS Fayetteville is the clearest example of an environmental NGO using CWA construction-stormwater standards to pressure a hyperscale colocation operator. Even without a filed lawsuit, citizen documentation forced site changes — a template likely to spread, especially in Georgia where data center sprawl is concentrated in sensitive Flint and Chattahoochee basins.",
       "sources": [
         {
@@ -447,6 +447,16 @@
           "title": "Georgia's data center boom leaves residents worried about environmental impacts — CBS Atlanta",
           "url": "https://www.cbsnews.com/atlanta/news/georgias-data-center-boom-leave-residents-concerns-about-environmental-impacts/",
           "type": "news"
+        },
+        {
+          "title": "CWA 60-Day Notice of Intent to Sue Letter, Evans Bowers LLP (George Lott) to QTS entities et al.",
+          "url": "https://www.flintriverkeeper.org/wp-content/uploads/2026/06/2026.05.28-CWA-Notice-Letter-Final.pdf",
+          "type": "citizen suit notice (primary document)"
+        },
+        {
+          "title": "Flint Riverkeeper and Fayetteville residents plan to file lawsuit against data center developers",
+          "url": "https://www.times-herald.com/data_center/flint-riverkeeper-and-fayetteville-residents-plan-to-file-lawsuit-against-data-center-developers/article_d5249896-534a-4d28-98fb-f6349a14c68e.html",
+          "type": "news"
         }
       ],
       "case_type": "construction-stormwater",
@@ -455,7 +465,8 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-construction-stormwater",
-        "cwa-505-citizen-suit"
+        "cwa-505-citizen-suit",
+        "cwa-404-dredge-fill"
       ]
     },
     {
@@ -3159,6 +3170,192 @@
       "display_section": "historical",
       "authorities": [
         "tsca-8a7-pfas-reporting"
+      ]
+    },
+    {
+      "case_id": "Google-VanBurenTownship-MI-wetlands-2026",
+      "category": "datacenter",
+      "respondent": "Google LLC (client) / Panattoni Development Co. (applicant/developer), “Project Cannoli” 1-GW data center campus, Van Buren Township, Wayne County, Michigan (Haggerty Road / I-94, Huron River watershed)",
+      "year": "2026",
+      "cwa_section": "§404 / 33 U.S.C. §1344 (Army Corps of Engineers) with a companion state wetland permit under Michigan's EGLE-administered program (Part 303, NREPA)",
+      "violation_summary": "Panattoni applied for federal §404 and state wetland permits to permanently fill 13.55 acres of wetlands and install six culverts in regulated streams, filling and abandoning 573 linear feet of stream channel, for a 282-acre, 1-GW data center campus. The Army Corps' public notice put total impacts at nearly 17 acres of wetlands and over 6,000 linear feet of streams when counting temporary impacts. The project is projected to use 2-3.6 million gallons of water per day, sourced from Van Buren Township's Great Lakes Water Authority municipal connection. EGLE's public comment period closed June 26, 2026; the Corps and U.S. Fish and Wildlife Service are conducting parallel federal review.",
+      "outcome": "PENDING — EGLE and USACE permit applications under review; no decision issued as of July 2026. Developer proposes 20.6 acres of mitigation bank credits in the Huron River watershed plus 1,174 feet of new on-site stream channel as compensatory mitigation.",
+      "takeaway": "A textbook post-Sackett individual §404 permit fight at a hyperscaler campus — paired federal/state wetland review, a 13+ acre permanent wetland loss, and a multi-million-gallon-per-day municipal water draw — that gives commenters and potential litigants two separate permitting choke points (Corps §404 and EGLE state wetland permit) before a shovel goes in the ground.",
+      "sources": [
+        {
+          "title": "Google data center in Van Buren Township would destroy 13 acres of wetlands (Planet Detroit)",
+          "url": "https://planetdetroit.org/2026/06/google-data-center-wetlands/",
+          "type": "news"
+        },
+        {
+          "title": "Google data center in Van Buren Township would destroy 13 acres of wetlands (Michigan Advance)",
+          "url": "https://michiganadvance.com/2026/06/18/google-data-center-in-van-buren-township-would-destroy-13-acres-of-wetlands/",
+          "type": "news"
+        },
+        {
+          "title": "EGLE: Google data center pitched as community asset will destroy 13.5 acres of wetlands, use 3.6 million gallons of water per day",
+          "url": "https://www.themidwesterner.news/2026/06/egle-google-data-center-pitched-as-community-asset-will-destroy-13-5-acres-of-wetlands-use-3-6-million-gallons-of-water-per-day/",
+          "type": "news"
+        }
+      ],
+      "case_type": "wetlands-streams",
+      "cwa_applied": "pending",
+      "cwa_instrument": "§404 individual permit + EGLE state wetland permit — under review, comment period closed 6/26/2026",
+      "authorities": [
+        "cwa-404-dredge-fill",
+        "cwa-401-certification"
+      ],
+      "cwa_pathway": "Corps §404 individual-permit review is already underway; EPA §404(c) veto or a §401 state-certification challenge remain live levers if the permitted mitigation is later found inadequate.",
+      "analogous_cases": [
+        "Google-ProjectRaspberry-VA-2026",
+        "Amazon-NewCarlisle-IN-wetlands-2025",
+        "Google-FortWayneIN-isolated-wetland-permit-2025"
+      ],
+      "display_section": "potential"
+    },
+    {
+      "case_id": "MCEA-PineIsland-MN-ProjectSkyway-2026",
+      "category": "adjacent",
+      "respondent": "Ryan Companies US, Inc. (developer) and City of Pine Island, Minnesota (“Project Skyway,” 482-acre data center campus with Google as anchor tenant, Goodhue County)",
+      "year": "2025-2026",
+      "cwa_section": "Not a CWA action — Minnesota Environmental Policy Act (MEPA) environmental-review adequacy challenge (Alternative Urban Areawide Review) plus a Minnesota Government Data Practices Act records claim",
+      "violation_summary": "The Minnesota Center for Environmental Advocacy sued the City of Pine Island and Ryan Companies in Goodhue County District Court (No. 25-CV-25-2298), arguing the city's Alternative Urban Areawide Review (AUAR) for the up-to-2,700-MW Project Skyway data center campus was legally inadequate because it failed to analyze how a water-use spike — developer filings put daily use at up to 152,000 gallons at buildout, while MCEA cites figures implying up to 55.7 million gallons annually (roughly 50% of the city's total current water use) — would affect groundwater, local aquifers, or nearby private wells, and used non-binding mitigation language instead of enforceable commitments. On May 22, 2026, the court granted a temporary restraining order blocking Ryan Companies from any construction or pre-construction activity, finding the City had not complied with the MGDPA in responding to MCEA's records requests.",
+      "outcome": "PENDING — TRO in effect as of the order date; litigation on the merits of the environmental review continues. Construction, originally slated to start July 2026, is delayed with the developer's own worst-case estimate slipping to 2027.",
+      "takeaway": "The clearest example yet of a state environmental-review statute (not the CWA) being used to force water-impact analysis before a data center campus breaks ground — plaintiffs specifically fault the environmental study for omitting groundwater/aquifer/private-well effects of a hyperscale campus's water demand, a fact pattern directly analogous to the CWA/SDWA gaps this tracker already watches in Georgia and Texas.",
+      "sources": [
+        {
+          "title": "Court grants restraining order to halt Project Skyway progress in Pine Island (Post Bulletin)",
+          "url": "https://www.postbulletin.com/news/local/court-grants-restraining-order-to-halt-project-skyway-progress-in-pine-island",
+          "type": "news"
+        },
+        {
+          "title": "Lawsuit challenges Pine Island's scrutiny of data center (MPR News)",
+          "url": "https://www.mprnews.org/story/2025/10/19/lawsuit-challenges-pine-islands-scrutiny-of-data-center",
+          "type": "news"
+        },
+        {
+          "title": "Order Granting Motion for Temporary Restraining Order, Goodhue County District Court No. 25-CV-25-2298 (2026-05-22)",
+          "url": "https://legalectric.org/f/2026/05/MCRO_25-CV-25-2298_Order-Granting-Motion_2026-05-26143544.pdf",
+          "type": "court ruling"
+        }
+      ],
+      "case_type": "groundwater",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "No CWA instrument — state MEPA/AUAR review challenge + MGDPA records claim",
+      "authorities": [
+        "sdwa-source-water-protection",
+        "cwa-402-maui-groundwater"
+      ],
+      "cwa_pathway": "If the campus's water draw is later shown to reach connected surface waters via shallow aquifer discharge, Maui's 'functional equivalent' theory could convert this into a federal CWA groundwater case; absent that, SDWA source-water-protection mapping is the likelier federal hook.",
+      "analogous_cases": [
+        "CorpusChristi-SintonTX-EvangelineAquifer-wells-2026",
+        "Meta-NewtonCountyGA-well-failures-2018-2025",
+        "Sailfish-HoodCountyTX-ComancheCircle-aquifer-moratorium-2025-2026"
+      ],
+      "display_section": "potential"
+    },
+    {
+      "case_id": "Chemours-MultiState-PFAS-TSCA-CWA-RCRA-2026",
+      "category": "industrial",
+      "respondent": "The Chemours Company (Chambers Works, Parlin NJ; Fayetteville Works, NC; Washington Works, WV)",
+      "year": "2026",
+      "cwa_section": "TSCA §5(e) consent-order recordkeeping / premanufacture-notice requirements, plus CWA §402/§301 NPDES and RCRA claims in the same consent decree",
+      "violation_summary": "EPA, DOJ, and West Virginia allege Chemours released PFAS (including GenX/HFPO-DA) into the Cape Fear River (NC), Delaware River (NJ), and Ohio River (WV) in violation of NPDES permits, and separately violated TSCA by omitting required information from a premanufacture notice, violating TSCA §5(e) order recordkeeping provisions, and unlawfully manufacturing/processing PFAS outside an enclosed process — proposed consent decree filed June 24, 2026 in the U.S. District Court for the Southern District of West Virginia, subject to a 30-day public comment period.",
+      "outcome": "Proposed consent decree: $22.5M civil penalty (paid over three annual installments, 2026-2028), over $337M in injunctive relief (~$280M for alternative drinking water, ~$60M for WV facility compliance), and a 15-year, $90M government-supervised PFAS mitigation program requiring 99% GenX release-control efficiency at each facility; pending court approval.",
+      "takeaway": "Shows a chemical manufacturer facing simultaneous CWA, TSCA, and RCRA liability for the same PFAS releases — the same fluorochemical/PFAS-in-cooling-and-industrial-fluid supply chain data centers increasingly draw on — and the TSCA reporting-failure theory (undisclosed manufacturing data, evading enclosed-process rules) is directly transferable to any data-center-adjacent chemical supplier.",
+      "sources": [
+        {
+          "title": "EPA Obtains Over $450 Million In Penalties and Relief in Agreement with Chemours to Settle Claims Over PFAS Pollution in Three States",
+          "url": "https://www.epa.gov/newsreleases/epa-obtains-over-450-million-penalties-and-relief-agreement-chemours-settle-claims",
+          "type": "agency press release"
+        },
+        {
+          "title": "Chemours Agrees to $450M Landmark Settlement Agreement for Releases of PFAS ‘Forever Chemicals’ in West Virginia, North Carolina, and New Jersey",
+          "url": "https://www.justice.gov/opa/pr/chemours-agrees-450m-landmark-settlement-agreement-releases-pfas-forever-chemicals-west",
+          "type": "DOJ press release"
+        },
+        {
+          "title": "Chemours to pay $450 million in first federal settlement over PFAS 'forever chemicals'",
+          "url": "https://www.cbsnews.com/news/chemours-forever-chemicals-pfas-450-million/",
+          "type": "news"
+        }
+      ],
+      "case_type": "spills-contamination",
+      "cwa_applied": "applied",
+      "cwa_instrument": "TSCA §5(e)/PMN violations + CWA NPDES + RCRA — joint consent decree, $450M total",
+      "authorities": [
+        "tsca-8e-substantial-risk",
+        "cwa-402-npdes",
+        "rcra-7002-7003-endangerment"
+      ]
+    },
+    {
+      "case_id": "Westchester-JointWaterWorks-NY-SDWA-filtration-2024",
+      "category": "industrial",
+      "respondent": "Westchester Joint Water Works (WJWW); Town/Village of Harrison, NY; Village of Mamaroneck, NY; Town of Mamaroneck, NY",
+      "year": "2019-2024",
+      "cwa_section": "SDWA Stage 2 Disinfectants and Disinfection Byproducts Rule (42 U.S.C. §300g) plus violation of a prior EPA administrative order requiring filtration",
+      "violation_summary": "WJWW's Rye Lake surface-water source supplied drinking water exceeding the legal limit for haloacetic acids (HAA5) in 2019, and WJWW then violated an EPA administrative order (and a related state court order) requiring construction of a filtration plant by set deadlines; the U.S., New York, EPA, and DOJ sued WJWW and the three municipalities in the Southern District of New York.",
+      "outcome": "June 24, 2024 consent decree: $600,000 civil penalty; WJWW must design, build, and operate a filtration plant (~$138M cost) for the Rye Lake source by July 1, 2029, plus interim public-notice/monitoring measures and a ~$900,000 supplemental environmental project modifying a detention basin and managing invasive species in the Kensico Reservoir watershed.",
+      "takeaway": "Demonstrates how long-deferred SDWA filtration/treatment obligations at a public water system escalate into nine-figure capital consent-decree liability — directly relevant where data-center-driven demand growth strains a regional water utility's aging treatment infrastructure and delays compliance investment, the same supply-capacity fact pattern already tracked at Bessemer, AL and Richland Parish, LA.",
+      "sources": [
+        {
+          "title": "Westchester Joint Water Works Safe Drinking Water Act Consent Decree, Westchester County, New York",
+          "url": "https://www.epa.gov/enforcement/westchester-joint-water-works-safe-drinking-water-act-consent-decree-westchester-county",
+          "type": "agency case page"
+        },
+        {
+          "title": "Drinking Water Violations See New York Company Hit With Huge Penalty",
+          "url": "https://www.newsweek.com/drinking-water-violation-new-york-company-fined-wjww-1916994",
+          "type": "news"
+        },
+        {
+          "title": "Westchester Joint Water Works Settlement Will Require Construction of $138M Filtration Plant",
+          "url": "https://www.asdwa.org/2024/06/26/westchester-joint-water-works-settlement-will-require-construction-of-138m-filtration-plant/",
+          "type": "association summary"
+        }
+      ],
+      "case_type": "water-supply",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "SDWA Part B consent decree — public water system filtration/treatment, $600K penalty",
+      "authorities": [
+        "sdwa-pws-compliance"
+      ],
+      "cwa_pathway": "A regional water utility whose treatment infrastructure lags fast-growing (including data-center-driven) demand risks the same SDWA filtration/treatment-technique violations, escalating from administrative order to a multi-hundred-million-dollar federal consent decree.",
+      "analogous_cases": [
+        "US-v-Alisal-Water-Corp-2005",
+        "Bessemer-AL-Hyperscale-WaterSupply-2025",
+        "Meta-RichlandParish-LA-WaterSupply-2025"
+      ]
+    },
+    {
+      "case_id": "CJTGroup-Georgia-PWS-disinfectant-emergency-2024",
+      "category": "industrial",
+      "respondent": "CJT Group LLC (owner/operator of six community water systems serving manufactured-home communities in Georgia)",
+      "year": "2024",
+      "cwa_section": "SDWA §1431 / 42 U.S.C. §300i emergency order authority",
+      "violation_summary": "EPA issued an emergency administrative order in August 2024 against CJT Group LLC for six Georgia community water systems (serving roughly 500 residents) after finding chronic inadequacy of chlorine disinfectant residuals in the distributed drinking water — an acute health-based SDWA violation.",
+      "outcome": "Order required CJT Group to issue customer public notice, fix maintenance deficiencies, perform daily disinfectant-residual monitoring, and provide alternative water to customers any time residual disinfectant or system pressure drops below required levels.",
+      "takeaway": "A small, thinly-capitalized private water-system operator is exactly the ownership profile increasingly asked to absorb new industrial and data-center-adjacent hookup demand in fast-growing exurban Georgia — this order shows how quickly a routine disinfection-residual lapse becomes a federal emergency action.",
+      "sources": [
+        {
+          "title": "National Enforcement and Compliance Initiative: Increasing Compliance with Drinking Water Standards",
+          "url": "https://www.epa.gov/enforcement/national-enforcement-and-compliance-initiative-increasing-compliance-drinking-water-0",
+          "type": "agency initiative summary"
+        }
+      ],
+      "case_type": "water-supply",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "SDWA §1431 emergency administrative order",
+      "authorities": [
+        "sdwa-1431-emergency",
+        "sdwa-pws-compliance"
+      ],
+      "cwa_pathway": "Georgia's exurban data-center corridor (Fayette, Newton, Coweta, Morgan counties, all already in this dataset) is served by a patchwork of small private/municipal water systems; the same §1431 emergency-order mechanism used here reaches any system whose capacity or maintenance is compromised by rapid nearby industrial growth.",
+      "analogous_cases": [
+        "Flint-MI-SDWA-1431-2016",
+        "US-v-Alisal-Water-Corp-2005",
+        "QTS-Fayette-GA-unbilled-water-2026"
       ]
     }
   ]

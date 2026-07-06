@@ -35,16 +35,26 @@
     color: #08519c !important;
 }
 
-/* --- Water aesthetic: page surface + pipe/droplet texture + wave underline --- */
-/* 200×200 tile: two pipe segments (L-shape top-left, T-junction bottom-right)
-   with circular fittings + four teardrop droplets. All at ~6-7% opacity so
-   the infrastructure motif reads as texture, not illustration (DESIGN.md §1). */
+/* --- Water aesthetic: page surface + wave/ripple texture + wave underline --- */
+/* Three layers, back to front: (1) a soft radial highlight top-center, like
+   light on a water surface; (2) a top-to-bottom depth wash from pale surface
+   blue to a deeper aqua; (3) a 240x120 tile of three staggered ripple lines
+   + scattered bubbles at ~6-8% opacity, replacing the old pipe/fitting
+   schematic with a texture that reads as open water rather than plumbing.
+   The ripple period (40px) evenly divides both tile dimensions so it tiles
+   seamlessly in both axes. Kept in sync with the `body` rule in
+   build_site.py's CSS block — the static site has no .stApp wrapper, so it
+   carries its own copy of the same three layers (DESIGN.md §1). */
 [data-testid="stAppViewContainer"] > .main,
 .stApp {
-    background-color: #f5f9fc;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g stroke='%2308519c' fill='none' stroke-opacity='0.065' stroke-linecap='round'><path d='M8 50H55V90' stroke-width='2.8'/><path d='M115 135H185 M150 105V135' stroke-width='2.8'/></g><g fill='%2308519c' fill-opacity='0.075'><circle cx='8' cy='50' r='4'/><circle cx='55' cy='90' r='4'/><circle cx='115' cy='135' r='4'/><circle cx='185' cy='135' r='4'/><circle cx='150' cy='105' r='4'/><ellipse cx='88' cy='22' rx='2' ry='3'/><ellipse cx='178' cy='68' rx='1.6' ry='2.4'/><ellipse cx='28' cy='155' rx='2.2' ry='3.3'/><ellipse cx='108' cy='188' rx='1.5' ry='2.2'/></g></svg>");
-    background-repeat: repeat;
-    background-attachment: fixed;
+    background-color: #eaf4fb;
+    background-image:
+      radial-gradient(120% 60% at 50% 0%, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0) 65%),
+      linear-gradient(180deg, #f2f9fd 0%, #e6f2fa 45%, #d8ebf6 100%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 120'><g fill='none' stroke-linecap='round'><path d='M0 20 Q 10 15,20 20 T 40 20 T 60 20 T 80 20 T 100 20 T 120 20 T 140 20 T 160 20 T 180 20 T 200 20 T 220 20 T 240 20' stroke='%2308519c' stroke-opacity='0.07' stroke-width='1.6'/><path d='M-20 60 Q -10 53,0 60 T 20 60 T 40 60 T 60 60 T 80 60 T 100 60 T 120 60 T 140 60 T 160 60 T 180 60 T 200 60 T 220 60 T 240 60 T 260 60' stroke='%233182bd' stroke-opacity='0.08' stroke-width='2'/><path d='M0 100 Q 10 93,20 100 T 40 100 T 60 100 T 80 100 T 100 100 T 120 100 T 140 100 T 160 100 T 180 100 T 200 100 T 220 100 T 240 100' stroke='%2308519c' stroke-opacity='0.06' stroke-width='1.4'/></g><g fill='%233182bd' fill-opacity='0.06'><circle cx='34' cy='42' r='2'/><circle cx='142' cy='12' r='1.6'/><circle cx='202' cy='84' r='2.4'/><circle cx='72' cy='104' r='1.8'/><circle cx='182' cy='50' r='1.4'/><circle cx='10' cy='90' r='1.5'/></g></svg>");
+    background-repeat: no-repeat, no-repeat, repeat;
+    background-position: center top, center top, left top;
+    background-attachment: fixed, fixed, fixed;
 }
 /* Wave underline beneath h1 — double-amplitude sinusoid for more presence. */
 .stApp h1 {
@@ -479,6 +489,56 @@
     color: #08519c;
 }
 /* Water-authorities toolkit (statute-grouped reading cards) */
+/* Jump-nav: one pill per statute above the accordion, so a specific act is
+   one click away instead of a scroll past every earlier one (2026-07-07). */
+.statute-jumpnav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0.7rem 0 1rem;
+}
+.statute-jump {
+    color: #fff;
+    border-radius: 999px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+}
+.statute-jump:hover {
+    filter: brightness(0.92);
+}
+.statute-jump-count {
+    font-weight: 400;
+    opacity: 0.85;
+    margin-left: 0.2rem;
+}
+/* Each statute is a collapsed-by-default accordion; the jump-nav pills open
+   the matching one via onclick before the browser scrolls to its anchor. */
+.statute-group {
+    margin: 0 0 0.5rem;
+}
+.statute-group > summary.statute-head {
+    cursor: pointer;
+    list-style: none;
+}
+.statute-group > summary.statute-head::marker,
+.statute-group > summary.statute-head::-webkit-details-marker {
+    display: none;
+}
+.statute-group > summary.statute-head::before {
+    content: "▸";
+    display: inline-block;
+    color: #4b5563;
+    font-size: 0.85rem;
+    transition: transform 0.15s ease;
+}
+.statute-group[open] > summary.statute-head::before {
+    transform: rotate(90deg);
+}
 .statute-head {
     display: flex;
     align-items: center;
@@ -486,6 +546,12 @@
     font-size: 1.05rem;
     color: #1a1a2e;
     margin: 1.2rem 0 0.1rem;
+    min-height: 44px;
+}
+.statute-count {
+    color: #4b5563;
+    font-weight: 400;
+    font-size: 0.9rem;
 }
 .statute-meta {
     font-size: 0.85rem;

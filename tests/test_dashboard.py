@@ -881,7 +881,7 @@ class TestCWAInvestigations:
             assert 'class="cwa-type-pill"' in html_str, c["case_id"]
             assert 'class="cwa-status-pill"' in html_str, c["case_id"]
             if c["cwa_applied"] in ("pending", "not-applied"):
-                assert "How the CWA could apply" in html_str, c["case_id"]
+                assert "How statutes could apply" in html_str, c["case_id"]
                 first_analog = c["analogous_cases"][0]
                 assert f'href="#cwa-{first_analog}"' in html_str, c["case_id"]
 
@@ -1087,6 +1087,42 @@ class TestCWAInvestigations:
         stats = _cwa_datacenter_insights([{"category": "precedent"}])
         assert stats["total"] == 0
         assert stats["contractor_permittee"] == 0
+
+    def test_statute_breadth_insight(self):
+        # 2026-07-07: every insight bullet was CWA-only even though the
+        # record now covers SDWA/TSCA/RCRA/RHA — this is the fix, scanning
+        # the whole datacenter+adjacent record (not just historical).
+        import dashboard as dash
+
+        rbi = dash._readings_by_id(dash.load_water_authorities())
+        breadth = dash._cwa_statute_breadth_insight(self._cases(), rbi)
+        for key in ("total", "sdwa", "no_cwa"):
+            assert key in breadth, f"missing breadth key {key}"
+        expected_total = sum(
+            1 for c in self._cases() if c["category"] in ("datacenter", "adjacent")
+        )
+        assert breadth["total"] == expected_total
+        assert 0 <= breadth["sdwa"] <= breadth["total"]
+        assert 0 <= breadth["no_cwa"] <= breadth["total"]
+        # Real, non-trivial pattern in the current dataset: SDWA is a common
+        # hook and plenty of datacenter/adjacent fights have no CWA angle.
+        assert breadth["sdwa"] >= 10
+        assert breadth["no_cwa"] >= 10
+        # Includes potential/pending cases, not just historical — the whole
+        # point is that many SDWA-shaped fights (e.g. Meta-MorganCo) sit in
+        # display_section "potential", which the older insight function skips.
+        assert any(
+            c["case_id"] == "Meta-MorganCo-GA-investigation-2026"
+            for c in self._cases()
+            if c.get("display_section") == "potential"
+        )
+
+    def test_statute_breadth_insight_empty(self):
+        import dashboard as dash
+
+        rbi = dash._readings_by_id(dash.load_water_authorities())
+        breadth = dash._cwa_statute_breadth_insight([{"category": "precedent"}], rbi)
+        assert breadth == {"total": 0, "sdwa": 0, "no_cwa": 0}
 
 
 # --- Tests for Andy Masley reality-check comparisons ---
@@ -1350,6 +1386,30 @@ class TestWaterAuthoritiesSchema:
             assert "How it could apply to a data center" in out
             # Example-case links resolve to in-page case anchors.
             assert f'href="#cwa-{r["example_case_ids"][0]}"' in out
+
+    def test_authorities_html_jumpnav_and_accordion(self):
+        # 2026-07-07: reaching a specific act (e.g. RHA, listed last) used to
+        # mean scrolling past every earlier statute's reading cards. Each
+        # statute is now a collapsed-by-default accordion with a jump-nav
+        # pill above it that opens the target before the browser scrolls.
+        import dashboard as dash
+
+        payload = self._payload()
+        ids = {c["case_id"] for c in self._cases()}
+        out = dash._build_authorities_html(payload, ids)
+        statutes = sorted(
+            {r["statute"] for r in payload["readings"]},
+            key=lambda s: dash.WATER_STATUTE_ORDER.index(s),
+        )
+        assert out.count('class="statute-group"') == len(statutes)
+        for s in statutes:
+            # Jump pill targets the group's anchor and opens it in one click.
+            assert f'href="#statute-{s}"' in out
+            assert f"getElementById('statute-{s}')" in out
+            # Collapsed by default: no `open` attribute on the <details>.
+            assert f'<details class="statute-group" id="statute-{s}">' in out
+        # Reading-card count is untouched by the new wrapper.
+        assert out.count('id="reading-') == len(payload["readings"])
 
     def test_case_card_gains_statute_pills_and_hooks(self):
         import dashboard as dash

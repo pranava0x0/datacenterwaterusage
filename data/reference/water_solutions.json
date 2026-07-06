@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-06-24",
+  "last_updated": "2026-07-06",
   "description": "Solutions to data center water challenges, organized by actor type. Drawn from enacted legislation, utility programs, enforcement outcomes, and industry practice documented across the tracker's datasets.",
   "categories": [
     {
@@ -133,6 +133,16 @@
           "source_url": "https://www.loudounwater.org/about/comprehensive-annual-financial-reports",
           "cross_ref_tab": "data",
           "cross_ref_note": "Loudoun Water and Fairfax Water data in Sources tab"
+        },
+        {
+          "id": "aws-melbourne-recycled-water-connection",
+          "title": "AWS / Greater Western Water Recycled-Water Connection (Melbourne)",
+          "status": "pilot",
+          "actor_type": "utility",
+          "actor": "Greater Western Water (Victoria, Australia) / Amazon Web Services",
+          "description": "Greater Western Water signed an agreement to supply AWS's planned Melbourne-area data center with recycled water from its Melton Recycled Water Plant at Mt Cottrell — the first such connection for a data center in the state of Victoria, announced mid-June 2026.",
+          "example": "First-of-its-kind government-utility-brokered recycled-water supply contract specifically for a data center in Victoria, Australia, intended to remove cooling-tower demand from the potable supply for the under-development facility.",
+          "source_url": "https://www.gww.com.au/about/news/melton-plant-leads-way-first-recycled-water-connection-victorian-data-centre"
         }
       ]
     },
@@ -212,6 +222,16 @@
           "source_url": null,
           "cross_ref_tab": null,
           "cross_ref_note": null
+        },
+        {
+          "id": "nvidia-vera-rubin-dsx-dry-cooling",
+          "title": "Nvidia Vera Rubin DSX Reference Design (Near-Zero Water Cooling)",
+          "status": "pilot",
+          "actor_type": "industry",
+          "actor": "Nvidia, with Motivair (Schneider Electric's advanced cooling division)",
+          "description": "Nvidia unveiled the Vera Rubin DSX data center reference design at London Climate Week (June 2026): a fully liquid-cooled architecture using a 75% water / 25% propylene glycol coolant circulated in a closed loop at up to 45°C, paired with outdoor dry coolers that reject heat to ambient air in favorable climates, eliminating on-site water consumption for cooling.",
+          "example": "Nvidia estimates the design cuts water use from the ~2.6 million gallons per MW/year typical of cooling-tower systems to near zero, saving a 50 MW hyperscale facility over $4M/year in combined cooling energy and water costs. It is a reference design for the upcoming Rubin GPU platform; no named customer deployment has been announced yet.",
+          "source_url": "https://blogs.nvidia.com/blog/liquid-cooling-ai-factories/"
         }
       ]
     }

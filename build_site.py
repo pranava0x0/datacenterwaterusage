@@ -302,13 +302,25 @@ def build_cwa_tab() -> str:
     potential = [c for c in cases if c.get("display_section") == "potential"]
     stats = dash._cwa_datacenter_insights(historical)
     total = stats["total"]
+    breadth = dash._cwa_statute_breadth_insight(cases, readings_by_id)
     last_updated = payload.get("last_updated") or "unknown"
 
     insights = ""
     if total:
+        breadth_li = ""
+        if breadth["total"]:
+            breadth_li = f"""
+    <li><strong>Look beyond the CWA.</strong> Of {breadth['total']} data-center and adjacent
+      water fights in this record, {breadth['sdwa']} carry an SDWA reading and {breadth['no_cwa']}
+      have no CWA angle at all — including the Amazon Boardman settlement above, which resolved
+      under state tort law and SDWA/RCRA, not the Clean Water Act. Aquifer depletion, well
+      failures, and public-water-system strain are consistently an SDWA story, not a CWA one.</li>"""
+        # Collapsed by default (2026-07-07): this was the largest always-visible
+        # block between the tab title and the Part 1-4 sub-tabs.
         insights = f"""
-<div class="insights">
-  <h4>What this record tells data centers</h4>
+<details class="lazy">
+  <summary>What this record tells data centers</summary>
+  <div class="insights">
   <ul>
     <li><strong>The permittee shield.</strong> {stats['contractor_permittee']} of {total}
       resolved data-center enforcement cases name a construction contractor or subcontractor —
@@ -325,9 +337,10 @@ def build_cwa_tab() -> str:
       blowdown goes to the municipal sewer, so the operational CWA exposure rides on the
       <em>receiving</em> treatment plant's NPDES permit — the very permits this project tracks
       via EPA ECHO. Watch the POTW's compliance status, not the data center's near-empty
-      stormwater permit.</li>
+      stormwater permit.</li>{breadth_li}
   </ul>
-</div>"""
+  </div>
+</details>"""
 
     theories = dash._build_cwa_theories_html(dash.CWA_APPLICATION_THEORIES)
     explainer = md(dash._cwa_statute_explainer_md())
@@ -1042,9 +1055,17 @@ html,body{margin:0;padding:0}
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   color:var(--ink);line-height:1.55;
-  background-color:#f5f9fc;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g stroke='%2308519c' fill='none' stroke-opacity='0.065' stroke-linecap='round'><path d='M8 50H55V90' stroke-width='2.8'/><path d='M115 135H185 M150 105V135' stroke-width='2.8'/></g><g fill='%2308519c' fill-opacity='0.075'><circle cx='8' cy='50' r='4'/><circle cx='55' cy='90' r='4'/><circle cx='115' cy='135' r='4'/><circle cx='185' cy='135' r='4'/><circle cx='150' cy='105' r='4'/><ellipse cx='88' cy='22' rx='2' ry='3'/><ellipse cx='178' cy='68' rx='1.6' ry='2.4'/><ellipse cx='28' cy='155' rx='2.2' ry='3.3'/><ellipse cx='108' cy='188' rx='1.5' ry='2.2'/></g></svg>");
-  background-attachment:fixed;
+  /* Kept in sync with the .stApp rule in assets/components.css — see the
+     comment there for the layer breakdown (highlight + depth wash + ripple
+     tile). The static site has no .stApp wrapper, so it needs its own copy. */
+  background-color:#eaf4fb;
+  background-image:
+    radial-gradient(120% 60% at 50% 0%, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0) 65%),
+    linear-gradient(180deg, #f2f9fd 0%, #e6f2fa 45%, #d8ebf6 100%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 120'><g fill='none' stroke-linecap='round'><path d='M0 20 Q 10 15,20 20 T 40 20 T 60 20 T 80 20 T 100 20 T 120 20 T 140 20 T 160 20 T 180 20 T 200 20 T 220 20 T 240 20' stroke='%2308519c' stroke-opacity='0.07' stroke-width='1.6'/><path d='M-20 60 Q -10 53,0 60 T 20 60 T 40 60 T 60 60 T 80 60 T 100 60 T 120 60 T 140 60 T 160 60 T 180 60 T 200 60 T 220 60 T 240 60 T 260 60' stroke='%233182bd' stroke-opacity='0.08' stroke-width='2'/><path d='M0 100 Q 10 93,20 100 T 40 100 T 60 100 T 80 100 T 100 100 T 120 100 T 140 100 T 160 100 T 180 100 T 200 100 T 220 100 T 240 100' stroke='%2308519c' stroke-opacity='0.06' stroke-width='1.4'/></g><g fill='%233182bd' fill-opacity='0.06'><circle cx='34' cy='42' r='2'/><circle cx='142' cy='12' r='1.6'/><circle cx='202' cy='84' r='2.4'/><circle cx='72' cy='104' r='1.8'/><circle cx='182' cy='50' r='1.4'/><circle cx='10' cy='90' r='1.5'/></g></svg>");
+  background-repeat:no-repeat, no-repeat, repeat;
+  background-position:center top, center top, left top;
+  background-attachment:fixed, fixed, fixed;
 }
 .wrap{max-width:1040px;margin:0 auto;padding:1.25rem 1.25rem 4rem}
 h1{font-size:1.9rem;margin:0 0 .2rem;padding-bottom:.4rem;
@@ -1505,7 +1526,7 @@ def build_llms_txt() -> str:
             f"— {c.get('cwa_instrument', '')}. {c.get('takeaway', '')}"
         )
         if c.get("cwa_pathway"):
-            line += f" How the CWA could apply: {c['cwa_pathway']}"
+            line += f" How {statutes} could apply: {c['cwa_pathway']}"
         if src:
             line += f" Source: {src}"
         lines.append(line)

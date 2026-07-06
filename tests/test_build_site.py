@@ -205,14 +205,19 @@ class TestLegislationFilters:
 
 class TestCwaAccordion:
     def test_case_narrative_collapsed(self):
-        # Scroll-control: every case's violation/outcome/sources live in a
-        # collapsed <details>; takeaway and CWA pathway stay visible.
+        # Scroll-control (2026-07-06): every case's full narrative —
+        # violation, outcome, statute applicability + pathway, full citation,
+        # sources — lives in one collapsed <details>; only the takeaway stays
+        # visible by default, matching Part 4's conflict-site card density.
         html = _html()
         cases = dashboard.load_cwa_investigations().get("cases", [])
-        assert html.count("Details — full statute citation, sources") == len(cases)
-        # Pathway blocks remain OUTSIDE the details (visible by default).
+        assert (
+            html.count("Details — violation, outcome, statute applicability &amp; sources")
+            == len(cases)
+        )
+        # "How statutes could apply" appears once per pending/not-applied case.
         pending = [c for c in cases if c.get("cwa_applied") in ("pending", "not-applied")]
-        assert html.count("How the CWA could apply") == len(pending)
+        assert html.count("How statutes could apply") == len(pending)
 
 
 class TestLlmsTxt:

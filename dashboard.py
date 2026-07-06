@@ -2644,13 +2644,42 @@ def _cwa_datacenter_insights(cases: list[dict]) -> dict:
     }
 
 
-def render_cwa_datacenter_insights(cases: list[dict] | None = None):
+def _cwa_statute_breadth_insight(cases: list[dict], readings_by_id: dict) -> dict:
+    """How the *whole* datacenter+adjacent record spreads across statutes.
+
+    Unlike `_cwa_datacenter_insights` (historical enforcement only, datacenter
+    category only), this scans historical AND active/potential cases across
+    both datacenter and adjacent categories — the question here is which
+    statute the problem space maps to, not just already-resolved enforcement.
+    Added 2026-07-07 because every existing insight bullet was CWA-only, even
+    though the record now covers SDWA/TSCA/RCRA/RHA too. Pure + testable
+    without Streamlit.
+    """
+    scoped = [c for c in cases if c.get("category") in ("datacenter", "adjacent")]
+    total = len(scoped)
+    sdwa = sum(1 for c in scoped if "SDWA" in _case_statutes(c, readings_by_id))
+    no_cwa = sum(1 for c in scoped if "CWA" not in _case_statutes(c, readings_by_id))
+    return {"total": total, "sdwa": sdwa, "no_cwa": no_cwa}
+
+
+def render_cwa_datacenter_insights(
+    cases: list[dict] | None = None,
+    all_cases: list[dict] | None = None,
+    readings_by_id: dict | None = None,
+):
     """Headline 'what this record tells data centers' panel.
 
-    Pass ``cases`` to scope the computation (e.g., historical-only subset).
-    When omitted, loads the full dataset — kept for backward compatibility.
-    Computed live so counts move with the dataset; framed around the tracker's
-    mission: operational CWA exposure lands on the *receiving* WWTP permit.
+    Pass ``cases`` to scope the first three bullets (e.g., historical-only
+    subset). When omitted, loads the full dataset — kept for backward
+    compatibility. Pass ``all_cases`` + ``readings_by_id`` to add the
+    statute-breadth bullet, which deliberately scans the *whole* record
+    (historical + potential, datacenter + adjacent) rather than the possibly
+    narrower ``cases`` scope. Computed live so counts move with the dataset.
+
+    Collapsed by default (2026-07-07): this was the largest always-visible
+    block between the tab title and the Part 1-4 sub-tabs — an expander gets
+    a reader to the substantive tabs immediately, with the analysis one click
+    away rather than a scroll away.
     """
     if cases is None:
         payload = load_cwa_investigations()
@@ -2659,8 +2688,7 @@ def render_cwa_datacenter_insights(cases: list[dict] | None = None):
     total = stats["total"]
     if not total:
         return
-    with st.container(border=True):
-        st.markdown("#### What this record tells data centers")
+    with st.expander("What this record tells data centers", expanded=False):
         st.markdown(
             f"- **The permittee shield.** {stats['contractor_permittee']} of "
             f"{total} resolved data-center enforcement cases name a construction "
@@ -2689,6 +2717,19 @@ def render_cwa_datacenter_insights(cases: list[dict] | None = None):
             "EPA ECHO. Watch the POTW's compliance status, not the data "
             "center's near-empty stormwater permit."
         )
+        if all_cases is not None and readings_by_id is not None:
+            breadth = _cwa_statute_breadth_insight(all_cases, readings_by_id)
+            if breadth["total"]:
+                st.markdown(
+                    "- **Look beyond the CWA.** Of "
+                    f"{breadth['total']} data-center and adjacent water fights in "
+                    f"this record, {breadth['sdwa']} carry an SDWA reading and "
+                    f"{breadth['no_cwa']} have no CWA angle at all — including the "
+                    "Amazon Boardman settlement above, which resolved under state "
+                    "tort law and SDWA/RCRA, not the Clean Water Act. Aquifer "
+                    "depletion, well failures, and public-water-system strain are "
+                    "consistently an SDWA story, not a CWA one."
+                )
 
 
 def render_cwa_tracker():
@@ -2727,8 +2768,9 @@ def render_cwa_tracker():
     historical = [c for c in cases if c.get("display_section", "historical") == "historical"]
     potential = [c for c in cases if c.get("display_section") == "potential"]
 
-    # Headline synthesis — computed over historical enforcement cases only.
-    render_cwa_datacenter_insights(historical)
+    # Headline synthesis — first three bullets computed over historical
+    # enforcement only; the statute-breadth bullet scans the full record.
+    render_cwa_datacenter_insights(historical, all_cases=cases, readings_by_id=readings_by_id)
 
     # Forward-looking bridge from historical record to potential exposure.
     render_cwa_application_theories()
@@ -2764,7 +2806,9 @@ def render_cwa_tracker():
             "across the CWA, SDWA, TSCA, RCRA, and the Rivers & Harbors Act — each "
             "card explains what the authority historically covered, how it could "
             "apply to a data-center fact pattern, and which cases below show it in "
-            "use. Case and site cards link back here via the *statute applicability* rows."
+            "use. Case and site cards link back here via the *statute applicability* rows. "
+            "Jump straight to an act with the pills below instead of scrolling — each "
+            "statute is collapsed until you open it."
         )
         st.markdown(
             _build_authorities_html(authorities_payload, all_ids),
@@ -3069,17 +3113,36 @@ def _build_reading_card_html(
 
 
 def _build_authorities_html(payload: dict, case_ids: set[str] | None = None) -> str:
-    """The full water-law toolkit: reading cards grouped by statute."""
+    """The full water-law toolkit: reading cards grouped by statute.
+
+    Each statute is a collapsed-by-default <details> accordion (20 readings
+    across 5 statutes was a long scroll to reach e.g. RHA at the bottom), and
+    a jump-nav row of statute pills sits above them — clicking one scrolls
+    straight to that statute's summary AND opens it in one click via the
+    inline onclick, so reaching any single act never requires scrolling past
+    the others first (2026-07-07).
+    """
     esc = html.escape
     statutes_meta = payload.get("statutes", {})
     readings = payload.get("readings", [])
     order = {s: i for i, s in enumerate(WATER_STATUTE_ORDER)}
-    blocks = []
     seen = []
     for r in readings:
         if r["statute"] not in seen:
             seen.append(r["statute"])
     seen.sort(key=lambda s: order.get(s, 99))
+    counts = {s: sum(1 for r in readings if r["statute"] == s) for s in seen}
+
+    nav_links = "".join(
+        f'<a class="statute-jump" href="#statute-{esc(s)}" '
+        f'style="background:{WATER_STATUTE_COLORS.get(s, COLORS["secondary"])}" '
+        f"onclick=\"var d=document.getElementById('statute-{esc(s)}'); "
+        'if(d) d.open=true;">'
+        f"{esc(s)} <span class=\"statute-jump-count\">({counts[s]})</span></a>"
+        for s in seen
+    )
+    blocks = [f'<div class="statute-jumpnav">{nav_links}</div>']
+
     for statute in seen:
         meta = statutes_meta.get(statute, {})
         title = esc(meta.get("name", statute))
@@ -3091,16 +3154,20 @@ def _build_authorities_html(payload: dict, case_ids: set[str] | None = None) -> 
             if url
             else full
         )
-        blocks.append(
-            f'<h4 class="statute-head">{_statute_pill_html(statute)} '
-            f"{title}</h4>"
-            f'<p class="statute-meta">{full_html}'
-            f'{" · Administered by: " + agencies if agencies else ""}</p>'
-        )
-        blocks.extend(
+        cards = "".join(
             _build_reading_card_html(r, case_ids)
             for r in readings
             if r["statute"] == statute
+        )
+        blocks.append(
+            f'<details class="statute-group" id="statute-{esc(statute)}">'
+            f'<summary class="statute-head">{_statute_pill_html(statute)} '
+            f'{title} <span class="statute-count">'
+            f'({counts[statute]})</span></summary>'
+            f'<p class="statute-meta">{full_html}'
+            f'{" · Administered by: " + agencies if agencies else ""}</p>'
+            f"{cards}"
+            "</details>"
         )
     return "".join(blocks)
 
@@ -3274,26 +3341,21 @@ def _build_cwa_case_html(
         f'<div class="cwa-class-row">{"".join(class_bits)}</div>' if class_bits else ""
     )
 
-    # Visible by default: the takeaway (why this case matters here) and the
-    # CWA pathway. The longer narrative (full statute cite, violation,
-    # outcome, sources) lives in a collapsed <details> so 73 cards stay
-    # scannable, especially on mobile — the cwa_instrument pill row already
-    # summarizes the statute line.
-    # Reading order (user-tested 2026-07-02): what happened (violation), how
-    # it ended (outcome), why it matters here (relevance), then the statute-
-    # applicability note (hooks + pathway). Only the verbose statute citation
-    # and sources stay collapsed.
+    # Visible by default: only the head, classification pills, and the
+    # takeaway (the precomputed "why this matters here" sentence) — mirrors
+    # how the Part 4 conflict-site cards stay scannable at a glance. The full
+    # narrative (violation, outcome, statute applicability + pathway, full
+    # statute citation, sources) lives behind one <details> toggle so a page
+    # of 87+ cards doesn't read as a wall of always-open text (2026-07-06).
     sections = []
     detail_sections = []
-    if cwa_section:
-        detail_sections.append(f'<div class="cwa-section-line">{cwa_section}</div>')
     if violation:
-        sections.append(
+        detail_sections.append(
             '<div class="bill-section-label">Violation</div>'
             f'<p class="bill-sentiment">{violation}</p>'
         )
     if outcome:
-        sections.append(
+        detail_sections.append(
             '<div class="bill-section-label">Outcome</div>'
             f'<p class="bill-sentiment">{outcome}</p>'
         )
@@ -3302,12 +3364,15 @@ def _build_cwa_case_html(
             '<div class="bill-section-label">Relevance to data centers</div>'
             f'<p class="cwa-takeaway">{takeaway}</p>'
         )
+    hooks = ""
     if readings_by_id is not None:
         hooks = _case_hooks_html(case, readings_by_id)
-        if hooks:
-            sections.append(hooks)
-    # For cases where the CWA was NOT applied (or is only potential): how it
-    # could apply, with cross-links to the historic cases that show the path.
+    # For cases where the statute was NOT applied (or is only potential): how
+    # each mapped statute could apply, with cross-links to the historic cases
+    # that show the path. The hooks row (one link per authority) is folded
+    # into this section — right under the header — so "how statutes could
+    # apply" actually enumerates each one, instead of a single blended
+    # sentence with no per-statute breakdown.
     pathway = case.get("cwa_pathway", "")
     if pathway:
         analog_html = ""
@@ -3317,10 +3382,15 @@ def _build_cwa_case_html(
                 '<div class="cwa-analogs">Historic examples in this record: '
                 f'{_case_links_html(analogs, case_ids)}</div>'
             )
-        sections.append(
-            '<div class="bill-section-label">How the CWA could apply</div>'
+        detail_sections.append(
+            '<div class="bill-section-label">How statutes could apply</div>'
+            f'{hooks}'
             f'<div class="cwa-pathway">{esc(pathway)}{analog_html}</div>'
         )
+    elif hooks:
+        detail_sections.append(hooks)
+    if cwa_section:
+        detail_sections.append(f'<div class="cwa-section-line">{cwa_section}</div>')
     sources_block = _sources_html(sources)
     if sources_block:
         detail_sections.append(sources_block)
@@ -3333,7 +3403,7 @@ def _build_cwa_case_html(
         # deployed artifact is the static site.
         sections.append(
             '<details class="bill-card-details">'
-            '<summary>Details — full statute citation, sources</summary>'
+            '<summary>Details — violation, outcome, statute applicability &amp; sources</summary>'
             f'{"".join(detail_sections)}'
             '</details>'
         )
