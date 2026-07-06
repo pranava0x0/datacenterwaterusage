@@ -1,7 +1,70 @@
 {
-  "last_updated": "2026-07-02",
+  "last_updated": "2026-07-05",
   "description": "Curated headlines about data center water use, regulation, enforcement, and solutions — linked to the tracker's datasets where possible.",
   "items": [
+    {
+      "id": "florida-sb484-effective-2026-07",
+      "date": "2026-07",
+      "title": "Florida's Data Center Ratepayer and Reclaimed-Water Law Takes Effect",
+      "outlet": "Data Center Dynamics / Fla. Governor's Office",
+      "summary": "FL SB 484 — signed by Gov. DeSantis in May, bars utilities from passing data-center electricity costs onto residential ratepayers, requires 50+ MW users to pay full cost of service, and mandates reclaimed water for cooling at facilities using 100,000+ gallons/day where feasible — took effect July 1, 2026. Local governments keep zoning/denial authority, and the law tightens aquifer withdrawal permitting.",
+      "tags": [
+        "regulation",
+        "policy"
+      ],
+      "source_url": "https://www.datacenterdynamics.com/en/news/florida-enacts-data-center-law-covering-ratepayer-protections-water-use-and-local-zoning-powers/",
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "Full bill entry in Legislation tab: FL SB 484"
+    },
+    {
+      "id": "imperial-valley-iid-lawsuit-2026-06",
+      "date": "2026-06",
+      "title": "Data Center Developer Who Vowed to Skip the Colorado River Now Sues For It",
+      "outlet": "KPBS / Associated Press",
+      "summary": "Imperial Valley Computer Manufacturing, which spent months publicly pledging its planned Imperial County AI complex would not touch a drop of Colorado River water, is now suing the Imperial Irrigation District for 260 million gallons/year after IID rejected its water application and cities' negotiations broke down. The developer argues fallowing 160 leased acres of farmland offsets the ~750,000 gal/day cooling demand, and challenges IID's tiered pricing (industrial rates up to ~$1,100/acre-foot vs. ~$20/acre-foot for agricultural use) as an unlawful barrier.",
+      "tags": [
+        "enforcement",
+        "policy"
+      ],
+      "source_url": "https://www.kpbs.org/news/environment/2026/06/15/imperial-valley-data-center-developer-files-lawsuit-seeking-access-to-colorado-river-water",
+      "cross_ref_tab": "cwa",
+      "cross_ref_note": "Related to the Imperial County moratorium fight already tracked: Imperial County, CA Declares Emergency Data-Center Moratorium; Developer Sues"
+    },
+    {
+      "id": "fort-worth-cedar-creek-lake-2026-07",
+      "date": "2026-07",
+      "title": "Proposed Data Center Would Draw From Lake Supplying Most of Fort Worth's Drinking Water",
+      "outlet": "Fort Worth Report",
+      "summary": "Kansas-based Diode Ventures has proposed a Henderson County data center that could draw up to 5 million gallons/day from Cedar Creek Lake, the reservoir supplying most of Fort Worth's drinking water, as area residents are asked to conserve amid drought-driven moderate water shortages. The West Cedar Creek Municipal Utility District had already advanced a temporary suspension of new 'high-intensity water service commitments' through April 1, 2027; the project's site review remains in early stages.",
+      "tags": [
+        "policy",
+        "data"
+      ],
+      "source_url": "https://fortworthreport.org/2026/07/01/proposed-data-center-would-pull-from-lake-that-supplies-most-of-fort-worths-water/"
+    },
+    {
+      "id": "brookville-pa-moratorium-2026-06",
+      "date": "2026-06",
+      "title": "Jefferson County, PA Borough Passes 180-Day Data-Center Moratorium Over Water Supply",
+      "outlet": "Pennsylvania Capital-Star",
+      "summary": "Brookville Borough Council unanimously passed a 180-day moratorium on new data-center development and barred projects from drawing on borough water, after two prospective developments in nearby Pine Creek and Rose townships surfaced that could together use roughly 2.4 million gallons/day. The council says it isn't opposed to data centers in principle but wants rules in place — a December deadline — before any project proceeds. Adds to the wave of small-jurisdiction moratoriums enacted ahead of any state-level Pennsylvania framework.",
+      "tags": [
+        "regulation",
+        "policy"
+      ],
+      "source_url": "https://penncapital-star.com/energy-environment/borough-in-jefferson-county-passes-180-day-moratorium-on-data-center-development/"
+    },
+    {
+      "id": "missouri-legislature-stalls-2026-07",
+      "date": "2026-07",
+      "title": "Missouri Lawmakers Pass No Data-Center Water/Energy Rules; Local Moratoriums Keep Spreading",
+      "outlet": "KCUR",
+      "summary": "Missouri's 2026 session ended without advancing HB 3362 (the 'AI Infrastructure Grid Integrity and Water Resources Protection Act'), which would have required a DNR permit for any facility using more than 2 million gallons/day of fresh water and included a drought/grid-emergency kill switch. With no state rule in place, communities are increasingly acting on their own — in Festus, four city council members lost their seats after supporting a $6B data center, and Independence councilmembers were voted out after backing a data-center tax break.",
+      "tags": [
+        "policy"
+      ],
+      "source_url": "https://www.kcur.org/housing-development-section/2026-07-01/missouri-data-center-rules-water-energy-legislature"
+    },
     {
       "id": "texas-puc-water-survey-ignored-2026-06",
       "date": "2026-06",

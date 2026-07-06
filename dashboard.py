@@ -2740,13 +2740,25 @@ def render_cwa_tracker():
         st.markdown(_cwa_statute_explainer_md())
 
     all_ids = {c.get("case_id") for c in cases}
-
-    # ── SECTION 1: THE STATUTORY TOOLKIT ──────────────────────────────────
-    st.markdown("---")
+    conflicts_payload = load_dc_water_conflicts()
+    sites = conflicts_payload.get("sites", [])
     n_readings = len(authorities_payload.get("readings", []))
-    with st.expander(
-        f"Part 1 — The Federal Water-Law Toolkit ({n_readings} statutory readings)"
-    ):
+
+    # Four sub-tabs instead of stacked expanders: Part 2 (the historical
+    # record most users want) no longer sits behind Part 1's content in the
+    # scroll order — each part is one click away. Mirrors the static site's
+    # .subtab/.subtabpanel pair (build_site.py).
+    st.markdown("---")
+    tab_labels = [
+        f"Part 1 · Toolkit ({n_readings})",
+        f"Part 2 · Historical Record ({len(historical)})",
+        f"Part 3 · Active/Potential Exposure ({len(potential)})",
+    ]
+    if sites:
+        tab_labels.append(f"Part 4 · DC Water Conflicts ({len(sites)})")
+    part_tabs = st.tabs(tab_labels)
+
+    with part_tabs[0]:
         st.markdown(
             f"**{n_readings} statutory readings** "
             "across the CWA, SDWA, TSCA, RCRA, and the Rivers & Harbors Act — each "
@@ -2759,101 +2771,94 @@ def render_cwa_tracker():
             unsafe_allow_html=True,
         )
 
-    # ── SECTION 2: HISTORICAL ENFORCEMENT RECORD ──────────────────────────
-    st.markdown("---")
-    st.markdown("### Part 2 — Historical Enforcement Record")
-    st.markdown(
-        f"**{len(historical)} cases** — enforcement actions, penalties, settlements, "
-        "landmark court rulings, and standing rulemakings that have **actually "
-        "occurred**, under the CWA and the other federal water authorities above. "
-        "**Industrial cases are legal analogs** — they show the enforcement pattern "
-        "for operations similar to data centers, but are enforcement against *other* "
-        "industries, not data centers themselves. "
-        "Precedent rulings define the legal scope for future enforcement."
-    )
-
-    # Filter controls. Primary axis: project type (what kind of water issue);
-    # secondary: statute + case group (who it involves) + 2020+ toggle.
-    selected_statutes = st.multiselect(
-        "Filter by statute",
-        options=WATER_STATUTE_ORDER,
-        default=WATER_STATUTE_ORDER,
-        format_func=lambda k: f"{k} — "
-        + authorities_payload.get("statutes", {}).get(k, {}).get("name", k),
-        key="cwa_statute_filter",
-    )
-    selected_types = st.multiselect(
-        "Filter by project type",
-        options=list(CWA_CASE_TYPE_LABELS.keys()),
-        default=list(CWA_CASE_TYPE_LABELS.keys()),
-        format_func=lambda k: CWA_CASE_TYPE_LABELS.get(k, k.title()),
-        key="cwa_case_type_filter",
-    )
-    # Adjacent cases all moved to section 2 (potential), so only
-    # datacenter/industrial/precedent remain here.
-    hist_cats = sorted(
-        {c.get("category") for c in historical if c.get("category")},
-        key=lambda k: CWA_CATEGORY_ORDER.get(k, 9),
-    )
-    filter_cols = st.columns([3, 1])
-    with filter_cols[0]:
-        selected_categories = st.multiselect(
-            "Filter by case group",
-            options=hist_cats,
-            default=hist_cats,
-            format_func=lambda k: CWA_CATEGORY_LABELS.get(k, k.title()),
-            key="cwa_category_filter",
-        )
-    with filter_cols[1]:
-        recent_only = st.toggle(
-            "2020 onward only",
-            value=False,
-            key="cwa_recent_only",
-            help="Show only cases with an end year of 2020 or later.",
+    with part_tabs[1]:
+        st.markdown(
+            f"**{len(historical)} cases** — enforcement actions, penalties, settlements, "
+            "landmark court rulings, and standing rulemakings that have **actually "
+            "occurred**, under the CWA and the other federal water authorities above. "
+            "**Industrial cases are legal analogs** — they show the enforcement pattern "
+            "for operations similar to data centers, but are enforcement against *other* "
+            "industries, not data centers themselves. "
+            "Precedent rulings define the legal scope for future enforcement."
         )
 
-    filtered_hist = [
-        c
-        for c in historical
-        if c.get("category") in selected_categories
-        and c.get("case_type") in selected_types
-        and any(
-            s in selected_statutes for s in _case_statutes(c, readings_by_id)
+        # Filter controls. Primary axis: project type (what kind of water issue);
+        # secondary: statute + case group (who it involves) + 2020+ toggle.
+        selected_statutes = st.multiselect(
+            "Filter by statute",
+            options=WATER_STATUTE_ORDER,
+            default=WATER_STATUTE_ORDER,
+            format_func=lambda k: f"{k} — "
+            + authorities_payload.get("statutes", {}).get(k, {}).get("name", k),
+            key="cwa_statute_filter",
         )
-    ]
-    if recent_only:
+        selected_types = st.multiselect(
+            "Filter by project type",
+            options=list(CWA_CASE_TYPE_LABELS.keys()),
+            default=list(CWA_CASE_TYPE_LABELS.keys()),
+            format_func=lambda k: CWA_CASE_TYPE_LABELS.get(k, k.title()),
+            key="cwa_case_type_filter",
+        )
+        # Adjacent cases all moved to section 2 (potential), so only
+        # datacenter/industrial/precedent remain here.
+        hist_cats = sorted(
+            {c.get("category") for c in historical if c.get("category")},
+            key=lambda k: CWA_CATEGORY_ORDER.get(k, 9),
+        )
+        filter_cols = st.columns([3, 1])
+        with filter_cols[0]:
+            selected_categories = st.multiselect(
+                "Filter by case group",
+                options=hist_cats,
+                default=hist_cats,
+                format_func=lambda k: CWA_CATEGORY_LABELS.get(k, k.title()),
+                key="cwa_category_filter",
+            )
+        with filter_cols[1]:
+            recent_only = st.toggle(
+                "2020 onward only",
+                value=False,
+                key="cwa_recent_only",
+                help="Show only cases with an end year of 2020 or later.",
+            )
+
         filtered_hist = [
-            c for c in filtered_hist if _cwa_year_end(c.get("year", "")) >= 2020
+            c
+            for c in historical
+            if c.get("category") in selected_categories
+            and c.get("case_type") in selected_types
+            and any(
+                s in selected_statutes for s in _case_statutes(c, readings_by_id)
+            )
         ]
+        if recent_only:
+            filtered_hist = [
+                c for c in filtered_hist if _cwa_year_end(c.get("year", "")) >= 2020
+            ]
 
-    if filtered_hist:
-        st.markdown(
-            f"**Showing {len(filtered_hist)} of {len(historical)} historical cases** "
-            f"— {_cwa_summary(filtered_hist)}"
-        )
-        sorted_hist = sorted(
-            filtered_hist,
-            key=lambda c: (
-                CWA_CATEGORY_ORDER.get(c.get("category"), 9),
-                -_cwa_year_end(c.get("year", "")),
-            ),
-        )
-        st.markdown(
-            "".join(
-                _build_cwa_case_html(case, all_ids, readings_by_id)
-                for case in sorted_hist
-            ),
-            unsafe_allow_html=True,
-        )
-    else:
-        st.info("No cases match the current filter. Try widening the category or year selection.")
+        if filtered_hist:
+            st.markdown(
+                f"**Showing {len(filtered_hist)} of {len(historical)} historical cases** "
+                f"— {_cwa_summary(filtered_hist)}"
+            )
+            sorted_hist = sorted(
+                filtered_hist,
+                key=lambda c: (
+                    CWA_CATEGORY_ORDER.get(c.get("category"), 9),
+                    -_cwa_year_end(c.get("year", "")),
+                ),
+            )
+            st.markdown(
+                "".join(
+                    _build_cwa_case_html(case, all_ids, readings_by_id)
+                    for case in sorted_hist
+                ),
+                unsafe_allow_html=True,
+            )
+        else:
+            st.info("No cases match the current filter. Try widening the category or year selection.")
 
-    # ── SECTION 3: ACTIVE & POTENTIAL EXPOSURE ─────────────────────────────
-    st.markdown("---")
-    with st.expander(
-        f"Part 3 — Active & Potential CWA Exposure at Named Data Center "
-        f"Sites ({len(potential)})"
-    ):
+    with part_tabs[2]:
         st.markdown(
             f"**{len(potential)} named data center sites** where regulatory proceedings "
             "are active (pending permit applications, ongoing investigations, active "
@@ -2880,15 +2885,8 @@ def render_cwa_tracker():
             unsafe_allow_html=True,
         )
 
-    # ── SECTION 4: DC SITES WITH WATER CONFLICTS ──────────────────────────
-    conflicts_payload = load_dc_water_conflicts()
-    sites = conflicts_payload.get("sites", [])
     if sites:
-        st.markdown("---")
-        with st.expander(
-            f"Part 4 — Data-Center Sites with Reported Water Issues or "
-            f"Pushback ({len(sites)})"
-        ):
+        with part_tabs[3]:
             st.markdown(
                 f"**{len(sites)} named sites** with documented water problems or "
                 "community pushback — supply strain, dried wells, discharge "

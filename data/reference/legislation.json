@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-06-27",
-  "note": "State + federal data center water/energy legislation, plus selected regulatory actions and major local zoning decisions. Verified entries had their status confirmed against a primary source (state legislature page, Congress.gov / GovInfo, official sponsor press release) on the listed last_verified date; unverified entries should be re-checked before being relied upon. June 27, 2026 additions: IA HF 2690 (water + energy reporting and a separate data-center electric tariff; introduced) and CT SB 245 (would have repealed Connecticut's data-center tax incentives and added clean-energy/sustainability conditions; failed — died on the Senate calendar). Each bill is enriched with recent_news (up to 3 dated items with source URLs), public_sentiment (a paragraph naming supporters/opponents), general_principles (tagged policy concepts), and a procedural timeline. These fields are best-effort as of last_updated and should be re-verified before being cited. Scope expanded 2026-05-28 to include regulatory rulemakings (OH EPA OHD000001) and major local ordinances (Loudoun ZOAM) that function as de facto data-center policy.",
+  "last_updated": "2026-07-05",
+  "note": "State + federal data center water/energy legislation, plus selected regulatory actions and major local zoning decisions. Verified entries had their status confirmed against a primary source (state legislature page, Congress.gov / GovInfo, official sponsor press release) on the listed last_verified date; unverified entries should be re-checked before being relied upon. July 5, 2026 addition: FL SB 484 — enacted (signed May 7, 2026, effective July 1, 2026), ratepayer cost-allocation protections, a 100,000 gal/day reclaimed-water cooling requirement, and preserved local zoning authority; resolves the 'Florida hyperscale data-center regulatory framework' backlog candidate with a confirmed bill number. June 27, 2026 additions: IA HF 2690 (water + energy reporting and a separate data-center electric tariff; introduced) and CT SB 245 (would have repealed Connecticut's data-center tax incentives and added clean-energy/sustainability conditions; failed — died on the Senate calendar). Each bill is enriched with recent_news (up to 3 dated items with source URLs), public_sentiment (a paragraph naming supporters/opponents), general_principles (tagged policy concepts), and a procedural timeline. These fields are best-effort as of last_updated and should be re-verified before being cited. Scope expanded 2026-05-28 to include regulatory rulemakings (OH EPA OHD000001) and major local ordinances (Loudoun ZOAM) that function as de facto data-center policy.",
   "bills": [
     {
       "bill_id": "VA HB 496 / SB 553",
@@ -3420,6 +3420,72 @@
           "date": "2026-05-06",
           "milestone": "Died on the calendar",
           "detail": "2026 General Assembly adjourned sine die without a Senate floor vote on SB 245."
+        }
+      ]
+    },
+    {
+      "bill_id": "FL SB 484",
+      "jurisdiction": "Florida",
+      "level": "state",
+      "title": "Data center ratepayer protections, reclaimed-water cooling, and local authority",
+      "sponsor": "Sen. Jay Collins",
+      "summary": "Bars utilities from passing large-scale data-center electricity and infrastructure costs onto residential/small-business ratepayers and requires 50+ MW users to pay their full cost of service; requires data centers using at least 100,000 gallons/day to use reclaimed water for cooling when environmentally, economically, and technically feasible; requires public discussion of water/utility impacts before approval and preserves local governments' zoning/denial authority; tightens aquifer withdrawal permitting.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Signed by Gov. DeSantis May 7, 2026 at Florida Polytechnic University; passed Senate 37-0 and House 92-16 with a final 31-6 Senate concurrence vote. Effective July 1, 2026. Verified via flgov.com press release and flsenate.gov bill history.",
+      "source_url": "https://www.flsenate.gov/Session/Bill/2026/484/ByCategory",
+      "last_verified": "2026-07-05",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-05-07",
+          "title": "Governor Ron DeSantis Signs Law to Protect Floridians from Subsidizing Data Centers",
+          "source": "Executive Office of the Governor",
+          "url": "https://www.flgov.com/eog/news/press/2026/governor-ron-desantis-signs-law-protect-floridians-subsidizing-data-centers",
+          "takeaway": "Signing announcement frames the bill primarily as ratepayer protection, with reclaimed-water cooling and local zoning authority as companion provisions."
+        },
+        {
+          "date": "2026-05-08",
+          "title": "Florida enacts data center law covering ratepayer protections, water use, and local zoning powers",
+          "source": "Data Center Dynamics",
+          "url": "https://www.datacenterdynamics.com/en/news/florida-enacts-data-center-law-covering-ratepayer-protections-water-use-and-local-zoning-powers/",
+          "takeaway": "Trade-press summary confirms the 100,000 gal/day reclaimed-water threshold and that local governments retain approval authority over major developments."
+        }
+      ],
+      "public_sentiment": "Broad bipartisan support (37-0 Senate, 92-16 House) framed around protecting ratepayers from subsidizing Big Tech infrastructure; environmental and open-government advocates flagged during committee that the 'feasible' reclaimed-water standard leaves an implementation gap, since utilities and operators determine feasibility with limited independent review.",
+      "general_principles": [
+        {
+          "tag": "Cost allocation",
+          "note": "Prohibits shifting large-load electricity/infrastructure costs onto residential and small-business ratepayers; requires 50+ MW users to pay full cost of service."
+        },
+        {
+          "tag": "Conservation",
+          "note": "Requires reclaimed water for cooling at 100,000+ gal/day facilities where feasible, aimed at reducing potable/aquifer draw."
+        },
+        {
+          "tag": "Permit oversight",
+          "note": "Tightens aquifer withdrawal permitting and preserves local governments' zoning/denial authority over hyperscale projects."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-03-19",
+          "milestone": "Committee scrutiny",
+          "detail": "Coverage flagged the reclaimed-water 'feasibility' standard and NDA-adjacent transparency concerns during committee review."
+        },
+        {
+          "date": "2026-05-07",
+          "milestone": "Signed by Governor",
+          "detail": "Signed at Florida Polytechnic University after passing Senate 37-0 and House 92-16."
+        },
+        {
+          "date": "2026-07-01",
+          "milestone": "Effective date",
+          "detail": "Ratepayer, reclaimed-water, and permitting provisions take effect."
         }
       ]
     }
