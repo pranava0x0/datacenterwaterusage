@@ -2644,13 +2644,42 @@ def _cwa_datacenter_insights(cases: list[dict]) -> dict:
     }
 
 
-def render_cwa_datacenter_insights(cases: list[dict] | None = None):
+def _cwa_statute_breadth_insight(cases: list[dict], readings_by_id: dict) -> dict:
+    """How the *whole* datacenter+adjacent record spreads across statutes.
+
+    Unlike `_cwa_datacenter_insights` (historical enforcement only, datacenter
+    category only), this scans historical AND active/potential cases across
+    both datacenter and adjacent categories — the question here is which
+    statute the problem space maps to, not just already-resolved enforcement.
+    Added 2026-07-07 because every existing insight bullet was CWA-only, even
+    though the record now covers SDWA/TSCA/RCRA/RHA too. Pure + testable
+    without Streamlit.
+    """
+    scoped = [c for c in cases if c.get("category") in ("datacenter", "adjacent")]
+    total = len(scoped)
+    sdwa = sum(1 for c in scoped if "SDWA" in _case_statutes(c, readings_by_id))
+    no_cwa = sum(1 for c in scoped if "CWA" not in _case_statutes(c, readings_by_id))
+    return {"total": total, "sdwa": sdwa, "no_cwa": no_cwa}
+
+
+def render_cwa_datacenter_insights(
+    cases: list[dict] | None = None,
+    all_cases: list[dict] | None = None,
+    readings_by_id: dict | None = None,
+):
     """Headline 'what this record tells data centers' panel.
 
-    Pass ``cases`` to scope the computation (e.g., historical-only subset).
-    When omitted, loads the full dataset — kept for backward compatibility.
-    Computed live so counts move with the dataset; framed around the tracker's
-    mission: operational CWA exposure lands on the *receiving* WWTP permit.
+    Pass ``cases`` to scope the first three bullets (e.g., historical-only
+    subset). When omitted, loads the full dataset — kept for backward
+    compatibility. Pass ``all_cases`` + ``readings_by_id`` to add the
+    statute-breadth bullet, which deliberately scans the *whole* record
+    (historical + potential, datacenter + adjacent) rather than the possibly
+    narrower ``cases`` scope. Computed live so counts move with the dataset.
+
+    Collapsed by default (2026-07-07): this was the largest always-visible
+    block between the tab title and the Part 1-4 sub-tabs — an expander gets
+    a reader to the substantive tabs immediately, with the analysis one click
+    away rather than a scroll away.
     """
     if cases is None:
         payload = load_cwa_investigations()
@@ -2659,8 +2688,7 @@ def render_cwa_datacenter_insights(cases: list[dict] | None = None):
     total = stats["total"]
     if not total:
         return
-    with st.container(border=True):
-        st.markdown("#### What this record tells data centers")
+    with st.expander("What this record tells data centers", expanded=False):
         st.markdown(
             f"- **The permittee shield.** {stats['contractor_permittee']} of "
             f"{total} resolved data-center enforcement cases name a construction "
@@ -2689,6 +2717,19 @@ def render_cwa_datacenter_insights(cases: list[dict] | None = None):
             "EPA ECHO. Watch the POTW's compliance status, not the data "
             "center's near-empty stormwater permit."
         )
+        if all_cases is not None and readings_by_id is not None:
+            breadth = _cwa_statute_breadth_insight(all_cases, readings_by_id)
+            if breadth["total"]:
+                st.markdown(
+                    "- **Look beyond the CWA.** Of "
+                    f"{breadth['total']} data-center and adjacent water fights in "
+                    f"this record, {breadth['sdwa']} carry an SDWA reading and "
+                    f"{breadth['no_cwa']} have no CWA angle at all — including the "
+                    "Amazon Boardman settlement above, which resolved under state "
+                    "tort law and SDWA/RCRA, not the Clean Water Act. Aquifer "
+                    "depletion, well failures, and public-water-system strain are "
+                    "consistently an SDWA story, not a CWA one."
+                )
 
 
 def render_cwa_tracker():
@@ -2727,8 +2768,9 @@ def render_cwa_tracker():
     historical = [c for c in cases if c.get("display_section", "historical") == "historical"]
     potential = [c for c in cases if c.get("display_section") == "potential"]
 
-    # Headline synthesis — computed over historical enforcement cases only.
-    render_cwa_datacenter_insights(historical)
+    # Headline synthesis — first three bullets computed over historical
+    # enforcement only; the statute-breadth bullet scans the full record.
+    render_cwa_datacenter_insights(historical, all_cases=cases, readings_by_id=readings_by_id)
 
     # Forward-looking bridge from historical record to potential exposure.
     render_cwa_application_theories()

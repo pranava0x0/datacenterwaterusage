@@ -1088,6 +1088,42 @@ class TestCWAInvestigations:
         assert stats["total"] == 0
         assert stats["contractor_permittee"] == 0
 
+    def test_statute_breadth_insight(self):
+        # 2026-07-07: every insight bullet was CWA-only even though the
+        # record now covers SDWA/TSCA/RCRA/RHA — this is the fix, scanning
+        # the whole datacenter+adjacent record (not just historical).
+        import dashboard as dash
+
+        rbi = dash._readings_by_id(dash.load_water_authorities())
+        breadth = dash._cwa_statute_breadth_insight(self._cases(), rbi)
+        for key in ("total", "sdwa", "no_cwa"):
+            assert key in breadth, f"missing breadth key {key}"
+        expected_total = sum(
+            1 for c in self._cases() if c["category"] in ("datacenter", "adjacent")
+        )
+        assert breadth["total"] == expected_total
+        assert 0 <= breadth["sdwa"] <= breadth["total"]
+        assert 0 <= breadth["no_cwa"] <= breadth["total"]
+        # Real, non-trivial pattern in the current dataset: SDWA is a common
+        # hook and plenty of datacenter/adjacent fights have no CWA angle.
+        assert breadth["sdwa"] >= 10
+        assert breadth["no_cwa"] >= 10
+        # Includes potential/pending cases, not just historical — the whole
+        # point is that many SDWA-shaped fights (e.g. Meta-MorganCo) sit in
+        # display_section "potential", which the older insight function skips.
+        assert any(
+            c["case_id"] == "Meta-MorganCo-GA-investigation-2026"
+            for c in self._cases()
+            if c.get("display_section") == "potential"
+        )
+
+    def test_statute_breadth_insight_empty(self):
+        import dashboard as dash
+
+        rbi = dash._readings_by_id(dash.load_water_authorities())
+        breadth = dash._cwa_statute_breadth_insight([{"category": "precedent"}], rbi)
+        assert breadth == {"total": 0, "sdwa": 0, "no_cwa": 0}
+
 
 # --- Tests for Andy Masley reality-check comparisons ---
 

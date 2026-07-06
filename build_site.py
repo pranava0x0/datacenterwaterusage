@@ -302,13 +302,25 @@ def build_cwa_tab() -> str:
     potential = [c for c in cases if c.get("display_section") == "potential"]
     stats = dash._cwa_datacenter_insights(historical)
     total = stats["total"]
+    breadth = dash._cwa_statute_breadth_insight(cases, readings_by_id)
     last_updated = payload.get("last_updated") or "unknown"
 
     insights = ""
     if total:
+        breadth_li = ""
+        if breadth["total"]:
+            breadth_li = f"""
+    <li><strong>Look beyond the CWA.</strong> Of {breadth['total']} data-center and adjacent
+      water fights in this record, {breadth['sdwa']} carry an SDWA reading and {breadth['no_cwa']}
+      have no CWA angle at all — including the Amazon Boardman settlement above, which resolved
+      under state tort law and SDWA/RCRA, not the Clean Water Act. Aquifer depletion, well
+      failures, and public-water-system strain are consistently an SDWA story, not a CWA one.</li>"""
+        # Collapsed by default (2026-07-07): this was the largest always-visible
+        # block between the tab title and the Part 1-4 sub-tabs.
         insights = f"""
-<div class="insights">
-  <h4>What this record tells data centers</h4>
+<details class="lazy">
+  <summary>What this record tells data centers</summary>
+  <div class="insights">
   <ul>
     <li><strong>The permittee shield.</strong> {stats['contractor_permittee']} of {total}
       resolved data-center enforcement cases name a construction contractor or subcontractor —
@@ -325,9 +337,10 @@ def build_cwa_tab() -> str:
       blowdown goes to the municipal sewer, so the operational CWA exposure rides on the
       <em>receiving</em> treatment plant's NPDES permit — the very permits this project tracks
       via EPA ECHO. Watch the POTW's compliance status, not the data center's near-empty
-      stormwater permit.</li>
+      stormwater permit.</li>{breadth_li}
   </ul>
-</div>"""
+  </div>
+</details>"""
 
     theories = dash._build_cwa_theories_html(dash.CWA_APPLICATION_THEORIES)
     explainer = md(dash._cwa_statute_explainer_md())
