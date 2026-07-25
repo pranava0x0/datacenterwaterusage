@@ -17,7 +17,10 @@
           "example": "Loudoun Water (serving ~1.635B gal/yr to data centers) must file monthly reports beginning ~July 2026. First published data will be the only facility-aggregated DC water series in any US state.",
           "source_url": "https://lis.virginia.gov/cgi-bin/legp604.exe?ses=251&typ=bil&val=hb496",
           "cross_ref_tab": "legislation",
-          "cross_ref_note": "VA HB 496 / SB 553 tracked in Legislation tab"
+          "cross_ref_note": "VA HB 496 / SB 553 tracked in Legislation tab",
+          "cross_ref_targets": [
+            "VA HB 496 / SB 553"
+          ]
         },
         {
           "id": "idaho-h895-closed-loop-mandate",
@@ -29,7 +32,11 @@
           "example": "First state-level mandate of its kind in the US. South Carolina HB 4583 (pending) would extend this closed-loop model to the Southeast.",
           "source_url": null,
           "cross_ref_tab": "legislation",
-          "cross_ref_note": "ID H895 and SC HB 4583 in Legislation tab"
+          "cross_ref_note": "The two enacted closed-loop mandates",
+          "cross_ref_targets": [
+            "ID H 895",
+            "SC HB 4583"
+          ]
         },
         {
           "id": "sd-sb135-cost-causation",
@@ -41,7 +48,10 @@
           "example": "Part of South Dakota's 'Data Center Bill of Rights.' Addresses the pattern where large industrial loads trigger regional water infrastructure upgrades whose costs are socialized to all ratepayers.",
           "source_url": null,
           "cross_ref_tab": "legislation",
-          "cross_ref_note": "SD SB 135 in Legislation tab"
+          "cross_ref_note": "SD SB 135 in Legislation tab",
+          "cross_ref_targets": [
+            "SD SB 135"
+          ]
         },
         {
           "id": "utah-hb76-eo-disclosure",
@@ -53,7 +63,11 @@
           "example": "Disclosure threshold set to match existing utility metering capabilities, making reporting immediately actionable rather than dependent on new infrastructure.",
           "source_url": null,
           "cross_ref_tab": "legislation",
-          "cross_ref_note": "UT HB 76 and UT EO 2026-03 in Legislation tab"
+          "cross_ref_note": "UT HB 76 and UT EO 2026-03 in Legislation tab",
+          "cross_ref_targets": [
+            "UT HB 76",
+            "UT EO 2026-03"
+          ]
         },
         {
           "id": "ohio-epa-ohd000001",
@@ -65,7 +79,10 @@
           "example": "Comment period closed January 2025; permit finalization pending as of June 2026. If enacted, it would create the first direct federal-level DC water monitoring dataset, complementing the WWTP-level data this project already tracks via EPA ECHO.",
           "source_url": "https://epa.ohio.gov/",
           "cross_ref_tab": "data",
-          "cross_ref_note": "OHD000001 tracked by oh_epa_general_permit scraper — see Sources tab"
+          "cross_ref_note": "The draft general permit itself; discharge data will come from the oh_epa_general_permit scraper once it is finalized",
+          "cross_ref_targets": [
+            "OH EPA OHD000001 (draft general permit)"
+          ]
         },
         {
           "id": "ny-s10642-seqra-review",
@@ -77,7 +94,10 @@
           "example": "Passed Senate 44-16 and Assembly 102-39 as of June 2026. Gov. Hochul has not publicly committed to signing or vetoing.",
           "source_url": "https://www.nysenate.gov/legislation/bills/2025/S10642",
           "cross_ref_tab": "legislation",
-          "cross_ref_note": "NY S10642 / A11560 in Legislation tab"
+          "cross_ref_note": "NY S10642 / A11560 in Legislation tab",
+          "cross_ref_targets": [
+            "NY S10642 / A11560"
+          ]
         }
       ]
     },
