@@ -310,6 +310,48 @@ class TestPolicyInstrumentSchema:
         ]
 
 
+class TestAuthorityFamilies:
+    """Spec C1 — the registry speaks doctrine, not just federal statutes."""
+
+    @staticmethod
+    def _statutes():
+        return loaders.load_water_authorities()["statutes"]
+
+    def test_every_family_declares_a_kind(self):
+        """A federal statute and a state common-law doctrine read completely
+        differently — no agency, no permit, litigated in state court — and the
+        UI says which the user is looking at."""
+        for code, meta in self._statutes().items():
+            assert meta.get("kind") in taxonomies.AUTHORITY_KIND_LABELS, (code, meta.get("kind"))
+
+    def test_doctrine_families_present(self):
+        """The gap C1 exists to close: the Memphis fight turns on interstate
+        aquifer apportionment and the Georgia one on state groundwater law,
+        neither of which the five federal statutes can express."""
+        codes = set(self._statutes())
+        assert {"EQAP", "PTD", "GW"} <= codes
+
+    def test_non_federal_families_are_marked_as_such(self):
+        kinds = {meta["kind"] for meta in self._statutes().values()}
+        assert kinds - {"federal-statute"}, "no non-federal family is registered"
+
+    def test_doctrine_anchors_reach_tracked_fact_patterns(self):
+        """A precedent that names no tracked conflict is a history entry. The
+        anchors must point at live data-center matters in the corpus, which is
+        what makes the registry a tool rather than a reading list."""
+        cases = {c["case_id"]: c for c in loaders.load_cwa_investigations()["cases"]}
+        readings = loaders.load_water_authorities()["readings"]
+        doctrine = [r for r in readings if r["statute"] in {"EQAP", "PTD", "GW"}]
+        assert doctrine
+        for reading in doctrine:
+            for case_id in reading["example_case_ids"]:
+                analogs = cases[case_id].get("analogous_cases", [])
+                assert analogs, f"{case_id} names no tracked fact pattern"
+                assert any(
+                    cases[a]["category"] in {"datacenter", "adjacent"} for a in analogs
+                ), f"{case_id}'s analogs are all precedent — none is a live matter"
+
+
 class TestTaxonomyConstants:
     def test_dashboard_reexports_are_the_same_objects(self):
         """dashboard.py re-exports rather than redefines, so there is exactly

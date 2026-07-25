@@ -215,7 +215,18 @@ AUTHORITY_KIND_LABELS = {
 # enforces both, which is why families are added here in the same commit as
 # their data (the doctrine families of plan Spec C1 arrive in P2), never ahead
 # of it.
-WATER_STATUTE_ORDER = ["CWA", "SDWA", "TSCA", "RCRA", "RHA"]
+# Federal statutes first, then the doctrine families in rough legal-hierarchy
+# order (interstate/constitutional → public trust → property).
+WATER_STATUTE_ORDER = [
+    "CWA",
+    "SDWA",
+    "TSCA",
+    "RCRA",
+    "RHA",
+    "EQAP",
+    "PTD",
+    "GW",
+]
 
 # Family pill colours. Colour carries *family identity* here — a lookup aid,
 # like a map legend — not status, so the decorative-colour rule is satisfied.
@@ -225,6 +236,9 @@ WATER_STATUTE_COLORS = {
     "TSCA": "#7c3aed",
     "RCRA": "#b45309",
     "RHA": "#475569",
+    "EQAP": "#1a4f8a",
+    "PTD": "#1a7a8a",
+    "GW": "#8a6d1f",
 }
 
 
