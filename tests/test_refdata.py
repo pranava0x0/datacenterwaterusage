@@ -235,6 +235,81 @@ class TestExplicitCrossRefs:
         assert out == ""
 
 
+class TestPolicyInstrumentSchema:
+    """Spec B1 — legislation.json holds policy *instruments*, not just bills."""
+
+    @staticmethod
+    def _bills():
+        return loaders.load_legislation()["bills"]
+
+    def test_every_entry_has_a_valid_instrument_type(self):
+        for entry in self._bills():
+            itype = entry.get("instrument_type")
+            assert itype in taxonomies.INSTRUMENT_TYPE_LABELS, (
+                entry.get("bill_id"),
+                itype,
+            )
+
+    def test_federal_executive_layer_present(self):
+        """The gap this spec exists to close: EO 14318 drove the NWP 39
+        reissuance the tracker already records, so recording the consequence
+        without the cause left the federal permitting story unexplained."""
+        ids = {e["bill_id"] for e in self._bills()}
+        assert "US EO 14318" in ids
+        assert "NY EO 62" in ids
+        types = {e["instrument_type"] for e in self._bills()}
+        assert "executive-order" in types
+        assert "commission-docket" in types
+
+    def test_commission_dockets_carry_a_timeline(self):
+        """A docket with no filing or order dates is indistinguishable from a
+        rumour; the timeline is what makes it trackable."""
+        for entry in self._bills():
+            if entry["instrument_type"] == "commission-docket":
+                assert entry.get("timeline"), entry["bill_id"]
+
+    def test_principles_are_in_the_closed_taxonomy(self):
+        for entry in self._bills():
+            for principle in entry.get("general_principles", []):
+                assert (
+                    principle["tag"] in taxonomies.LEGISLATION_PRINCIPLE_DESCRIPTIONS
+                ), (entry["bill_id"], principle["tag"])
+
+    def test_permitting_acceleration_is_used(self):
+        """Taxonomy values ship with their data — an unused value means either
+        the value or the records went missing."""
+        tags = {
+            p["tag"] for e in self._bills() for p in e.get("general_principles", [])
+        }
+        assert "Permitting acceleration" in tags
+
+    def test_unverified_entries_explain_what_to_recheck(self):
+        """Fail-closed curation: an entry that isn't fully sourced must say so
+        in prose a curator can act on, not just carry a false flag."""
+        for entry in self._bills():
+            if entry.get("verified") is False:
+                assert entry.get("status_detail"), entry["bill_id"]
+
+    def test_new_entries_have_sources(self):
+        for entry in self._bills():
+            assert entry.get("source_url", "").startswith("http"), entry["bill_id"]
+
+    def test_implements_edges_resolve(self):
+        """Covered generically by the integrity suite; asserted here so the
+        specific chain this spec built (rule -> enabling act, EO -> blueprint)
+        is pinned."""
+        by_id = {e["bill_id"]: e for e in self._bills()}
+        assert "VA HB 496 / SB 553" in by_id[
+            "VA DEQ waterworks data-center reporting regulations"
+        ]["implements"]
+        assert "US EO 14318" in by_id["QTS Richmond Technology Park DC5 (FAST-41)"][
+            "implements"
+        ]
+        assert "USACE-NWP39-DataCenters-2026" in by_id["US EO 14318"][
+            "related_case_ids"
+        ]
+
+
 class TestTaxonomyConstants:
     def test_dashboard_reexports_are_the_same_objects(self):
         """dashboard.py re-exports rather than redefines, so there is exactly

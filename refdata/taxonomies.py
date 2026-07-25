@@ -76,8 +76,11 @@ LEGISLATION_PRINCIPLE_DESCRIPTIONS = {
     "Closed-loop cooling": "Require sealed cooling systems with minimal net water draw.",
     "Strict liability": "Attach direct, non-waivable liability for violations or harms.",
     "Moratorium": "Pause new data-center development until safeguards exist.",
-    # Spec B1 adds "Permitting acceleration" here with the federal executive
-    # layer that needs it — values land in the same commit as their records.
+    # Added with the federal executive layer (2026-07-25). Every principle
+    # above conditions or slows data-center water use; nothing captured a
+    # government speeding water permitting *up*, which is what the 2025-26
+    # federal executive actions do.
+    "Permitting acceleration": "Speed water permitting up for data centers, not slow it down.",
 }
 
 # What KIND of government lever a record is. `legislation.json` has quietly
