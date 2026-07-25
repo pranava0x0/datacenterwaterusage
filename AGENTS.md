@@ -355,6 +355,60 @@ so future sessions prefer seeding when a candidate list already exists.**
   narrowing scope further (e.g. one agent per statute, not per broad topic) to
   cut the search-then-reject overhead that drove the 7-8x token gap.
 
+**2026-07-25 — three parallel background research agents feeding the
+issues/policy/precedent implementation plan (`docs/plan-2026-07-25-issues-policy-precedent.md`).
+Verdict: all three justified; hybrid seed+sweep lands mid-band on cost, and
+the correction yield is what paid for it.**
+
+- *Agent A — issues/claims (seeded verify + 3-week news sweep):* 181.1k
+  subagent tokens, 50 tool uses, ~8.5 min. All 7 seeds verified with 4
+  substantive refinements (AWS suit is a *whistleblower* state
+  consumer-protection action; Google silently dropped the "120%" figure its
+  tracked claim still quotes; Microsoft's "90%" is two-decade fleet WUE, not
+  new-facility marketing; heatwave/UT-Austin seeds predate the window). New:
+  Meta Cheyenne WY pretreatment-SNC contamination, WVWA/Google Botetourt
+  real contract numbers (2 MGD / 8 MGD ceiling vs the rejected 11 MGD),
+  Brookhaven/Missoula/Albany/Spokane moratoria, xAI greywater restart, and a
+  14-value issue-type taxonomy. Flagged 4 unverifiable specifics instead of
+  asserting them (docket no., Snopes verdict, Meta 6B-gal figure).
+- *Agent B — legislation/EO/policy (seeded verify + docket triage):* 128.6k
+  tokens, 45 tool uses, ~7.6 min. Mapped the entire untracked federal
+  executive layer (EO 14318 anatomy — §404-only, *no NPDES directive*,
+  correcting the seed; NWP-39 chain; first FAST-41 data center QTS Richmond)
+  and produced 5 status changes on tracked entries (NY EO 62 *instead of*
+  signing/vetoing the bill; AWS Lake Anna permit final at 0.28 MGD; VA HB 496
+  regs with concrete dates; WV HB 4832 dead with protections stripped on
+  floor votes; MI 5-bill package). Killed 3 false seeds outright, including
+  "Ohio enacted water provisions beyond the pledge" (energy-only) — which
+  descoped Spec B2 before it was built wrong.
+- *Agent C — precedent doctrines (seeded legal verification):* 137.8k tokens,
+  42 tool uses, ~9.2 min. 20/20 anchor cases verified with 2 caption
+  corrections (Sierra Club v. *Lujan*, not Babbitt, for the 1993 Edwards
+  springflow order; Racine/Foxconn ALJ posture), 1 candidate family
+  *affirmatively excluded* as non-additive (state antidegradation), 1 gap
+  honestly flagged rather than filled (no litigated MI WWAT case), and 4 new
+  families proposed that reshaped the design (SGMA/AZ-GMA → `GWMGMT`,
+  area-of-origin + forfeiture → `XFER`). Also produced the site-by-site
+  innovative-application mappings (Mount Pleasant double exposure, Sinton
+  triple, Bessemer "Swanson in reverse", Imperial tribal-seniority angle) and
+  *negative* mappings (ESA ∅ Memphis) that became a product feature.
+- *Efficiency:* ~447.5k combined tokens for ~45 verified, plan-ready units
+  (items, status changes, anchor cases, taxonomy) ≈ **~10k/unit** — between
+  the 4.6k pure-seeded benchmark (2026-07-02) and the 35.5k open-discovery
+  regime (2026-07-06), exactly where a hybrid seed+bounded-sweep design
+  should land. The 3-week date window on sweeps is what kept discovery from
+  drifting into the 35k regime.
+- *Necessity:* yes — the deliverable was a plan whose specs would have baked
+  in ~8 material errors without verification (wrong case caption, wrong EO
+  scope, a "pending" bill that was actually superseded by an EO, an
+  energy-only docket layer). Main-context inline equivalent was 50+
+  serialized fetches with no parallelism; plan-writing proceeded while
+  agents ran.
+- *Improvement for next time:* asking agents to state "maps to <dataset> /
+  does NOT fit current schema" turned research output directly into design
+  input (the AWS suit's state-law theory forced the `SL` authority family) —
+  keep that clause in every research-agent prompt for this repo.
+
 ---
 
 ## What NOT to do

@@ -76,6 +76,13 @@ Last reviewed: 2026-05-28 (External Tracker Survey added — see section below t
 
 ## High Priority
 
+### Execute the 2026-07-25 implementation plan: Issues & Claims / Policy Instruments / Precedent Engine (NEW — planned, research-verified)
+
+Full plan with product specs, ontology, phasing: **`docs/plan-2026-07-25-issues-policy-precedent.md`**. Built from a direct research pass + 3 verified agent sweeps (see AGENTS.md eval log 2026-07-25). Twelve specs across 4 groups; phases P0→P5 are independently shippable. Highest-signal contents: the untracked federal executive layer (EO 14318, NY EO 62, first FAST-41 data center), the AWS whistleblower greenwashing suit + claim-lifecycle schema (`challenged_in`), a 14-value issue-type taxonomy, 12 new legal-authority families with 20 verified anchor cases (Mississippi v. Tennessee → xAI Memphis; Lake Beulah + Racine diversion → Microsoft Mount Pleasant; Swanson → Bessemer), and a status-monitor pipeline. Time-sensitive statuses already verified: AWS Lake Anna VPDES **final** (eff. ~2026-08-01); VA HB 496 first aggregate report due **2026-10-01**; Montgomery Co MD moratorium vote **2026-07-28**.
+
+**Sample prompt (P0):**
+> Execute Phase P0 of docs/plan-2026-07-25-issues-policy-precedent.md: extract the `refdata/` package (loaders, registry, taxonomies, integrity) from dashboard.py with zero behavior change, add `cross_ref_targets` support to news+solutions rendering via the registry, and add the edge-integrity test suite. Run the full test suite and `python3 build_site.py` before/after to prove byte-stable output, then commit.
+
 ### Data Tab Redesign — 4-Section Data Access Map (highest priority, 2026-06-25)
 
 The Data tab needs a full redesign. The current flow-chart view is preserved behind a developer toggle (`dev_flow_data`) until the new layout ships. The new design frames **data access opacity itself** as the story, not just the data we have.
