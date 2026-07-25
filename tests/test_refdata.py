@@ -310,6 +310,44 @@ class TestPolicyInstrumentSchema:
         ]
 
 
+class TestIssueTypes:
+    """Spec A1 — a closed classification over the conflict registry."""
+
+    @staticmethod
+    def _sites():
+        return loaders.load_dc_water_conflicts()["sites"]
+
+    def test_every_site_classified(self):
+        for site in self._sites():
+            tags = site.get("issue_types")
+            assert tags, site["site_id"]
+            assert len(tags) <= 3, f"{site['site_id']} has {len(tags)} tags; cap is 3"
+
+    def test_tags_are_in_the_closed_taxonomy(self):
+        for site in self._sites():
+            for tag in site["issue_types"]:
+                assert tag in taxonomies.ISSUE_TYPE_LABELS, (site["site_id"], tag)
+
+    def test_no_duplicate_tags_on_a_site(self):
+        for site in self._sites():
+            assert len(site["issue_types"]) == len(set(site["issue_types"])), site["site_id"]
+
+    def test_every_taxonomy_value_is_used(self):
+        """An issue type nothing is classified as becomes an empty filter —
+        values ship with their data, so an unused one means a site is missing
+        or the value was added early."""
+        used = {tag for site in self._sites() for tag in site["issue_types"]}
+        assert set(taxonomies.ISSUE_TYPE_LABELS) == used, (
+            f"unused: {sorted(set(taxonomies.ISSUE_TYPE_LABELS) - used)}"
+        )
+
+    def test_classification_carries_its_justification(self):
+        """Each label has to be checkable against the record it labels,
+        otherwise a wrong classification is invisible in review."""
+        for site in self._sites():
+            assert len(site.get("issue_types_rationale", "")) > 40, site["site_id"]
+
+
 class TestAuthorityFamilies:
     """Spec C1 — the registry speaks doctrine, not just federal statutes."""
 

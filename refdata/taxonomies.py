@@ -255,14 +255,14 @@ ISSUE_TYPE_LABELS = {
     "supply-contract-dispute": "Water-contract dispute",
     "rate-cost-shift": "Rate & cost shifting",
     "discharge-quality": "Discharge quality",
-    "pretreatment-potw": "Pretreatment / POTW contamination",
     "construction-impacts": "Construction impacts",
     "moratorium-pause": "Moratorium / pause",
     "siting-zoning-defeat": "Siting & zoning defeat",
-    "greenwashing-claims": "Contested water claims",
-    "indirect-power-water": "Indirect (power) water",
     "disclosure-gap": "Disclosure gap",
     "alt-source-adoption": "Alternative-source adoption",
+    # Spec A2 adds "pretreatment-potw" (Meta Cheyenne), "greenwashing-claims"
+    # (the AWS claims suit) and "indirect-power-water" with the sites and
+    # cases that need them.
 }
 
 ISSUE_TYPE_DESCRIPTIONS = {
@@ -272,12 +272,9 @@ ISSUE_TYPE_DESCRIPTIONS = {
     "supply-contract-dispute": "Fights over the terms of a utility↔data-center water-sale agreement.",
     "rate-cost-shift": "Water and sewer infrastructure costs socialized onto other ratepayers.",
     "discharge-quality": "Direct discharge under a permit — cooling blowdown, thermal load, nitrate.",
-    "pretreatment-potw": "Contamination introduced into a municipal sewer or reclaimed-water system.",
     "construction-impacts": "Wetland and stream fill, frac-outs, sediment — harm from building, not operating.",
     "moratorium-pause": "A government halting new development pending study, at any level.",
     "siting-zoning-defeat": "Rezoning losses, siting rejections and the process fights around them.",
-    "greenwashing-claims": "Challenges to water-positive or efficiency claims as unverifiable or false.",
-    "indirect-power-water": "Water consumed generating the facility's electricity, off the balance sheet.",
     "disclosure-gap": "Absent or non-standard facility-level reporting of actual water use.",
     "alt-source-adoption": "Shifts to greywater, reclaimed water or air cooling — the solutions edge of a conflict.",
 }
