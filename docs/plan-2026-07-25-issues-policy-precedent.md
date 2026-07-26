@@ -400,7 +400,7 @@ Mississippi v. Tennessee, No. 143 Orig. (2021) · Florida v. Georgia, No. 142 Or
 |---|---|---|
 | **P0 Foundation** | ✅ done — `refdata/` extracted (pure, no Streamlit), registry + integrity suite, 27 entries migrated to `cross_ref_targets` | `1bcd55e` |
 | **P1 Policy data** | ✅ done — `instrument_type` back-filled over 54, +13 new entries (67 total), federal executive layer, first commission dockets | `2d4fd38` |
-| **P2 Precedent** | 🟡 2 of ~4 batches — 12 of 17 families, 31 readings, 104 cases. **Remaining:** GWMGMT, XFER, TRIBAL, SEPA, SL families; C3 pieces 2–3 (`outcome_type` migration, site→doctrine mappings, `analogous_outcome_note`) | `9d03727`, `25fb6ee` |
+| **P2 Precedent** | 🟡 3 of 4 batches — **16 of 17 families**, 38 readings, 107 cases. C3 piece 2 (`outcome_type`) done across all 107. **Remaining:** the `SL` family (held for A2 — its only anchor is the AWS claims suit); C3 pieces 1 and 3 (site→doctrine mappings, `analogous_outcome_note`) | `9d03727`, `25fb6ee`, `9e597ec`, `9b91560` |
 | **P3 Issues/Claims** | 🟡 A1 done (issue types + filter). **Remaining:** A2 claims lifecycle, A3 tab restructure | `c462a24` |
 | **P4 UX** | 🟡 chips + Part 4 issue filter done. **Remaining:** instrument-type filter, C3 doctrine matrix, doctrine rows in the theories table | `75994e3`, `14f6091` |
 | **P5 Automation** | ⬜ not started | — |
@@ -413,7 +413,10 @@ Mississippi v. Tennessee, No. 143 Orig. (2021) · Florida v. Georgia, No. 142 Or
 4. **`_doctrine_batch.py`** holds the shared validation for every C1/C2 batch (family/kind/colour registration, ≥2 sources, mandatory `analogous_cases`, referential checks), so batches 3–4 are data-only.
 5. **UAT note:** screenshots of `pages/index.html` over `file://` come back blank — the pane renders it as a static snapshot. `javascript_tool` DOM inspection is live and is the reliable verification channel on that surface.
 
-Test count: 513 at plan time → **563**.
+6. **Anchoring a family on a live matter beats inventing a historical one.** `_doctrine_batch.py` grew an `authority_additions` hook so a new reading can attach to a case the tracker already follows — the Tucson fight illustrates Arizona's AMA regime better than any 1980s precedent, and Pine Island was already the state-environmental-review case. Connecting doctrine to what is actually happening is the product, so the tooling should make that the easy path.
+7. **Phrase-classifying prose needs negation and tense guards.** The `outcome_type` pass initially recorded two matters as penalised consent decrees off the sentence "No formal CWA NOV or consent order issued", and read an applicant's *proposed* mitigation as an imposed permit condition. Both are now guarded (negated-clause stripping; leading-`PENDING` forcing). Any future prose classifier over this corpus should assume both failure modes are present.
+
+Test count: 513 at plan time → **569**.
 
 ## Phasing, sequencing, and acceptance
 
