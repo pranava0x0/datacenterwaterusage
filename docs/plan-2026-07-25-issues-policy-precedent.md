@@ -400,9 +400,10 @@ Mississippi v. Tennessee, No. 143 Orig. (2021) · Florida v. Georgia, No. 142 Or
 |---|---|---|
 | **P0 Foundation** | ✅ done — `refdata/` extracted (pure, no Streamlit), registry + integrity suite, 27 entries migrated to `cross_ref_targets` | `1bcd55e` |
 | **P1 Policy data** | ✅ done — `instrument_type` back-filled over 54, +13 new entries (67 total), federal executive layer, first commission dockets | `2d4fd38` |
-| **P2 Precedent** | ✅ families done — **17 of 17**, 39 readings, 109 cases. C3 piece 2 (`outcome_type`) done across all 109. **Remaining:** C3 pieces 1 and 3 (site→doctrine mappings beyond those already linked, `analogous_outcome_note`) | `9d03727`, `25fb6ee`, `9e597ec`, `9b91560`, `dae3c1c` |
-| **P3 Issues/Claims** | ✅ A1 + A2 done — issue types + filter; claim lifecycle, claim↔case edge, AWS suit, Meta Cheyenne. **Remaining:** A3 tab restructure | `c462a24`, `dae3c1c` |
-| **P4 UX** | 🟡 chips + Part 4 issue filter + claim lifecycle chips done. **Remaining:** instrument-type filter, C3 doctrine matrix, doctrine rows in the theories table | `75994e3`, `14f6091`, `dae3c1c` |
+| **P2 Precedent** | ✅ done — 17 of 17 families, 39 readings, 109 cases; `outcome_type` across all 109 | `9d03727`, `25fb6ee`, `9e597ec`, `9b91560`, `dae3c1c` |
+| **P3 Issues/Claims** | ✅ A1 + A2 done. **Remaining:** A3 tab restructure (rename Claims → "Issues & Claims", move Part 4 into it) | `c462a24`, `dae3c1c` |
+| **C3 application mapping** | ✅ done — 30 site→doctrine mappings incl. 4 negatives, doctrine matrix, derived outcome notes | `f75fb53`, `fb7f5a5` |
+| **P4 UX** | 🟡 chips, both filters, claim lifecycle, matrix done. **Remaining:** doctrine rows in the Part 2 theories table | `75994e3`, `14f6091`, `dae3c1c`, `fb7f5a5`, `8a03356` |
 | **P5 Automation** | ⬜ not started | — |
 
 **Decisions taken during the build that amend this plan:**
@@ -418,7 +419,10 @@ Mississippi v. Tennessee, No. 143 Orig. (2021) · Florida v. Georgia, No. 142 Or
 
 8. **Google did not drop the 120% figure.** The plan's research said it had. Verified: the June 2026 announcement leads with "replenish more water than we consume", but 120% remains in the supporting technical documentation — reframed, not retired.
 
-Test count: 513 at plan time → **575**. Datasets: 67 policy instruments · 17 authority families / 39 readings · 109 cases · 19 conflict sites · 35 claims.
+9. **Derive rather than store, where the value is derivable.** The plan specified `analogous_outcome_note` as a stored human-written sentence per site; deriving it at render from `outcome_type` is strictly better — it cannot drift, it updates as cases are added, and it follows the rule the statute pills already obey (§0.6-1). Applied the same way to the doctrine matrix.
+10. **Negative mappings are first-class.** Four site→doctrine mappings record that the obvious doctrine does *not* reach a site (ESA ∅ Memphis and ∅ Corpus Christi, TRIBAL ∅ Memphis, PTD ∅ Tucson). They render under their own heading in neutral grey, and appear as a dash in the matrix, so "assessed and doesn't apply" never reads as "not assessed".
+
+Test count: 513 at plan time → **589**. Datasets: 67 policy instruments · 17 authority families / 39 readings · 109 cases · 19 conflict sites (30 doctrine mappings) · 35 claims.
 
 ## Phasing, sequencing, and acceptance
 
