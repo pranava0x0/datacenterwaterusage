@@ -381,6 +381,18 @@ class TestClassificationChips:
                     tag,
                 )
 
+    def test_sites_carry_filterable_issue_data(self):
+        """The static site filters on data-issues; without it every site shows
+        under every filter selection, which looks like a working filter."""
+        import dashboard as dash
+
+        readings_by_id = dash._readings_by_id()
+        for site in loaders.load_dc_water_conflicts()["sites"]:
+            out = dash._build_conflict_site_html(site, readings_by_id, set())
+            assert 'class="bill-card dc-site"' in out, site["site_id"]
+            expected = " ".join(site["issue_types"])
+            assert f'data-issues="{expected}"' in out, site["site_id"]
+
     def test_chip_styles_exist_for_both_surfaces(self):
         """One stylesheet feeds the Streamlit app and the static site; a chip
         class with no rule renders as unstyled text on both."""

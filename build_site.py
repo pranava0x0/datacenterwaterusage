@@ -414,6 +414,20 @@ def build_cwa_tab() -> str:
     )
     conflicts_updated = conflicts_payload.get("last_updated") or "unknown"
 
+    # Issue-type filter for Part 4 — the question the prose summaries could
+    # only answer by being read: which of these are aquifer fights? Ordered by
+    # how many sites carry each tag, so the common problems lead.
+    issue_counts: dict[str, int] = {}
+    for s in conflict_sites:
+        for t in s.get("issue_types", []):
+            issue_counts[t] = issue_counts.get(t, 0) + 1
+    issue_boxes = "".join(
+        f'<label class="chip-check" title="{esc(dash.ISSUE_TYPE_DESCRIPTIONS[k])}">'
+        f'<input type="checkbox" class="dc-issue" value="{k}" checked> '
+        f'{esc(dash.ISSUE_TYPE_LABELS[k])} ({issue_counts[k]})</label>'
+        for k in sorted(issue_counts, key=lambda k: (-issue_counts[k], k))
+    )
+
     cat_labels_json = json.dumps(dash.CWA_CATEGORY_LABELS)
     cat_order_json = json.dumps(dash.CWA_CATEGORY_ORDER)
 
@@ -497,6 +511,11 @@ def build_cwa_tab() -> str:
     moratoriums. Each card maps the fact pattern to the statutory readings from Part 1
     that could reach it, citing the historical cases that show each reading in use.
     Readings overlap by design.</p>
+    <div class="cwa-filters">
+      <span class="filter-label">Issue type:</span>
+      <div class="cwa-types">{issue_boxes}</div>
+    </div>
+    <p class="count-line" id="conflict-count"></p>
     <div id="dc-conflicts">{site_cards}</div>
     <p class="src-note">Site roster last updated {esc(conflicts_updated)}.</p>
   </div>
@@ -1309,6 +1328,31 @@ function applyLegFilter(){
 }
 legChecks.forEach(c => c.addEventListener('change', applyLegFilter));
 if (legCount) applyLegFilter();
+
+// --- Part 4 conflict-site filtering by issue type ---
+const conflictCount = document.getElementById('conflict-count');
+const dcSites = [...document.querySelectorAll('.dc-site')];
+const issueChecks = [...document.querySelectorAll('.dc-issue')];
+function applyIssueFilter(){
+  const picked = new Set(issueChecks.filter(c => c.checked).map(c => c.value));
+  let shown = 0;
+  dcSites.forEach(el => {
+    // A site carries 1-3 tags and matches if ANY is picked — the tags are
+    // facets of one conflict, not alternatives, so requiring all of them
+    // would hide a site the moment you narrowed to one of its own problems.
+    const tags = (el.dataset.issues || '').split(' ').filter(Boolean);
+    const ok = tags.some(t => picked.has(t));
+    el.hidden = !ok;
+    if (ok) shown++;
+  });
+  if (conflictCount){
+    const strong = document.createElement('strong');
+    strong.textContent = 'Showing ' + shown + ' of ' + dcSites.length + ' sites';
+    conflictCount.replaceChildren(strong);
+  }
+}
+issueChecks.forEach(c => c.addEventListener('change', applyIssueFilter));
+if (conflictCount) applyIssueFilter();
 
 // --- CWA filtering ---
 const cwaCount = document.getElementById('cwa-count');

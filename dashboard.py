@@ -3070,7 +3070,10 @@ def _build_conflict_site_html(
         )
     anchor = esc(site.get("site_id", ""))
     return (
-        f'<div class="bill-card" id="site-{anchor}">'
+        f'<div class="bill-card dc-site" id="site-{anchor}"'
+        # The static site filters on this attribute; the Streamlit app filters
+        # in Python before calling this builder. Same data, one source.
+        f' data-issues="{esc(" ".join(site.get("issue_types", [])))}">'
         f'{head}{class_row}{"".join(sections)}</div>'
     )
 

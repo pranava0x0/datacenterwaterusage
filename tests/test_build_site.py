@@ -78,7 +78,11 @@ class TestStaticBuild:
         cases = dashboard.load_cwa_investigations().get("cases", [])
         readings = dashboard.load_water_authorities().get("readings", [])
         sites = dashboard.load_dc_water_conflicts().get("sites", [])
-        assert html.count('class="bill-card"') == (
+        # Boundary-aware: conflict cards carry `class="bill-card dc-site"` so
+        # the filter JS can select them, so an exact-attribute match drops all
+        # 18 — but a bare prefix match also catches .bill-card-head and
+        # friends. Require the class name to end at a quote or a space.
+        assert len(re.findall(r'class="bill-card[" ]', html)) == (
             len(bills) + len(cases) + len(readings) + len(sites)
         )
         assert html.count('class="claim-card"') == len(claims)
@@ -113,7 +117,11 @@ class TestStaticBuild:
         assert html.count('class="cwa-case"') == len(historical)
         readings = dashboard.load_water_authorities().get("readings", [])
         sites = dashboard.load_dc_water_conflicts().get("sites", [])
-        assert html.count('class="bill-card"') == (
+        # Boundary-aware: conflict cards carry `class="bill-card dc-site"` so
+        # the filter JS can select them, so an exact-attribute match drops all
+        # 18 — but a bare prefix match also catches .bill-card-head and
+        # friends. Require the class name to end at a quote or a space.
+        assert len(re.findall(r'class="bill-card[" ]', html)) == (
             len(bills) + len(cases) + len(readings) + len(sites)
         )
 
@@ -253,3 +261,26 @@ class TestWriteOutput:
         assert out.exists()
         assert out.stat().st_size > 200_000
         assert (tmp_path / "llms.txt").exists()
+
+
+class TestConflictIssueFilter:
+    """Part 4's issue-type filter — the thing that makes the A1 taxonomy usable
+    rather than merely visible."""
+
+    def test_filter_controls_and_hooks_present(self):
+        html = _html()
+        sites = dashboard.load_dc_water_conflicts().get("sites", [])
+        used = {t for s in sites for t in s["issue_types"]}
+        # One checkbox per issue type actually in use, plus the count line and
+        # the handler that drives them.
+        assert len(re.findall(r'class="dc-issue"', html)) == len(used)
+        assert 'id="conflict-count"' in html
+        assert "applyIssueFilter" in html
+
+    def test_every_site_is_reachable_through_some_filter(self):
+        """A site whose tags are all absent from the control row can never be
+        shown once the user touches the filter."""
+        html = _html()
+        offered = set(re.findall(r'class="dc-issue" value="([^"]+)"', html))
+        for site in dashboard.load_dc_water_conflicts().get("sites", []):
+            assert set(site["issue_types"]) & offered, site["site_id"]
