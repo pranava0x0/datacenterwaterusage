@@ -57,6 +57,34 @@
       "agencies": "State courts; groundwater conservation districts",
       "kind": "state-doctrine",
       "url": "https://www.law.cornell.edu/wex/water_rights"
+    },
+    "WELL": {
+      "name": "High-capacity well & withdrawal-permit review",
+      "full_name": "State review of high-capacity well and large-withdrawal permits — the agency's duty to consider cumulative and off-site impacts before issuing",
+      "agencies": "State natural-resource agencies; state courts",
+      "kind": "state-doctrine",
+      "url": "https://www.law.cornell.edu/wex/water_rights"
+    },
+    "CL": {
+      "name": "Common-law interference, nuisance & standing",
+      "full_name": "Common-law limits on groundwater withdrawal — negligence, subsidence, nuisance — and the standing rules that govern who may sue",
+      "agencies": "State courts",
+      "kind": "common-law",
+      "url": "https://www.law.cornell.edu/wex/nuisance"
+    },
+    "UTIL": {
+      "name": "Municipal utility service & shortage law",
+      "full_name": "The law governing whether a public water utility must serve a new large customer, and when it may refuse or impose a connection moratorium",
+      "agencies": "Municipal utilities and districts; state courts",
+      "kind": "state-doctrine",
+      "url": "https://www.law.cornell.edu/wex/public_utility"
+    },
+    "ESA": {
+      "name": "Endangered Species Act as a water constraint",
+      "full_name": "Endangered Species Act, 16 U.S.C. §§1531–1544 (esp. §7 and §9 take)",
+      "agencies": "U.S. Fish and Wildlife Service; NOAA Fisheries; federal courts",
+      "kind": "federal-statute",
+      "url": "https://www.law.cornell.edu/uscode/text/16/chapter-35"
     }
   },
   "readings": [
@@ -410,6 +438,66 @@
       "dc_applicability": "Cuts both ways, which is why it belongs in the registry. It is the doctrine a data center would invoke against a withdrawal cap imposed after it acquired the land — and equally the one a neighbouring landowner invokes when a regulator permits the campus to draw down the property interest under their own acreage. It also explains why states in this family regulate through districts and permits rather than by prohibition: outright restriction carries a compensation risk.",
       "example_case_ids": [
         "Edwards-Aquifer-Authority-v-Day-2012"
+      ]
+    },
+    {
+      "reading_id": "well-cumulative-impact",
+      "statute": "WELL",
+      "section": "State high-capacity well permitting — agency duty to consider harm to waters of the state",
+      "name": "The permitting agency must weigh a well's off-site impact",
+      "agency": "State natural-resource agencies",
+      "what_it_covers": "Whether an agency issuing a high-capacity well permit must look beyond the applicant's own parcel. Where the state holds navigable waters in trust and the permitting statute protects waters of the state generally, the agency has both authority and a general duty to consider whether the proposed well may harm those waters — but the duty is triggered by concrete scientific evidence of potential harm, not by objection alone.",
+      "dc_applicability": "The most practically usable doctrine in the registry for an opponent, because it operates at the permit stage rather than after the damage. It also sets the price of admission: objections to a data-center well must arrive as hydrologic evidence, since generalized concern does not trigger the agency's duty. That is precisely the bind sites in this dataset describe — the evidence needs consumption data the operator holds.",
+      "example_case_ids": [
+        "Lake-Beulah-v-DNR-2011"
+      ]
+    },
+    {
+      "reading_id": "cl-negligent-subsidence",
+      "statute": "CL",
+      "section": "Negligence, willful waste and malicious injury as limits on the rule of capture",
+      "name": "Capture shields depletion, not negligent harm",
+      "agency": "State courts",
+      "what_it_covers": "In rule-of-capture states a landowner may generally pump without liability for draining a neighbour. That immunity is not total: where the *manner* of withdrawal is negligent, willfully wasteful or malicious and proximately causes damage to another's land — the classic case being subsidence from closely spaced high-volume wells — the pumper is liable.",
+      "dc_applicability": "The opening in an otherwise closed door. A neighbour in a capture state cannot complain that a data center took the water, but can complain about how: well spacing, siting near a boundary, and pumping rates chosen despite engineering forecasts of subsidence. Coastal and alluvial settings are where this bites, because that is where measurable subsidence follows drawdown.",
+      "example_case_ids": [
+        "Friendswood-v-Smith-Southwest-1978"
+      ]
+    },
+    {
+      "reading_id": "cl-citizen-standing-limit",
+      "statute": "CL",
+      "section": "Standing under state environmental-protection statutes — particularized injury",
+      "name": "The standing trap for opposition groups",
+      "agency": "State courts",
+      "what_it_covers": "How far a statutory 'any person may sue' provision actually reaches. A citizens' group may sue over a withdrawal that injures its members' own recreational, aesthetic, economic or property interests, but not over harm to the environment at large — the injury must be concrete and particularized to identifiable members.",
+      "dc_applicability": "Explains a pattern visible across this dataset: why data-center opposition succeeds through zoning votes, moratoriums and records requests far more often than through lawsuits. A group organized around a watershed rather than around injured members can be dismissed before the merits. It also says which plaintiff wins — the household whose well failed, not the coalition, which is why the Newton County fact pattern is legally stronger than a general-harm campaign.",
+      "example_case_ids": [
+        "MCWC-v-Nestle-Waters-2007"
+      ]
+    },
+    {
+      "reading_id": "util-shortage-moratorium",
+      "statute": "UTIL",
+      "section": "Municipal water service — no right to new service; moratorium review",
+      "name": "A utility may refuse to serve a new large customer",
+      "agency": "Municipal utilities and districts; state courts",
+      "what_it_covers": "A prospective new water user holds no absolute right to service and need not be treated like established customers. Where a utility faces a genuine imbalance between supply and demand it has a rational basis for a moratorium on new connections, and a court will disturb that decision only for fraud, arbitrariness or caprice.",
+      "dc_applicability": "Runs the opposite way from how these fights are usually argued. The tracked conflicts assume the utility is under pressure to say yes; this reading says a utility facing real supply constraint is on strong legal ground saying no, and the data center has no entitlement to be served. Where a utility has already conceded on the record that it cannot serve the load without major upgrades — Bessemer being the clearest instance here — that admission is the rational basis a refusal would rest on.",
+      "example_case_ids": [
+        "Swanson-v-Marin-MWD-1976"
+      ]
+    },
+    {
+      "reading_id": "esa-proximate-cause-limit",
+      "statute": "ESA",
+      "section": "ESA §9 take, 16 U.S.C. §1538 — proximate cause between state permitting and downstream harm",
+      "name": "State water permitting is usually too remote to be a take",
+      "agency": "Federal courts; U.S. Fish and Wildlife Service",
+      "what_it_covers": "Whether a state agency's issuance of upstream withdrawal permits can be the proximate cause of downstream harm to a listed species. The Fifth Circuit held it cannot on the record before it: with multiple natural, independent and unpredictable forces acting on the habitat, the causal chain from permit to death of the animals was not reasonably foreseeable, and the injunction against further permitting was an abuse of discretion.",
+      "dc_applicability": "Included as a *negative* reading, because knowing where a theory fails is worth as much as knowing where it works. ESA is the intuitive federal hook for a data center drying a river reach, and in the Fifth Circuit this is binding law that the hook will usually miss when the defendant is the state permitting authority. A §9 claim would need to run at the withdrawer directly, with a much shorter causal chain than 'permit issued, species died'.",
+      "example_case_ids": [
+        "Aransas-Project-v-Shaw-2014"
       ]
     }
   ]

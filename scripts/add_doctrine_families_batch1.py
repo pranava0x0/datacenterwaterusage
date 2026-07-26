@@ -24,15 +24,11 @@ Idempotent.
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(BASE_DIR))
-
-AUTHORITIES_PATH = BASE_DIR / "data" / "reference" / "water_authorities.json"
-CASES_PATH = BASE_DIR / "data" / "reference" / "cwa_investigations.json"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _doctrine_batch import apply_batch  # noqa: E402
 
 NEW_STATUTES = {
     "EQAP": {
@@ -552,102 +548,13 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
-
-    from refdata.taxonomies import (
-        AUTHORITY_KIND_LABELS,
-        CWA_CASE_TYPE_LABELS,
-        WATER_STATUTE_COLORS,
-        WATER_STATUTE_ORDER,
+    return apply_batch(
+        NEW_STATUTES,
+        NEW_READINGS,
+        NEW_CASES,
+        last_updated="2026-07-25",
+        dry_run=args.dry_run,
     )
-
-    authorities = json.loads(AUTHORITIES_PATH.read_text(encoding="utf-8"))
-    cases_payload = json.loads(CASES_PATH.read_text(encoding="utf-8"))
-
-    problems = []
-    for code, meta in NEW_STATUTES.items():
-        if meta["kind"] not in AUTHORITY_KIND_LABELS:
-            problems.append(f"{code}: bad kind {meta['kind']}")
-        if code not in WATER_STATUTE_ORDER:
-            problems.append(f"{code}: not in WATER_STATUTE_ORDER — add it in taxonomies.py")
-        if code not in WATER_STATUTE_COLORS:
-            problems.append(f"{code}: no colour in WATER_STATUTE_COLORS")
-
-    # Back-fill `kind` on the five original families. They pre-date the field,
-    # and every family needs one for the accordion to say what register the
-    # reader is in — a federal permit statute and a state common-law doctrine
-    # are not the same kind of authority.
-    backfilled = []
-    for code, meta in authorities["statutes"].items():
-        if code not in NEW_STATUTES and "kind" not in meta:
-            meta["kind"] = "federal-statute"
-            backfilled.append(code)
-
-    added_statutes = [c for c in NEW_STATUTES if c not in authorities["statutes"]]
-    authorities["statutes"].update(NEW_STATUTES)
-
-    existing_readings = {r["reading_id"] for r in authorities["readings"]}
-    added_readings = []
-    for reading in NEW_READINGS:
-        if reading["reading_id"] in existing_readings:
-            continue
-        if reading["statute"] not in authorities["statutes"]:
-            problems.append(f"{reading['reading_id']}: unknown family {reading['statute']}")
-        authorities["readings"].append(reading)
-        added_readings.append(reading["reading_id"])
-
-    existing_cases = {c["case_id"] for c in cases_payload["cases"]}
-    added_cases = []
-    for case in NEW_CASES:
-        if case["case_id"] in existing_cases:
-            continue
-        if case["case_type"] not in CWA_CASE_TYPE_LABELS:
-            problems.append(f"{case['case_id']}: bad case_type {case['case_type']}")
-        if len(case.get("sources", [])) < 2:
-            problems.append(f"{case['case_id']}: needs at least 2 sources")
-        # A doctrine anchor earns its place by naming the tracked fact patterns
-        # it reaches; without that it is a history entry, not a tool.
-        if not case.get("analogous_cases"):
-            problems.append(f"{case['case_id']}: needs analogous_cases")
-        cases_payload["cases"].append(case)
-        added_cases.append(case["case_id"])
-
-    # Every reading must name a case that exists once this batch is applied.
-    all_case_ids = {c["case_id"] for c in cases_payload["cases"]}
-    for reading in NEW_READINGS:
-        for cid in reading["example_case_ids"]:
-            if cid not in all_case_ids:
-                problems.append(f"{reading['reading_id']}: example case {cid} not found")
-
-    print(f"families added: {len(added_statutes)}  {added_statutes}")
-    print(f"kind back-filled: {len(backfilled)}  {backfilled}")
-    print(f"readings added: {len(added_readings)}")
-    for r in added_readings:
-        print(f"  + {r}")
-    print(f"cases added:    {len(added_cases)}")
-    for c in added_cases:
-        print(f"  + {c}")
-    print(
-        f"totals -> families {len(authorities['statutes'])}, "
-        f"readings {len(authorities['readings'])}, cases {len(cases_payload['cases'])}"
-    )
-
-    if problems:
-        print("\nAborted:\n  " + "\n  ".join(problems), file=sys.stderr)
-        return 1
-    if args.dry_run:
-        print("\n(dry run — nothing written)")
-        return 0
-
-    authorities["last_updated"] = "2026-07-25"
-    cases_payload["last_updated"] = "2026-07-25"
-    AUTHORITIES_PATH.write_text(
-        json.dumps(authorities, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-    )
-    CASES_PATH.write_text(
-        json.dumps(cases_payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-    )
-    print("\nWrote water_authorities.json and cwa_investigations.json")
-    return 0
 
 
 if __name__ == "__main__":

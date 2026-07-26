@@ -226,6 +226,10 @@ WATER_STATUTE_ORDER = [
     "EQAP",
     "PTD",
     "GW",
+    "WELL",
+    "ESA",
+    "CL",
+    "UTIL",
 ]
 
 # Family pill colours. Colour carries *family identity* here — a lookup aid,
@@ -239,6 +243,10 @@ WATER_STATUTE_COLORS = {
     "EQAP": "#1a4f8a",
     "PTD": "#1a7a8a",
     "GW": "#8a6d1f",
+    "WELL": "#3182bd",
+    "ESA": "#2f7a4f",
+    "CL": "#6b7280",
+    "UTIL": "#6b3fa0",
 }
 
 
