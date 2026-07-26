@@ -39,6 +39,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-construction-stormwater"
+      ],
+      "outcome_type": [
+        "monetary-penalty"
       ]
     },
     {
@@ -80,6 +83,9 @@
       "authorities": [
         "sdwa-1431-emergency",
         "sdwa-source-water-protection"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -114,6 +120,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty"
       ]
     },
     {
@@ -143,6 +152,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty"
       ]
     },
     {
@@ -173,6 +185,10 @@
       "authorities": [
         "cwa-316-cooling",
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "permit-issued",
+        "permit-conditioned"
       ]
     },
     {
@@ -202,6 +218,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-307-pretreatment"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree"
       ]
     },
     {
@@ -236,6 +256,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-307-pretreatment"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree"
       ]
     },
     {
@@ -261,6 +285,10 @@
       "authorities": [
         "cwa-316-cooling",
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree"
       ]
     },
     {
@@ -295,6 +323,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-404-dredge-fill"
+      ],
+      "outcome_type": [
+        "jurisdiction-narrowed"
       ]
     },
     {
@@ -329,6 +360,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-maui-groundwater"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed"
       ]
     },
     {
@@ -363,6 +397,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-316-cooling"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed"
       ]
     },
     {
@@ -397,6 +434,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-404-dredge-fill"
+      ],
+      "outcome_type": [
+        "jurisdiction-narrowed"
       ]
     },
     {
@@ -426,6 +466,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-construction-stormwater"
+      ],
+      "outcome_type": [
+        "consent-decree"
       ]
     },
     {
@@ -467,6 +510,10 @@
         "cwa-402-construction-stormwater",
         "cwa-505-citizen-suit",
         "cwa-404-dredge-fill"
+      ],
+      "outcome_type": [
+        "injunction-stop-work",
+        "pending-undecided"
       ]
     },
     {
@@ -506,6 +553,11 @@
       "display_section": "historical",
       "authorities": [
         "sdwa-source-water-protection"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "compliance-order",
+        "pending-undecided"
       ]
     },
     {
@@ -546,6 +598,9 @@
       "display_section": "potential",
       "authorities": [
         "cwa-402-construction-stormwater"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -581,6 +636,11 @@
       "authorities": [
         "cwa-316-cooling",
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree",
+        "permit-conditioned"
       ]
     },
     {
@@ -610,6 +670,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-311-spills"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree"
       ]
     },
     {
@@ -640,6 +704,11 @@
       "authorities": [
         "cwa-402-npdes",
         "tsca-8a7-pfas-reporting"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "permit-conditioned",
+        "compliance-order"
       ]
     },
     {
@@ -674,6 +743,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree"
       ]
     },
     {
@@ -708,6 +781,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-311-spills"
+      ],
+      "outcome_type": [
+        "consent-decree"
       ]
     },
     {
@@ -742,6 +818,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree"
       ]
     },
     {
@@ -776,6 +856,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree"
       ]
     },
     {
@@ -810,6 +894,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "consent-decree"
       ]
     },
     {
@@ -844,6 +931,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree"
       ]
     },
     {
@@ -869,6 +960,9 @@
       "authorities": [
         "cwa-307-pretreatment",
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "consent-decree"
       ]
     },
     {
@@ -903,6 +997,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty"
       ]
     },
     {
@@ -942,6 +1039,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-construction-stormwater"
+      ],
+      "outcome_type": [
+        "consent-decree"
       ]
     },
     {
@@ -981,6 +1081,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty"
       ]
     },
     {
@@ -1015,6 +1118,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty"
       ]
     },
     {
@@ -1054,6 +1160,12 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree",
+        "permit-issued",
+        "permit-conditioned"
       ]
     },
     {
@@ -1078,6 +1190,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "consent-decree"
       ]
     },
     {
@@ -1117,6 +1232,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-307-pretreatment"
+      ],
+      "outcome_type": [
+        "consent-decree"
       ]
     },
     {
@@ -1146,6 +1264,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty"
       ]
     },
     {
@@ -1180,6 +1301,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "permit-conditioned"
       ]
     },
     {
@@ -1214,6 +1338,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-maui-groundwater"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed"
       ]
     },
     {
@@ -1248,6 +1375,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-401-certification"
+      ],
+      "outcome_type": [
+        "permit-denied",
+        "jurisdiction-affirmed"
       ]
     },
     {
@@ -1294,6 +1425,9 @@
       "authorities": [
         "sdwa-1431-emergency",
         "rcra-7002-7003-endangerment"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -1344,6 +1478,9 @@
       "authorities": [
         "sdwa-pws-compliance",
         "gwmgmt-az-ama"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -1384,6 +1521,9 @@
       "authorities": [
         "cwa-402-construction-stormwater",
         "cwa-311-spills"
+      ],
+      "outcome_type": [
+        "monetary-penalty"
       ]
     },
     {
@@ -1424,6 +1564,9 @@
       "authorities": [
         "cwa-402-npdes",
         "cwa-505-citizen-suit"
+      ],
+      "outcome_type": [
+        "consent-decree"
       ]
     },
     {
@@ -1463,6 +1606,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "consent-decree",
+        "pending-undecided"
       ]
     },
     {
@@ -1502,6 +1649,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "consent-decree",
+        "pending-undecided"
       ]
     },
     {
@@ -1541,6 +1692,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree"
       ]
     },
     {
@@ -1586,6 +1741,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "compliance-order",
+        "pending-undecided"
       ]
     },
     {
@@ -1631,6 +1790,9 @@
       "authorities": [
         "sdwa-pws-compliance",
         "tsca-8e-substantial-risk"
+      ],
+      "outcome_type": [
+        "consent-decree"
       ]
     },
     {
@@ -1673,7 +1835,10 @@
         "SF-EPA-end-result-2025"
       ],
       "display_section": "historical",
-      "authorities": []
+      "authorities": [],
+      "outcome_type": [
+        "jurisdiction-narrowed"
+      ]
     },
     {
       "case_id": "Lewis-v-United-States-5th-Cir-2023",
@@ -1712,6 +1877,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-404-dredge-fill"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed"
       ]
     },
     {
@@ -1758,6 +1926,9 @@
         "cwa-402-npdes",
         "cwa-307-pretreatment",
         "sdwa-source-water-protection"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -1793,6 +1964,9 @@
       "authorities": [
         "cwa-404-dredge-fill",
         "cwa-401-certification"
+      ],
+      "outcome_type": [
+        "monetary-penalty"
       ]
     },
     {
@@ -1832,6 +2006,9 @@
       "display_section": "potential",
       "authorities": [
         "sdwa-source-water-protection"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -1871,6 +2048,10 @@
       "display_section": "potential",
       "authorities": [
         "sdwa-source-water-protection"
+      ],
+      "outcome_type": [
+        "consent-decree",
+        "settled-nonmonetary"
       ]
     },
     {
@@ -1913,6 +2094,9 @@
         "sdwa-source-water-protection",
         "sdwa-1424e-sole-source-aquifer",
         "xfer-area-of-origin"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -1946,6 +2130,9 @@
       "display_section": "potential",
       "authorities": [
         "sdwa-pws-compliance"
+      ],
+      "outcome_type": [
+        "settled-nonmonetary"
       ]
     },
     {
@@ -1980,6 +2167,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-505-citizen-suit"
+      ],
+      "outcome_type": [
+        "dismissed-no-liability"
       ]
     },
     {
@@ -2014,6 +2204,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-505-citizen-suit"
+      ],
+      "outcome_type": [
+        "dismissed-no-liability"
       ]
     },
     {
@@ -2048,6 +2241,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "consent-decree"
       ]
     },
     {
@@ -2083,6 +2279,9 @@
       "authorities": [
         "cwa-402-npdes",
         "cwa-307-pretreatment"
+      ],
+      "outcome_type": [
+        "monetary-penalty"
       ]
     },
     {
@@ -2117,6 +2316,9 @@
       "display_section": "potential",
       "authorities": [
         "cwa-404-dredge-fill"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -2146,6 +2348,9 @@
       "display_section": "potential",
       "authorities": [
         "cwa-404-dredge-fill"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -2180,6 +2385,9 @@
       "display_section": "potential",
       "authorities": [
         "cwa-404-dredge-fill"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -2215,6 +2423,9 @@
       "authorities": [
         "cwa-316-cooling",
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -2245,6 +2456,9 @@
       "authorities": [
         "cwa-404-dredge-fill",
         "cwa-505-citizen-suit"
+      ],
+      "outcome_type": [
+        "injunction-stop-work"
       ]
     },
     {
@@ -2289,6 +2503,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -2326,6 +2543,10 @@
         "cwa-402-npdes",
         "cwa-303-wqs",
         "rha-10-structures"
+      ],
+      "outcome_type": [
+        "permit-issued",
+        "pending-undecided"
       ]
     },
     {
@@ -2371,6 +2592,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-404-dredge-fill"
+      ],
+      "outcome_type": [
+        "permit-issued",
+        "permit-conditioned"
       ]
     },
     {
@@ -2412,6 +2637,9 @@
       "authorities": [
         "cwa-404-dredge-fill",
         "cwa-401-certification"
+      ],
+      "outcome_type": [
+        "permit-issued"
       ]
     },
     {
@@ -2452,6 +2680,9 @@
       "authorities": [
         "sdwa-1431-emergency",
         "sdwa-source-water-protection"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -2491,6 +2722,9 @@
       "display_section": "historical",
       "authorities": [
         "sdwa-pws-compliance"
+      ],
+      "outcome_type": [
+        "settled-nonmonetary"
       ]
     },
     {
@@ -2525,6 +2759,9 @@
       "display_section": "historical",
       "authorities": [
         "sdwa-source-water-protection"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -2564,6 +2801,9 @@
       "display_section": "historical",
       "authorities": [
         "sdwa-source-water-protection"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -2603,6 +2843,9 @@
       "display_section": "historical",
       "authorities": [
         "sdwa-pws-compliance"
+      ],
+      "outcome_type": [
+        "permit-denied"
       ]
     },
     {
@@ -2642,6 +2885,9 @@
       "display_section": "historical",
       "authorities": [
         "sdwa-pws-compliance"
+      ],
+      "outcome_type": [
+        "permit-denied"
       ]
     },
     {
@@ -2676,6 +2922,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-404-dredge-fill"
+      ],
+      "outcome_type": [
+        "permit-issued"
       ]
     },
     {
@@ -2711,6 +2960,9 @@
       "authorities": [
         "cwa-404-dredge-fill",
         "cwa-401-certification"
+      ],
+      "outcome_type": [
+        "permit-issued"
       ]
     },
     {
@@ -2752,6 +3004,9 @@
       "authorities": [
         "cwa-316-cooling",
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -2787,6 +3042,9 @@
       "display_section": "historical",
       "authorities": [
         "sdwa-pws-compliance"
+      ],
+      "outcome_type": [
+        "permit-conditioned"
       ]
     },
     {
@@ -2826,6 +3084,9 @@
       "display_section": "historical",
       "authorities": [
         "sdwa-pws-compliance"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -2866,6 +3127,10 @@
         "tsca-8e-substantial-risk",
         "sdwa-1431-emergency",
         "rcra-7002-7003-endangerment"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "compliance-order"
       ]
     },
     {
@@ -2900,6 +3165,9 @@
       "display_section": "historical",
       "authorities": [
         "tsca-8e-substantial-risk"
+      ],
+      "outcome_type": [
+        "monetary-penalty"
       ]
     },
     {
@@ -2935,6 +3203,9 @@
       "authorities": [
         "sdwa-1431-emergency",
         "sdwa-pws-compliance"
+      ],
+      "outcome_type": [
+        "compliance-order"
       ]
     },
     {
@@ -2969,6 +3240,10 @@
       "display_section": "historical",
       "authorities": [
         "sdwa-pws-compliance"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "compliance-order"
       ]
     },
     {
@@ -3004,6 +3279,9 @@
       "authorities": [
         "sdwa-1431-emergency",
         "cwa-402-maui-groundwater"
+      ],
+      "outcome_type": [
+        "compliance-order"
       ]
     },
     {
@@ -3038,6 +3316,9 @@
       "display_section": "historical",
       "authorities": [
         "sdwa-1424e-sole-source-aquifer"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed"
       ]
     },
     {
@@ -3072,6 +3353,9 @@
       "authorities": [
         "sdwa-uic-classv",
         "cwa-402-maui-groundwater"
+      ],
+      "outcome_type": [
+        "compliance-order"
       ]
     },
     {
@@ -3106,6 +3390,9 @@
       "display_section": "historical",
       "authorities": [
         "rcra-7002-7003-endangerment"
+      ],
+      "outcome_type": [
+        "compliance-order"
       ]
     },
     {
@@ -3139,6 +3426,9 @@
       "display_section": "historical",
       "authorities": [
         "rha-10-structures"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed"
       ]
     },
     {
@@ -3172,6 +3462,9 @@
       "display_section": "historical",
       "authorities": [
         "tsca-8a7-pfas-reporting"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -3213,7 +3506,10 @@
         "Amazon-NewCarlisle-IN-wetlands-2025",
         "Google-FortWayneIN-isolated-wetland-permit-2025"
       ],
-      "display_section": "potential"
+      "display_section": "potential",
+      "outcome_type": [
+        "pending-undecided"
+      ]
     },
     {
       "case_id": "MCEA-PineIsland-MN-ProjectSkyway-2026",
@@ -3255,7 +3551,10 @@
         "Meta-NewtonCountyGA-well-failures-2018-2025",
         "Sailfish-HoodCountyTX-ComancheCircle-aquifer-moratorium-2025-2026"
       ],
-      "display_section": "potential"
+      "display_section": "potential",
+      "outcome_type": [
+        "pending-undecided"
+      ]
     },
     {
       "case_id": "Chemours-MultiState-PFAS-TSCA-CWA-RCRA-2026",
@@ -3290,6 +3589,10 @@
         "tsca-8e-substantial-risk",
         "cwa-402-npdes",
         "rcra-7002-7003-endangerment"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree"
       ]
     },
     {
@@ -3329,6 +3632,10 @@
         "US-v-Alisal-Water-Corp-2005",
         "Bessemer-AL-Hyperscale-WaterSupply-2025",
         "Meta-RichlandParish-LA-WaterSupply-2025"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree"
       ]
     },
     {
@@ -3359,6 +3666,9 @@
         "Flint-MI-SDWA-1431-2016",
         "US-v-Alisal-Water-Corp-2005",
         "QTS-Fayette-GA-unbilled-water-2026"
+      ],
+      "outcome_type": [
+        "compliance-order"
       ]
     },
     {
@@ -3398,6 +3708,10 @@
       "display_section": "historical",
       "authorities": [
         "eqap-interstate-aquifer"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed",
+        "dismissed-no-liability"
       ]
     },
     {
@@ -3432,6 +3746,9 @@
       "display_section": "historical",
       "authorities": [
         "eqap-commerce-clause"
+      ],
+      "outcome_type": [
+        "jurisdiction-narrowed"
       ]
     },
     {
@@ -3466,6 +3783,9 @@
       "display_section": "historical",
       "authorities": [
         "ptd-reopener"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed"
       ]
     },
     {
@@ -3506,6 +3826,9 @@
       "authorities": [
         "ptd-groundwater-nexus",
         "gwmgmt-sgma"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed"
       ]
     },
     {
@@ -3540,6 +3863,9 @@
       "display_section": "historical",
       "authorities": [
         "ptd-precautionary"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed"
       ]
     },
     {
@@ -3579,6 +3905,9 @@
       "display_section": "historical",
       "authorities": [
         "gw-ownership-takings"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed"
       ]
     },
     {
@@ -3613,6 +3942,10 @@
       "display_section": "historical",
       "authorities": [
         "well-cumulative-impact"
+      ],
+      "outcome_type": [
+        "permit-issued",
+        "jurisdiction-affirmed"
       ]
     },
     {
@@ -3652,6 +3985,9 @@
       "display_section": "historical",
       "authorities": [
         "cl-negligent-subsidence"
+      ],
+      "outcome_type": [
+        "dismissed-no-liability"
       ]
     },
     {
@@ -3691,6 +4027,9 @@
       "display_section": "historical",
       "authorities": [
         "cl-citizen-standing-limit"
+      ],
+      "outcome_type": [
+        "dismissed-no-liability"
       ]
     },
     {
@@ -3725,6 +4064,9 @@
       "display_section": "historical",
       "authorities": [
         "util-shortage-moratorium"
+      ],
+      "outcome_type": [
+        "dismissed-no-liability"
       ]
     },
     {
@@ -3764,6 +4106,9 @@
       "display_section": "historical",
       "authorities": [
         "esa-proximate-cause-limit"
+      ],
+      "outcome_type": [
+        "dismissed-no-liability"
       ]
     },
     {
@@ -3803,6 +4148,9 @@
       "display_section": "historical",
       "authorities": [
         "tribal-winters"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed"
       ]
     },
     {
@@ -3842,6 +4190,9 @@
       "display_section": "historical",
       "authorities": [
         "tribal-groundwater"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed"
       ]
     },
     {
@@ -3881,6 +4232,9 @@
       "display_section": "historical",
       "authorities": [
         "sepa-supply-adequacy"
+      ],
+      "outcome_type": [
+        "permit-denied"
       ]
     }
   ]

@@ -476,3 +476,50 @@ class TestTaxonomyConstants:
         assert set(taxonomies.INSTRUMENT_TYPE_LABELS) == set(
             taxonomies.INSTRUMENT_TYPE_COLORS
         )
+
+
+class TestOutcomeTypes:
+    """Spec C3 piece 2 — what actually happened, not just what it was about."""
+
+    @staticmethod
+    def _cases():
+        return loaders.load_cwa_investigations()["cases"]
+
+    def test_every_case_has_an_outcome_type(self):
+        for case in self._cases():
+            assert case.get("outcome_type"), case["case_id"]
+
+    def test_values_are_in_the_closed_taxonomy(self):
+        for case in self._cases():
+            for t in case["outcome_type"]:
+                assert t in taxonomies.OUTCOME_TYPE_LABELS, (case["case_id"], t)
+
+    def test_no_duplicates(self):
+        for case in self._cases():
+            types = case["outcome_type"]
+            assert len(types) == len(set(types)), case["case_id"]
+
+    def test_every_taxonomy_value_is_used(self):
+        used = {t for c in self._cases() for t in c["outcome_type"]}
+        assert set(taxonomies.OUTCOME_TYPE_LABELS) == used, (
+            f"unused: {sorted(set(taxonomies.OUTCOME_TYPE_LABELS) - used)}"
+        )
+
+    def test_undecided_matters_are_tagged_pending(self):
+        """These records open with PENDING when nothing has been decided. The
+        classifier reads prose, and an undecided matter's prose describes what
+        is *proposed* — so without this the proposal reads as the outcome."""
+        for case in self._cases():
+            if case["outcome"].strip().lower().startswith("pending"):
+                assert "pending-undecided" in case["outcome_type"], case["case_id"]
+
+    def test_negated_enforcement_is_not_recorded_as_enforcement(self):
+        """'No formal NOV or consent order issued' must not yield a consent
+        decree. Phrase matching cannot see negation; the classifier strips
+        negated clauses, and this is the regression guard."""
+        by_id = {c["case_id"]: c for c in self._cases()}
+        for case_id in ("Nscale-MasonCounty-WV-2026", "Meta-MorganCo-GA-investigation-2026"):
+            if case_id in by_id:
+                types = by_id[case_id]["outcome_type"]
+                assert "consent-decree" not in types, case_id
+                assert "monetary-penalty" not in types, case_id
