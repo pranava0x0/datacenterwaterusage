@@ -575,3 +575,85 @@ class TestClaimLifecycle:
         for claim in self._claims():
             for site_id in claim.get("related_site_ids", []):
                 assert reg[site_id].kind == "site", (claim["id"], site_id)
+
+
+class TestSiteDoctrineMappings:
+    """Spec C3 piece 1 — the join from doctrine to tracked fact pattern."""
+
+    @staticmethod
+    def _readings():
+        return {
+            r["reading_id"]: r
+            for r in loaders.load_water_authorities()["readings"]
+        }
+
+    @classmethod
+    def _doctrine_ids(cls):
+        federal = {"CWA", "SDWA", "TSCA", "RCRA", "RHA"}
+        return {
+            rid
+            for rid, r in cls._readings().items()
+            if r["statute"] not in federal
+        }
+
+    def test_doctrine_registry_actually_reaches_sites(self):
+        """Before this spec the 12 doctrine families existed and no site
+        pointed at any of them — the engine was built and unplugged."""
+        doctrine = self._doctrine_ids()
+        sites = loaders.load_dc_water_conflicts()["sites"]
+        mapped = [
+            s
+            for s in sites
+            if any(m["reading_id"] in doctrine for m in s["applicable_readings"])
+        ]
+        assert len(mapped) >= 18, f"only {len(mapped)} of {len(sites)} sites mapped"
+
+    def test_every_doctrine_family_reaches_some_site(self):
+        """A family nobody can reach is a reading list, not a tool."""
+        readings = self._readings()
+        doctrine = self._doctrine_ids()
+        reached = {
+            readings[m["reading_id"]]["statute"]
+            for s in loaders.load_dc_water_conflicts()["sites"]
+            for m in s["applicable_readings"]
+            if m["reading_id"] in doctrine
+        }
+        expected = {readings[rid]["statute"] for rid in doctrine}
+        assert expected == reached, f"unreached: {sorted(expected - reached)}"
+
+    def test_negative_mappings_exist_and_are_marked(self):
+        """Knowing where a doctrine fails is product-valuable, but it must
+        never be mistaken for exposure."""
+        negatives = [
+            m
+            for s in loaders.load_dc_water_conflicts()["sites"]
+            for m in s["applicable_readings"]
+            if m.get("reaches") is False
+        ]
+        assert len(negatives) >= 4
+        for m in negatives:
+            assert len(m.get("how", "")) > 80
+
+    def test_negative_mappings_render_under_their_own_heading(self):
+        import dashboard as dash
+
+        readings_by_id = dash._readings_by_id()
+        case_ids = {c["case_id"] for c in loaders.load_cwa_investigations()["cases"]}
+        for site in loaders.load_dc_water_conflicts()["sites"]:
+            negatives = [
+                m for m in site["applicable_readings"] if m.get("reaches") is False
+            ]
+            out = dash._build_conflict_site_html(site, readings_by_id, case_ids)
+            heading = "Doctrines that do NOT reach this site"
+            assert (heading in out) == bool(negatives), site["site_id"]
+            assert out.count("cwa-pathway-negative") == len(negatives), site["site_id"]
+
+    def test_mapping_copy_stays_modal(self):
+        """The tracker maps exposure; it does not predict outcomes. Flag the
+        assertive constructions that would turn a mapping into a prediction."""
+        banned = ("will win", "will succeed", "should sue", "is liable", "will be liable")
+        for site in loaders.load_dc_water_conflicts()["sites"]:
+            for m in site["applicable_readings"]:
+                low = m.get("how", "").lower()
+                for phrase in banned:
+                    assert phrase not in low, (site["site_id"], m["reading_id"], phrase)

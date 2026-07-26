@@ -1498,7 +1498,9 @@ class TestDcWaterConflictsSchema:
         for s in self._sites():
             out = dash._build_conflict_site_html(s, rbi, case_ids)
             assert f'id="site-{s["site_id"]}"' in out
-            assert "Which statutory readings could apply" in out
+            # Renamed from "statutory readings" when the registry grew beyond
+            # federal statutes — a public-trust reopener is not statutory.
+            assert "Which legal readings could apply" in out
             first = s["applicable_readings"][0]["reading_id"]
             assert f'href="#reading-{first}"' in out
 

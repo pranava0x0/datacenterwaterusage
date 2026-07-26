@@ -505,6 +505,14 @@
     line-height: 1.5;
     border-radius: 0 0.25rem 0.25rem 0;
 }
+/* A doctrine that does NOT reach a site. Neutral grey rather than the amber
+   of a live pathway: the information is valuable but must not read as
+   exposure. */
+.cwa-pathway-negative {
+    background: #f6f7f8;
+    border-left: 3px solid #9ca3af;
+    color: #4b5563;
+}
 .cwa-analogs {
     margin-top: 0.35rem;
     font-size: 0.85rem;

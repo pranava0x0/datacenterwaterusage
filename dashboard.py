@@ -3026,31 +3026,46 @@ def _build_conflict_site_html(
         )
     readings = site.get("applicable_readings", [])
     if readings:
-        items = []
-        for ar in readings:
+
+        def _reading_item(ar: dict, negative: bool) -> str:
             reading = readings_by_id.get(ar.get("reading_id"))
             label = (
                 _reading_link_html(reading)
                 if reading
                 else esc(ar.get("reading_id", ""))
             )
-            analog_html = ""
             analogs = ar.get("analogous_cases", [])
-            if analogs:
-                analog_html = (
-                    '<div class="cwa-analogs">Historical cases: '
-                    f'{_case_links_html(analogs, case_ids)}</div>'
-                )
-            items.append(
+            analog_html = (
+                '<div class="cwa-analogs">Historical cases: '
+                f'{_case_links_html(analogs, case_ids)}</div>'
+                if analogs
+                else ""
+            )
+            body_class = "cwa-pathway cwa-pathway-negative" if negative else "cwa-pathway"
+            return (
                 f'<div class="conflict-reading"><strong>{label}</strong>'
-                f'<div class="cwa-pathway">{esc(ar.get("how", ""))}'
+                f'<div class="{body_class}">{esc(ar.get("how", ""))}'
                 f"{analog_html}</div></div>"
             )
-        sections.append(
-            '<div class="bill-section-label">'
-            "Which statutory readings could apply</div>"
-            f'{"".join(items)}'
-        )
+
+        # Split positive from negative mappings. A doctrine that does NOT reach
+        # a site is genuinely useful — it stops an advocacy claim before it is
+        # made — but it must never be mistaken for one that does, so the two
+        # get separate headings and separate treatment.
+        applies = [ar for ar in readings if ar.get("reaches") is not False]
+        does_not = [ar for ar in readings if ar.get("reaches") is False]
+        if applies:
+            sections.append(
+                '<div class="bill-section-label">'
+                "Which legal readings could apply</div>"
+                f'{"".join(_reading_item(ar, False) for ar in applies)}'
+            )
+        if does_not:
+            sections.append(
+                '<div class="bill-section-label">'
+                "Doctrines that do NOT reach this site</div>"
+                f'{"".join(_reading_item(ar, True) for ar in does_not)}'
+            )
     detail_sections = []
     related = site.get("related_case_ids", [])
     if related:
