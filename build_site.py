@@ -401,6 +401,7 @@ def build_cwa_tab() -> str:
     # Sort like the app: category order, then year descending; wrap each card in
     # a div carrying machine-readable category + type + end-year for filtering.
     all_ids = {c.get("case_id") for c in cases}
+    cases_by_id = {c["case_id"]: c for c in cases}
     sorted_hist = sorted(
         historical,
         key=lambda c: (
@@ -437,10 +438,11 @@ def build_cwa_tab() -> str:
 
     # Part 4: DC sites with documented water conflicts.
     site_cards = "".join(
-        dash._build_conflict_site_html(s, readings_by_id, all_ids)
+        dash._build_conflict_site_html(s, readings_by_id, all_ids, cases_by_id)
         for s in conflict_sites
     )
     conflicts_updated = conflicts_payload.get("last_updated") or "unknown"
+    doctrine_matrix = dash._build_site_doctrine_matrix_html(conflict_sites, readings_by_id)
 
     # Issue-type filter for Part 4 — the question the prose summaries could
     # only answer by being read: which of these are aquifer fights? Ordered by
@@ -539,6 +541,8 @@ def build_cwa_tab() -> str:
     moratoriums. Each card maps the fact pattern to the statutory readings from Part 1
     that could reach it, citing the historical cases that show each reading in use.
     Readings overlap by design.</p>
+    <h4 class="solution-cat-header">Which doctrines are in play where</h4>
+    {doctrine_matrix}
     <div class="cwa-filters">
       <span class="filter-label">Issue type:</span>
       <div class="cwa-types">{issue_boxes}</div>

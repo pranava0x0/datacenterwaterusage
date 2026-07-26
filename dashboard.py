@@ -2748,12 +2748,19 @@ def render_cwa_tracker():
                 "community pushback — supply strain, dried wells, discharge "
                 "fights, secrecy, moratoriums. Each card maps the fact pattern to "
                 "the statutory readings from Part 1 that could reach it, citing "
+                "the legal readings from Part 1 that could reach it, citing "
                 "the historical cases that show each reading in use. Readings "
                 "overlap by design."
             )
+            st.markdown("#### Which doctrines are in play where")
+            st.markdown(
+                _build_site_doctrine_matrix_html(sites, readings_by_id),
+                unsafe_allow_html=True,
+            )
+            cases_by_id = {c["case_id"]: c for c in cases}
             st.markdown(
                 "".join(
-                    _build_conflict_site_html(s, readings_by_id, all_ids)
+                    _build_conflict_site_html(s, readings_by_id, all_ids, cases_by_id)
                     for s in sites
                 ),
                 unsafe_allow_html=True,
@@ -2973,8 +2980,130 @@ def _build_authorities_html(payload: dict, case_ids: set[str] | None = None) -> 
     return "".join(blocks)
 
 
+def _site_outcome_profile(site: dict, cases_by_id: dict) -> list[tuple[str, int]]:
+    """Outcome types across every case a site points at, commonest first.
+
+    Derived at render rather than stored, so it can never drift from the
+    ``outcome_type`` values it summarizes — the same rule the statute pills
+    follow. Counts each case once even where several readings cite it, so a
+    heavily cross-referenced precedent does not dominate the profile.
+    """
+    seen: set[str] = set()
+    for mapping in site.get("applicable_readings", []):
+        # Negative mappings say a doctrine does NOT reach the site; their
+        # historical cases are counter-examples, not the site's likely path.
+        if mapping.get("reaches") is False:
+            continue
+        seen.update(mapping.get("analogous_cases", []) or [])
+    seen.update(site.get("related_case_ids", []) or [])
+
+    counts: dict[str, int] = {}
+    for case_id in seen:
+        case = cases_by_id.get(case_id)
+        if not case:
+            continue
+        for otype in case.get("outcome_type", []):
+            counts[otype] = counts.get(otype, 0) + 1
+    return sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
+
+
+def _build_site_outcome_note_html(site: dict, cases_by_id: dict) -> str:
+    """'What has happened in comparable matters' line for a conflict-site card.
+
+    Reports the historical record's shape without predicting this site's
+    outcome — the distinction the copy rule in the plan turns on.
+    """
+    profile = _site_outcome_profile(site, cases_by_id)
+    if not profile:
+        return ""
+    top = profile[:3]
+    parts = [
+        f"{OUTCOME_TYPE_LABELS.get(otype, otype).lower()} ({n})" for otype, n in top
+    ]
+    listed = ", ".join(parts[:-1]) + (f" and {parts[-1]}" if len(parts) > 1 else parts[-1])
+    total = sum(n for _, n in profile)
+    return (
+        '<div class="conflict-outcome-note">'
+        f"<strong>How comparable matters resolved:</strong> across the cases this "
+        f"site maps to, the recorded outcomes were most often {html.escape(listed)}"
+        f" — {total} outcome tags in total. Historical pattern only; it does not "
+        "predict what happens here."
+        "</div>"
+    )
+
+
+def _build_site_doctrine_matrix_html(sites: list[dict], readings_by_id: dict) -> str:
+    """Site x authority-family matrix — which doctrines are in play where.
+
+    The precedent engine's product face: one glance answers "what kind of law
+    is this fight actually about?" across the whole roster, which no amount of
+    reading individual cards gives you. Cells count mapped readings; a cell
+    marked with a dash is a doctrine explicitly recorded as NOT reaching that
+    site, which is information rather than absence.
+    """
+    if not sites:
+        return ""
+
+    grid: dict[str, dict[str, int]] = {}
+    negatives: dict[str, set[str]] = {}
+    for site in sites:
+        row: dict[str, int] = {}
+        neg: set[str] = set()
+        for mapping in site.get("applicable_readings", []):
+            reading = readings_by_id.get(mapping.get("reading_id"))
+            if not reading:
+                continue
+            family = reading["statute"]
+            if mapping.get("reaches") is False:
+                neg.add(family)
+            else:
+                row[family] = row.get(family, 0) + 1
+        grid[site["site_id"]] = row
+        negatives[site["site_id"]] = neg
+
+    families = _ordered_statutes(
+        {f for row in grid.values() for f in row} | {f for n in negatives.values() for f in n}
+    )
+    if not families:
+        return ""
+
+    head = "".join(
+        f'<th title="{html.escape(load_water_authorities()["statutes"].get(f, {}).get("name", f))}">'
+        f"{html.escape(f)}</th>"
+        for f in families
+    )
+    rows = []
+    for site in sites:
+        sid = site["site_id"]
+        cells = []
+        for family in families:
+            count = grid[sid].get(family, 0)
+            if count:
+                cells.append(f'<td class="dm-hit">{count}</td>')
+            elif family in negatives[sid]:
+                cells.append('<td class="dm-neg" title="recorded as NOT reaching this site">&ndash;</td>')
+            else:
+                cells.append('<td class="dm-none"></td>')
+        rows.append(
+            f'<tr><th class="dm-site"><a href="#site-{html.escape(sid)}">'
+            f'{html.escape(site.get("site", sid))}</a></th>{"".join(cells)}</tr>'
+        )
+
+    return (
+        '<div class="doctrine-matrix"><div class="table-wrap">'
+        '<table class="data-table"><thead><tr><th>Site</th>'
+        f"{head}</tr></thead><tbody>{''.join(rows)}</tbody></table></div>"
+        '<p class="src-note">Cells count the legal readings mapped to each site. '
+        "&ndash; marks a doctrine explicitly recorded as <em>not</em> reaching that "
+        "site. Family codes are the accordions in Part 1.</p></div>"
+    )
+
+
 def _build_conflict_site_html(
-    site: dict, readings_by_id: dict, case_ids: set[str] | None = None
+    site: dict,
+    readings_by_id: dict,
+    case_ids: set[str] | None = None,
+    cases_by_id: dict | None = None,
 ) -> str:
     """One data-center conflict-site card: fact pattern → readings → cases."""
     esc = html.escape
@@ -3066,6 +3195,11 @@ def _build_conflict_site_html(
                 "Doctrines that do NOT reach this site</div>"
                 f'{"".join(_reading_item(ar, True) for ar in does_not)}'
             )
+    if cases_by_id:
+        note = _build_site_outcome_note_html(site, cases_by_id)
+        if note:
+            sections.append(note)
+
     detail_sections = []
     related = site.get("related_case_ids", [])
     if related:

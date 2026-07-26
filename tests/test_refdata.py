@@ -657,3 +657,129 @@ class TestSiteDoctrineMappings:
                 low = m.get("how", "").lower()
                 for phrase in banned:
                     assert phrase not in low, (site["site_id"], m["reading_id"], phrase)
+
+
+class TestDoctrineMatrixAndOutcomeNote:
+    """Spec C3 piece 3 + the matrix panel — both derived, never stored."""
+
+    @staticmethod
+    def _ctx():
+        import dashboard as dash
+
+        return (
+            loaders.load_dc_water_conflicts()["sites"],
+            dash._readings_by_id(),
+            {c["case_id"]: c for c in loaders.load_cwa_investigations()["cases"]},
+        )
+
+    def test_matrix_covers_every_site_and_family(self):
+        import dashboard as dash
+
+        sites, readings_by_id, _ = self._ctx()
+        out = dash._build_site_doctrine_matrix_html(sites, readings_by_id)
+        assert out
+        # One body row per site, and every family that reaches a site is a column.
+        assert out.count('<th class="dm-site">') == len(sites)
+        families = {
+            readings_by_id[m["reading_id"]]["statute"]
+            for s in sites
+            for m in s["applicable_readings"]
+            if m["reading_id"] in readings_by_id
+        }
+        for family in families:
+            assert f">{family}</th>" in out, family
+
+    def test_matrix_cell_counts_equal_mapped_readings(self):
+        """The matrix must agree with the cards it summarizes; a count that
+        drifts is worse than no matrix."""
+        import dashboard as dash
+        import re
+
+        sites, readings_by_id, _ = self._ctx()
+        out = dash._build_site_doctrine_matrix_html(sites, readings_by_id)
+        expected = sum(
+            1
+            for s in sites
+            for m in s["applicable_readings"]
+            if m["reading_id"] in readings_by_id and m.get("reaches") is not False
+        )
+        counted = sum(
+            int(n) for n in re.findall(r'class="dm-hit">(\d+)<', out)
+        )
+        assert counted == expected
+
+    def test_matrix_marks_negatives_distinctly(self):
+        import dashboard as dash
+
+        sites, readings_by_id, _ = self._ctx()
+        out = dash._build_site_doctrine_matrix_html(sites, readings_by_id)
+        negatives = sum(
+            1
+            for s in sites
+            for m in s["applicable_readings"]
+            if m.get("reaches") is False
+        )
+        assert out.count('class="dm-neg"') == negatives
+
+    def test_matrix_site_links_use_registry_anchors(self):
+        import dashboard as dash
+
+        sites, readings_by_id, _ = self._ctx()
+        out = dash._build_site_doctrine_matrix_html(sites, readings_by_id)
+        reg = registry.build_registry()
+        for site in sites:
+            assert f'href="#{reg[site["site_id"]].anchor}"' in out, site["site_id"]
+
+    def test_outcome_note_excludes_negative_mappings(self):
+        """A negative mapping's historical cases are counter-examples. Counting
+        them would make 'how comparable matters resolved' describe the wrong
+        matters."""
+        import dashboard as dash
+
+        sites, _, cases_by_id = self._ctx()
+        memphis = next(s for s in sites if s["site_id"] == "xai-colossus-memphis-tn")
+        profile = dict(dash._site_outcome_profile(memphis, cases_by_id))
+        negative_case_ids = {
+            cid
+            for m in memphis["applicable_readings"]
+            if m.get("reaches") is False
+            for cid in m.get("analogous_cases", [])
+        }
+        assert negative_case_ids, "fixture site has no negative mapping"
+        only_negative = negative_case_ids - {
+            cid
+            for m in memphis["applicable_readings"]
+            if m.get("reaches") is not False
+            for cid in m.get("analogous_cases", [])
+        } - set(memphis.get("related_case_ids", []))
+        for cid in only_negative:
+            for otype in cases_by_id[cid]["outcome_type"]:
+                # The tag may legitimately arrive from a positive mapping too;
+                # what must not happen is it arriving ONLY from the negative one.
+                contributed_elsewhere = any(
+                    otype in cases_by_id[o]["outcome_type"]
+                    for m in memphis["applicable_readings"]
+                    if m.get("reaches") is not False
+                    for o in m.get("analogous_cases", [])
+                    if o in cases_by_id
+                ) or any(
+                    otype in cases_by_id[o]["outcome_type"]
+                    for o in memphis.get("related_case_ids", [])
+                    if o in cases_by_id
+                )
+                if not contributed_elsewhere:
+                    assert otype not in profile, (cid, otype)
+
+    def test_outcome_note_is_framed_as_history_not_prediction(self):
+        import dashboard as dash
+
+        sites, _, cases_by_id = self._ctx()
+        rendered = 0
+        for site in sites:
+            note = dash._build_site_outcome_note_html(site, cases_by_id)
+            if not note:
+                continue
+            rendered += 1
+            assert "does not predict" in note, site["site_id"]
+            assert "How comparable matters resolved" in note
+        assert rendered >= 15
