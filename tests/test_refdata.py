@@ -523,3 +523,55 @@ class TestOutcomeTypes:
                 types = by_id[case_id]["outcome_type"]
                 assert "consent-decree" not in types, case_id
                 assert "monetary-penalty" not in types, case_id
+
+
+class TestClaimLifecycle:
+    """Spec A2 — made → assessed → challenged, not just a verdict."""
+
+    @staticmethod
+    def _claims():
+        return loaders.load_company_water_claims()["claims"]
+
+    def test_every_claim_has_a_type(self):
+        for claim in self._claims():
+            assert claim.get("claim_type") in taxonomies.CLAIM_TYPE_LABELS, claim["id"]
+
+    def test_every_claim_type_is_used(self):
+        used = {c["claim_type"] for c in self._claims()}
+        assert set(taxonomies.CLAIM_TYPE_LABELS) == used, (
+            f"unused: {sorted(set(taxonomies.CLAIM_TYPE_LABELS) - used)}"
+        )
+
+    def test_litigated_status_is_available_and_used(self):
+        """The value exists because a claim became a cause of action; if no
+        claim carries it, either the value or the AWS suit went missing."""
+        assert "litigated" in taxonomies.DELIVERED_STATUS_COLORS
+        statuses = {
+            (c.get("delivered") or {}).get("status") for c in self._claims()
+        }
+        assert "litigated" in statuses
+
+    def test_challenged_claims_name_a_real_case(self):
+        """Covered generically by the integrity suite; pinned here because
+        this edge is the point of the spec."""
+        challenged = [c for c in self._claims() if c.get("challenged_in")]
+        assert challenged, "no claim is recorded as challenged"
+        reg = registry.build_registry()
+        for claim in challenged:
+            for case_id in claim["challenged_in"]:
+                assert reg[case_id].kind == "case", (claim["id"], case_id)
+
+    def test_a_litigated_claim_is_also_flagged_in_its_assessment(self):
+        """A claim can be challenged without the assessment saying so, which
+        would show the badge and a stale 'partial' verdict side by side."""
+        for claim in self._claims():
+            if claim.get("challenged_in"):
+                assert (claim.get("delivered") or {}).get("status") == "litigated", (
+                    claim["id"]
+                )
+
+    def test_related_sites_resolve_to_sites(self):
+        reg = registry.build_registry()
+        for claim in self._claims():
+            for site_id in claim.get("related_site_ids", []):
+                assert reg[site_id].kind == "site", (claim["id"], site_id)

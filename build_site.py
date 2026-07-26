@@ -224,6 +224,10 @@ def build_company_claims() -> str:
         "partial": ("Partial", "partial"),
         "contested": ("Contested", "partial"),
         "shortfall": ("Shortfall", "shortfall"),
+        # A claim whose truth is before a court or regulator. Rendered in the
+        # shortfall (danger) treatment because the exposure is real, with copy
+        # that says the claim is being TESTED — the tracker does not adjudicate.
+        "litigated": ("Contested in court", "shortfall"),
     }
     for claim in claims:
         slug = claim.get("company_slug", "unknown")
@@ -247,6 +251,30 @@ def build_company_claims() -> str:
         if project_id:
             cap.append(f'Project: <code>{esc(str(project_id))}</code>')
         caption = f'<div class="claim-meta">{" · ".join(cap)}</div>' if cap else ""
+
+        # Classification and lifecycle row: what kind of promise this is, which
+        # tracked sites it is about, and whether it is under legal challenge.
+        chips = []
+        ctype = claim.get("claim_type")
+        if ctype in dash.CLAIM_TYPE_LABELS:
+            chips.append(
+                f'<span class="claim-type-pill">{esc(dash.CLAIM_TYPE_LABELS[ctype])}</span>'
+            )
+        for case_id in claim.get("challenged_in", []):
+            ref = dash.resolve_ref(case_id)
+            if ref:
+                chips.append(
+                    f'<a class="claim-challenge-pill" href="#{esc(ref.anchor)}">'
+                    f'&#9878; Challenged in court</a>'
+                )
+        for site_id in claim.get("related_site_ids", []):
+            ref = dash.resolve_ref(site_id)
+            if ref:
+                chips.append(
+                    f'<a class="claim-site-link" href="#{esc(ref.anchor)}">'
+                    f'&rarr; {esc(ref.label)}</a>'
+                )
+        chip_row = f'<div class="claim-chips">{"".join(chips)}</div>' if chips else ""
 
         box = ""
         delivered = claim.get("delivered")
@@ -272,7 +300,7 @@ def build_company_claims() -> str:
 
         parts.append(
             f'<div class="claim-card"><p class="claim-quote">“{statement}”</p>'
-            f'{caption}{box}</div>'
+            f'{caption}{chip_row}{box}</div>'
         )
 
     parts.append(
@@ -1173,6 +1201,11 @@ details.lazy .panel{margin:0}
 .claim-company{margin:1rem 0 .3rem;color:var(--blue)}
 .claim-card{border:1px solid #e2e8f0;border-radius:.5rem;background:#fff;padding:.8rem 1rem;margin:.5rem 0}
 .claim-quote{font-style:italic;margin:0 0 .4rem}
+.claim-chips{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin:.3rem 0 .45rem}
+.claim-type-pill{background:transparent;border:1px solid #6b7280;color:#4b5563;border-radius:999px;padding:.05rem .55rem;font-size:.72rem;font-weight:600}
+.claim-challenge-pill{background:#fdeaec;border:1px solid #c41e3a;color:#c41e3a;border-radius:999px;padding:.05rem .55rem;font-size:.72rem;font-weight:700;text-decoration:none}
+.claim-site-link{font-size:.78rem;color:#08519c;text-decoration:none}
+.claim-site-link:hover{text-decoration:underline}
 .claim-meta{color:#666;font-size:.8rem}
 .claim-status{margin-top:.6rem;padding:.6rem .8rem;border-radius:.35rem;font-size:.9rem}
 .claim-status-summary{margin-top:.3rem}

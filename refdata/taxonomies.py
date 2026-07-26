@@ -177,8 +177,10 @@ CWA_CASE_TYPE_LABELS = {
     "spills-contamination": "Spills, PFAS & contamination",
     "water-supply": "Water supply & drinking water",
     "legal-doctrine": "Citizen suits & court doctrine",
-    # Spec A2 adds "greenwashing-litigation" here with the AWS claims suit.
-    # Adding it early renders a filter chip that matches nothing.
+    # Added with the AWS claims suit (2026-07-26): consumer-protection theories
+    # attacking an operator's published water figures. No existing type fits —
+    # the defendant's own statements are the alleged violation.
+    "greenwashing-litigation": "Greenwashing & claims litigation",
 }
 
 # Did the Clean Water Act actually get used in this case? ("not-applied" also
@@ -234,6 +236,7 @@ WATER_STATUTE_ORDER = [
     "SEPA",
     "CL",
     "UTIL",
+    "SL",
 ]
 
 # Family pill colours. Colour carries *family identity* here — a lookup aid,
@@ -255,6 +258,7 @@ WATER_STATUTE_COLORS = {
     "SEPA": "#5b6b8a",
     "CL": "#6b7280",
     "UTIL": "#6b3fa0",
+    "SL": "#c41e3a",
 }
 
 
@@ -276,9 +280,7 @@ ISSUE_TYPE_LABELS = {
     "siting-zoning-defeat": "Siting & zoning defeat",
     "disclosure-gap": "Disclosure gap",
     "alt-source-adoption": "Alternative-source adoption",
-    # Spec A2 adds "pretreatment-potw" (Meta Cheyenne), "greenwashing-claims"
-    # (the AWS claims suit) and "indirect-power-water" with the sites and
-    # cases that need them.
+    "pretreatment-potw": "Pretreatment / POTW contamination",
 }
 
 ISSUE_TYPE_DESCRIPTIONS = {
@@ -293,6 +295,7 @@ ISSUE_TYPE_DESCRIPTIONS = {
     "siting-zoning-defeat": "Rezoning losses, siting rejections and the process fights around them.",
     "disclosure-gap": "Absent or non-standard facility-level reporting of actual water use.",
     "alt-source-adoption": "Shifts to greywater, reclaimed water or air cooling — the solutions edge of a conflict.",
+    "pretreatment-potw": "Contamination introduced into a municipal sewer or reclaimed-water system.",
 }
 
 
@@ -303,9 +306,11 @@ DELIVERED_STATUS_COLORS = {
     "partial": "warning",
     "contested": "warning",
     "shortfall": "danger",
-    # Spec A2 adds "litigated" here — a claim whose truth is now before a court
-    # or regulator, distinct from "contested" (assessors merely disagree)
-    # because a case_id, a docket and a decision date exist.
+    # Added with the AWS claims suit (2026-07-26). Distinct from "contested",
+    # where independent assessors merely disagree: here a case_id, a forum and
+    # a decision date exist. The label records that the claim is being tested,
+    # not that it is false.
+    "litigated": "danger",
 }
 
 # What kind of promise the claim is. Drives the claim-type chip and lets the

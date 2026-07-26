@@ -113,6 +113,13 @@
       "agencies": "Lead agencies under state review statutes; state courts",
       "kind": "state-doctrine",
       "url": "https://www.law.cornell.edu/wex/environmental_law"
+    },
+    "SL": {
+      "name": "State consumer-protection & claims law",
+      "full_name": "State deceptive-trade-practices and consumer-protection statutes as applied to environmental and water-sustainability claims",
+      "agencies": "State attorneys general; state courts; private plaintiffs",
+      "kind": "state-doctrine",
+      "url": "https://www.law.cornell.edu/wex/deceptive_trade_practices"
     }
   },
   "readings": [
@@ -610,6 +617,18 @@
       "dc_applicability": "The timing half of the supply-adequacy reading, and the reason state environmental review outranks most federal theories in practice for these projects: it can halt work while the dispute is live. Data-center construction moves faster than litigation, so a remedy that only arrives after the campus is built is not much of a remedy.",
       "example_case_ids": [
         "MCEA-PineIsland-MN-ProjectSkyway-2026"
+      ]
+    },
+    {
+      "reading_id": "sl-greenwashing-udap",
+      "statute": "SL",
+      "section": "State deceptive-trade-practices / consumer-protection statutes",
+      "name": "Water claims as a deceptive trade practice",
+      "agency": "State attorneys general; state courts; private plaintiffs",
+      "what_it_covers": "Statements a company makes to the public about its environmental performance, where those statements are alleged to be materially misleading. The subject of the claim is the company's own published figures rather than any discharge, withdrawal or permit, and the remedy sought is typically corrective disclosure and an accounting.",
+      "dc_applicability": "The one reading in this registry that does not require a permit, a discharge or an aquifer. It reaches the water-positive pledges and efficiency percentages that operators publish — which is significant because those figures are the industry's main public answer on water, and until 2026 nothing in the tracker connected a claim to a legal consequence. Its evidentiary base is utility billing records obtained by FOIA, so it is unusually available to outsiders compared with the hydrologic proof most other readings demand.",
+      "example_case_ids": [
+        "Wangusi-v-Amazon-Web-Services-VA-2026"
       ]
     }
   ]

@@ -20,6 +20,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import pytest
 
 from dashboard import (
+    DELIVERED_STATUS_COLORS as _DELIVERED_STATUS_COLORS,
     _extract_flow_mgd,
     _file_signature,
     _classify_source,
@@ -1157,7 +1158,11 @@ class TestMasleyComparisons:
 # --- Tests for Company Water Claims panel (mirrored from datacentercommunitybenefits) ---
 
 
-VALID_DELIVERED_STATUS = {"delivered", "partial", "contested", "shortfall"}
+# Derived, not duplicated: the renderer colours a claim by looking this value
+# up, so a status the map does not know renders unstyled. Hardcoding the set
+# here meant adding "litigated" to the taxonomy failed a test that had no
+# opinion about it.
+VALID_DELIVERED_STATUS = set(_DELIVERED_STATUS_COLORS)
 
 
 class TestCompanyWaterClaims:

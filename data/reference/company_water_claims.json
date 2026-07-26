@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-06-27",
+  "last_updated": "2026-07-26",
   "source_repo": "pranava0x0/datacentercommunitybenefits",
   "source_path": "docs/data/claims.json",
   "live_dashboard": "https://pranava0x0.github.io/datacentercommunitybenefits/",
@@ -34,11 +34,12 @@
       "captured_at": "2026-05-14",
       "delivered": {
         "status": "partial",
-        "summary": "Google continues to expand water-replenishment partnerships (Chattahoochee Trust for Public Land at LaGrange; regenerative-agriculture program in Oklahoma); however reported emissions grew 48% year-over-year as AI demand scaled, casting doubt on whether the 120% 2030 target's underlying intensity assumptions hold.",
-        "source_url": "https://www.wric.com/news/local-news/chesterfield-county/google-advancing-project-peanut/",
-        "source_title": "WRIC 8News — Google's 48% YoY emissions increase referenced in Chesterfield coverage",
-        "assessed_at": "2026-05-17"
-      }
+        "summary": "Reframed rather than retired. Google's June 2026 announcement leads with replenishing 'more water than we consume' across data centers by 2030; the 120% figure remains in the supporting technical documentation, so the target stands while the headline softened. Progress is real and large — 165 projects across 97 watersheds, $17M committed across seven states, and projects expected to replenish over 19 billion gallons a year by 2030, roughly double 2024 consumption — but replenishment is watershed-level and does not by itself answer local strain where a campus actually draws.",
+        "source_url": "https://blog.google/company-news/outreach-and-initiatives/sustainability/new-water-stewardship-commitments/",
+        "source_title": "Google — New water stewardship commitments (June 2026)",
+        "assessed_at": "2026-07-26"
+      },
+      "claim_type": "water-positive-pledge"
     },
     {
       "id": "meta-water-positive-2030",
@@ -54,7 +55,12 @@
         "source_url": "https://datacenters.atmeta.com/2026/04/restoring-water-in-our-data-center-communities/",
         "source_title": "Meta Data Centers — Restoring Water in Our Data Center Communities (Apr 2026)",
         "assessed_at": "2026-05-17"
-      }
+      },
+      "claim_type": "water-positive-pledge",
+      "related_site_ids": [
+        "meta-cheyenne-wy",
+        "meta-newton-county-ga"
+      ]
     },
     {
       "id": "ms-water-positive-2030",
@@ -66,11 +72,12 @@
       "captured_at": "2026-05-14",
       "delivered": {
         "status": "partial",
-        "summary": "Microsoft reports continued investment in water-replenishment projects, but Bloomberg reported May 6 2026 that the hourly-matched 2030 clean-power target is under internal review as AI growth strains 100/100/0 commitments; water-positive 2030 target remains official but contested internally.",
-        "source_url": "https://www.bloomberg.com/news/articles/2026-05-06/microsoft-clean-power-target-on-chopping-block-over-data-center-boom",
-        "source_title": "Bloomberg — Microsoft clean-power target on chopping block over data-center boom (May 6 2026)",
-        "assessed_at": "2026-05-17"
-      }
+        "summary": "Microsoft reported in June 2026 that in FY25 it replenished more water than it withdrew — the 2030 pledge met roughly five years early, but as a GLOBAL AGGREGATE. Replenishment credited in one basin does not reach a community where a campus draws, so the milestone is real at company scale and unverified at the scale communities experience. Independent basin-level adjudication does not exist.",
+        "source_url": "https://blogs.microsoft.com/blog/2026/06/24/inside-microsofts-two-decade-push-to-cut-water-intensity-while-scaling-for-growth/",
+        "source_title": "Microsoft — Inside Microsoft's two-decade push to cut water intensity",
+        "assessed_at": "2026-07-26"
+      },
+      "claim_type": "water-positive-pledge"
     },
     {
       "id": "qts-water-water-free-design",
@@ -86,7 +93,8 @@
         "source_url": "https://thecitizen.com/2026/05/11/behind-fayettes-qts-water-controversy-a-missed-meter-8000-workers-and-a-massive-construction-project/",
         "source_title": "The Citizen — Behind Fayette's QTS Water Controversy (29M unmetered gallons, May 11 2026)",
         "assessed_at": "2026-05-17"
-      }
+      },
+      "claim_type": "zero-water-design"
     },
     {
       "id": "xai-memphis-tn-water-recycling-80m",
@@ -108,7 +116,11 @@
         "source_url": "https://www.actionnews5.com/2026/04/09/xai-pauses-plans-build-water-recycling-plant-memphis/",
         "source_title": "Action News 5 — xAI pauses then recommits to Memphis water-recycling plant (Apr 9 2026)",
         "assessed_at": "2026-05-17"
-      }
+      },
+      "claim_type": "site-specific-promise",
+      "related_site_ids": [
+        "xai-colossus-memphis-tn"
+      ]
     },
     {
       "id": "aws-water-positive-2030",
@@ -117,7 +129,18 @@
       "statement": "AWS is committed to being water positive by 2030, returning more water to communities than we use in our direct operations.",
       "source_url": "https://aws.amazon.com/sustainability/water-positive/",
       "source_title": "AWS Water Positive by 2030",
-      "captured_at": "2026-05-14"
+      "captured_at": "2026-05-14",
+      "claim_type": "water-positive-pledge",
+      "challenged_in": [
+        "Wangusi-v-Amazon-Web-Services-VA-2026"
+      ],
+      "delivered": {
+        "status": "litigated",
+        "summary": "AWS's published Northern Virginia water figures are now before the Circuit Court of Arlington County. A former AWS water sustainability program manager alleges, on FOIA'd utility billing records for 2023-2026, that the company's '42% year-over-year reduction' and 'ninety-seven percent of the year ... not using any water' statements are materially misleading. AWS denies wrongdoing and says its water data is independently assured by a third party. No ruling as of 2026-07-26 — this records that the claim is contested in a forum, not that it is false.",
+        "source_url": "https://www.theregister.com/on-prem/2026/07/15/aws-sustainability-claims-dont-hold-water-lawsuit-alleges/5269723",
+        "source_title": "The Register — AWS sustainability claims don't hold water, lawsuit alleges",
+        "assessed_at": "2026-07-26"
+      }
     },
     {
       "id": "aws-loudoun-va-water-recycled",
@@ -127,7 +150,11 @@
       "source_url": "https://www.aboutamazon.com/news/aws/aws-data-center-economic-impact-study",
       "source_title": "5 ways AWS data centers benefit local communities",
       "captured_at": "2026-05-14",
-      "project_id": "aws-loudoun-va"
+      "project_id": "aws-loudoun-va",
+      "claim_type": "site-specific-promise",
+      "related_site_ids": [
+        "pw-digital-gateway-va"
+      ]
     },
     {
       "id": "amazon-clinton-water-wehner-2026",
@@ -143,7 +170,8 @@
         "unit": "gallons",
         "kind": "water_use_design"
       },
-      "project_id": "amazon-clinton-ms"
+      "project_id": "amazon-clinton-ms",
+      "claim_type": "site-specific-promise"
     },
     {
       "id": "anthropic-water-cooling-framework",
@@ -153,7 +181,8 @@
       "source_url": "https://www.anthropic.com/news/covering-electricity-price-increases",
       "source_title": "Anthropic — Covering electricity price increases from our data centers (Feb 2026)",
       "captured_at": "2026-05-15",
-      "published_at": "2026-02-11"
+      "published_at": "2026-02-11",
+      "claim_type": "zero-water-design"
     },
     {
       "id": "coreweave-water-uk-closedloop-intrator",
@@ -163,7 +192,8 @@
       "source_url": "https://www.coreweave.com/news/coreweave-announces-significant-commitment-to-power-uk-ai-innovation-and-growth",
       "source_title": "CoreWeave — Michael Intrator (Chairman & CEO) on UK closed-loop cooling commitment",
       "captured_at": "2026-05-15",
-      "published_at": "2024-05-20"
+      "published_at": "2024-05-20",
+      "claim_type": "zero-water-design"
     },
     {
       "id": "crusoe-water-abilene-closed-loop",
@@ -174,7 +204,8 @@
       "source_title": "Crusoe — An inside look at the Abilene AI data center",
       "captured_at": "2026-05-15",
       "published_at": "2025-08-05",
-      "project_id": "crusoe-abilene-tx"
+      "project_id": "crusoe-abilene-tx",
+      "claim_type": "zero-water-design"
     },
     {
       "id": "google-council-bluffs-ia-water-grade-stabilization",
@@ -189,7 +220,8 @@
         "unit": "usd",
         "kind": "community_investment"
       },
-      "project_id": "google-council-bluffs-ia"
+      "project_id": "google-council-bluffs-ia",
+      "claim_type": "site-specific-promise"
     },
     {
       "id": "google-mesa-az-water-srp-donation",
@@ -204,7 +236,11 @@
         "unit": "usd",
         "kind": "community_investment"
       },
-      "project_id": "google-mesa-az"
+      "project_id": "google-mesa-az",
+      "claim_type": "site-specific-promise",
+      "related_site_ids": [
+        "meta-mesa-microsoft-goodyear-az"
+      ]
     },
     {
       "id": "google-mesa-az-water-stewardship",
@@ -214,7 +250,11 @@
       "source_url": "https://www.aztechcouncil.org/google-announces-new-commitment-to-arizona-breaks-ground-on-600m-data-center/",
       "source_title": "Google announces new commitment to Arizona, breaks ground on $600M data center - Arizona Technology Council",
       "captured_at": "2026-05-14",
-      "project_id": "google-mesa-az"
+      "project_id": "google-mesa-az",
+      "claim_type": "site-specific-promise",
+      "related_site_ids": [
+        "meta-mesa-microsoft-goodyear-az"
+      ]
     },
     {
       "id": "meta-prineville-or-water-stewardship-pdf",
@@ -225,7 +265,8 @@
       "source_title": "Meta's Prineville Data Center (2025 info sheet)",
       "captured_at": "2026-05-14",
       "published_at": "2025-02-01",
-      "project_id": "meta-prineville-or"
+      "project_id": "meta-prineville-or",
+      "claim_type": "site-specific-promise"
     },
     {
       "id": "meta-newton-ga-water-onsite-efficiency",
@@ -236,7 +277,11 @@
       "source_title": "Meta Stanton Springs Data Center (Dec 2025 info sheet)",
       "captured_at": "2026-05-14",
       "published_at": "2025-12-01",
-      "project_id": "meta-newton-ga"
+      "project_id": "meta-newton-ga",
+      "claim_type": "efficiency-wue",
+      "related_site_ids": [
+        "meta-newton-county-ga"
+      ]
     },
     {
       "id": "meta-richland-la-water-restoration-watersheds",
@@ -247,7 +292,11 @@
       "source_title": "One Year In: Meta's Richland Parish Data Center Supports Louisiana Economy With $875M In Contracts",
       "captured_at": "2026-05-14",
       "published_at": "2025-12-01",
-      "project_id": "meta-richland-la"
+      "project_id": "meta-richland-la",
+      "claim_type": "site-specific-promise",
+      "related_site_ids": [
+        "meta-richland-parish-la"
+      ]
     },
     {
       "id": "meta-beaver-dam-water-davis-2025",
@@ -263,7 +312,8 @@
         "unit": "percent",
         "kind": "water_restored"
       },
-      "project_id": "meta-beaver-dam-wi"
+      "project_id": "meta-beaver-dam-wi",
+      "claim_type": "site-specific-promise"
     },
     {
       "id": "ms-quincy-wa-water-reuse",
@@ -278,7 +328,8 @@
         "unit": "gallons",
         "kind": "operational"
       },
-      "project_id": "ms-quincy-wa"
+      "project_id": "ms-quincy-wa",
+      "claim_type": "site-specific-promise"
     },
     {
       "id": "ms-mt-pleasant-wi-water-modest",
@@ -288,7 +339,11 @@
       "source_url": "https://blogs.microsoft.com/on-the-issues/2025/09/18/made-in-wisconsin-the-worlds-most-powerful-ai-datacenter/",
       "source_title": "Made in Wisconsin: The world's most powerful AI datacenter",
       "captured_at": "2026-05-14",
-      "project_id": "ms-mt-pleasant-wi"
+      "project_id": "ms-mt-pleasant-wi",
+      "claim_type": "efficiency-wue",
+      "related_site_ids": [
+        "microsoft-racine-county-wi"
+      ]
     },
     {
       "id": "ms-water-replenish-2026",
@@ -298,7 +353,8 @@
       "source_url": "https://blogs.microsoft.com/on-the-issues/2026/01/13/community-first-ai-infrastructure/",
       "source_title": "Microsoft — Building Community-First AI Infrastructure (Brad Smith, Jan 13, 2026)",
       "captured_at": "2026-05-15",
-      "published_at": "2026-01-13"
+      "published_at": "2026-01-13",
+      "claim_type": "water-positive-pledge"
     },
     {
       "id": "nebius-water-closed-loop",
@@ -307,7 +363,8 @@
       "statement": "Due to the innovative closed-loop water cooling design, the facility will require minimal annual water needs.",
       "source_url": "https://nebius.com/independencemo",
       "source_title": "Nebius x Independence, Missouri",
-      "captured_at": "2026-05-15"
+      "captured_at": "2026-05-15",
+      "claim_type": "zero-water-design"
     },
     {
       "id": "openai-water-stargate-community-2026",
@@ -318,7 +375,8 @@
       "source_title": "OpenAI — Stargate Community (water-cooling commitment, verified verbatim via The Register Jan 21 2026 citation)",
       "captured_at": "2026-05-16",
       "published_at": "2026-01-21",
-      "project_id": "openai-abilene-tx"
+      "project_id": "openai-abilene-tx",
+      "claim_type": "zero-water-design"
     },
     {
       "id": "oracle-water-closed-loop-2026",
@@ -328,7 +386,8 @@
       "source_url": "https://www.oracle.com/news/announcement/blog/closed-loop-cooling-in-oracle-ai-data-centers-2026-02-09/",
       "source_title": "Oracle blog — Closed-loop cooling in Oracle AI data centers",
       "captured_at": "2026-05-16",
-      "published_at": "2026-02-09"
+      "published_at": "2026-02-09",
+      "claim_type": "zero-water-design"
     },
     {
       "id": "oracle-abilene-water-magouyrk-2025",
@@ -339,7 +398,8 @@
       "source_title": "CNBC — Clay Magouyrk (Oracle Co-CEO) on Abilene Stargate water design",
       "captured_at": "2026-05-16",
       "published_at": "2025-09-23",
-      "project_id": "oracle-abilene-tx"
+      "project_id": "oracle-abilene-tx",
+      "claim_type": "zero-water-design"
     },
     {
       "id": "wonder-valley-water-oleary-salt-lake-2026",
@@ -349,7 +409,8 @@
       "source_url": "https://kutv.com/news/local/kevin-o-leary-addresses-water-concerns-claims-data-center-wont-drain-great-salt-lake",
       "source_title": "KUTV — Kevin O'Leary on Wonder Valley water concerns and Great Salt Lake (May 10, 2026)",
       "captured_at": "2026-05-15",
-      "published_at": "2026-05-10"
+      "published_at": "2026-05-10",
+      "claim_type": "disclosure-transparency"
     },
     {
       "id": "wonder-valley-water-oleary-env-studies-2026",
@@ -360,7 +421,8 @@
       "source_title": "KPCW — Kevin O'Leary on Stratos sustainability concerns",
       "captured_at": "2026-05-16",
       "published_at": "2026-05-11",
-      "project_id": "wonder-valley-box-elder-ut"
+      "project_id": "wonder-valley-box-elder-ut",
+      "claim_type": "disclosure-transparency"
     },
     {
       "id": "xai-memphis-water-recommit-2026",
@@ -371,7 +433,11 @@
       "source_title": "Action News 5 — xAI statement on Memphis water recycling plant",
       "captured_at": "2026-05-16",
       "published_at": "2026-04-09",
-      "project_id": "xai-memphis-tn"
+      "project_id": "xai-memphis-tn",
+      "claim_type": "site-specific-promise",
+      "related_site_ids": [
+        "xai-colossus-memphis-tn"
+      ]
     },
     {
       "id": "xai-memphis-water-musk-sequencing-2026",
@@ -382,7 +448,11 @@
       "source_title": "Action News 5 — Elon Musk on water-plant sequencing",
       "captured_at": "2026-05-16",
       "published_at": "2026-04-09",
-      "project_id": "xai-memphis-tn"
+      "project_id": "xai-memphis-tn",
+      "claim_type": "site-specific-promise",
+      "related_site_ids": [
+        "xai-colossus-memphis-tn"
+      ]
     },
     {
       "id": "switch-water-net-positive-2x",
@@ -391,7 +461,8 @@
       "statement": "Switch will replenish and restore up to two times more water than it uses operationally.",
       "source_url": "https://www.switch.com/sustainability/",
       "source_title": "Switch — Green Data Center / Sustainability (net positive water strategy)",
-      "captured_at": "2026-06-27"
+      "captured_at": "2026-06-27",
+      "claim_type": "water-positive-pledge"
     },
     {
       "id": "switch-water-100-percent-recycled",
@@ -400,7 +471,8 @@
       "statement": "Switch identifies and leads water improvement projects in the communities where we operate to allow us to run our campuses on 100% recycled water.",
       "source_url": "https://www.switch.com/sustainability/",
       "source_title": "Switch — Sustainability (100% recycled water campuses)",
-      "captured_at": "2026-06-27"
+      "captured_at": "2026-06-27",
+      "claim_type": "replenishment-milestone"
     },
     {
       "id": "edgeconnex-water-neutral-2030",
@@ -414,7 +486,8 @@
         "value": 2030.0,
         "unit": "year",
         "kind": "water_neutral_target"
-      }
+      },
+      "claim_type": "water-positive-pledge"
     },
     {
       "id": "vantage-water-positivity-near-zero",
@@ -424,7 +497,8 @@
       "source_url": "https://blog.vantage-dc.com/2026/04/22/cooling-without-the-drain-how-closed-loop-systems-cut-day-to-day-water-use/",
       "source_title": "Vantage Data Centers — Cooling Without the Drain: How Closed-Loop Systems Cut Day-to-Day Water Use",
       "captured_at": "2026-06-27",
-      "published_at": "2026-04-22"
+      "published_at": "2026-04-22",
+      "claim_type": "water-positive-pledge"
     },
     {
       "id": "compass-water-zero-airside-mandate",
@@ -433,7 +507,25 @@
       "statement": "Since day one, Compass saw a zero-water solution as a mandate.",
       "source_url": "https://www.compassdatacenters.com/a-zero-water-solution-to-support-the-global-data-demand/",
       "source_title": "Compass Data Centers — The Pathway to Net Zero Water Data Center (Adil Attlassy, CTO)",
-      "captured_at": "2026-06-27"
+      "captured_at": "2026-06-27",
+      "claim_type": "zero-water-design"
+    },
+    {
+      "id": "ms-water-wue-90-percent-2026",
+      "company_slug": "microsoft",
+      "theme": "water",
+      "claim_type": "efficiency-wue",
+      "statement": "Through continuous innovation and advancements in cooling technologies, Microsoft has improved its water use effectiveness by nearly 90% since its first generation of datacenters in the early 2000s.",
+      "source_url": "https://blogs.microsoft.com/blog/2026/06/24/inside-microsofts-two-decade-push-to-cut-water-intensity-while-scaling-for-growth/",
+      "source_title": "Microsoft — Inside Microsoft's two-decade push to cut water intensity",
+      "captured_at": "2026-07-26",
+      "delivered": {
+        "status": "partial",
+        "summary": "The figure is fleet-average water use effectiveness falling from 2.3 to 0.27 L/kWh, measured against Microsoft's earliest 2000s facilities — a two-decade intensity improvement, not a claim about how much water current data centers use. Intensity per kilowatt-hour can fall while total withdrawal rises, and AI load is rising fast; Microsoft's own nearer-term target is a 40% intensity improvement by 2030, 25% achieved as of 2025.",
+        "source_url": "https://www.geekwire.com/2026/microsoft-says-its-data-centers-use-90-less-water-than-its-earliest-facilities-as-public-concern-grows/",
+        "source_title": "GeekWire — Microsoft says its data centers use 90% less water than its earliest facilities",
+        "assessed_at": "2026-07-26"
+      }
     }
   ]
 }

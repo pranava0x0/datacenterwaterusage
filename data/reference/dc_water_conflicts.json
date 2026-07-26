@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-07-02",
+  "last_updated": "2026-07-26",
   "note": "Named data-center sites with documented water issues or community pushback, each mapped to the federal statutory readings (reading_ids from water_authorities.json) that could reach the fact pattern, with the historical cases (case_ids from cwa_investigations.json) that show each reading in use. Mappings deliberately overlap — one site can trigger several readings. Sites verified against news/government sources July 2026; status_2026 reflects the latest reporting found at that pass.",
   "sites": [
     {
@@ -861,6 +861,42 @@
         "moratorium-pause"
       ],
       "issue_types_rationale": "A project defeated on water-rate grounds, then one of the first US municipal data-center moratoriums driven partly by water supply."
+    },
+    {
+      "site_id": "meta-cheyenne-wy",
+      "site": "Meta — Cheyenne, WY",
+      "location": "Cheyenne, Laramie County, Wyoming",
+      "operator": "Meta (campus built by Goat Systems LLC)",
+      "issue_summary": "Commissioning discharges from Meta's 715,000 sq ft campus introduced the rare metal-resistant bacterium Cupriavidus gilardii into Cheyenne's reclaimed-water system in February 2026, interfering with two reclamation plants and affecting 801,475 gallons of wastewater. The city's utility board classified it as significant noncompliance with federal pretreatment regulations.",
+      "pushback_summary": "BOPU suspended the reclaimed-water irrigation program, permanently terminated the discharge privileges, and adopted a standing policy refusing wastewater from data centers using closed-loop cooling and fill-and-flush systems — a categorical restriction on an entire cooling practice rather than a penalty against one project. Follow-up testing found the bacterium cleared and the reuse system is operating again under continued sampling.",
+      "status_2026": "Discharge privileges terminated; reuse system restored under new policy",
+      "issue_types": [
+        "pretreatment-potw",
+        "discharge-quality"
+      ],
+      "issue_types_rationale": "Contamination introduced into a municipal reclaimed-water system by a commissioning discharge, resolved through the utility's pretreatment authority rather than any data-center permit.",
+      "applicable_readings": [
+        {
+          "reading_id": "cwa-307-pretreatment",
+          "how": "The operative authority was the receiving utility's federally delegated pretreatment program, not any permit held by the data center — the utility could bar the discharge outright without an enforcement action against the operator.",
+          "analogous_cases": [
+            "Meta-Cheyenne-WY-reclaimed-contamination-2026"
+          ]
+        }
+      ],
+      "related_case_ids": [
+        "Meta-Cheyenne-WY-reclaimed-contamination-2026"
+      ],
+      "sources": [
+        {
+          "title": "Cheyenne BOPU traces rare bacteria discharge to Meta data center contractor",
+          "url": "https://www.wyomingnews.com/news/local_news/cheyenne-bopu-traces-rare-bacteria-discharge-to-meta-data-center-contractor/article_1c538467-06ec-427d-9a6f-33797cd3c6ce.html"
+        },
+        {
+          "title": "Cheyenne BOPU releases wastewater contamination timeline; over 800K gallons affected",
+          "url": "https://capcity.news/community/city/2026/07/20/cheyenne-bopu-releases-wastewater-contamination-timeline-over-800k-gallons-affected/"
+        }
+      ]
     }
   ]
 }
