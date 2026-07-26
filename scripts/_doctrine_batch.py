@@ -26,12 +26,20 @@ def apply_batch(
     new_cases: list[dict],
     *,
     last_updated: str,
+    authority_additions: dict[str, list[str]] | None = None,
     dry_run: bool = False,
 ) -> int:
     """Validate and append one doctrine batch. Returns a process exit code.
 
-    Idempotent: a family, reading or case that is already present is skipped,
-    so re-running a shipped batch is a no-op.
+    ``authority_additions`` maps an EXISTING case_id to reading_ids to add to
+    its ``authorities`` list. Some doctrine families are best anchored on a
+    matter the tracker already follows rather than on a new historical case —
+    Arizona's assured-water-supply regime is better illustrated by the live
+    Tucson fight than by a 1980s precedent — and a family only counts as
+    represented when some case's ``authorities`` names one of its readings.
+
+    Idempotent: a family, reading, case or authority link that is already
+    present is skipped, so re-running a shipped batch is a no-op.
     """
     sys.path.insert(0, str(BASE_DIR))
     from refdata.taxonomies import (
@@ -92,6 +100,23 @@ def apply_batch(
         cases_payload["cases"].append(case)
         added_cases.append(case["case_id"])
 
+    # Link new readings onto cases the tracker already follows.
+    by_case_id = {c["case_id"]: c for c in cases_payload["cases"]}
+    all_reading_ids = {r["reading_id"] for r in authorities["readings"]}
+    linked = []
+    for case_id, reading_ids in (authority_additions or {}).items():
+        case = by_case_id.get(case_id)
+        if case is None:
+            problems.append(f"authority_additions names an absent case: {case_id}")
+            continue
+        for reading_id in reading_ids:
+            if reading_id not in all_reading_ids:
+                problems.append(f"{case_id}: unknown reading {reading_id}")
+                continue
+            if reading_id not in case.setdefault("authorities", []):
+                case["authorities"].append(reading_id)
+                linked.append(f"{case_id} += {reading_id}")
+
     all_case_ids = {c["case_id"] for c in cases_payload["cases"]}
     for reading in new_readings:
         for cid in reading["example_case_ids"]:
@@ -111,6 +136,10 @@ def apply_batch(
     print(f"cases added:      {len(added_cases)}")
     for c in added_cases:
         print(f"  + {c}")
+    if linked:
+        print(f"authorities linked onto existing cases: {len(linked)}")
+        for line in linked:
+            print(f"  ~ {line}")
     print(
         f"totals -> families {len(authorities['statutes'])}, "
         f"readings {len(authorities['readings'])}, cases {len(cases_payload['cases'])}"

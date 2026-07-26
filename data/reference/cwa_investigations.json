@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-07-25",
+  "last_updated": "2026-07-26",
   "note": "Clean Water Act enforcement actions and landmark precedent cases relevant to data center water use and cooling discharge. Four categories: 'datacenter' = direct CWA actions against named hyperscale operators or their contractors, including state permit enforcement and §404 permit applications with significant wetland/stream impacts (e.g. Amazon Boardman nitrate settlement, Google §404 applications in VA and AR); 'adjacent' = water-relevant actions at data-center sites where the binding or active enforcement sits OUTSIDE the CWA — a Clean Air Act suit, a local well-permitting action, a §404 citizen suit over data-center power infrastructure, or a permitted-but-paused voluntary water commitment; 'industrial' = enforcement against large industrial water users that are the closest practical analogs (cooling water §316(a)/(b), pretreatment, sewer-system consent decrees, PFAS, CAFO discharges); 'precedent' = Supreme Court and federal appellate rulings that set the legal scope of the CWA, including Loper Bright (2024) ending Chevron deference and Lewis v. US (5th Cir. 2023) applying Sackett. Comprehensive coverage for 2020-present, with foundational earlier cases retained as benchmarks (Smithfield 1997, Tyson 2003, Brayton Point 2003-2007). Direct hyperscaler enforcement remains thin because operators usually sit behind contractor-permittee structures and discharge to municipal sewers — the industrial cases show what enforcement looks like once that shield slips. The Amazon Boardman 2026 $20.5M nitrate settlement is the first eight-figure direct-hyperscaler water settlement. The Port of Morrow OR DEQ enforcement ($727K, 2024) is the largest state-level penalty at a WWTP explicitly identified as receiving data center wastewater. Google's concurrent §404 applications in VA (Project Raspberry, Project Loch) and AR (Port of Little Rock, 16.8 ac wetlands) mark a new wave of federal permitting scrutiny on data center construction in sensitive watersheds. July 2, 2026 expansion: the dataset now spans federal water authorities beyond the CWA — 10 historical SDWA / TSCA / RCRA / Rivers-and-Harbors-Act cases and rulemakings (DuPont Washington Works PFOA, 3M TSCA 8(e), Flint and Trinity American SDWA 1431, Alisal receivership, Edwards sole-source-aquifer designation, the 1999 UIC Class V rule, Interfaith v. Honeywell RCRA 7002, US v. Republic Steel RHA 10/13, and the TSCA 8(a)(7) PFAS reporting rule) — and every case carries an 'authorities' list of reading_ids from data/reference/water_authorities.json mapping it to the statutory readings it used or could trigger (overlap intentional).",
   "cases": [
     {
@@ -1342,7 +1342,8 @@
       ],
       "display_section": "potential",
       "authorities": [
-        "sdwa-pws-compliance"
+        "sdwa-pws-compliance",
+        "gwmgmt-az-ama"
       ]
     },
     {
@@ -1910,7 +1911,8 @@
       "display_section": "potential",
       "authorities": [
         "sdwa-source-water-protection",
-        "sdwa-1424e-sole-source-aquifer"
+        "sdwa-1424e-sole-source-aquifer",
+        "xfer-area-of-origin"
       ]
     },
     {
@@ -3244,7 +3246,8 @@
       "cwa_instrument": "No CWA instrument — state MEPA/AUAR review challenge + MGDPA records claim",
       "authorities": [
         "sdwa-source-water-protection",
-        "cwa-402-maui-groundwater"
+        "cwa-402-maui-groundwater",
+        "sepa-review-injunction"
       ],
       "cwa_pathway": "If the campus's water draw is later shown to reach connected surface waters via shallow aquifer discharge, Maui's 'functional equivalent' theory could convert this into a federal CWA groundwater case; absent that, SDWA source-water-protection mapping is the likelier federal hook.",
       "analogous_cases": [
@@ -3501,7 +3504,8 @@
       "cwa_pathway": "A challenge to the county well permit behind a data-center campus, on the ground that drawdown depletes a connected navigable stream. Requires hydrologic evidence of the groundwater-to-surface-water connection.",
       "display_section": "historical",
       "authorities": [
-        "ptd-groundwater-nexus"
+        "ptd-groundwater-nexus",
+        "gwmgmt-sgma"
       ]
     },
     {
@@ -3760,6 +3764,123 @@
       "display_section": "historical",
       "authorities": [
         "esa-proximate-cause-limit"
+      ]
+    },
+    {
+      "case_id": "Winters-v-United-States-1908",
+      "category": "precedent",
+      "respondent": "Winters v. United States, 207 U.S. 564 (1908)",
+      "year": "1908",
+      "cwa_section": "Not a Clean Water Act case — implied federal reservation of water rights",
+      "violation_summary": "Settlers upstream of the Fort Belknap Reservation in Montana built dams, ditches and canals diverting the Milk River for irrigation, cutting off the flow reaching the reservation. The United States sued on the tribes' behalf to enjoin the diversions.",
+      "outcome": "The Supreme Court held that the 1888 agreement establishing the reservation impliedly reserved enough Milk River water to serve its purposes, and that Montana's admission to the Union the following year did not disturb that reservation. The reserved right dates from the creation of the reservation, making it senior to the settlers' later state-law claims.",
+      "takeaway": "The oldest doctrine in this registry and, in the arid West, often the most consequential — because it operates on priority rather than on conduct. A data center never has to do anything wrong for this to matter: quantifying a senior reserved right shrinks the pool the state had been allocating, and junior users are cut in order of seniority. A campus whose supply contract rests on a junior state-law right in a basin serving a reservation holds something worth less than its face value, and that is a due-diligence question rather than a litigation risk.",
+      "analogous_cases": [
+        "ProjectBlue-Tucson-AMES-2026",
+        "Mississippi-v-Tennessee-2021"
+      ],
+      "sources": [
+        {
+          "title": "Winters v. United States, 207 U.S. 564 (1908) — full opinion",
+          "url": "https://supreme.justia.com/cases/federal/us/207/564/",
+          "type": "court ruling"
+        },
+        {
+          "title": "Indian Reserved Water Rights Under the Winters Doctrine: An Overview (Congressional Research Service)",
+          "url": "https://www.everycrsreport.com/reports/RL32198.html",
+          "type": "law review"
+        },
+        {
+          "title": "The Winters Doctrine: The Foundation of Tribal Water Rights",
+          "url": "https://itcaonline.com/programs/tribal-leaders-water-policy-council/the-winters-doctrine-the-foundation-of-tribal-water-rights/",
+          "type": "advocacy"
+        }
+      ],
+      "case_type": "legal-doctrine",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "SCOTUS — water impliedly reserved with the reservation, senior to later state rights",
+      "cwa_pathway": "Reaches a data center indirectly and structurally: not as a claim against the operator, but as a senior right that reduces what the state can allocate to it, in any basin serving a federal reservation.",
+      "display_section": "historical",
+      "authorities": [
+        "tribal-winters"
+      ]
+    },
+    {
+      "case_id": "Agua-Caliente-v-CVWD-2017",
+      "category": "precedent",
+      "respondent": "Agua Caliente Band of Cahuilla Indians v. Coachella Valley Water District, 849 F.3d 1262 (9th Cir. 2017)",
+      "year": "2017",
+      "cwa_section": "Not a Clean Water Act case — federal reserved water rights extended to groundwater",
+      "violation_summary": "The Agua Caliente Band sued two water districts in California's arid Coachella Valley, seeking a declaration that its reserved rights extend to the groundwater beneath the reservation. The districts argued the Winters doctrine covers surface water only, and that the tribe had never historically pumped.",
+      "outcome": "The Ninth Circuit affirmed for the tribe. The Winters doctrine does not distinguish surface water from groundwater; the United States impliedly reserved appurtenant water sources including groundwater when it created the reservation in an arid region. Historical non-use does not defeat the right, and state water rights are preempted where they conflict. The Supreme Court denied certiorari.",
+      "takeaway": "Removes the assumption that groundwater is the unencumbered fallback. A project told a basin's surface water is spoken for will look to wells; in the Ninth Circuit, a senior federal reserved right follows it there. That matters directly for the Southwest data-center corridor, where the surface supply is over-allocated, groundwater is the growth path, and reservations overlie or adjoin many of the aquifers involved. The exposure runs through the supply contract rather than through any conduct by the operator.",
+      "analogous_cases": [
+        "ProjectBlue-Tucson-AMES-2026",
+        "Winters-v-United-States-1908"
+      ],
+      "sources": [
+        {
+          "title": "Agua Caliente Band of Cahuilla Indians v. Coachella Valley Water District, No. 15-55896 (9th Cir. 2017)",
+          "url": "https://law.justia.com/cases/federal/appellate-courts/ca9/15-55896/15-55896-2017-03-07.html",
+          "type": "court ruling"
+        },
+        {
+          "title": "Agua Caliente Band of Cahuilla Indians v. Coachella Valley Water District — Indian Law Bulletin",
+          "url": "https://www.narf.org/nill/bulletins/federal/documents/agua_caliente_v_coachella_water.html",
+          "type": "court ruling"
+        },
+        {
+          "title": "A Tribe's Successful Fight for Federally Reserved Water Rights (American Indian Law Review)",
+          "url": "https://digitalcommons.law.ou.edu/ailr/vol43/iss1/6/",
+          "type": "law review"
+        }
+      ],
+      "case_type": "groundwater",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "9th Cir. — reserved rights extend to groundwater; state law preempted",
+      "cwa_pathway": "Applies where a campus's groundwater supply sits in a basin with an overlying or adjoining reservation. The claim runs between the tribe and the water district, but the resulting quantification determines what is left for the district's industrial customers.",
+      "display_section": "historical",
+      "authorities": [
+        "tribal-groundwater"
+      ]
+    },
+    {
+      "case_id": "Vineyard-v-Rancho-Cordova-2007",
+      "category": "precedent",
+      "respondent": "Vineyard Area Citizens for Responsible Growth, Inc. v. City of Rancho Cordova, 40 Cal. 4th 412 (2007)",
+      "year": "2007",
+      "cwa_section": "Not a Clean Water Act case — California Environmental Quality Act; long-term water supply analysis",
+      "violation_summary": "Residents challenged the environmental impact report for a 6,000-acre community plan and its first development phase, arguing it failed to identify and evaluate where the water for the full build-out would come from.",
+      "outcome": "The California Supreme Court held the EIR's near-term supply analysis adequate but its long-term analysis both procedurally and factually deficient: it improperly purported to tier from a future regional planning document, leaned on a mitigation measure that would curtail development if water failed to materialize without analysing that curtailment's own impacts, and left unexplained discrepancies between its supply estimates and the regional water plan's. The approval was set aside. The decision drove CEQA Guidelines amendments requiring analysis of supply over a project's full life.",
+      "takeaway": "The most transferable procedural attack on a data-center approval anywhere with a state environmental review statute, because it needs no proof of hydrologic harm — only that the document assumed water it could not demonstrate. Campus approvals routinely analyse the first phase and defer the rest to a future regional plan, which is exactly the defect named here. It also produces the remedy opponents usually want: the approval is vacated and redone before construction, rather than damages long afterward.",
+      "analogous_cases": [
+        "MCEA-PineIsland-MN-ProjectSkyway-2026",
+        "ProjectBlue-Tucson-AMES-2026"
+      ],
+      "sources": [
+        {
+          "title": "Vineyard Area Citizens for Responsible Growth, Inc. v. City of Rancho Cordova (2007) S132972",
+          "url": "https://caselaw.findlaw.com/summary/opinion/ca-supreme-court/2007/02/01/147286.html",
+          "type": "court ruling"
+        },
+        {
+          "title": "Supreme Court Sets Aside Land Use Plan EIR For Failure To Adequately Assess Long-Term Water Supplies",
+          "url": "https://kmtg.com/news/legal-alerts/supreme-court-sets-aside-land-use-plan-eir-for-failure-to-adequately-assess-long-term-water-supplies/",
+          "type": "law review"
+        },
+        {
+          "title": "Vineyard Area Citizens for Responsible Growth v. City of Rancho Cordova — case summary",
+          "url": "https://www.rmmenvirolaw.com/vineyard-area-citizens-for-responsible-growth-v-city-of-rancho-cordova/",
+          "type": "law review"
+        }
+      ],
+      "case_type": "water-supply",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "Cal. Supreme Court — EIR must show a realistic long-term water supply",
+      "cwa_pathway": "A challenge to the environmental document behind a data-center approval on the ground that it analysed only near-term supply and deferred the rest. Requires a state environmental review statute with a supply-analysis requirement, not a federal hook.",
+      "display_section": "historical",
+      "authorities": [
+        "sepa-supply-adequacy"
       ]
     }
   ]

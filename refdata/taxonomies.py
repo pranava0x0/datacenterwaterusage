@@ -227,7 +227,11 @@ WATER_STATUTE_ORDER = [
     "PTD",
     "GW",
     "WELL",
+    "GWMGMT",
+    "XFER",
     "ESA",
+    "TRIBAL",
+    "SEPA",
     "CL",
     "UTIL",
 ]
@@ -244,7 +248,11 @@ WATER_STATUTE_COLORS = {
     "PTD": "#1a7a8a",
     "GW": "#8a6d1f",
     "WELL": "#3182bd",
+    "GWMGMT": "#6b7f2a",
+    "XFER": "#9a6700",
     "ESA": "#2f7a4f",
+    "TRIBAL": "#8a4f2a",
+    "SEPA": "#5b6b8a",
     "CL": "#6b7280",
     "UTIL": "#6b3fa0",
 }
