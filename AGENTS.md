@@ -272,6 +272,31 @@ the ~3-4× waste patterns. Score each run on:
 
 ### Agent-use evaluation log
 
+**2026-07-25 — plan implementation (P0–P4 partial). Zero agents spawned;
+verification done with ~10 direct WebSearch calls. Verdict: correct call for
+this shape of work — log it as the counter-example to reflexive delegation.**
+
+- The task was *implementing* an already-researched plan, not discovering
+  facts. The research agents had run in the planning session (~447k tokens);
+  re-delegating verification would have paid that cost twice for claims the
+  plan already stated.
+- What still needed checking was narrow and enumerable: a source URL per new
+  record. Direct WebSearch, ~2 per response, produced **three material
+  corrections** the plan had wrong — the Michigan standing case (2007 Supreme
+  Court, not the 2005 Court of Appeals decision that was *reversed*), the
+  Swanson holding (no "duty to augment supply"), and a stale CA AB 93 veto
+  date. An agent would have found the same things at several times the cost
+  and returned prose I'd have had to re-read.
+- **Lesson:** delegate *discovery* (open-ended, unknown answer set); do
+  *confirmation* inline (bounded, one lookup per known item). The tell is
+  whether you can enumerate the questions before you start.
+- **Infrastructure finding worth keeping:** Justia 403s all automated
+  requests and CourtListener returns blank to WebFetch, so legal-citation
+  URLs cannot be verified by fetching — and cannot be pattern-guessed either,
+  since a wrong guess is indistinguishable from a blocked valid one. Search
+  results are the only reliable channel. Any future case-law batch should
+  budget ~1 search per 1–2 cases and hold back anything unsourced.
+
 **2026-07-02 — two parallel background research agents (water-authorities
 expansion). Verdict: both justified; keep this pattern.**
 

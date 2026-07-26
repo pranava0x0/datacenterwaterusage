@@ -394,6 +394,27 @@ Mississippi v. Tennessee, No. 143 Orig. (2021) · Florida v. Georgia, No. 142 Or
 **Tests.** Matrix counts = edge counts; outcome_type membership + coverage; note renders; theories table row count includes doctrine rows.
 
 
+## Build status (updated 2026-07-25, branch `jam/issues-policy-precedent-plan-9d7d05`)
+
+| Phase | State | Commits |
+|---|---|---|
+| **P0 Foundation** | ✅ done — `refdata/` extracted (pure, no Streamlit), registry + integrity suite, 27 entries migrated to `cross_ref_targets` | `1bcd55e` |
+| **P1 Policy data** | ✅ done — `instrument_type` back-filled over 54, +13 new entries (67 total), federal executive layer, first commission dockets | `2d4fd38` |
+| **P2 Precedent** | 🟡 2 of ~4 batches — 12 of 17 families, 31 readings, 104 cases. **Remaining:** GWMGMT, XFER, TRIBAL, SEPA, SL families; C3 pieces 2–3 (`outcome_type` migration, site→doctrine mappings, `analogous_outcome_note`) | `9d03727`, `25fb6ee` |
+| **P3 Issues/Claims** | 🟡 A1 done (issue types + filter). **Remaining:** A2 claims lifecycle, A3 tab restructure | `c462a24` |
+| **P4 UX** | 🟡 chips + Part 4 issue filter done. **Remaining:** instrument-type filter, C3 doctrine matrix, doctrine rows in the theories table | `75994e3`, `14f6091` |
+| **P5 Automation** | ⬜ not started | — |
+
+**Decisions taken during the build that amend this plan:**
+
+1. **Taxonomy values ship with their data.** A value is added to a taxonomy in the same commit as the records that use it, never ahead of them — otherwise a filter offers a category nothing is in (caught in the P0 build diff). This is why `WATER_STATUTE_ORDER` grew 5→8→12 rather than jumping to 17, the issue taxonomy shipped 11 of the drafted 14, and `greenwashing-litigation` / `litigated` / `pretreatment-potw` / `greenwashing-claims` / `indirect-power-water` are still pending their Spec A2 records.
+2. **Source verification is search-only.** Justia and CourtListener both block automated requests — Justia 403s every URL including valid ones, CourtListener returns blank to WebFetch — so citation URLs cannot be pattern-guessed and confirmed. Every case ships with 2+ search-verified sources; anything that could not be tied to a retrievable source is held for a later batch.
+3. **Corrections to the seed research** (each would otherwise have been baked in): the Michigan standing limit is the **2007 Michigan Supreme Court** decision (479 Mich. 280), not the 2005 Court of Appeals decision at 269 Mich. App. 25 — the 2005 panel *found* standing and was reversed; **Swanson** announced no "continuing duty to augment supply", only that a new user has no right to service and a moratorium is reviewable for fraud/arbitrariness/caprice; **CA AB 93** was vetoed 2025-10-11 (the record said October 2024) by Assemblymember Papan's bill, and had no source URL at all.
+4. **`_doctrine_batch.py`** holds the shared validation for every C1/C2 batch (family/kind/colour registration, ≥2 sources, mandatory `analogous_cases`, referential checks), so batches 3–4 are data-only.
+5. **UAT note:** screenshots of `pages/index.html` over `file://` come back blank — the pane renders it as a static snapshot. `javascript_tool` DOM inspection is live and is the reliable verification channel on that surface.
+
+Test count: 513 at plan time → **563**.
+
 ## Phasing, sequencing, and acceptance
 
 Order minimizes rework: foundation → data → UX → automation. Each phase is independently shippable and committed in small increments (CLAUDE.md §5); every phase ends with full suite + `python3 build_site.py` + regenerated page committed together.
