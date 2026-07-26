@@ -284,3 +284,27 @@ class TestConflictIssueFilter:
         offered = set(re.findall(r'class="dc-issue" value="([^"]+)"', html))
         for site in dashboard.load_dc_water_conflicts().get("sites", []):
             assert set(site["issue_types"]) & offered, site["site_id"]
+
+
+class TestInstrumentFilter:
+    """Spec B1's filter — makes the instrument_type data usable, not just visible."""
+
+    def test_controls_and_hooks_present(self):
+        html = _html()
+        bills = dashboard.load_legislation().get("bills", [])
+        used = {b.get("instrument_type", "bill") for b in bills}
+        assert len(re.findall(r'class="leg-instrument"', html)) == len(used)
+        # Every card carries the attribute the filter reads.
+        assert len(re.findall(r"data-instrument=", html)) == len(bills)
+
+    def test_every_instrument_type_in_use_is_offered(self):
+        html = _html()
+        offered = set(re.findall(r'class="leg-instrument" value="([^"]+)"', html))
+        for bill in dashboard.load_legislation().get("bills", []):
+            assert bill.get("instrument_type", "bill") in offered, bill["bill_id"]
+
+    def test_count_line_says_instruments_not_bills(self):
+        """15 of 67 entries are not bills; the old copy contradicted the data
+        model B1 introduced."""
+        html = _html()
+        assert "' instruments'" in html or " instruments'" in html

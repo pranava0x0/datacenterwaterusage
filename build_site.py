@@ -88,7 +88,8 @@ def build_legislation_tab() -> str:
         f'<div class="leg-bill" data-status="{esc(b.get("status",""))}" '
         f'data-level="{esc(b.get("level",""))}" '
         f'data-scope="{esc(" ".join(b.get("scope", [])))}" '
-        f'data-principles="{esc(" ".join(sorted({_principle_slug(p.get("tag","")) for p in b.get("general_principles", [])})))}">'
+        f'data-principles="{esc(" ".join(sorted({_principle_slug(p.get("tag","")) for p in b.get("general_principles", [])})))}" '
+        f'data-instrument="{esc(b.get("instrument_type", "bill"))}">'
         f'{dash._build_bill_card_html(b)}</div>'
         for b in sorted_bills
     )
@@ -118,6 +119,17 @@ def build_legislation_tab() -> str:
         f'value="{k}" checked> {esc(v)}</label>'
         for k, v in dash.LEGISLATION_SCOPE_LABELS.items()
     )
+    instrument_counts: dict[str, int] = {}
+    for b in bills:
+        itype = b.get("instrument_type", "bill")
+        instrument_counts[itype] = instrument_counts.get(itype, 0) + 1
+    instrument_boxes = "".join(
+        f'<label class="chip-check"><input type="checkbox" class="leg-instrument" '
+        f'value="{k}" checked> {esc(dash.INSTRUMENT_TYPE_LABELS[k])} '
+        f'({instrument_counts[k]})</label>'
+        for k in dash.INSTRUMENT_TYPE_LABELS
+        if k in instrument_counts
+    )
     status_labels_json = json.dumps(dash.LEGISLATION_STATUS_LABELS)
     status_order_json = json.dumps(dash.LEGISLATION_STATUS_ORDER)
 
@@ -141,6 +153,10 @@ def build_legislation_tab() -> str:
     <span class="filter-label">Status:</span>{status_boxes}
     <span class="filter-label">Level:</span>{level_boxes}
     <span class="filter-label">Scope:</span>{scope_boxes}
+  </div>
+  <div class="cwa-filters">
+    <span class="filter-label">Instrument:</span>
+    <div class="cwa-types">{instrument_boxes}</div>
   </div>
   <p class="count-line" id="leg-count"></p>
   <div id="leg-bills">{cards}</div>
@@ -1337,14 +1353,16 @@ subtabs.forEach(t => t.addEventListener('click', () => activateSubtab(t.dataset.
 // low-end mobile as the dataset grows.
 const legCount = document.getElementById('leg-count');
 const legBills = [...document.querySelectorAll('.leg-bill')];
-const legChecks = [...document.querySelectorAll('.leg-status, .leg-level, .leg-scope, .leg-principle')];
+const legChecks = [...document.querySelectorAll('.leg-status, .leg-level, .leg-scope, .leg-principle, .leg-instrument')];
 function applyLegFilter(){
-  const statuses = new Set(), levels = new Set(), scopes = new Set(), prins = new Set();
+  const statuses = new Set(), levels = new Set(), scopes = new Set(),
+        prins = new Set(), instruments = new Set();
   legChecks.forEach(c => {
     if (!c.checked) return;
     if (c.classList.contains('leg-status')) statuses.add(c.value);
     else if (c.classList.contains('leg-level')) levels.add(c.value);
     else if (c.classList.contains('leg-scope')) scopes.add(c.value);
+    else if (c.classList.contains('leg-instrument')) instruments.add(c.value);
     else prins.add(c.value);
   });
   const counts = {};
@@ -1353,15 +1371,20 @@ function applyLegFilter(){
     const sc = (el.dataset.scope || '').split(' ').filter(Boolean);
     const pr = (el.dataset.principles || '').split(' ').filter(Boolean);
     const ok = statuses.has(el.dataset.status) && levels.has(el.dataset.level) &&
-      sc.some(s => scopes.has(s)) && pr.some(p => prins.has(p));
+      sc.some(s => scopes.has(s)) && pr.some(p => prins.has(p)) &&
+      instruments.has(el.dataset.instrument || 'bill');
     el.hidden = !ok;
     if (ok){ shown++; counts[el.dataset.status] = (counts[el.dataset.status]||0)+1; }
   });
   const lOrder = window.LEG_STATUS_ORDER || {}, lLabels = window.LEG_STATUS_LABELS || {};
   const lSummary = Object.keys(counts).sort((a,b)=>(lOrder[a]??9)-(lOrder[b]??9))
     .map(k => counts[k] + ' ' + (lLabels[k]||k)).join(' · ');
-  legCount.innerHTML = '<strong>Showing ' + shown + ' of ' + window.LEG_TOTAL +
-    ' bills</strong>' + (lSummary ? ' — ' + lSummary : '');
+  // "instruments", not "bills": 15 of these are executive orders, agency
+  // rules, commission dockets and local ordinances.
+  const legStrong = document.createElement('strong');
+  legStrong.textContent = 'Showing ' + shown + ' of ' + window.LEG_TOTAL + ' instruments';
+  legCount.replaceChildren(legStrong);
+  if (lSummary) legCount.append(' — ' + lSummary);
 }
 legChecks.forEach(c => c.addEventListener('change', applyLegFilter));
 if (legCount) applyLegFilter();
