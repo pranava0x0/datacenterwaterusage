@@ -10,6 +10,7 @@ one pass, so a new dataset joins the guarantee by adding one clause to
 
 from __future__ import annotations
 
+import html
 import json
 import os
 import sys
@@ -346,6 +347,50 @@ class TestIssueTypes:
         otherwise a wrong classification is invisible in review."""
         for site in self._sites():
             assert len(site.get("issue_types_rationale", "")) > 40, site["site_id"]
+
+
+class TestClassificationChips:
+    """The P1/A1 data has to reach the page, or it is only half-delivered."""
+
+    def test_non_bill_instruments_get_a_chip(self):
+        import dashboard as dash
+
+        for bill in loaders.load_legislation()["bills"]:
+            out = dash._build_bill_card_html(bill)
+            itype = bill["instrument_type"]
+            if itype == "bill":
+                # Bills are the default; a chip on all 50 would be noise.
+                assert 'class="instrument-pill"' not in out, bill["bill_id"]
+            else:
+                assert 'class="instrument-pill"' in out, bill["bill_id"]
+                assert taxonomies.INSTRUMENT_TYPE_LABELS[itype] in out, bill["bill_id"]
+
+    def test_conflict_cards_show_every_issue_type(self):
+        import dashboard as dash
+
+        readings_by_id = dash._readings_by_id()
+        case_ids = {c["case_id"] for c in loaders.load_cwa_investigations()["cases"]}
+        for site in loaders.load_dc_water_conflicts()["sites"]:
+            out = dash._build_conflict_site_html(site, readings_by_id, case_ids)
+            assert out.count('class="issue-pill"') == len(site["issue_types"]), site["site_id"]
+            for tag in site["issue_types"]:
+                # Labels are escaped on the way out ('Secrecy & FOIA fights'
+                # becomes '&amp;'), so compare against the escaped form.
+                assert html.escape(taxonomies.ISSUE_TYPE_LABELS[tag]) in out, (
+                    site["site_id"],
+                    tag,
+                )
+
+    def test_chip_styles_exist_for_both_surfaces(self):
+        """One stylesheet feeds the Streamlit app and the static site; a chip
+        class with no rule renders as unstyled text on both."""
+        import pathlib
+
+        css = (
+            pathlib.Path(loaders.BASE_DIR) / "assets" / "components.css"
+        ).read_text()
+        assert ".instrument-pill" in css
+        assert ".issue-pill" in css
 
 
 class TestAuthorityFamilies:

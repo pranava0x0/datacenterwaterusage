@@ -467,6 +467,30 @@
     font-weight: 700;
     color: #fff;
 }
+/* Outline chips for classification tags. Filled pills are reserved for
+   status, so a type tag must not read as one — hence transparent ground and
+   a coloured rule. .instrument-pill takes its colour inline from
+   INSTRUMENT_TYPE_COLORS; .issue-pill is neutral because the issue taxonomy
+   has 11 values and colouring them all would be decoration, not information. */
+.instrument-pill {
+    background: transparent;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    padding: 0.1rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+.issue-pill {
+    background: transparent;
+    color: #4b5563;
+    border: 1px dashed #9ca3af;
+    border-radius: 999px;
+    padding: 0.1rem 0.6rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: help;
+}
 .cwa-instrument {
     font-size: 0.8rem;
     color: #374151;

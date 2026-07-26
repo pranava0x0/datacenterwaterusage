@@ -1446,6 +1446,18 @@ def _build_bill_card_html(bill: dict) -> str:
     # principle tags at a glance (mirrors the CWA cards' cwa-class-row).
     level = (bill.get("level") or "").lower()
     class_bits = []
+    # Instrument type leads the row: whether a record is a bill, an executive
+    # order or an agency rule changes how a reader should weigh it far more
+    # than its jurisdiction does. Only non-bills get a chip — bills are the
+    # overwhelming default and a chip on all 50 would be noise.
+    instrument_type = bill.get("instrument_type", "bill")
+    if instrument_type != "bill" and instrument_type in INSTRUMENT_TYPE_LABELS:
+        class_bits.append(
+            f'<span class="instrument-pill" style="color:'
+            f'{INSTRUMENT_TYPE_COLORS[instrument_type]};border-color:'
+            f'{INSTRUMENT_TYPE_COLORS[instrument_type]}">'
+            f'{esc(INSTRUMENT_TYPE_LABELS[instrument_type])}</span>'
+        )
     jurisdiction = esc(bill.get("jurisdiction", ""))
     if jurisdiction:
         class_bits.append(f'<span class="cwa-type-pill">{jurisdiction}</span>')
@@ -2986,6 +2998,15 @@ def _build_conflict_site_html(
         }
     )
     class_bits.extend(_statute_pill_html(s) for s in statutes)
+    # Issue types answer "what kind of water problem is this?" — the question
+    # the prose summaries could only answer by being read. Outline chips per
+    # DESIGN.md §8: filled pills stay reserved for status.
+    for tag in site.get("issue_types", []):
+        if tag in ISSUE_TYPE_LABELS:
+            class_bits.append(
+                f'<span class="issue-pill" title="{esc(ISSUE_TYPE_DESCRIPTIONS[tag])}">'
+                f'{esc(ISSUE_TYPE_LABELS[tag])}</span>'
+            )
     if site.get("status_2026"):
         class_bits.append(
             f'<span class="cwa-instrument">{esc(site["status_2026"])}</span>'
