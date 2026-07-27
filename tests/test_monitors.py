@@ -579,6 +579,20 @@ class TestScheduledSweepWorkflow:
         assert any("monitor_hits.json" in p for p in paths), "queue must survive too"
         assert cache["with"].get("restore-keys"), "no restore-key = never inherits"
 
+    def test_cache_miss_falls_back_to_the_last_artifact(self):
+        """The actions cache is a cache: GitHub evicts entries unused for 7
+        days and under repo pressure. One skipped week would drop the queue and
+        a curator would download a fresh artifact silently missing every
+        untriaged hit. Artifacts are retained 90 days, so a miss must recover."""
+        steps = self._wf()["jobs"]["sweep"]["steps"]
+        cache = next(s for s in steps if "cache@" in s.get("uses", ""))
+        assert cache.get("id"), "cache step needs an id to branch on cache-hit"
+        recovery = next(
+            (s for s in steps if "cache-hit" in str(s.get("if", ""))), None
+        )
+        assert recovery is not None, "no cache-miss recovery step"
+        assert "monitor-hits" in recovery["run"]
+
     def test_uses_cache_not_artifacts_for_cross_run_state(self):
         """download-artifact cannot read a PRIOR run's output without its
         run-id, so an artifact round-trip would re-baseline every week and
@@ -587,8 +601,13 @@ class TestScheduledSweepWorkflow:
         assert not any("download-artifact" in s.get("uses", "") for s in steps)
 
     def test_least_privilege_and_pinned_actions(self):
+        """Assert the PROPERTY (no write scope), not an exact dict — the first
+        version hardcoded {"contents": "read"} and broke the moment a
+        legitimate read-only scope was added."""
         wf = self._wf()
-        assert wf["permissions"] == {"contents": "read"}
+        assert wf["permissions"], "must declare an explicit top-level block"
+        for scope, level in wf["permissions"].items():
+            assert level == "read", f"{scope}: {level} — this job writes nothing"
         for step in wf["jobs"]["sweep"]["steps"]:
             uses = step.get("uses")
             if uses:
@@ -604,9 +623,18 @@ class TestScheduledSweepWorkflow:
         """
         wf = self._wf()
         assert wf["permissions"].get("contents") != "write"
+        # Ban MUTATION, not tooling: the queue-recovery step legitimately reads
+        # a prior artifact via `gh run download` / `gh api ... --jq`. Banning
+        # `gh api` outright was the same over-broad-literal mistake as pinning
+        # the permissions dict.
+        mutations = (
+            "git commit", "git push", "gh pr create", "gh pr merge",
+            "gh release", "--method POST", "--method PUT", "--method PATCH",
+            "--method DELETE",
+        )
         for step in wf["jobs"]["sweep"]["steps"]:
             body = step.get("run", "")
-            for forbidden in ("git commit", "git push", "gh pr", "gh api"):
+            for forbidden in mutations:
                 assert forbidden not in body, f"{forbidden} in step {step.get('name')}"
 
 
@@ -668,3 +696,41 @@ class TestSharedClaimStyles:
         for cls in (".claim-chips", ".claim-type-pill", ".claim-challenge-pill",
                     ".claim-site-link"):
             assert cls in css, cls
+
+
+class TestSurfaceAwareClaimLinks:
+    """Codex round 5: only the static site has the JS that activates a
+    fragment's owning tab. In Streamlit an `#cwa-…` href rewrites the hash and
+    leaves the reader where they were — worse than plain text, because it
+    looks clickable."""
+
+    @staticmethod
+    def _claim():
+        from refdata.loaders import load_company_water_claims
+
+        return next(
+            c for c in load_company_water_claims()["claims"] if c.get("challenged_in")
+        )
+
+    def test_static_surface_keeps_the_hyperlinks(self):
+        import dashboard as dash
+
+        out = dash._build_claim_lifecycle_html(self._claim())
+        assert 'href="#cwa-' in out
+
+    def test_streamlit_surface_emits_no_fragment_hrefs(self):
+        import dashboard as dash
+
+        out = dash._build_claim_lifecycle_html(self._claim(), link_anchors=False)
+        assert 'href="#' not in out
+        # Same information, still reachable by hand.
+        assert "Challenged in court" in out
+        assert "Water Cases" in out
+
+    def test_both_surfaces_carry_the_same_claim_type(self):
+        import dashboard as dash
+
+        claim = self._claim()
+        for linked in (True, False):
+            out = dash._build_claim_lifecycle_html(claim, link_anchors=linked)
+            assert "claim-type-pill" in out

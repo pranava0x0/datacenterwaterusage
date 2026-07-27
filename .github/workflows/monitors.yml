@@ -22,6 +22,9 @@ on:
 # actions cache and artifacts, so this job never needs contents: write.
 permissions:
   contents: read
+  # Needed only to download a prior run's monitor-hits artifact when the
+  # actions cache has been evicted. Still no write scope anywhere.
+  actions: read
 
 concurrency:
   # A slow sweep must not overlap the next week's run and double-append.
@@ -59,6 +62,7 @@ jobs:
       # omits a hit nobody has actioned yet — which then expires with the old
       # artifact. The queue is append-only precisely so pending work survives.
       - name: Restore monitor state from the last sweep
+        id: state
         uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
         with:
           path: |
@@ -66,6 +70,34 @@ jobs:
             data/output/monitor_hits.json
           key: monitor-state-${{ github.run_id }}
           restore-keys: monitor-state-
+
+      # The actions cache is a CACHE, not storage: GitHub evicts entries unused
+      # for 7 days and under repo cache pressure. One skipped week would drop
+      # the queue, the next run would re-baseline everything, and a curator
+      # following REFRESH.md would download a fresh artifact silently missing
+      # every untriaged hit. Artifacts are retained 90 days, so on a cache miss
+      # fall back to the last run that published one.
+      - name: Recover queue from the last artifact if the cache missed
+        if: steps.state.outputs.cache-hit != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p data/output
+          run_id=$(gh run list --workflow monitors.yml --status success \
+            --limit 20 --json databaseId --jq '.[].databaseId' \
+            | while read -r id; do
+                if gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id/artifacts" \
+                     --jq '.artifacts[].name' 2>/dev/null | grep -qx monitor-hits; then
+                  echo "$id"; break
+                fi
+              done)
+          if [ -n "${run_id:-}" ]; then
+            echo "Recovering queue from run $run_id"
+            gh run download "$run_id" --name monitor-hits --dir data/output || true
+          else
+            echo "No prior monitor-hits artifact found — starting a fresh queue."
+          fi
 
       - name: Sweep
         env:

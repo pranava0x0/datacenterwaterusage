@@ -3671,7 +3671,9 @@ def render_company_water_claims():
     )
 
 
-def _build_claim_lifecycle_html(claim: dict, companies: dict | None = None) -> str:
+def _build_claim_lifecycle_html(
+    claim: dict, companies: dict | None = None, *, link_anchors: bool = True
+) -> str:
     """Claim-type chip, court-challenge badge and site cross-links.
 
     Shared by the static site and the Streamlit card. This lived inline in
@@ -3679,6 +3681,12 @@ def _build_claim_lifecycle_html(claim: dict, companies: dict | None = None) -> s
     claim type, no "challenged in court" badge, no site links. Two surfaces
     disagreeing about the same record is precisely what the shared-builder rule
     in CLAUDE.md exists to prevent, and it had already drifted.
+
+    ``link_anchors=False`` renders the same information without hyperlinks.
+    Only the static site has the JS that activates a fragment's owning tab; in
+    Streamlit an ``#cwa-…`` href just rewrites the hash and leaves the reader
+    on Issues & Claims with nothing visibly happening — worse than plain text,
+    because it looks clickable. The badge instead names where the record lives.
     """
     esc = html.escape
     chips = []
@@ -3689,17 +3697,30 @@ def _build_claim_lifecycle_html(claim: dict, companies: dict | None = None) -> s
         )
     for case_id in claim.get("challenged_in", []) or []:
         ref = resolve_ref(case_id)
-        if ref:
+        if not ref:
+            continue
+        if link_anchors:
             chips.append(
                 f'<a class="claim-challenge-pill" href="#{esc(ref.anchor)}">'
                 "&#9878; Challenged in court</a>"
             )
+        else:
+            chips.append(
+                '<span class="claim-challenge-pill">&#9878; Challenged in court '
+                f"&middot; see Water Cases: {esc(ref.label)}</span>"
+            )
     for site_id in claim.get("related_site_ids", []) or []:
         ref = resolve_ref(site_id)
-        if ref:
+        if not ref:
+            continue
+        if link_anchors:
             chips.append(
                 f'<a class="claim-site-link" href="#{esc(ref.anchor)}">'
                 f"&rarr; {esc(ref.label)}</a>"
+            )
+        else:
+            chips.append(
+                f'<span class="claim-site-link">&rarr; {esc(ref.label)}</span>'
             )
     return f'<div class="claim-chips">{"".join(chips)}</div>' if chips else ""
 
@@ -3735,7 +3756,8 @@ def _render_water_claim_card(claim: dict):
         if caption_parts:
             st.caption(" · ".join(caption_parts))
 
-        lifecycle = _build_claim_lifecycle_html(claim)
+        # Streamlit has no cross-tab fragment handler; see the builder docstring.
+        lifecycle = _build_claim_lifecycle_html(claim, link_anchors=False)
         if lifecycle:
             st.markdown(lifecycle, unsafe_allow_html=True)
 
