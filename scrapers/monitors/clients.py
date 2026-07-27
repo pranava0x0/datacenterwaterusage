@@ -46,6 +46,59 @@ def _require(env_var: str) -> str:
     return key
 
 
+def _legiscan_ok(payload: dict, context: str) -> dict:
+    """Reject a LegiScan error payload instead of fingerprinting it.
+
+    LegiScan answers every request 200 with a body carrying its own
+    ``status`` field. Without this check an error body — which has none of the
+    fields :func:`canonical_legiscan` reads — canonicalizes to a stable
+    all-null string. That fingerprint never changes, so the watch looks
+    perfectly healthy and can never report a status move: the silent-failure
+    mode this whole subsystem exists to prevent. Raise instead, so the sweep
+    reports it as a failed fetch.
+    """
+    if payload.get("status") != "OK":
+        raise RuntimeError(
+            f"LegiScan {context} returned status={payload.get('status')!r}: "
+            f"{payload.get('alert', {}).get('message', payload)}"
+        )
+    return payload
+
+
+def resolve_legiscan_bill_id(key: str, get: Callable[[str], str], api_key: str) -> str:
+    """Map a human bill reference to LegiScan's internal numeric bill id.
+
+    ``getBill`` takes LegiScan's own integer id, NOT a bill number — passing
+    "NY S10642" returns an error payload rather than the bill. Keys may be
+    given either as a numeric id (used directly) or as "<STATE> <BILLNUM>",
+    which is resolved through ``getSearch`` and matched on the exact bill
+    number so a fuzzy relevance hit cannot silently select the wrong bill.
+    """
+    key = key.strip()
+    if key.isdigit():
+        return key
+
+    parts = key.split(None, 1)
+    if len(parts) != 2:
+        raise ValueError(
+            f"legiscan key {key!r} must be a numeric bill id or '<STATE> <BILLNUM>'"
+        )
+    state, bill_number = parts[0], parts[1].replace(" ", "")
+    url = f"{LEGISCAN_API}?key={api_key}&op=getSearch&state={state}&query={bill_number}"
+    payload = _legiscan_ok(json.loads(get(url)), "getSearch")
+
+    results = payload.get("searchresult", {}) or {}
+    for value in results.values():
+        if not isinstance(value, dict):
+            continue  # 'summary' block
+        found = str(value.get("bill_number", "")).replace(" ", "").upper()
+        if found == bill_number.upper():
+            return str(value["bill_id"])
+    raise RuntimeError(
+        f"LegiScan getSearch found no bill numbered {bill_number!r} in {state}"
+    )
+
+
 def canonical_legiscan(payload: dict) -> str:
     """Reduce a LegiScan bill payload to the fields a status change moves.
 
@@ -53,6 +106,7 @@ def canonical_legiscan(payload: dict) -> str:
     that churn independently of status; fingerprinting all of it would report a
     change on nearly every run.
     """
+    _legiscan_ok(payload, "getBill")
     bill = payload.get("bill", payload) or {}
     fields = {
         "status": bill.get("status"),
@@ -106,8 +160,9 @@ def make_fetcher(get: Callable[[str], str]) -> Callable[[Watch], str]:
 
         if watch.kind == "legiscan":
             key = _require("LEGISCAN_API_KEY")
-            url = f"{LEGISCAN_API}?key={key}&op=getBill&id={watch.key}"
             try:
+                bill_id = resolve_legiscan_bill_id(watch.key, get, key)
+                url = f"{LEGISCAN_API}?key={key}&op=getBill&id={bill_id}"
                 return canonical_legiscan(json.loads(get(url)))
             except Exception as exc:  # noqa: BLE001 - redact, then re-raise
                 raise _redacting(key, exc) from None

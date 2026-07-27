@@ -1067,8 +1067,8 @@
       "instrument_type": "bill",
       "monitor": {
         "kind": "legiscan",
-        "key": "US S. 4213",
-        "note": "Federal transparency bill — watch for committee action or floor movement. A Federal Register keyword search cannot see Senate status."
+        "key": "US SB4213",
+        "note": "Federal transparency bill — watch for committee action or floor movement. NB: the LegiScan bill-number string is not verified against the live API (no key available here). If it is wrong the watch fails LOUDLY on the first keyed run — getSearch matches the bill number exactly — rather than silently never firing."
       }
     },
     {
@@ -2676,7 +2676,7 @@
       "monitor": {
         "kind": "legiscan",
         "key": "NY S10642",
-        "note": "Never signed or vetoed — superseded by EO 62. Watch for an eventual veto."
+        "note": "Never signed or vetoed — superseded by EO 62. Watch for an eventual veto. NB: the LegiScan bill-number string is not verified against the live API (no key available here). If it is wrong the watch fails LOUDLY on the first keyed run — getSearch matches the bill number exactly — rather than silently never firing."
       }
     },
     {
@@ -3881,9 +3881,9 @@
       ],
       "public_sentiment": "Michigan's Great Lakes context makes consumptive-use caps unusually salient; the NDA provision responds directly to secrecy complaints around recent siting fights.",
       "monitor": {
-        "kind": "legiscan",
-        "key": "MI SB 1046",
-        "note": "Bill numbers unverified; confirm against the legislature lookup when status moves."
+        "kind": "url-watch",
+        "key": "https://legislature.mi.gov/Bills/Bill?ObjectName=2026-SB-1046",
+        "note": "Michigan legislature bill page for SB 1046, the water-permitting bill in the package. Bill numbers unverified; confirm against the lookup when status moves."
       }
     },
     {

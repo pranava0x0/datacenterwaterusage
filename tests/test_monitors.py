@@ -370,18 +370,20 @@ class TestClients:
         independently of status; fingerprinting them all would fire every run."""
         from scrapers.monitors.clients import canonical_legiscan
 
-        base = {"bill": {"status": 4, "status_date": "2026-07-01",
+        base = {"status": "OK",
+                "bill": {"status": 4, "status_date": "2026-07-01",
                          "last_action": "Passed", "last_action_date": "2026-07-01",
                          "bill_number": "S10642"}}
-        noisy = {"bill": dict(base["bill"], votes=[1, 2, 3], texts=["hash-a"],
+        noisy = {"status": "OK",
+                 "bill": dict(base["bill"], votes=[1, 2, 3], texts=["hash-a"],
                               sponsors=[{"name": "X"}])}
         assert canonical_legiscan(base) == canonical_legiscan(noisy)
 
     def test_legiscan_detects_a_real_status_move(self):
         from scrapers.monitors.clients import canonical_legiscan
 
-        a = {"bill": {"status": 4, "last_action": "Passed Senate"}}
-        b = {"bill": {"status": 5, "last_action": "Vetoed"}}
+        a = {"status": "OK", "bill": {"status": 4, "last_action": "Passed Senate"}}
+        b = {"status": "OK", "bill": {"status": 5, "last_action": "Vetoed"}}
         assert canonical_legiscan(a) != canonical_legiscan(b)
 
     def test_federal_register_is_order_independent(self):
@@ -481,3 +483,69 @@ class TestRunner:
 
         monkeypatch.setattr(runner, "_polite_get", lambda *a, **k: (lambda url: ""))
         assert runner.main(["--only", "no-such-record"]) == 1
+
+
+class TestLegiScanIdResolution:
+    """Codex P1 on the re-review: `getBill` takes LegiScan's internal numeric
+    id, not a bill number. Passing "NY S10642" returns an error payload, and
+    because nothing validated the response status that payload canonicalized
+    to a stable all-null fingerprint — a watch that looks healthy forever and
+    can never fire."""
+
+    def test_error_payload_raises_instead_of_fingerprinting_nulls(self):
+        from scrapers.monitors.clients import canonical_legiscan
+
+        with pytest.raises(RuntimeError, match="ERROR"):
+            canonical_legiscan({"status": "ERROR", "alert": {"message": "Unknown id"}})
+
+    def test_an_error_payload_would_otherwise_look_stable(self):
+        """Demonstrates the bug being guarded: two DIFFERENT errors reduce to
+        the same fields, so without validation they hash identically and the
+        watch reports 'no change' forever."""
+        from scrapers.monitors.clients import canonical_legiscan
+
+        for payload in (
+            {"status": "ERROR", "alert": {"message": "Unknown id"}},
+            {"status": "ERROR", "alert": {"message": "Rate limit"}},
+        ):
+            with pytest.raises(RuntimeError):
+                canonical_legiscan(payload)
+
+    def test_numeric_key_is_used_directly(self):
+        from scrapers.monitors.clients import resolve_legiscan_bill_id
+
+        called = []
+        assert resolve_legiscan_bill_id("4213", lambda u: called.append(u), "k") == "4213"
+        assert not called, "a numeric id needs no search round-trip"
+
+    def test_bill_number_resolves_by_exact_match(self):
+        """A fuzzy relevance hit must not silently select the wrong bill."""
+        from scrapers.monitors.clients import resolve_legiscan_bill_id
+
+        body = json.dumps({
+            "status": "OK",
+            "searchresult": {
+                "summary": {"count": 2},
+                "0": {"bill_number": "S1064", "bill_id": 111},
+                "1": {"bill_number": "S10642", "bill_id": 999},
+            },
+        })
+        assert resolve_legiscan_bill_id("NY S10642", lambda u: body, "k") == "999"
+
+    def test_unresolvable_bill_fails_loudly(self):
+        from scrapers.monitors.clients import resolve_legiscan_bill_id
+
+        body = json.dumps({"status": "OK", "searchresult": {"summary": {"count": 0}}})
+        with pytest.raises(RuntimeError, match="no bill numbered"):
+            resolve_legiscan_bill_id("NY S99999", lambda u: body, "k")
+
+    def test_malformed_key_is_rejected(self):
+        from scrapers.monitors.clients import resolve_legiscan_bill_id
+
+        with pytest.raises(ValueError):
+            resolve_legiscan_bill_id("S10642", lambda u: "", "k")
+
+    def test_watch_keys_in_the_dataset_are_resolvable_shapes(self):
+        for w in iter_watches():
+            if w.kind == "legiscan":
+                assert w.key.strip().isdigit() or len(w.key.split()) == 2, w.record_id

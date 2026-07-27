@@ -112,6 +112,16 @@ def invalid_watches() -> list[str]:
             problems.append(f"{w.record_id}: monitor has no key")
         if w.kind == "url-watch" and not w.key.startswith("http"):
             problems.append(f"{w.record_id}: url-watch key is not a URL ({w.key!r})")
+        if w.kind == "legiscan":
+            # getBill takes LegiScan's numeric id; a bill number needs a state
+            # to resolve against. Anything else silently returns an error
+            # payload rather than a bill.
+            parts = w.key.split()
+            if not (w.key.strip().isdigit() or len(parts) == 2):
+                problems.append(
+                    f"{w.record_id}: legiscan key must be a numeric bill id or "
+                    f"'<STATE> <BILLNUM>', got {w.key!r}"
+                )
     return problems
 
 
