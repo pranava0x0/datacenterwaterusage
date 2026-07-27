@@ -213,6 +213,28 @@ class TestQueue:
         ) == 1
 
 
+class TestPathsAreRedirectable:
+    """Regression guard. These paths were module-constant DEFAULT ARGUMENTS,
+    which bind at import — monkeypatching the constant did nothing and a test
+    wrote to the real data/state file. Resolving at call time fixes it."""
+
+    def test_queue_and_cache_honour_a_patched_constant(self, tmp_path, monkeypatch):
+        monkeypatch.setattr(monitor_queue, "QUEUE_PATH", tmp_path / "q.json")
+        monkeypatch.setattr(monitor_queue, "FINGERPRINT_PATH", tmp_path / "fp.json")
+        monitor_queue.append_candidates([{"record_id": "r", "fingerprint": "1"}], "t")
+        monitor_queue.save_fingerprints({"r": "1"}, "t")
+        assert (tmp_path / "q.json").exists()
+        assert (tmp_path / "fp.json").exists()
+
+    def test_real_paths_are_gitignored(self):
+        """Both are runtime artifacts of an ops sweep, not curated data."""
+        import pathlib
+
+        ignore = (pathlib.Path(monitor_queue.BASE_DIR) / ".gitignore").read_text()
+        assert "monitor_hits.json" in ignore
+        assert "monitor_fingerprints.json" in ignore
+
+
 class TestNoAutomaticWrites:
     def test_monitors_never_import_a_dataset_writer(self):
         """The curated layer's value is that a person checked it. A monitor
@@ -224,3 +246,113 @@ class TestNoAutomaticWrites:
         source = pathlib.Path(bm.__file__).read_text()
         for forbidden in ("json.dump", "write_text", "open(", "w+"):
             assert forbidden not in source, forbidden
+
+
+class TestClients:
+    """The three fetchers. No network: `get` is a stub throughout."""
+
+    @staticmethod
+    def _fetch(pages, kind, key):
+        from scrapers.monitors.clients import make_fetcher
+
+        return make_fetcher(lambda url: pages[url])(
+            Watch(record_id="r", dataset="legislation", kind=kind, key=key)
+        )
+
+    def test_url_watch_passes_the_page_through(self):
+        out = self._fetch({"https://x/1": "<p>hi</p>"}, "url-watch", "https://x/1")
+        assert out == "<p>hi</p>"
+
+    def test_legiscan_canonicalization_ignores_churn(self):
+        """The full payload carries vote rosters and text hashes that move
+        independently of status; fingerprinting them all would fire every run."""
+        from scrapers.monitors.clients import canonical_legiscan
+
+        base = {"bill": {"status": 4, "status_date": "2026-07-01",
+                         "last_action": "Passed", "last_action_date": "2026-07-01",
+                         "bill_number": "S10642"}}
+        noisy = {"bill": dict(base["bill"], votes=[1, 2, 3], texts=["hash-a"],
+                              sponsors=[{"name": "X"}])}
+        assert canonical_legiscan(base) == canonical_legiscan(noisy)
+
+    def test_legiscan_detects_a_real_status_move(self):
+        from scrapers.monitors.clients import canonical_legiscan
+
+        a = {"bill": {"status": 4, "last_action": "Passed Senate"}}
+        b = {"bill": {"status": 5, "last_action": "Vetoed"}}
+        assert canonical_legiscan(a) != canonical_legiscan(b)
+
+    def test_federal_register_is_order_independent(self):
+        from scrapers.monitors.clients import canonical_federal_register
+
+        d1 = {"document_number": "1", "title": "A", "publication_date": "2026-01-01"}
+        d2 = {"document_number": "2", "title": "B", "publication_date": "2026-02-01"}
+        assert canonical_federal_register({"results": [d1, d2]}) == (
+            canonical_federal_register({"results": [d2, d1]})
+        )
+
+    def test_federal_register_detects_a_new_document(self):
+        from scrapers.monitors.clients import canonical_federal_register
+
+        d1 = {"document_number": "1", "title": "A", "publication_date": "2026-01-01"}
+        d2 = {"document_number": "2", "title": "B", "publication_date": "2026-02-01"}
+        assert canonical_federal_register({"results": [d1]}) != (
+            canonical_federal_register({"results": [d1, d2]})
+        )
+
+    def test_missing_credential_is_raised_not_swallowed(self, monkeypatch):
+        """A watch that silently stops running looks exactly like one
+        reporting no change — the failure the monitors exist to prevent."""
+        from scrapers.monitors.clients import MissingCredential
+
+        monkeypatch.delenv("LEGISCAN_API_KEY", raising=False)
+        with pytest.raises(MissingCredential):
+            self._fetch({}, "legiscan", "NY S10642")
+
+    def test_missing_credential_surfaces_as_a_candidate(self, monkeypatch):
+        """MonitorRun catches fetch errors, so the sweep must still report the
+        unrun watch rather than dropping it."""
+        from scrapers.monitors.clients import make_fetcher
+
+        monkeypatch.delenv("LEGISCAN_API_KEY", raising=False)
+        w = Watch(record_id="r", dataset="legislation", kind="legiscan", key="NY S1")
+        out = MonitorRun(fetch=make_fetcher(lambda u: ""), previous={}, now="t").run([w])
+        assert len(out) == 1 and "fetch failed" in out[0].summary
+
+    def test_unknown_kind_is_rejected(self):
+        with pytest.raises(ValueError):
+            self._fetch({}, "carrier-pigeon", "x")
+
+
+class TestRunner:
+    def test_dry_run_writes_nothing(self, tmp_path, monkeypatch, capsys):
+        from scrapers.monitors import run as runner
+
+        monkeypatch.setattr(runner.monitor_queue, "QUEUE_PATH", tmp_path / "q.json")
+        monkeypatch.setattr(runner, "_polite_get", lambda *a, **k: (lambda url: "<p>x</p>"))
+        assert runner.main(["--dry-run"]) == 0
+        assert not (tmp_path / "q.json").exists()
+        assert "dry run" in capsys.readouterr().out
+
+    def test_failed_fetch_does_not_advance_the_baseline(self, tmp_path, monkeypatch):
+        """Baselining a watch that never fetched would make the next run report
+        no change — the failure would silently heal itself."""
+        from scrapers.monitors import run as runner
+
+        q, fp = tmp_path / "q.json", tmp_path / "fp.json"
+        monkeypatch.setattr(runner.monitor_queue, "QUEUE_PATH", q)
+        monkeypatch.setattr(runner.monitor_queue, "FINGERPRINT_PATH", fp)
+
+        def boom(url):
+            raise ConnectionError("down")
+
+        monkeypatch.setattr(runner, "_polite_get", lambda *a, **k: boom)
+        assert runner.main([]) == 0
+        saved = json.loads(fp.read_text())["fingerprints"]
+        assert saved == {}, "a failed fetch must not be baselined"
+
+    def test_unknown_only_target_exits_nonzero(self, monkeypatch):
+        from scrapers.monitors import run as runner
+
+        monkeypatch.setattr(runner, "_polite_get", lambda *a, **k: (lambda url: ""))
+        assert runner.main(["--only", "no-such-record"]) == 1

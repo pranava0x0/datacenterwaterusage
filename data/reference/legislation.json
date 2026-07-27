@@ -2032,8 +2032,8 @@
       "instrument_type": "agency-rule",
       "monitor": {
         "kind": "url-watch",
-        "key": "https://epa.ohio.gov/divisions-and-offices/surface-water/permitting/general-permits",
-        "note": "Draft general permit still not finalized; finalization makes data centers direct DMR filers."
+        "key": "https://ohioepa.commentinput.com/?id=csDN8pRrg",
+        "note": "Ohio EPA's public-comment portal for the draft permit — the page that changes when the comment period closes or the permit is finalized. (The agency's own permits index 404s; found by the first live sweep.)"
       }
     },
     {
@@ -3824,8 +3824,8 @@
       "public_sentiment": "Transparency advocates call the aggregate-only publication the compromise that keeps the data too coarse to hold any single campus accountable.",
       "monitor": {
         "kind": "url-watch",
-        "key": "https://www.deq.virginia.gov/water/water-quantity",
-        "note": "First aggregate report due 2026-10-01 — unlocks the Tier-1 scraper build."
+        "key": "https://townhall.virginia.gov/L/ViewBoard.cfm?BoardID=125",
+        "note": "Virginia Regulatory Town Hall board page for the State Water Control Board — tracks regulatory stages. deq.virginia.gov itself is WAF-blocked for automated clients (errors.md, 2026-02-24), so watch the Town Hall instead. First aggregate report due 2026-10-01."
       }
     },
     {

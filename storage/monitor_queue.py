@@ -23,8 +23,15 @@ QUEUE_PATH = BASE_DIR / "data" / "output" / "monitor_hits.json"
 FINGERPRINT_PATH = BASE_DIR / "data" / "state" / "monitor_fingerprints.json"
 
 
-def load_fingerprints(path: Path = FINGERPRINT_PATH) -> dict[str, str]:
-    """Last-seen fingerprint per record id; empty on first run."""
+def load_fingerprints(path: Path | None = None) -> dict[str, str]:
+    """Last-seen fingerprint per record id; empty on first run.
+
+    ``path`` resolves at call time rather than binding the module constant as a
+    default, so a test (or a caller with its own data root) can redirect these
+    writes. Binding it as a default made the constant unpatchable and let a
+    test write to the real state file.
+    """
+    path = path or FINGERPRINT_PATH
     if not path.exists():
         return {}
     try:
@@ -37,8 +44,9 @@ def load_fingerprints(path: Path = FINGERPRINT_PATH) -> dict[str, str]:
 
 
 def save_fingerprints(
-    fingerprints: dict[str, str], last_run: str, path: Path = FINGERPRINT_PATH
+    fingerprints: dict[str, str], last_run: str, path: Path | None = None
 ) -> None:
+    path = path or FINGERPRINT_PATH
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         json.dumps(
@@ -52,13 +60,14 @@ def save_fingerprints(
 
 
 def append_candidates(
-    candidates: list[dict], last_run: str, path: Path = QUEUE_PATH
+    candidates: list[dict], last_run: str, path: Path | None = None
 ) -> int:
     """Append new candidates to the queue; returns how many were added.
 
     De-duplicated on ``(record_id, fingerprint)`` so re-running before a
     curator has triaged the queue does not pile up copies of the same finding.
     """
+    path = path or QUEUE_PATH
     existing: list[dict] = []
     if path.exists():
         try:
