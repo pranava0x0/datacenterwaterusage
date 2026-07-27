@@ -1260,11 +1260,8 @@ details.lazy .panel{margin:0}
 .claim-company{margin:1rem 0 .3rem;color:var(--blue)}
 .claim-card{border:1px solid #e2e8f0;border-radius:.5rem;background:#fff;padding:.8rem 1rem;margin:.5rem 0}
 .claim-quote{font-style:italic;margin:0 0 .4rem}
-.claim-chips{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin:.3rem 0 .45rem}
-.claim-type-pill{background:transparent;border:1px solid #6b7280;color:#4b5563;border-radius:999px;padding:.05rem .55rem;font-size:.72rem;font-weight:600}
-.claim-challenge-pill{background:#fdeaec;border:1px solid #c41e3a;color:#c41e3a;border-radius:999px;padding:.05rem .55rem;font-size:.72rem;font-weight:700;text-decoration:none}
-.claim-site-link{font-size:.78rem;color:#08519c;text-decoration:none}
-.claim-site-link:hover{text-decoration:underline}
+/* .claim-chips/.claim-*-pill/.claim-site-link live in assets/components.css
+   so the Streamlit card and this page share one definition. */
 .claim-meta{color:#666;font-size:.8rem}
 .claim-status{margin-top:.6rem;padding:.6rem .8rem;border-radius:.35rem;font-size:.9rem}
 .claim-status-summary{margin-top:.3rem}

@@ -383,3 +383,13 @@ class TestNoDanglingAnchors:
         for kind, anchors in by_kind.items():
             present = sum(1 for a in anchors if a in ids)
             assert present, f"no {kind} anchor reaches the page (of {len(anchors)})"
+
+
+class TestNoDuplicateClaimStyles:
+    def test_lifecycle_classes_defined_once(self):
+        """They were defined in build_site.py's CSS block AND (after the move)
+        in assets/components.css, so the built page carried two competing
+        definitions — the drift the move existed to end."""
+        html = _html()
+        for cls in (".claim-type-pill", ".claim-challenge-pill", ".claim-chips"):
+            assert html.count(cls + "{") + html.count(cls + " {") == 1, cls

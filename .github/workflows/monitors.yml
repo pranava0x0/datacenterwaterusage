@@ -73,6 +73,8 @@ jobs:
           # skipping quietly. Intentional: a watch that stopped running must not
           # be indistinguishable from a watch reporting no change.
           LEGISCAN_API_KEY: ${{ secrets.LEGISCAN_API_KEY }}
+        # Writes its own $GITHUB_STEP_SUMMARY covering only this run's
+        # candidates — the queue on disk is append-only history.
         run: python3 -m scrapers.monitors.run
 
       # A convenience copy for humans — the cache above is what actually
@@ -85,26 +87,3 @@ jobs:
           path: data/output/monitor_hits.json
           if-no-files-found: ignore
           retention-days: 90
-
-      - name: Summarize
-        if: always()
-        run: |
-          echo "### Monitor sweep" >> "$GITHUB_STEP_SUMMARY"
-          if [ -f data/output/monitor_hits.json ]; then
-            python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
-          import json
-          from pathlib import Path
-          rows = json.loads(Path("data/output/monitor_hits.json").read_text())["candidates"]
-          changed = [c for c in rows if c.get("previous_fingerprint") and c.get("fingerprint")]
-          failed = [c for c in rows if not c.get("fingerprint")]
-          print(f"- {len(changed)} changed, {len(failed)} failed, {len(rows)} total queued")
-          for c in changed:
-              print(f"  - **{c['record_id']}** — {c.get('note') or c['summary']}")
-          for c in failed:
-              print(f"  - x {c['record_id']} — {c['summary']}")
-          print()
-          print("Download the `monitor-hits` artifact to triage. Monitors propose; a curator decides.")
-          PY
-          else
-            echo "- no candidate queue written" >> "$GITHUB_STEP_SUMMARY"
-          fi

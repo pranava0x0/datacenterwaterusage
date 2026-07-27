@@ -18,6 +18,7 @@ import pytest
 
 from scrapers.monitors.base_monitor import (
     MONITOR_KINDS,
+    Candidate,
     MonitorRun,
     Watch,
     first_difference,
@@ -607,3 +608,63 @@ class TestScheduledSweepWorkflow:
             body = step.get("run", "")
             for forbidden in ("git commit", "git push", "gh pr", "gh api"):
                 assert forbidden not in body, f"{forbidden} in step {step.get('name')}"
+
+
+class TestStepSummary:
+    """Codex: once the queue persists across runs, anything summarizing the
+    FILE re-reports the first change it ever saw as current, every week."""
+
+    def test_summary_reports_only_this_runs_candidates(self):
+        from scrapers.monitors.run import build_step_summary
+
+        c = Candidate(
+            record_id="rec-now", dataset="legislation", kind="url-watch",
+            key="k", previous_fingerprint="a", fingerprint="b",
+            summary="watched page changed since last run", detected_at="t2",
+            note="Ohio permit finalization",
+        )
+        out = build_step_summary([c], [], [], total_queued=1)
+        assert "rec-now" in out
+        assert "**1 changed**" in out
+        # It is handed candidates, never the queue file, so history cannot leak.
+        import inspect
+        import scrapers.monitors.run as runner
+        assert "monitor_hits" not in inspect.getsource(runner.build_step_summary)
+
+    def test_quiet_run_says_so(self):
+        from scrapers.monitors.run import build_step_summary
+
+        assert "nothing to triage" in build_step_summary([], [], [], 0)
+
+    def test_workflow_does_not_reparse_the_queue(self):
+        import pathlib
+
+        raw = (
+            pathlib.Path(monitor_queue.BASE_DIR) / ".github/workflows/monitors.yml"
+        ).read_text()
+        assert "monitor_hits.json" in raw, "artifact upload should still reference it"
+        # ...but no step may re-derive the summary by READING that file. Check
+        # the parsed run blocks, not prose — the comments legitimately discuss
+        # candidates (a raw grep here would repeat the contents:-write mistake).
+        import yaml
+
+        wf = yaml.safe_load(raw)
+        for step in wf["jobs"]["sweep"]["steps"]:
+            body = step.get("run", "")
+            assert "monitor_hits.json" not in body, step.get("name")
+            assert "GITHUB_STEP_SUMMARY" not in body, step.get("name")
+
+
+class TestSharedClaimStyles:
+    def test_lifecycle_classes_are_in_the_shared_stylesheet(self):
+        """Sharing the markup without the styles is only half a shared
+        component: Streamlit injects assets/components.css and would otherwise
+        render the chips as bare text."""
+        import pathlib
+
+        css = (
+            pathlib.Path(monitor_queue.BASE_DIR) / "assets" / "components.css"
+        ).read_text()
+        for cls in (".claim-chips", ".claim-type-pill", ".claim-challenge-pill",
+                    ".claim-site-link"):
+            assert cls in css, cls
