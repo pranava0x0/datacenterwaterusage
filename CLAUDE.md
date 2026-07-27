@@ -142,6 +142,11 @@ the renderer emitted the anchor.
 ### Status monitors (`scrapers/monitors/`, added 2026-07-26)
 
 `python3 -m scrapers.monitors.run [--dry-run] [--only ID]` — see `REFRESH.md`.
+Runs weekly unattended via `.github/workflows/monitors.yml` (Mondays 07:23 UTC,
+`workflow_dispatch` for a manual run). The fingerprint cache round-trips through
+the actions cache — **not** an artifact, which cannot read a prior run's state —
+and the candidate queue is uploaded as `monitor-hits` for triage. The workflow
+has `contents: read` only; it proposes, it never commits.
 
 - **Monitors propose; humans dispose.** Nothing here writes to a curated
   dataset; changes land in `data/output/monitor_hits.json` for adjudication. A

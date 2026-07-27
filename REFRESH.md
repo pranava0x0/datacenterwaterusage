@@ -25,6 +25,11 @@ Sweeps every record carrying a `monitor` block (7 today), fingerprints the
 watched page, and appends anything that changed to
 `data/output/monitor_hits.json`. Rate-limited 2–5 s, sequential.
 
+**This also runs weekly on its own** (`.github/workflows/monitors.yml`, Mondays
+07:23 UTC). Grab the `monitor-hits` artifact from the latest run instead of
+sweeping locally, and read the run summary for the one-line verdict. Run it by
+hand only when you want a sweep right now.
+
 Read the queue before doing any research — it tells you what actually moved,
 so you re-verify the two things that changed instead of the sixty that didn't.
 

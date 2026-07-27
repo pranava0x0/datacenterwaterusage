@@ -681,11 +681,11 @@ These are large data-center water stories with no formal CWA enforcement action 
   same question applies to every `scripts/add_*_2026_07.py`.
 - **Sample prompt**: "Decide a convention for applied one-off migration scripts in scripts/ — archive vs keep-current — and apply it, starting with annotate_issue_types.py which is now stale by one site."
 
-## Scheduled monitor sweep
+## Add LEGISCAN_API_KEY to repo secrets
 - **Priority**: medium
-- **What**: `python3 -m scrapers.monitors.run` is manual. A weekly GitHub Action
-  (pinned to a commit SHA, least-privilege `permissions:`, key from repo secrets)
-  would append candidates without a human remembering to sweep. Note the queue and
-  fingerprint cache are gitignored, so the action needs somewhere to persist state
-  — an artifact, or a committed queue with the cache still ignored.
-- **Sample prompt**: "Add a weekly GitHub Action running the monitor sweep, SHA-pinned with least-privilege permissions, LEGISCAN_API_KEY from secrets, persisting monitor_fingerprints.json between runs."
+- **What**: The weekly `Status monitors` workflow runs without it — the two
+  LegiScan watches simply report as failed, loudly, which is the intended
+  degraded mode rather than a silent skip. Adding the secret activates them.
+  Pairs with the live-verification item above: the first keyed run is also what
+  confirms the bill-number strings.
+- **Sample prompt**: "Add LEGISCAN_API_KEY to the repo secrets and trigger the Status monitors workflow manually to confirm both LegiScan watches resolve."
