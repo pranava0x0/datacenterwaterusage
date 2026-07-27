@@ -77,13 +77,26 @@ jobs:
       # following REFRESH.md would download a fresh artifact silently missing
       # every untriaged hit. Artifacts are retained 90 days, so on a cache miss
       # fall back to the last run that published one.
-      - name: Recover queue from the last artifact if the cache missed
+      # The actions cache is a CACHE, not storage: GitHub evicts entries unused
+      # for 7 days and under repo cache pressure. On a miss, rebuild from the
+      # last published artifact (90-day retention).
+      #
+      # This step FAILS rather than continuing on a partial recovery. A warning
+      # is not enough: the sweep would baseline a page that had actually
+      # changed, and the upload steps at the end would then overwrite the good
+      # cache and artifact with that empty state — turning a recoverable blip
+      # into permanent loss of a real status change. Better a red run somebody
+      # investigates than a green one that quietly discarded the finding.
+      #
+      # A genuine first run (no prior artifact at all) is not a failure: there
+      # is nothing to recover and baselining is the correct behaviour.
+      - name: Recover monitor state if the cache missed
         if: steps.state.outputs.cache-hit != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          mkdir -p data/output
+          mkdir -p data/output data/state
           run_id=$(gh run list --workflow monitors.yml --status success \
             --limit 20 --json databaseId --jq '.[].databaseId' \
             | while read -r id; do
@@ -92,16 +105,30 @@ jobs:
                   echo "$id"; break
                 fi
               done)
-          if [ -n "${run_id:-}" ]; then
-            echo "Recovering monitor state from run $run_id"
-            # Both files, restored to their real locations. The artifact is
-            # rooted at data/ (least common ancestor of output/ and state/).
-            gh run download "$run_id" --name monitor-state --dir data || true
-            ls -la data/output/monitor_hits.json data/state/monitor_fingerprints.json 2>/dev/null \
-              || echo "WARNING: recovery incomplete — this sweep will re-baseline."
-          else
-            echo "No prior monitor-state artifact found — starting fresh."
+
+          if [ -z "${run_id:-}" ]; then
+            echo "No prior monitor-state artifact — genuine cold start, baselining."
+            exit 0
           fi
+
+          echo "Recovering monitor state from run $run_id"
+          if ! gh run download "$run_id" --name monitor-state --dir data; then
+            echo "::error::Recovery download failed for run $run_id. Refusing to" \
+                 "sweep: baselining now would overwrite the recoverable queue" \
+                 "and fingerprints with empty state."
+            exit 1
+          fi
+
+          missing=""
+          [ -s data/output/monitor_hits.json ] || missing="$missing data/output/monitor_hits.json"
+          [ -s data/state/monitor_fingerprints.json ] || missing="$missing data/state/monitor_fingerprints.json"
+          if [ -n "$missing" ]; then
+            echo "::error::Recovery incomplete — missing:$missing. Refusing to" \
+                 "sweep: a changed page would be recorded as a first observation" \
+                 "and the good state overwritten."
+            exit 1
+          fi
+          echo "Recovered both state files."
 
       - name: Sweep
         env:

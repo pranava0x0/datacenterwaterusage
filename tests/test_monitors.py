@@ -596,6 +596,15 @@ class TestScheduledSweepWorkflow:
         # and the summary reads "nothing to triage" — a silent miss that looks
         # like a quiet week. Half-recovered state is worse than none.
         assert "monitor-state" in recovery["run"], "must recover the full state artifact"
+        body = recovery["run"]
+        # Must FAIL on partial recovery, not warn. Continuing would baseline a
+        # page that changed, and the upload steps would then overwrite the good
+        # cache/artifact with that empty state — a recoverable blip turned into
+        # permanent loss. A cold start (no prior artifact) is a legitimate
+        # exit 0, so both paths must exist.
+        assert body.count("exit 1") >= 2, "partial recovery must fail the step"
+        assert "exit 0" in body, "a genuine cold start must not fail"
+        assert "::error::" in body, "failures should surface as annotations"
         published = [
             st for st in steps
             if "upload-artifact" in st.get("uses", "")
