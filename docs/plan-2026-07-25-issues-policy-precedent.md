@@ -404,7 +404,7 @@ Mississippi v. Tennessee, No. 143 Orig. (2021) · Florida v. Georgia, No. 142 Or
 | **P3 Issues/Claims** | ✅ done — A1 issue types + filter, A2 claims lifecycle, A3 unified Issues & Claims tab | `c462a24`, `dae3c1c`, `7b8c5cb` |
 | **C3 application mapping** | ✅ done — 30 site→doctrine mappings incl. 4 negatives, doctrine matrix, derived outcome notes | `f75fb53`, `fb7f5a5` |
 | **P4 UX** | ✅ done — chips, both filters, claim lifecycle, matrix, Issues & Claims tab, doctrine theories table | `75994e3`, `14f6091`, `8a03356`, `7b8c5cb`, `3f37ecd` |
-| **P5 Automation** | 🟡 core done — derived watch list (7 records), fingerprint diffing, append-only candidate queue, 22 offline tests. **Remaining:** LegiScan / Federal Register API clients (need keys in config), scheduled run, REFRESH.md playbook consuming `monitor_hits.json` | `0194eda` |
+| **P5 Automation** | ✅ done — derived watch list (7 records), fingerprint diffing with negation/churn guards, LegiScan + Federal Register canonicalizers, runnable sweep, append-only queue, REFRESH.md playbook. API keys come from the environment | `0194eda`, `f0ac674` |
 
 **Decisions taken during the build that amend this plan:**
 
@@ -424,9 +424,9 @@ Mississippi v. Tennessee, No. 143 Orig. (2021) · Florida v. Georgia, No. 142 Or
 
 11. **The registry paid for itself at A3.** Moving conflict sites and claims into a new tab was two lines in `KIND_TABS` — every cross-reference in every dataset followed automatically, including a News item written when sites lived in Water Cases. That move would otherwise have been a find-and-replace across three JSON files with no way to verify completeness.
 
-Test count: 513 at plan time → **620**. Datasets: 67 policy instruments · 17 authority families / 39 readings · 109 cases · 19 conflict sites (30 doctrine mappings) · 35 claims. Tabs: Legislation · Water Cases · **Issues & Claims** · News · Solutions · Sources.
+Test count: 513 at plan time → **633**. Datasets: 67 policy instruments · 17 authority families / 39 readings · 109 cases · 19 conflict sites (30 doctrine mappings) · 35 claims. Tabs: Legislation · Water Cases · **Issues & Claims** · News · Solutions · Sources.
 
-**All six phases have landed.** What remains is listed per-phase above — chiefly the two API-backed monitor kinds, which need credentials rather than design.
+**All six phases are complete.** The only operational prerequisite left is a `LEGISCAN_API_KEY` in the environment for the two LegiScan watches; everything else runs today.
 
 ## Phasing, sequencing, and acceptance
 
