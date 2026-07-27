@@ -401,9 +401,9 @@ Mississippi v. Tennessee, No. 143 Orig. (2021) · Florida v. Georgia, No. 142 Or
 | **P0 Foundation** | ✅ done — `refdata/` extracted (pure, no Streamlit), registry + integrity suite, 27 entries migrated to `cross_ref_targets` | `1bcd55e` |
 | **P1 Policy data** | ✅ done — `instrument_type` back-filled over 54, +13 new entries (67 total), federal executive layer, first commission dockets | `2d4fd38` |
 | **P2 Precedent** | ✅ done — 17 of 17 families, 39 readings, 109 cases; `outcome_type` across all 109 | `9d03727`, `25fb6ee`, `9e597ec`, `9b91560`, `dae3c1c` |
-| **P3 Issues/Claims** | ✅ A1 + A2 done. **Remaining:** A3 tab restructure (rename Claims → "Issues & Claims", move Part 4 into it) | `c462a24`, `dae3c1c` |
+| **P3 Issues/Claims** | ✅ done — A1 issue types + filter, A2 claims lifecycle, A3 unified Issues & Claims tab | `c462a24`, `dae3c1c`, `7b8c5cb` |
 | **C3 application mapping** | ✅ done — 30 site→doctrine mappings incl. 4 negatives, doctrine matrix, derived outcome notes | `f75fb53`, `fb7f5a5` |
-| **P4 UX** | 🟡 chips, both filters, claim lifecycle, matrix done. **Remaining:** doctrine rows in the Part 2 theories table | `75994e3`, `14f6091`, `dae3c1c`, `fb7f5a5`, `8a03356` |
+| **P4 UX** | ✅ done — chips, both filters, claim lifecycle, matrix, Issues & Claims tab, doctrine theories table | `75994e3`, `14f6091`, `8a03356`, `7b8c5cb`, `3f37ecd` |
 | **P5 Automation** | ⬜ not started | — |
 
 **Decisions taken during the build that amend this plan:**
@@ -422,7 +422,11 @@ Mississippi v. Tennessee, No. 143 Orig. (2021) · Florida v. Georgia, No. 142 Or
 9. **Derive rather than store, where the value is derivable.** The plan specified `analogous_outcome_note` as a stored human-written sentence per site; deriving it at render from `outcome_type` is strictly better — it cannot drift, it updates as cases are added, and it follows the rule the statute pills already obey (§0.6-1). Applied the same way to the doctrine matrix.
 10. **Negative mappings are first-class.** Four site→doctrine mappings record that the obvious doctrine does *not* reach a site (ESA ∅ Memphis and ∅ Corpus Christi, TRIBAL ∅ Memphis, PTD ∅ Tucson). They render under their own heading in neutral grey, and appear as a dash in the matrix, so "assessed and doesn't apply" never reads as "not assessed".
 
-Test count: 513 at plan time → **589**. Datasets: 67 policy instruments · 17 authority families / 39 readings · 109 cases · 19 conflict sites (30 doctrine mappings) · 35 claims.
+11. **The registry paid for itself at A3.** Moving conflict sites and claims into a new tab was two lines in `KIND_TABS` — every cross-reference in every dataset followed automatically, including a News item written when sites lived in Water Cases. That move would otherwise have been a find-and-replace across three JSON files with no way to verify completeness.
+
+Test count: 513 at plan time → **598**. Datasets: 67 policy instruments · 17 authority families / 39 readings · 109 cases · 19 conflict sites (30 doctrine mappings) · 35 claims. Tabs: Legislation · Water Cases · **Issues & Claims** · News · Solutions · Sources.
+
+**Only P5 (monitors) remains.**
 
 ## Phasing, sequencing, and acceptance
 
