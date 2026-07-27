@@ -78,6 +78,19 @@ def canonical_federal_register(payload: dict) -> str:
     return "\n".join(rows)
 
 
+def _redacting(key: str, exc: Exception) -> RuntimeError:
+    """Re-raise a fetch error with the credential scrubbed out.
+
+    httpx puts the full request URL in its error messages, and MonitorRun
+    formats fetch errors verbatim into a Candidate that gets printed and
+    written to the queue file. Any 4xx from an API whose key travels in the
+    query string would otherwise burn that key into logs on disk (CLAUDE.md
+    §10). Redacting at the throw site is the only place that catches every
+    path, since callers do not know a secret was involved.
+    """
+    return RuntimeError(f"{type(exc).__name__}: {str(exc).replace(key, '***')}")
+
+
 def make_fetcher(get: Callable[[str], str]) -> Callable[[Watch], str]:
     """Build the ``fetch`` callable :class:`MonitorRun` expects.
 
@@ -94,7 +107,10 @@ def make_fetcher(get: Callable[[str], str]) -> Callable[[Watch], str]:
         if watch.kind == "legiscan":
             key = _require("LEGISCAN_API_KEY")
             url = f"{LEGISCAN_API}?key={key}&op=getBill&id={watch.key}"
-            return canonical_legiscan(json.loads(get(url)))
+            try:
+                return canonical_legiscan(json.loads(get(url)))
+            except Exception as exc:  # noqa: BLE001 - redact, then re-raise
+                raise _redacting(key, exc) from None
 
         if watch.kind == "federal-register":
             url = (

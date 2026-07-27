@@ -6,8 +6,10 @@ Two files, deliberately separate:
   same spirit as ``results.csv`` (CLAUDE.md §3): a candidate is never removed by
   a later run, because "we noticed this and it turned out to be nothing" is
   itself a record worth keeping.
-* ``data/state/monitor_fingerprints.json`` — the last fingerprint seen per
-  record. Rewritten each run; it is a cache, not a history.
+* ``data/state/monitor_fingerprints.json`` — per record, the last fingerprint
+  seen and a normalized snapshot of the page it came from. Rewritten each run;
+  it is a cache, not a history. The snapshot is what lets a candidate show the
+  actual diff instead of the top of the page.
 
 Kept out of ``scrapers/`` because it is storage, matching the existing split
 between scrapers and ``storage/``.
@@ -43,14 +45,33 @@ def load_fingerprints(path: Path | None = None) -> dict[str, str]:
     return data.get("fingerprints", {}) if isinstance(data, dict) else {}
 
 
+def load_snapshots(path: Path | None = None) -> dict[str, str]:
+    """Last normalized body per record id, for diffing. Empty on first run."""
+    path = path or FINGERPRINT_PATH
+    if not path.exists():
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
+    return data.get("snapshots", {}) if isinstance(data, dict) else {}
+
+
 def save_fingerprints(
-    fingerprints: dict[str, str], last_run: str, path: Path | None = None
+    fingerprints: dict[str, str],
+    last_run: str,
+    path: Path | None = None,
+    snapshots: dict[str, str] | None = None,
 ) -> None:
     path = path or FINGERPRINT_PATH
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         json.dumps(
-            {"last_run": last_run, "fingerprints": fingerprints},
+            {
+                "last_run": last_run,
+                "fingerprints": fingerprints,
+                "snapshots": snapshots or {},
+            },
             indent=2,
             sort_keys=True,
         )
@@ -64,8 +85,13 @@ def append_candidates(
 ) -> int:
     """Append new candidates to the queue; returns how many were added.
 
-    De-duplicated on ``(record_id, fingerprint)`` so re-running before a
-    curator has triaged the queue does not pile up copies of the same finding.
+    De-duplicated on the *transition* — ``(record_id, previous, current)`` —
+    rather than on the destination fingerprint alone. Keying on the destination
+    loses real events: a page that goes A -> B -> back to A produces a
+    fingerprint already in the queue, so the revert is dropped while the run
+    still advances the baseline, and no later run can ever report it. Failures
+    (empty fingerprint) additionally key on their summary, so a 500 followed by
+    a 404 are two rows rather than one silently swallowed.
     """
     path = path or QUEUE_PATH
     existing: list[dict] = []
@@ -76,10 +102,16 @@ def append_candidates(
         except json.JSONDecodeError:
             existing = []
 
-    seen = {(c.get("record_id"), c.get("fingerprint")) for c in existing}
-    fresh = [
-        c for c in candidates if (c.get("record_id"), c.get("fingerprint")) not in seen
-    ]
+    def key(c: dict) -> tuple:
+        fp = c.get("fingerprint") or ""
+        return (
+            c.get("record_id"),
+            c.get("previous_fingerprint"),
+            fp or c.get("summary", ""),
+        )
+
+    seen = {key(c) for c in existing}
+    fresh = [c for c in candidates if key(c) not in seen]
     if not fresh:
         return 0
 

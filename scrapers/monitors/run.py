@@ -66,7 +66,13 @@ def main(argv: list[str] | None = None) -> int:
 
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     previous = monitor_queue.load_fingerprints()
-    run = MonitorRun(fetch=make_fetcher(_polite_get()), previous=previous, now=now)
+    snapshots = monitor_queue.load_snapshots()
+    run = MonitorRun(
+        fetch=make_fetcher(_polite_get()),
+        previous=previous,
+        snapshots=snapshots,
+        now=now,
+    )
     candidates = run.run(watches)
 
     changed = [c for c in candidates if c.previous_fingerprint and c.fingerprint]
@@ -93,7 +99,7 @@ def main(argv: list[str] | None = None) -> int:
     for c in candidates:
         if c.fingerprint:
             fingerprints[c.record_id] = c.fingerprint
-    monitor_queue.save_fingerprints(fingerprints, now)
+    monitor_queue.save_fingerprints(fingerprints, now, snapshots=run.snapshots)
 
     print(f"\nqueued {added} new candidate(s) -> {monitor_queue.QUEUE_PATH}")
     if changed:

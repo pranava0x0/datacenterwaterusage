@@ -83,14 +83,61 @@ class TestDiffing:
         assert out == []
 
     def test_change_emits_a_candidate_with_context(self):
-        out = _run(
-            {"https://x/1": "<p>Permit status: final</p>"},
-            {"rec-1": fingerprint("<p>Permit status: draft</p>")},
-        )
+        """The excerpt must be the DIFF, not the head of the page.
+
+        The earlier version of this test used a 20-character fixture, so the
+        top of the page and the changed region were the same substring — it
+        passed while the code returned body[0:240] regardless. The boilerplate
+        prefix here makes head != diff, so only a real diff satisfies it.
+        """
+        boiler = "<p>Status: introduced. " + ("Nothing to see here. " * 40) + "</p>"
+        old_body = boiler + "<b>Nothing new here</b>"
+        new_body = boiler + "<b>PASSED SENATE 2026-07-20</b>"
+        out = MonitorRun(
+            fetch=lambda w: new_body,
+            previous={"rec-1": fingerprint(old_body)},
+            snapshots={"rec-1": normalize(old_body)},
+            now="t",
+        ).run([W])
         assert len(out) == 1
         assert out[0].summary == "watched page changed since last run"
-        # A bare "it changed" costs the curator the click the monitor saved.
-        assert "final" in out[0].excerpt
+        assert "PASSED SENATE" in out[0].excerpt
+        assert "Status: introduced" not in out[0].excerpt
+
+    def test_excerpt_is_empty_rather_than_misleading_without_a_snapshot(self):
+        """A first run has nothing to diff against. An empty excerpt is honest;
+        the head of the page labelled as the change is not."""
+        long_body = "<p>" + ("filler " * 100) + "CHANGED</p>"
+        out = MonitorRun(
+            fetch=lambda w: long_body,
+            previous={"rec-1": "stale-fp"},
+            snapshots={},
+            now="t",
+        ).run([W])
+        assert out[0].excerpt == ""
+
+    def test_snapshots_are_updated_for_the_next_run(self):
+        run = MonitorRun(fetch=lambda w: "<p>v2</p>", previous={}, snapshots={}, now="t")
+        run.run([W])
+        assert run.snapshots["rec-1"] == "v2"
+
+    @pytest.mark.parametrize(
+        "label,body",
+        [
+            ("unterminated openers", "<script>" * 40000),
+            ("unterminated comments", "<!--" * 30000),
+            ("large well-formed", "<div><script>var x=1</script><p>hi</p></div>" * 40000),
+        ],
+    )
+    def test_normalize_stays_linear_on_hostile_input(self, label, body):
+        """A lazy DOTALL `<script>.*?</script>` rescans to end-of-string at every
+        unterminated opener — 40k of them took ~56s, and input is arbitrary
+        third-party HTML. Block stripping is a linear str.find scan now."""
+        import time
+
+        t0 = time.monotonic()
+        normalize(body)
+        assert time.monotonic() - t0 < 1.0, label
 
     def test_fetch_failure_is_surfaced_not_swallowed(self):
         """An unreachable page usually means it moved, which is exactly the
@@ -178,6 +225,46 @@ class TestQueue:
         ) == 1
         payload = json.loads(path.read_text())
         assert len(payload["candidates"]) == 2
+
+    def test_a_reverted_page_is_not_silently_dropped(self, tmp_path):
+        """A -> B -> A. Keying dedupe on the destination fingerprint alone made
+        the revert collide with the original baseline, so it was dropped
+        permanently while the run still advanced the stored fingerprint."""
+        path = tmp_path / "hits.json"
+        assert monitor_queue.append_candidates(
+            [{"record_id": "r", "previous_fingerprint": None, "fingerprint": "A"}],
+            "t1", path,
+        ) == 1
+        assert monitor_queue.append_candidates(
+            [{"record_id": "r", "previous_fingerprint": "A", "fingerprint": "B"}],
+            "t2", path,
+        ) == 1
+        assert monitor_queue.append_candidates(
+            [{"record_id": "r", "previous_fingerprint": "B", "fingerprint": "A"}],
+            "t3", path,
+        ) == 1, "the revert back to A must be queued"
+
+    def test_distinct_failures_are_distinct_rows(self, tmp_path):
+        """Every failure has an empty fingerprint, so keying on it alone made a
+        500 followed by a 404 dedupe into one row — a dying watch going quiet."""
+        path = tmp_path / "hits.json"
+        base = {"record_id": "r", "previous_fingerprint": None, "fingerprint": ""}
+        assert monitor_queue.append_candidates(
+            [dict(base, summary="fetch failed: 500")], "t1", path
+        ) == 1
+        assert monitor_queue.append_candidates(
+            [dict(base, summary="fetch failed: 404")], "t2", path
+        ) == 1
+        assert monitor_queue.append_candidates(
+            [dict(base, summary="fetch failed: 500")], "t3", path
+        ) == 0
+
+    def test_snapshots_roundtrip(self, tmp_path):
+        path = tmp_path / "fp.json"
+        assert monitor_queue.load_snapshots(path) == {}
+        monitor_queue.save_fingerprints({"r": "1"}, "t", path, snapshots={"r": "body"})
+        assert monitor_queue.load_snapshots(path) == {"r": "body"}
+        assert monitor_queue.load_fingerprints(path) == {"r": "1"}
 
     def test_triaged_entries_are_never_dropped(self, tmp_path):
         """Append-only per CLAUDE.md §3: 'we looked and it was nothing' is a
@@ -318,6 +405,29 @@ class TestClients:
         w = Watch(record_id="r", dataset="legislation", kind="legiscan", key="NY S1")
         out = MonitorRun(fetch=make_fetcher(lambda u: ""), previous={}, now="t").run([w])
         assert len(out) == 1 and "fetch failed" in out[0].summary
+
+    def test_api_key_never_reaches_the_candidate_or_the_queue(self, monkeypatch):
+        """httpx puts the request URL in its error text, MonitorRun formats that
+        into a Candidate, and the Candidate is printed and written to disk. A
+        single 403 from LegiScan would otherwise burn the key into logs."""
+        import httpx
+
+        from scrapers.monitors.clients import make_fetcher
+
+        monkeypatch.setenv("LEGISCAN_API_KEY", "SUPERSECRET123")
+
+        def get(url):
+            raise httpx.HTTPStatusError(
+                f"Client error '403 Forbidden' for url '{url}'",
+                request=None,
+                response=None,
+            )
+
+        w = Watch(record_id="r", dataset="legislation", kind="legiscan", key="NY S1")
+        out = MonitorRun(fetch=make_fetcher(get), previous={}, now="t").run([w])
+        blob = json.dumps(out[0].as_dict())
+        assert "SUPERSECRET123" not in blob
+        assert "***" in blob
 
     def test_unknown_kind_is_rejected(self):
         with pytest.raises(ValueError):

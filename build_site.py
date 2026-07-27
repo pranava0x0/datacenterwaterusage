@@ -310,7 +310,8 @@ def build_company_claims() -> str:
             )
 
         parts.append(
-            f'<div class="claim-card"><p class="claim-quote">“{statement}”</p>'
+            f'<div class="claim-card" id="claim-{esc(claim.get("id", ""))}">'
+            f'<p class="claim-quote">“{statement}”</p>'
             f'{caption}{chip_row}{box}</div>'
         )
 
@@ -370,9 +371,12 @@ def build_issues_claims_tab() -> str:
             issue_counts[t] = issue_counts.get(t, 0) + 1
     issue_boxes = "".join(
         f'<label class="chip-check" title="{esc(dash.ISSUE_TYPE_DESCRIPTIONS[k])}">'
-        f'<input type="checkbox" class="dc-issue" value="{k}" checked> '
+        f'<input type="checkbox" class="dc-issue" value="{esc(k)}" checked> '
         f'{esc(dash.ISSUE_TYPE_LABELS[k])} ({issue_counts[k]})</label>'
+        # Unknown tags are skipped rather than raising: a schema test blocks
+        # them from landing, but a render must not be the thing that fails.
         for k in sorted(issue_counts, key=lambda k: (-issue_counts[k], k))
+        if k in dash.ISSUE_TYPE_LABELS
     )
 
     # Claims whose truth is now before a court or regulator. Small on purpose:
@@ -1532,11 +1536,18 @@ document.addEventListener('click', e => {
   // block) can't be scrolled to in all browsers — open the ancestors first.
   let det = target.closest('details');
   while (det) { det.open = true; det = det.parentElement && det.parentElement.closest('details'); }
-  const wrap = target.closest('.leg-bill, .cwa-case');
+  const wrap = target.closest('.leg-bill, .cwa-case, .dc-site');
   if (wrap && wrap.hidden) {
     if (wrap.classList.contains('leg-bill')) {
       legChecks.forEach(c => { c.checked = true; });
       applyLegFilter();
+    } else if (wrap.classList.contains('dc-site')) {
+      // Conflict cards are .bill-card.dc-site, so they fell through to the
+      // CWA branch and were never unhidden — the handler scrolled to a hidden
+      // element. Every doctrine-matrix row links here, and the matrix sits
+      // directly above the filter that hides them.
+      issueChecks.forEach(c => { c.checked = true; });
+      applyIssueFilter();
     } else {
       cwaCatChecks.forEach(c => { c.checked = true; });
       cwaTypeChecks.forEach(c => { c.checked = true; });

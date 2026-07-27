@@ -1883,7 +1883,8 @@ def _build_news_item_html(item: dict) -> str:
     # meta is already html-escaped (outlet + date_str were individually escaped above);
     # do not wrap in esc() again or &#x27; becomes &amp;#x27; and renders as literal text.
     return (
-        f'<div class="news-card" data-tags="{esc(tags_str)}" style="'
+        f'<div class="news-card" id="news-{esc(item.get("id", ""))}" '
+        f'data-tags="{esc(tags_str)}" style="'
         f'border:1px solid #d6e4f0;border-radius:0.5rem;padding:0.9rem 1.1rem;'
         f'margin-bottom:0.75rem;background:#fff;'
         f'box-shadow:0 1px 2px rgba(15,23,42,.04);">'
@@ -1975,7 +1976,7 @@ def _build_solution_card_html(sol: dict) -> str:
     else:
         example_html = ""
     return (
-        f'<div class="solution-card">'
+        f'<div class="solution-card" id="solution-{esc(sol.get("id", ""))}">'
         f'{badge}'
         f'<div class="solution-title">{title}</div>'
         f'<div class="solution-actor">{esc(actor_label)}: {actor}{source_link}</div>'
@@ -3203,18 +3204,25 @@ def _issue_type_summary_html(sites: list[dict]) -> str:
             counts[tag] = counts.get(tag, 0) + 1
     if not counts:
         return ""
-    ordered = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
+    # Filter to known tags ONCE, before both the chips and the headline. The
+    # chips used to guard while the headline below did an unguarded lookup on
+    # the same data, so an unknown tag raised KeyError mid-render.
+    ordered = sorted(
+        ((t, n) for t, n in counts.items() if t in ISSUE_TYPE_LABELS),
+        key=lambda kv: (-kv[1], kv[0]),
+    )
+    if not ordered:
+        return ""
     chips = "".join(
         f'<span class="issue-pill" title="{html.escape(ISSUE_TYPE_DESCRIPTIONS[t])}">'
         f"{html.escape(ISSUE_TYPE_LABELS[t])} <strong>{n}</strong></span>"
         for t, n in ordered
-        if t in ISSUE_TYPE_LABELS
     )
     top = ordered[0]
     return (
         '<div class="issue-summary">'
         f"<p class=\"count-line\"><strong>{len(sites)} tracked sites</strong> across "
-        f"{len(counts)} kinds of water problem &mdash; most commonly "
+        f"{len(ordered)} kinds of water problem &mdash; most commonly "
         f"{html.escape(ISSUE_TYPE_LABELS[top[0]].lower())} ({top[1]} sites).</p>"
         f'<div class="cwa-class-row">{chips}</div></div>'
     )

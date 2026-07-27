@@ -11,6 +11,10 @@ file change (mtime/size) rather than on a fixed clock. The reference JSON
 changes only when a scraper or a curation edit runs, so a TTL would just force
 needless re-parsing during an active session.
 
+Caches hold 2 entries per dataset — enough that the current file always hits,
+bounded so a long-running Streamlit process across nightly refreshes does not
+retain every historical version it has ever parsed.
+
 Callers must treat returned payloads as read-only — they are shared cached
 objects, exactly as they were under ``st.cache_data``.
 """
@@ -64,7 +68,7 @@ def _read_json(path_str: str, defaults: dict) -> dict:
     return payload
 
 
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=2)
 def _load_legislation_cached(path_str: str, signature: tuple) -> dict:
     p = Path(path_str)
     if p.exists():
@@ -86,7 +90,7 @@ def load_legislation(path: Path = LEGISLATION_PATH) -> dict:
     return _load_legislation_cached(str(path), file_signature(path))
 
 
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=2)
 def _load_company_water_claims_cached(path_str: str, signature: tuple) -> dict:
     return _read_json(path_str, {"claims": list, "companies": dict})
 
@@ -99,7 +103,7 @@ def load_company_water_claims(path: Path = COMPANY_WATER_CLAIMS_PATH) -> dict:
     return _load_company_water_claims_cached(str(path), file_signature(path))
 
 
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=2)
 def _load_cwa_investigations_cached(path_str: str, signature: tuple) -> dict:
     return _read_json(path_str, {"cases": list})
 
@@ -114,7 +118,7 @@ def load_cwa_investigations(path: Path = CWA_INVESTIGATIONS_PATH) -> dict:
     return _load_cwa_investigations_cached(str(path), file_signature(path))
 
 
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=2)
 def _load_water_authorities_cached(path_str: str, signature: tuple) -> dict:
     return _read_json(path_str, {"statutes": dict, "readings": list})
 
@@ -129,7 +133,7 @@ def load_water_authorities(path: Path = WATER_AUTHORITIES_PATH) -> dict:
     return _load_water_authorities_cached(str(path), file_signature(path))
 
 
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=2)
 def _load_dc_water_conflicts_cached(path_str: str, signature: tuple) -> dict:
     return _read_json(path_str, {"sites": list})
 
@@ -139,7 +143,7 @@ def load_dc_water_conflicts(path: Path = DC_WATER_CONFLICTS_PATH) -> dict:
     return _load_dc_water_conflicts_cached(str(path), file_signature(path))
 
 
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=2)
 def _load_water_news_cached(path_str: str, signature: tuple) -> dict:
     return _read_json(path_str, {"items": list})
 
@@ -149,7 +153,7 @@ def load_water_news(path: Path = WATER_NEWS_PATH) -> dict:
     return _load_water_news_cached(str(path), file_signature(path))
 
 
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=2)
 def _load_water_solutions_cached(path_str: str, signature: tuple) -> dict:
     return _read_json(path_str, {"categories": list})
 

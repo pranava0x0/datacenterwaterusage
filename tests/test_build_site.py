@@ -349,3 +349,37 @@ class TestIssuesAndClaimsTab:
         html = _html()
         assert 'class="issue-summary"' in html
         assert "kinds of water problem" in html
+
+
+class TestNoDanglingAnchors:
+    """Closes a whole class of bug in one assertion.
+
+    refdata.integrity proves a cross-reference id resolves *in the registry*;
+    it never proves the generated page contains the anchor. A shipped
+    `href="#solution-wue-reporting"` pointed at nothing, because the registry
+    advertised `solution-*` anchors that no builder emitted — and the JS
+    handler bails before preventDefault, so the click did nothing at all.
+    """
+
+    def test_every_internal_href_has_a_matching_id(self):
+        html = _html()
+        ids = set(re.findall(r'\bid="([^"]+)"', html))
+        hrefs = {
+            h for h in re.findall(r'href="#([^"]+)"', html) if h and h != "top"
+        }
+        dangling = sorted(hrefs - ids)
+        assert not dangling, f"hrefs pointing at no element: {dangling}"
+
+    def test_registry_anchor_kinds_are_all_emitted(self):
+        """Every record kind the registry can hand out an anchor for must
+        actually appear as an id on the page."""
+        from refdata.registry import build_registry
+
+        html = _html()
+        ids = set(re.findall(r'\bid="([^"]+)"', html))
+        by_kind: dict[str, list] = {}
+        for ref in build_registry().values():
+            by_kind.setdefault(ref.kind, []).append(ref.anchor)
+        for kind, anchors in by_kind.items():
+            present = sum(1 for a in anchors if a in ids)
+            assert present, f"no {kind} anchor reaches the page (of {len(anchors)})"

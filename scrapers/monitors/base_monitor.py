@@ -115,22 +115,56 @@ def invalid_watches() -> list[str]:
     return problems
 
 
-# Boilerplate that changes on every page load and would otherwise report a
-# change on every run: timestamps, session ids, CSRF tokens, cache-busting
-# query strings. Stripped before fingerprinting.
+# Cheap token-level noise: values that differ on every page load and would
+# otherwise report a change every run. These patterns are all bounded and
+# anchored, so they scan linearly.
 _NOISE = re.compile(
     r"""(?xi)
-    <script\b.*?</script>            # inline JS
-    | <style\b.*?</style>            # inline CSS
-    | <!--.*?-->                     # comments
-    | \b[0-9a-f]{16,}\b              # session/CSRF hex blobs
-    | \b\d{1,2}:\d{2}(:\d{2})?\s*(am|pm)?\b   # clock times
-    | [?&](?:_|cb|v|ts|nocache)=[^\s"'&<>]+   # cache-busters
+    \b[0-9a-f]{16,}\b                          # session/CSRF hex blobs
+    | \b\d{1,2}:\d{2}(:\d{2})?\s*(am|pm)?\b     # clock times
+    | [?&](?:_|cb|v|ts|nocache)=[^\s"'&<>]+     # cache-busters
     """,
-    re.DOTALL,
 )
+
+# Block-level noise (script/style/comment bodies) is stripped with a linear
+# scan rather than a regex. A lazy DOTALL pattern like `<script\b.*?</script>`
+# rescans to end-of-string at EVERY unterminated opener, so malformed HTML —
+# which is exactly what arbitrary third-party pages serve — degrades
+# quadratically: 40k unclosed `<script>` tags took ~56 s. str.find is O(n)
+# regardless, and an unterminated opener simply truncates the rest, which is
+# the right call for noise we are discarding anyway.
+_BLOCKS = (("<script", "</script>"), ("<style", "</style>"), ("<!--", "-->"))
+
+
+def _strip_blocks(text: str) -> str:
+    for open_tag, close_tag in _BLOCKS:
+        out = []
+        pos = 0
+        lowered = text.lower()
+        while True:
+            start = lowered.find(open_tag, pos)
+            if start == -1:
+                out.append(text[pos:])
+                break
+            out.append(text[pos:start])
+            end = lowered.find(close_tag, start + len(open_tag))
+            if end == -1:
+                # Unterminated: discard the remainder rather than rescanning.
+                break
+            pos = end + len(close_tag)
+        text = " ".join(out)
+    return text
+
+
 _TAGS = re.compile(r"<[^>]+>")
 _WS = re.compile(r"\s+")
+
+
+# Belt-and-braces bound on how much third-party HTML we process at all. The
+# normalizer is linear now, so this is about not spending a minute hashing a
+# 50 MB page rather than about backtracking. Far past any status page worth
+# watching.
+MAX_BODY_CHARS = 512_000
 
 
 def normalize(body: str) -> str:
@@ -140,7 +174,8 @@ def normalize(body: str) -> str:
     embedded a render timestamp — and a watcher that always fires is a watcher
     nobody reads.
     """
-    text = _NOISE.sub(" ", body or "")
+    text = _strip_blocks((body or "")[:MAX_BODY_CHARS])
+    text = _NOISE.sub(" ", text)
     text = _TAGS.sub(" ", text)
     return _WS.sub(" ", text).strip()
 
@@ -175,14 +210,19 @@ class MonitorRun:
 
     ``fetch`` maps a key to page text and is injected: the caller supplies a
     rate-limited client in production and a dict-backed stub in tests.
-    ``previous`` maps record_id to the last fingerprint seen.
+    ``previous`` maps record_id to the last fingerprint seen; ``snapshots``
+    maps record_id to the last *normalized body*, which is what makes the
+    candidate excerpt an actual diff rather than the top of the page.
     """
 
     fetch: Callable[[Watch], str]
     previous: dict[str, str] = field(default_factory=dict)
+    snapshots: dict[str, str] = field(default_factory=dict)
     now: str = "1970-01-01T00:00:00Z"
 
     def run(self, watches: Iterable[Watch] | None = None) -> list[Candidate]:
+        """Sweep the watches. Successful fetches update :attr:`snapshots` in
+        place, so the caller can persist them for the next run's diff."""
         candidates: list[Candidate] = []
         for watch in list(watches if watches is not None else iter_watches()):
             try:
@@ -207,6 +247,8 @@ class MonitorRun:
 
             current = fingerprint(body)
             prior = self.previous.get(watch.record_id)
+            prior_snapshot = self.snapshots.get(watch.record_id)
+            self.snapshots[watch.record_id] = normalize(body)
             if prior == current:
                 continue
             summary = (
@@ -225,7 +267,15 @@ class MonitorRun:
                     summary=summary,
                     detected_at=self.now,
                     note=watch.note,
-                    excerpt="" if prior is None else first_difference("", body),
+                    # Without a stored snapshot there is nothing to diff
+                    # against, and first_difference("", body) would return the
+                    # top of the page — unchanged boilerplate presented as the
+                    # change. An empty excerpt is honest; a misleading one is not.
+                    excerpt=(
+                        ""
+                        if prior is None or prior_snapshot is None
+                        else first_difference(prior_snapshot, body)
+                    ),
                 )
             )
         return candidates
