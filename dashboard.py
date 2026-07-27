@@ -2189,6 +2189,104 @@ CWA_APPLICATION_THEORIES = [
 ]
 
 
+# Sibling to CWA_APPLICATION_THEORIES: the same merit-only scoring applied to
+# the non-CWA doctrine families. The CWA table was the whole panel until the
+# 2026-07 registry expansion, which quietly made it a minority view — most
+# tracked conflicts are about GETTING water, and the Clean Water Act has very
+# little to say about that. Scored on the same three axes: Impact (harm
+# averted), Viability (legal strength today), Tractability (can this tracker
+# source the evidence).
+DOCTRINE_APPLICATION_THEORIES = [
+    {
+        "rank": 1,
+        "theory": "State environmental review — long-term supply not demonstrated",
+        "hook": "State review statutes (CEQA-style); see sepa-supply-adequacy",
+        "impact": 5, "viability": 5, "tractability": 5,
+        "why": "Needs no hydrologic proof — only that the approval document analysed "
+               "phase one and deferred build-out, which campus approvals routinely do. "
+               "The record is public by definition, and the remedy is the one opponents "
+               "actually want: approval vacated before construction, not damages after.",
+        "analog": "Vineyard v. Rancho Cordova (Cal. 2007); MCEA v. Pine Island (Minn. 2026)",
+    },
+    {
+        "rank": 2,
+        "theory": "High-capacity well permit — agency failed to weigh off-site impact",
+        "hook": "State withdrawal permitting; see well-cumulative-impact",
+        "impact": 5, "viability": 4, "tractability": 4,
+        "why": "Operates before the water is pumped rather than after the harm. The "
+               "catch is the trigger: the duty attaches only once concrete hydrologic "
+               "evidence is put in front of the agency, so it rewards exactly the "
+               "monitoring data this tracker collects.",
+        "analog": "Lake Beulah Mgmt. Dist. v. DNR (Wis. 2011)",
+    },
+    {
+        "rank": 3,
+        "theory": "Public trust — groundwater pumping depleting a connected stream",
+        "hook": "State public trust doctrine; see ptd-groundwater-nexus",
+        "impact": 5, "viability": 4, "tractability": 3,
+        "why": "Reaches ordinary campus-well hydrology, which is otherwise regulated as "
+               "groundwater and never as the surface diversion it functionally is. Puts "
+               "the duty on the county issuing the permit — the level these fights are "
+               "already being fought at. Needs a demonstrated aquifer-stream connection.",
+        "analog": "ELF v. SWRCB (Cal. App. 2018); Nat'l Audubon (Cal. 1983)",
+    },
+    {
+        "rank": 4,
+        "theory": "Consumer protection — published water claims are misleading",
+        "hook": "State deceptive-trade-practices law; see sl-greenwashing-udap",
+        "impact": 4, "viability": 4, "tractability": 5,
+        "why": "The most tractable theory in either table: the evidence is FOIA'd "
+               "utility billing records, not expert hydrology. Gets more available every "
+               "time a disclosure law adds reporting. Impact is reputational and "
+               "corrective rather than a limit on withdrawal.",
+        "analog": "Wangusi v. AWS (Va. Cir. Ct. 2026)",
+    },
+    {
+        "rank": 5,
+        "theory": "Utility declines to serve a large new load",
+        "hook": "Municipal service & shortage law; see util-shortage-moratorium",
+        "impact": 4, "viability": 5, "tractability": 4,
+        "why": "The only entry here that runs FOR the defending institution. A utility "
+               "facing genuine supply constraint may refuse, reviewable only for fraud "
+               "or caprice — and a capacity admission already on the record is the "
+               "rational basis. Depends entirely on the utility choosing to say no.",
+        "analog": "Swanson v. Marin MWD (Cal. App. 1976); Bessemer AL (2025-26)",
+    },
+    {
+        "rank": 6,
+        "theory": "Common-law negligence — subsidence or well interference",
+        "hook": "State common law; see cl-negligent-subsidence",
+        "impact": 4, "viability": 3, "tractability": 3,
+        "why": "The opening in rule-of-capture states: liability attaches to the manner "
+               "of withdrawal, not the fact of it. Strongest where drawdown produces "
+               "measurable subsidence. Needs an injured neighbour as plaintiff — a "
+               "coalition will hit the standing bar.",
+        "analog": "Friendswood Dev. v. Smith-Southwest (Tex. 1978)",
+    },
+    {
+        "rank": 7,
+        "theory": "Interstate apportionment of a shared aquifer",
+        "hook": "SCOTUS original jurisdiction; see eqap-interstate-aquifer",
+        "impact": 5, "viability": 3, "tractability": 2,
+        "why": "Highest ceiling, hardest to reach. Settled law since 2021 and directly "
+               "on point for the Memphis Sand, but it needs a state willing to sue and "
+               "clear-and-convincing proof of injury — which is why utility-level "
+               "reporting laws are the precondition rather than a side issue.",
+        "analog": "Mississippi v. Tennessee (2021)",
+    },
+    {
+        "rank": 8,
+        "theory": "Inter-basin transfer junior-priority challenge",
+        "hook": "Area-of-origin statutes; see xfer-area-of-origin",
+        "impact": 3, "viability": 4, "tractability": 4,
+        "why": "Underused and statutory rather than litigated: water piped out of basin "
+               "is junior to every right granted there first, so it is cut first in "
+               "drought. Applies only where supply actually crosses a basin line.",
+        "analog": "Tex. Water Code §11.085",
+    },
+]
+
+
 def _theory_score_cell(value: int) -> str:
     """Render one Impact/Viability/Tractability score cell, clamped to 1–5."""
     v = max(1, min(5, int(value)))
@@ -2246,10 +2344,20 @@ def render_cwa_application_theories():
     this project can source the evidence.
     """
     with st.expander(
-        "Prioritized CWA-application theories — what could attach to a data center"
+        "Prioritized application theories — what could attach to a data center"
     ):
         st.markdown(
             _build_cwa_theories_html(CWA_APPLICATION_THEORIES),
+            unsafe_allow_html=True,
+        )
+        st.markdown("##### Beyond the Clean Water Act — state and doctrine theories")
+        st.caption(
+            "Most tracked conflicts are about *getting* water, which the Clean "
+            "Water Act barely addresses. Same merit-only scoring, applied to the "
+            "non-CWA families in the Part 1 toolkit."
+        )
+        st.markdown(
+            _build_cwa_theories_html(DOCTRINE_APPLICATION_THEORIES),
             unsafe_allow_html=True,
         )
         st.caption(

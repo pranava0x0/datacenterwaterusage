@@ -476,6 +476,7 @@ def build_cwa_tab() -> str:
 </details>"""
 
     theories = dash._build_cwa_theories_html(dash.CWA_APPLICATION_THEORIES)
+    doctrine_theories = dash._build_cwa_theories_html(dash.DOCTRINE_APPLICATION_THEORIES)
     explainer = md(dash._cwa_statute_explainer_md())
 
     # Section 1: historical cases — filter checkboxes (project type + category).
@@ -558,6 +559,11 @@ def build_cwa_tab() -> str:
   <details class="lazy">
     <summary>Prioritized CWA-application theories — what could attach to a data center</summary>
     <section class="panel">{theories}
+    <h4 class="solution-cat-header">Beyond the Clean Water Act — state and doctrine theories</h4>
+    <p>Most tracked conflicts are about <em>getting</em> water, which the Clean Water Act
+    barely addresses. Same merit-only scoring, applied to the non-CWA families in the
+    Part&nbsp;1 toolkit.</p>
+    {doctrine_theories}
     <p class="src-note">Full write-up with primary-source citations:
     docs/cwa-enforcement-and-data-centers.md</p></section>
   </details>

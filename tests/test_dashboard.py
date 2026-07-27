@@ -1557,3 +1557,49 @@ class TestLegislationThemeGrid:
             expected.append(n)
         assert rendered == expected
         assert all(n > 0 for n in rendered), rendered
+
+
+class TestDoctrineApplicationTheories:
+    """The theories panel stopped being CWA-only (plan Spec C3 front end)."""
+
+    def _theories(self):
+        import dashboard as dash
+
+        return dash.DOCTRINE_APPLICATION_THEORIES
+
+    def test_ranks_are_dense_and_unique(self):
+        ranks = sorted(t["rank"] for t in self._theories())
+        assert ranks == list(range(1, len(ranks) + 1))
+
+    def test_same_shape_as_the_cwa_table(self):
+        """Both tables go through one builder, so a missing key renders a
+        broken row rather than failing loudly."""
+        required = set(CWA_APPLICATION_THEORIES[0])
+        for t in self._theories():
+            assert required <= set(t), (t["theory"], required - set(t))
+
+    def test_scores_are_in_range(self):
+        for t in self._theories():
+            for axis in ("impact", "viability", "tractability"):
+                assert 1 <= t[axis] <= 5, (t["theory"], axis)
+
+    def test_each_theory_names_a_registry_reading_or_statute(self):
+        """A scored theory with no hook back into the toolkit is an opinion."""
+        import dashboard as dash
+
+        reading_ids = {r["reading_id"] for r in dash.load_water_authorities()["readings"]}
+        for t in self._theories():
+            hook = t["hook"]
+            assert any(rid in hook for rid in reading_ids) or "§" in hook, t["theory"]
+
+    def test_covers_the_supply_side_families(self):
+        """The gap this table exists to close: the CWA has little to say about
+        getting water, which is what most tracked conflicts are about."""
+        hooks = " ".join(t["hook"] for t in self._theories())
+        for reading in (
+            "sepa-supply-adequacy",
+            "well-cumulative-impact",
+            "ptd-groundwater-nexus",
+            "eqap-interstate-aquifer",
+        ):
+            assert reading in hooks, reading

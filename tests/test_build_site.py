@@ -98,10 +98,12 @@ class TestStaticBuild:
         # The prioritized-theories panel is present on the CWA tab...
         assert "Prioritized CWA-application theories" in html
         assert 'class="theory-table"' in html
-        # ...with every theory row (12 + 1 header) reaching the page...
+        # ...with every theory row from BOTH tables reaching the page. The
+        # doctrine table is a sibling, not a replacement: the CWA panel became
+        # a minority view once the registry grew past five federal statutes.
         assert html.count('class="theory-rank"') == len(
             dashboard.CWA_APPLICATION_THEORIES
-        )
+        ) + len(dashboard.DOCTRINE_APPLICATION_THEORIES)
         # ...the novel Maui theory and the §505 lead row both surface.
         assert "functional equivalent" in html
         assert "receiving POTW" in html
