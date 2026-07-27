@@ -313,6 +313,17 @@ DELIVERED_STATUS_COLORS = {
     "litigated": "danger",
 }
 
+# Display labels for delivered.status. Both surfaces read this; the Streamlit
+# card previously carried its own literal copy, which silently lacked
+# "litigated" and fell back to a generic Unknown/info treatment.
+DELIVERED_STATUS_LABELS = {
+    "delivered": "Delivered",
+    "partial": "Partial",
+    "contested": "Contested",
+    "litigated": "Contested in court",
+    "shortfall": "Shortfall",
+}
+
 # What kind of promise the claim is. Drives the claim-type chip and lets the
 # Claims section separate a 2030 pledge from a measured WUE figure.
 CLAIM_TYPE_LABELS = {

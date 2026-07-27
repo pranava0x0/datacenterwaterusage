@@ -46,18 +46,26 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # The fingerprint cache is what makes a sweep report CHANGES rather than
-      # re-baselining everything every week. It's gitignored (ops state, not
-      # curated data), so it round-trips through the actions cache — which,
-      # unlike artifacts, is designed for cross-run state and needs no prior
-      # run-id. The restore-key lets each run inherit the most recent cache and
-      # save an updated one under a fresh key.
-      - name: Restore fingerprints from the last sweep
+      # Ops state that must survive between weekly runs. It's gitignored
+      # (not curated data), so it round-trips through the actions cache —
+      # which, unlike artifacts, is designed for cross-run state and needs no
+      # prior run-id. The restore-key inherits the most recent cache; the
+      # run-id key saves an updated one.
+      #
+      # BOTH files, not just the fingerprints. Restoring the cache alone would
+      # lose untriaged candidates: the prior run already advanced the
+      # fingerprint, so an unchanged page emits nothing the next week, the
+      # fresh checkout starts with no queue, and the newest artifact silently
+      # omits a hit nobody has actioned yet — which then expires with the old
+      # artifact. The queue is append-only precisely so pending work survives.
+      - name: Restore monitor state from the last sweep
         uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
         with:
-          path: data/state/monitor_fingerprints.json
-          key: monitor-fingerprints-${{ github.run_id }}
-          restore-keys: monitor-fingerprints-
+          path: |
+            data/state/monitor_fingerprints.json
+            data/output/monitor_hits.json
+          key: monitor-state-${{ github.run_id }}
+          restore-keys: monitor-state-
 
       - name: Sweep
         env:
@@ -67,8 +75,9 @@ jobs:
           LEGISCAN_API_KEY: ${{ secrets.LEGISCAN_API_KEY }}
         run: python3 -m scrapers.monitors.run
 
-      # The queue is the human work product. 90 days is well past any sensible
-      # triage lag, and it is append-only within a run.
+      # A convenience copy for humans — the cache above is what actually
+      # carries pending candidates forward between runs. 90 days is well past
+      # any sensible triage lag.
       - name: Upload candidate queue for triage
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:

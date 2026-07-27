@@ -549,3 +549,61 @@ class TestLegiScanIdResolution:
         for w in iter_watches():
             if w.kind == "legiscan":
                 assert w.key.strip().isdigit() or len(w.key.split()) == 2, w.record_id
+
+
+class TestScheduledSweepWorkflow:
+    """The weekly routine. Two of these pin bugs Codex found in the first
+    draft, both of which would have made the sweep quietly useless."""
+
+    @staticmethod
+    def _wf():
+        import pathlib
+
+        import yaml
+
+        return yaml.safe_load(
+            (pathlib.Path(monitor_queue.BASE_DIR) / ".github/workflows/monitors.yml")
+            .read_text()
+        )
+
+    def test_state_and_queue_both_persist_between_runs(self):
+        """Caching only the fingerprints loses untriaged candidates: the prior
+        run advanced the fingerprint, so an unchanged page emits nothing, the
+        fresh checkout has no queue, and the newest artifact silently omits a
+        hit nobody actioned."""
+        steps = self._wf()["jobs"]["sweep"]["steps"]
+        cache = next(s for s in steps if "cache@" in s.get("uses", ""))
+        paths = cache["with"]["path"].split()
+        assert any("monitor_fingerprints.json" in p for p in paths)
+        assert any("monitor_hits.json" in p for p in paths), "queue must survive too"
+        assert cache["with"].get("restore-keys"), "no restore-key = never inherits"
+
+    def test_uses_cache_not_artifacts_for_cross_run_state(self):
+        """download-artifact cannot read a PRIOR run's output without its
+        run-id, so an artifact round-trip would re-baseline every week and
+        report change never."""
+        steps = self._wf()["jobs"]["sweep"]["steps"]
+        assert not any("download-artifact" in s.get("uses", "") for s in steps)
+
+    def test_least_privilege_and_pinned_actions(self):
+        wf = self._wf()
+        assert wf["permissions"] == {"contents": "read"}
+        for step in wf["jobs"]["sweep"]["steps"]:
+            uses = step.get("uses")
+            if uses:
+                assert len(uses.split("@")[1]) == 40, f"{uses} is not SHA-pinned"
+
+    def test_never_commits_to_a_dataset(self):
+        """Monitors propose; humans dispose.
+
+        Scans the PARSED run blocks, not the raw file: a first version grepped
+        the text and tripped on a comment reading "never needs contents:
+        write" — a keyword check defeated by its own negation, which is the
+        same failure this repo already fixed in the outcome classifier.
+        """
+        wf = self._wf()
+        assert wf["permissions"].get("contents") != "write"
+        for step in wf["jobs"]["sweep"]["steps"]:
+            body = step.get("run", "")
+            for forbidden in ("git commit", "git push", "gh pr", "gh api"):
+                assert forbidden not in body, f"{forbidden} in step {step.get('name')}"

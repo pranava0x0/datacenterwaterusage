@@ -263,29 +263,9 @@ def build_company_claims() -> str:
             cap.append(f'Project: <code>{esc(str(project_id))}</code>')
         caption = f'<div class="claim-meta">{" · ".join(cap)}</div>' if cap else ""
 
-        # Classification and lifecycle row: what kind of promise this is, which
-        # tracked sites it is about, and whether it is under legal challenge.
-        chips = []
-        ctype = claim.get("claim_type")
-        if ctype in dash.CLAIM_TYPE_LABELS:
-            chips.append(
-                f'<span class="claim-type-pill">{esc(dash.CLAIM_TYPE_LABELS[ctype])}</span>'
-            )
-        for case_id in claim.get("challenged_in", []):
-            ref = dash.resolve_ref(case_id)
-            if ref:
-                chips.append(
-                    f'<a class="claim-challenge-pill" href="#{esc(ref.anchor)}">'
-                    f'&#9878; Challenged in court</a>'
-                )
-        for site_id in claim.get("related_site_ids", []):
-            ref = dash.resolve_ref(site_id)
-            if ref:
-                chips.append(
-                    f'<a class="claim-site-link" href="#{esc(ref.anchor)}">'
-                    f'&rarr; {esc(ref.label)}</a>'
-                )
-        chip_row = f'<div class="claim-chips">{"".join(chips)}</div>' if chips else ""
+        # Shared with the Streamlit card so the two surfaces cannot disagree
+        # about a claim's lifecycle (dashboard._build_claim_lifecycle_html).
+        chip_row = dash._build_claim_lifecycle_html(claim, companies)
 
         box = ""
         delivered = claim.get("delivered")
