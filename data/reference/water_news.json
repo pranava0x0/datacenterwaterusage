@@ -50,7 +50,10 @@
       ],
       "source_url": "https://www.latitudemedia.com/news/amazon-finally-reports-its-annual-water-use-at-data-centers/",
       "cross_ref_tab": "solutions",
-      "cross_ref_note": "Substantiates the existing wue-reporting solution entry in the Solutions tab"
+      "cross_ref_note": "Substantiates the WUE-reporting solution entry",
+      "cross_ref_targets": [
+        "wue-reporting"
+      ]
     },
     {
       "id": "ny-responsible-dc-act-permit-moratorium-2026-06",
@@ -64,7 +67,10 @@
       ],
       "source_url": "https://www.gtlaw.com/en/insights/2026/6/new-york-legislature-passes-data-center-moratorium-bill-awaits-governors-approval",
       "cross_ref_tab": "legislation",
-      "cross_ref_note": "Clarifies the mechanism for NY S10642/A11560 in the Legislation tab is a DEC permit moratorium, not only a SEQRA review trigger"
+      "cross_ref_note": "Clarifies that the mechanism is a DEC permit moratorium, not only a SEQRA review trigger",
+      "cross_ref_targets": [
+        "NY S10642 / A11560"
+      ]
     },
     {
       "id": "fayette-county-ga-qts-metering-2026-05",
@@ -78,7 +84,10 @@
       ],
       "source_url": "https://thecitizen.com/2026/05/11/behind-fayettes-qts-water-controversy-a-missed-meter-8000-workers-and-a-massive-construction-project/",
       "cross_ref_tab": "cwa",
-      "cross_ref_note": "Same incident tracked in Water Cases: QTS-Fayette-GA-unbilled-water-2026"
+      "cross_ref_note": "Same incident, tracked as a case",
+      "cross_ref_targets": [
+        "QTS-Fayette-GA-unbilled-water-2026"
+      ]
     },
     {
       "id": "florida-sb484-effective-2026-07",
@@ -92,7 +101,10 @@
       ],
       "source_url": "https://www.datacenterdynamics.com/en/news/florida-enacts-data-center-law-covering-ratepayer-protections-water-use-and-local-zoning-powers/",
       "cross_ref_tab": "legislation",
-      "cross_ref_note": "Full bill entry in Legislation tab: FL SB 484"
+      "cross_ref_note": "Full bill entry in Legislation tab: FL SB 484",
+      "cross_ref_targets": [
+        "FL SB 484"
+      ]
     },
     {
       "id": "imperial-valley-iid-lawsuit-2026-06",
@@ -155,7 +167,10 @@
       ],
       "source_url": "https://www.texastribune.org/2026/06/23/texas-data-centers-puc-water-survey/",
       "cross_ref_tab": "cwa",
-      "cross_ref_note": "Texas groundwater fights tracked in Water Cases tab: Corpus Christi / Sinton — Evangeline Aquifer, TX"
+      "cross_ref_note": "Texas groundwater fights tracked in Water Cases tab: Corpus Christi / Sinton — Evangeline Aquifer, TX",
+      "cross_ref_targets": [
+        "corpus-christi-sinton-tx"
+      ]
     },
     {
       "id": "nvidia-water-solved-claim-2026-06",
@@ -192,7 +207,10 @@
       ],
       "source_url": "https://www.kwtx.com/2026/06/04/hill-county-commissioners-court-rescinds-moratorium-data-center-wake-lawsuit/",
       "cross_ref_tab": "cwa",
-      "cross_ref_note": "Same no-local-vehicle pattern as MARA bitcoin mine & proposed AI campuses — Hood County, TX in Water Cases tab"
+      "cross_ref_note": "Same no-local-vehicle pattern as MARA bitcoin mine & proposed AI campuses — Hood County, TX in Water Cases tab",
+      "cross_ref_targets": [
+        "hood-county-granbury-tx"
+      ]
     },
     {
       "id": "lake-anna-deq-hearing-2026-06",
@@ -206,7 +224,10 @@
       ],
       "source_url": "https://www.12onyourside.com/2026/06/10/deq-meeting-about-data-center-water-discharging-into-lake-anna-tributaries-turns-contentious/",
       "cross_ref_tab": "cwa",
-      "cross_ref_note": "AWS Lake Anna Technology Campus — Louisa County, VA in Water Cases tab"
+      "cross_ref_note": "AWS Lake Anna Technology Campus — Louisa County, VA in Water Cases tab",
+      "cross_ref_targets": [
+        "aws-lake-anna-va"
+      ]
     },
     {
       "id": "nc-moratorium-wave-2026-06",
@@ -220,7 +241,10 @@
       ],
       "source_url": "https://www.wral.com/news/local/north-carolina-data-center-boom-where-does-water-go-june-2026/",
       "cross_ref_tab": "cwa",
-      "cross_ref_note": "Charlotte, NC — citywide data-center moratorium in Water Cases tab"
+      "cross_ref_note": "Charlotte, NC — citywide data-center moratorium in Water Cases tab",
+      "cross_ref_targets": [
+        "charlotte-nc-moratorium"
+      ]
     },
     {
       "id": "moratorium-bills-11-states-2026-06",
@@ -234,7 +258,10 @@
       ],
       "source_url": "https://goodjobsfirst.org/data-center-moratorium-bills-are-spreading-in-2026/",
       "cross_ref_tab": "legislation",
-      "cross_ref_note": "Statewide moratorium bills (e.g. NY S10642 / A11560) in Legislation tab"
+      "cross_ref_note": "Statewide moratorium bills (e.g. NY S10642 / A11560) in Legislation tab",
+      "cross_ref_targets": [
+        "NY S10642 / A11560"
+      ]
     },
     {
       "id": "un-university-ai-water-report-2026-06",
@@ -260,7 +287,10 @@
       ],
       "source_url": "https://www.nysenate.gov/legislation/bills/2025/S10642",
       "cross_ref_tab": "legislation",
-      "cross_ref_note": "NY S10642 / A11560 in Legislation tab"
+      "cross_ref_note": "NY S10642 / A11560 in Legislation tab",
+      "cross_ref_targets": [
+        "NY S10642 / A11560"
+      ]
     },
     {
       "id": "michigan-moratorium-2026-06",
@@ -274,7 +304,10 @@
       ],
       "source_url": null,
       "cross_ref_tab": "legislation",
-      "cross_ref_note": "MI SB 1018-1020 in Legislation tab"
+      "cross_ref_note": "MI SB 1018-1020 in Legislation tab",
+      "cross_ref_targets": [
+        "MI SB 1018-1020"
+      ]
     },
     {
       "id": "illinois-pritzker-pauses-incentives-2026-06",
@@ -288,7 +321,10 @@
       ],
       "source_url": null,
       "cross_ref_tab": "legislation",
-      "cross_ref_note": "IL SB 3830 (POWER Act) in Legislation tab"
+      "cross_ref_note": "IL SB 3830 (POWER Act) in Legislation tab",
+      "cross_ref_targets": [
+        "IL SB 3830 (POWER Act)"
+      ]
     },
     {
       "id": "google-s404-permits-2026-05",
@@ -302,7 +338,11 @@
       ],
       "source_url": null,
       "cross_ref_tab": "cwa",
-      "cross_ref_note": "Google §404 permit applications in Water Cases tab: Google ProjectRaspberry VA (2026), Google LittleRock AR (2026)"
+      "cross_ref_note": "The two §404 permit applications behind this story",
+      "cross_ref_targets": [
+        "Google-ProjectRaspberry-VA-2026",
+        "Google-LittleRock-AR-2026"
+      ]
     },
     {
       "id": "ut-eo-2026-03-signed-2026-05",
@@ -316,7 +356,11 @@
       ],
       "source_url": null,
       "cross_ref_tab": "legislation",
-      "cross_ref_note": "UT EO 2026-03 and UT HB 76 in Legislation tab"
+      "cross_ref_note": "UT EO 2026-03 and UT HB 76 in Legislation tab",
+      "cross_ref_targets": [
+        "UT EO 2026-03",
+        "UT HB 76"
+      ]
     },
     {
       "id": "virginia-hb496-enacted-2026-04",
@@ -330,7 +374,10 @@
       ],
       "source_url": "https://lis.virginia.gov/cgi-bin/legp604.exe?ses=251&typ=bil&val=hb496",
       "cross_ref_tab": "legislation",
-      "cross_ref_note": "VA HB 496 / SB 553 in Legislation tab"
+      "cross_ref_note": "VA HB 496 / SB 553 in Legislation tab",
+      "cross_ref_targets": [
+        "VA HB 496 / SB 553"
+      ]
     },
     {
       "id": "maryland-veto-override-2026-04",
@@ -344,7 +391,10 @@
       ],
       "source_url": null,
       "cross_ref_tab": "legislation",
-      "cross_ref_note": "MD HB 270 / SB 116 in Legislation tab"
+      "cross_ref_note": "MD HB 270 / SB 116 in Legislation tab",
+      "cross_ref_targets": [
+        "MD HB 270 / SB 116"
+      ]
     },
     {
       "id": "amazon-boardman-settlement-2026-03",
@@ -358,7 +408,10 @@
       ],
       "source_url": "https://www.doj.state.or.us/",
       "cross_ref_tab": "cwa",
-      "cross_ref_note": "Amazon Boardman OR nitrate (2026) in Water Cases tab — Historical section"
+      "cross_ref_note": "Full case record",
+      "cross_ref_targets": [
+        "amazon-boardman-umatilla-or"
+      ]
     },
     {
       "id": "idaho-h895-enacted-2026-03",
@@ -372,7 +425,10 @@
       ],
       "source_url": null,
       "cross_ref_tab": "legislation",
-      "cross_ref_note": "ID H 895 in Legislation tab"
+      "cross_ref_note": "ID H 895 in Legislation tab",
+      "cross_ref_targets": [
+        "ID H 895"
+      ]
     },
     {
       "id": "south-dakota-sb135-enacted-2026-03",
@@ -386,7 +442,10 @@
       ],
       "source_url": null,
       "cross_ref_tab": "legislation",
-      "cross_ref_note": "SD SB 135 in Legislation tab"
+      "cross_ref_note": "SD SB 135 in Legislation tab",
+      "cross_ref_targets": [
+        "SD SB 135"
+      ]
     },
     {
       "id": "utah-hb76-enacted-2026-03",
@@ -400,7 +459,10 @@
       ],
       "source_url": null,
       "cross_ref_tab": "legislation",
-      "cross_ref_note": "UT HB 76 in Legislation tab"
+      "cross_ref_note": "UT HB 76 in Legislation tab",
+      "cross_ref_targets": [
+        "UT HB 76"
+      ]
     },
     {
       "id": "california-ab2619-advancing-2026-05",
@@ -414,7 +476,11 @@
       ],
       "source_url": "https://leginfo.legislature.ca.gov/faces/billNavClient.xhtml?bill_id=202520260AB2619",
       "cross_ref_tab": "legislation",
-      "cross_ref_note": "CA AB 2619 and CA SB 887 in Legislation tab"
+      "cross_ref_note": "CA AB 2619 and CA SB 887 in Legislation tab",
+      "cross_ref_targets": [
+        "CA AB 2619",
+        "CA SB 887"
+      ]
     },
     {
       "id": "central-ohio-water-study-2025-03",

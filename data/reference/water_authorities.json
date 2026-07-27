@@ -1,36 +1,125 @@
 {
-  "last_updated": "2026-07-02",
+  "last_updated": "2026-07-26",
   "note": "Registry of federal water-authority 'readings' — specific statutory hooks under the CWA, SDWA, TSCA, RCRA, and Rivers & Harbors Act, each mapped to (a) what it historically covered, (b) how it could reach a data-center fact pattern, and (c) the historical cases in cwa_investigations.json that show the hook in use. Readings deliberately overlap: one fact pattern (e.g., PFAS in cooling blowdown reaching a drinking-water well) can trigger several readings at once. reading_ids are referenced from cwa_investigations.json (authorities) and dc_water_conflicts.json (applicable_readings).",
   "statutes": {
     "CWA": {
       "name": "Clean Water Act",
       "full_name": "Federal Water Pollution Control Act, 33 U.S.C. §§1251–1389",
       "agencies": "EPA + delegated state programs; U.S. Army Corps of Engineers (§404)",
-      "url": "https://www.law.cornell.edu/uscode/text/33/chapter-26"
+      "url": "https://www.law.cornell.edu/uscode/text/33/chapter-26",
+      "kind": "federal-statute"
     },
     "SDWA": {
       "name": "Safe Drinking Water Act",
       "full_name": "Safe Drinking Water Act, 42 U.S.C. §§300f–300j-27",
       "agencies": "EPA + primacy states",
-      "url": "https://www.law.cornell.edu/uscode/text/42/chapter-6A/subchapter-XII"
+      "url": "https://www.law.cornell.edu/uscode/text/42/chapter-6A/subchapter-XII",
+      "kind": "federal-statute"
     },
     "TSCA": {
       "name": "Toxic Substances Control Act",
       "full_name": "Toxic Substances Control Act, 15 U.S.C. §§2601–2697",
       "agencies": "EPA",
-      "url": "https://www.law.cornell.edu/uscode/text/15/chapter-53"
+      "url": "https://www.law.cornell.edu/uscode/text/15/chapter-53",
+      "kind": "federal-statute"
     },
     "RCRA": {
       "name": "Resource Conservation and Recovery Act",
       "full_name": "Resource Conservation and Recovery Act, 42 U.S.C. §§6901–6992k",
       "agencies": "EPA + authorized states",
-      "url": "https://www.law.cornell.edu/uscode/text/42/chapter-82"
+      "url": "https://www.law.cornell.edu/uscode/text/42/chapter-82",
+      "kind": "federal-statute"
     },
     "RHA": {
       "name": "Rivers and Harbors Act",
       "full_name": "Rivers and Harbors Appropriation Act of 1899, 33 U.S.C. §§401–467",
       "agencies": "U.S. Army Corps of Engineers",
-      "url": "https://www.law.cornell.edu/uscode/text/33/403"
+      "url": "https://www.law.cornell.edu/uscode/text/33/403",
+      "kind": "federal-statute"
+    },
+    "EQAP": {
+      "name": "Interstate apportionment & compacts",
+      "full_name": "Equitable apportionment (U.S. Const. art. III original jurisdiction), interstate water compacts, and dormant Commerce Clause limits on water export",
+      "agencies": "U.S. Supreme Court (original jurisdiction); compact councils",
+      "kind": "interstate",
+      "url": "https://www.law.cornell.edu/wex/equitable_apportionment"
+    },
+    "PTD": {
+      "name": "Public trust doctrine",
+      "full_name": "The public trust doctrine — the state's continuing sovereign duty over navigable waters and the resources that feed them, as developed in state constitutional and common law",
+      "agencies": "State courts; state water boards",
+      "kind": "state-doctrine",
+      "url": "https://www.law.cornell.edu/wex/public_trust_doctrine"
+    },
+    "GW": {
+      "name": "Groundwater property & allocation doctrines",
+      "full_name": "State groundwater ownership and allocation rules — rule of capture, ownership in place, correlative rights, and reasonable use",
+      "agencies": "State courts; groundwater conservation districts",
+      "kind": "state-doctrine",
+      "url": "https://www.law.cornell.edu/wex/water_rights"
+    },
+    "WELL": {
+      "name": "High-capacity well & withdrawal-permit review",
+      "full_name": "State review of high-capacity well and large-withdrawal permits — the agency's duty to consider cumulative and off-site impacts before issuing",
+      "agencies": "State natural-resource agencies; state courts",
+      "kind": "state-doctrine",
+      "url": "https://www.law.cornell.edu/wex/water_rights"
+    },
+    "CL": {
+      "name": "Common-law interference, nuisance & standing",
+      "full_name": "Common-law limits on groundwater withdrawal — negligence, subsidence, nuisance — and the standing rules that govern who may sue",
+      "agencies": "State courts",
+      "kind": "common-law",
+      "url": "https://www.law.cornell.edu/wex/nuisance"
+    },
+    "UTIL": {
+      "name": "Municipal utility service & shortage law",
+      "full_name": "The law governing whether a public water utility must serve a new large customer, and when it may refuse or impose a connection moratorium",
+      "agencies": "Municipal utilities and districts; state courts",
+      "kind": "state-doctrine",
+      "url": "https://www.law.cornell.edu/wex/public_utility"
+    },
+    "ESA": {
+      "name": "Endangered Species Act as a water constraint",
+      "full_name": "Endangered Species Act, 16 U.S.C. §§1531–1544 (esp. §7 and §9 take)",
+      "agencies": "U.S. Fish and Wildlife Service; NOAA Fisheries; federal courts",
+      "kind": "federal-statute",
+      "url": "https://www.law.cornell.edu/uscode/text/16/chapter-35"
+    },
+    "GWMGMT": {
+      "name": "Statutory groundwater-management regimes",
+      "full_name": "State statutory groundwater management — Arizona's Groundwater Management Act and Active Management Areas, California's Sustainable Groundwater Management Act, and comparable large-withdrawal regimes",
+      "agencies": "State water resource departments; groundwater sustainability agencies",
+      "kind": "state-doctrine",
+      "url": "https://www.law.cornell.edu/wex/water_rights"
+    },
+    "XFER": {
+      "name": "Water sourcing & inter-basin transfer law",
+      "full_name": "Statutory limits on moving water between basins and on holding rights unused — area-of-origin protection, junior-priority rules on transfer, and forfeiture or abandonment regimes",
+      "agencies": "State environmental commissions; water courts",
+      "kind": "state-doctrine",
+      "url": "https://texas.public.law/statutes/tex._water_code_section_11.085"
+    },
+    "TRIBAL": {
+      "name": "Federal & tribal reserved water rights",
+      "full_name": "Winters doctrine reserved rights — water impliedly reserved when the federal government sets land aside, senior to later state-law rights and extending to groundwater",
+      "agencies": "Federal courts; Department of the Interior; tribal governments",
+      "kind": "federal-doctrine",
+      "url": "https://www.law.cornell.edu/wex/winters_doctrine"
+    },
+    "SEPA": {
+      "name": "State environmental review & water-supply adequacy",
+      "full_name": "State environmental review statutes as applied to water — whether a project's environmental document must demonstrate a realistic long-term supply before approval",
+      "agencies": "Lead agencies under state review statutes; state courts",
+      "kind": "state-doctrine",
+      "url": "https://www.law.cornell.edu/wex/environmental_law"
+    },
+    "SL": {
+      "name": "State consumer-protection & claims law",
+      "full_name": "State deceptive-trade-practices and consumer-protection statutes as applied to environmental and water-sustainability claims",
+      "agencies": "State attorneys general; state courts; private plaintiffs",
+      "kind": "state-doctrine",
+      "url": "https://www.law.cornell.edu/wex/deceptive_trade_practices"
     }
   },
   "readings": [
@@ -42,7 +131,13 @@
       "agency": "EPA / delegated state programs (VPDES, TPDES, SPDES…)",
       "what_it_covers": "The core CWA machine: §301 makes any point-source discharge of a pollutant to a water of the United States unlawful unless authorized by a §402 NPDES permit with numeric effluent limits, monitoring (DMRs), and reporting. Most enforcement in this record — from Smithfield's $12.6M judgment to routine state NOVs — is §402/§301 enforcement.",
       "dc_applicability": "Applies whenever a data center discharges cooling-tower blowdown, on-site treatment effluent, or process water directly to surface water rather than to a sewer. The AWS Lake Anna VPDES draft permit is the first direct cooling-discharge NPDES action at a hyperscaler campus; the Homer City PA draft permit covers cooling outfalls at a DC power plant. Once a campus holds its own NPDES permit, every exceedance is ECHO-visible and enforceable — including by citizen suit.",
-      "example_case_ids": ["Smithfield-Pagan-River-1997", "AWS-LakeAnnaVA-VPDES-cooling-discharge-2026", "HomerCity-IndianaCounty-PA-NPDES-2026", "Hanover-Foods-2025", "PortOfMorrow-DEQ-OR-2024"]
+      "example_case_ids": [
+        "Smithfield-Pagan-River-1997",
+        "AWS-LakeAnnaVA-VPDES-cooling-discharge-2026",
+        "HomerCity-IndianaCounty-PA-NPDES-2026",
+        "Hanover-Foods-2025",
+        "PortOfMorrow-DEQ-OR-2024"
+      ]
     },
     {
       "reading_id": "cwa-402-construction-stormwater",
@@ -52,7 +147,13 @@
       "agency": "EPA / delegated states",
       "what_it_covers": "Land disturbance over one acre requires coverage under a construction general permit with a SWPPP, erosion/sediment BMPs, and inspection records. This is the single most-enforced CWA program against large construction projects.",
       "dc_applicability": "The primary CWA touchpoint for data centers today: multi-hundred-acre campus build-outs generate sediment-laden runoff, and every documented DC stormwater enforcement (Google Stillwater OK, Microsoft Boydton VA, QTS Fayetteville GA, Johns Hopkins DSAI) arose here. Enforcement usually names the general contractor — the permittee — not the operator.",
-      "example_case_ids": ["Google-Stillwater-OK-stormwater-2025", "Microsoft-Boydton-VA-2023", "QTS-Fayetteville-GA-2024", "JohnsHopkins-DSAI-Baltimore-2025", "Energix-VA-2024"]
+      "example_case_ids": [
+        "Google-Stillwater-OK-stormwater-2025",
+        "Microsoft-Boydton-VA-2023",
+        "QTS-Fayetteville-GA-2024",
+        "JohnsHopkins-DSAI-Baltimore-2025",
+        "Energix-VA-2024"
+      ]
     },
     {
       "reading_id": "cwa-402-industrial-stormwater",
@@ -62,7 +163,9 @@
       "agency": "EPA / delegated states",
       "what_it_covers": "Operating industrial facilities with materials or equipment exposed to rain need MSGP coverage with benchmark monitoring for pollutants in site runoff.",
       "dc_applicability": "Post-construction exposure for campuses with exposed fuel farms, chemical storage, switchyards, and equipment yards. Most operating data centers hold only this near-empty stormwater permit — which is why the operational record is thin — but benchmark exceedances are public and enforceable.",
-      "example_case_ids": ["Google-Stillwater-OK-stormwater-2025"]
+      "example_case_ids": [
+        "Google-Stillwater-OK-stormwater-2025"
+      ]
     },
     {
       "reading_id": "cwa-404-dredge-fill",
@@ -72,7 +175,14 @@
       "agency": "U.S. Army Corps of Engineers (EPA veto under §404(c))",
       "what_it_covers": "Placing fill in jurisdictional wetlands or streams requires a Corps permit — an individual permit for larger impacts or a nationwide permit (NWP) for smaller ones. Sackett (2023) narrowed which wetlands are jurisdictional; unpermitted fill draws cease-work orders and restoration liability.",
       "dc_applicability": "Site-grading at greenfield campuses regularly crosses wetlands and headwater streams: Google's three pending §404 individual permit applications (Project Raspberry and Loch in VA, Port of Little Rock AR at 16.8 acres), the SDC ATLA Douglas County GA application with ~1 mile of stream impacts, and the Amazon New Carlisle IN cease-work order all sit here. The 2026 NWP 39 reissuance expressly enumerates data centers.",
-      "example_case_ids": ["Amazon-NewCarlisle-IN-wetlands-2025", "Google-ProjectRaspberry-VA-2026", "Google-LittleRock-AR-2026", "SDC-ATLA-DouglasCounty-GA-404-401-2025", "USACE-NWP39-DataCenters-2026", "Sackett-v-EPA-2023"]
+      "example_case_ids": [
+        "Amazon-NewCarlisle-IN-wetlands-2025",
+        "Google-ProjectRaspberry-VA-2026",
+        "Google-LittleRock-AR-2026",
+        "SDC-ATLA-DouglasCounty-GA-404-401-2025",
+        "USACE-NWP39-DataCenters-2026",
+        "Sackett-v-EPA-2023"
+      ]
     },
     {
       "reading_id": "cwa-401-certification",
@@ -82,7 +192,11 @@
       "agency": "State environmental agencies",
       "what_it_covers": "Any federal permit that may result in a discharge (a §404 fill permit, a FERC license) needs the state to certify the project meets state water-quality standards. States can condition or deny certification — an independent veto point — and courts have vacated deficient certifications.",
       "dc_applicability": "Every data-center §404 permit needs a companion §401 certification, so state agencies (and commenters in the state proceeding) get leverage even where federal jurisdiction survives Sackett only barely. The SDC ATLA GA matter pairs §404 with a contested §401; the 4th Circuit's WV vacatur shows certifications are litigable.",
-      "example_case_ids": ["SierraClub-WVDEP-401-2023", "SDC-ATLA-DouglasCounty-GA-404-401-2025", "Amazon-NewCarlisle-IN-wetlands-2025"]
+      "example_case_ids": [
+        "SierraClub-WVDEP-401-2023",
+        "SDC-ATLA-DouglasCounty-GA-404-401-2025",
+        "Amazon-NewCarlisle-IN-wetlands-2025"
+      ]
     },
     {
       "reading_id": "cwa-307-pretreatment",
@@ -92,7 +206,13 @@
       "agency": "Receiving POTW (locally enforced), EPA/state oversight",
       "what_it_covers": "Industrial users discharging to a municipal sewer must meet national prohibitions (no pass-through or interference) and locally issued industrial-user permits with local limits. The POTW enforces; EPA enforces against POTWs whose pretreatment programs fail.",
       "dc_applicability": "The regime that most directly governs operating data centers: cooling-tower blowdown (concentrated dissolved solids, biocides, corrosion inhibitors) goes to the sewer under an industrial-user permit. High-volume DC loading can cause POTW pass-through — putting the plant in violation of its own NPDES permit, as at Port of Morrow OR. IU permits and local limits are FOIA-able.",
-      "example_case_ids": ["Swift-Beef-Grand-Island-2011", "Yuengling-Pottsville-2016", "Reading-WWTP-2024", "PortOfMorrow-DEQ-OR-2024", "Agri-Star-Postville-IA-2024-2025"]
+      "example_case_ids": [
+        "Swift-Beef-Grand-Island-2011",
+        "Yuengling-Pottsville-2016",
+        "Reading-WWTP-2024",
+        "PortOfMorrow-DEQ-OR-2024",
+        "Agri-Star-Postville-IA-2024-2025"
+      ]
     },
     {
       "reading_id": "cwa-316-cooling",
@@ -102,7 +222,13 @@
       "agency": "EPA / delegated states (via NPDES)",
       "what_it_covers": "Heat is a regulated pollutant: §316(a) governs thermal discharge variances and §316(b) requires cooling-water intake structures to reflect the best technology available for minimizing fish impingement and entrainment. Historically applied to power plants (Brayton Point's forced closed-cycle retrofit; Greenidge's bitcoin-era findings).",
       "dc_applicability": "Bites hardest where a campus takes surface water for once-through or evaporative cooling, or pairs with on-site generation — the full power-plant profile. The AWS Lake Anna draft permit and the Homer City DC power plant put §316 review squarely into data-center permitting for the first time.",
-      "example_case_ids": ["Brayton-Point-Dominion-2003-2007", "Entergy-v-Riverkeeper-2009", "Greenidge-SenecaLake-NY-2025", "AWS-LakeAnnaVA-VPDES-cooling-discharge-2026", "HomerCity-IndianaCounty-PA-NPDES-2026"]
+      "example_case_ids": [
+        "Brayton-Point-Dominion-2003-2007",
+        "Entergy-v-Riverkeeper-2009",
+        "Greenidge-SenecaLake-NY-2025",
+        "AWS-LakeAnnaVA-VPDES-cooling-discharge-2026",
+        "HomerCity-IndianaCounty-PA-NPDES-2026"
+      ]
     },
     {
       "reading_id": "cwa-311-spills",
@@ -112,7 +238,11 @@
       "agency": "EPA (spill prevention), Coast Guard/EPA (response), DOJ (penalties)",
       "what_it_covers": "Prohibits harmful-quantity discharges of oil or listed hazardous substances to waters of the U.S., requires Spill Prevention, Control and Countermeasure plans for facilities storing oil above thresholds, and carries per-barrel civil (and negligence-based criminal) penalties — the Plains Pipeline and East Palestine lines.",
       "dc_applicability": "Data centers keep multi-million-gallon diesel fuel farms for backup generators — squarely SPCC-regulated. A tank or transfer release reaching a stream is legally identical to the pipeline cases, including the duty-to-report trap. The Johns Hopkins DSAI matter already pairs construction stormwater with a §311 diesel element.",
-      "example_case_ids": ["Plains-Pipeline-Santa-Barbara-2020", "Norfolk-Southern-East-Palestine-2024", "JohnsHopkins-DSAI-Baltimore-2025"]
+      "example_case_ids": [
+        "Plains-Pipeline-Santa-Barbara-2020",
+        "Norfolk-Southern-East-Palestine-2024",
+        "JohnsHopkins-DSAI-Baltimore-2025"
+      ]
     },
     {
       "reading_id": "cwa-303-wqs",
@@ -122,7 +252,9 @@
       "agency": "States (EPA approval)",
       "what_it_covers": "States set designated uses and criteria for each water; new or expanded discharges into high-quality (Tier 2) waters trigger an antidegradation alternatives analysis, and impaired waters get TMDL load caps that flow into permit limits.",
       "dc_applicability": "A procedural lever at the siting stage: a proposed new DC outfall into high-quality water must survive an alternatives analysis (e.g., closed-loop or dry cooling), and a discharge into a TMDL-capped watershed inherits tighter limits. Raised by commenters in the Lake Anna proceeding.",
-      "example_case_ids": ["AWS-LakeAnnaVA-VPDES-cooling-discharge-2026"]
+      "example_case_ids": [
+        "AWS-LakeAnnaVA-VPDES-cooling-discharge-2026"
+      ]
     },
     {
       "reading_id": "cwa-402-maui-groundwater",
@@ -132,7 +264,10 @@
       "agency": "EPA / delegated states; heavily citizen-suit driven",
       "what_it_covers": "County of Maui v. Hawaii Wildlife Fund held that a discharge that travels through groundwater but is the functional equivalent of a direct discharge to surface water still needs an NPDES permit — injection wells, leach fields, and land application can't launder a point source.",
       "dc_applicability": "Closes the loophole for campuses that dispose of blowdown or treated effluent via injection wells, drywells, rapid-infiltration basins, or land application near streams: if it reaches surface water, Maui says permit it. Fact-intensive (distance, travel time), but the most potent novel theory for inland campuses over shallow aquifers.",
-      "example_case_ids": ["County-of-Maui-v-Hawaii-Wildlife-Fund-2020", "Maui-remand-DHaw-2021"]
+      "example_case_ids": [
+        "County-of-Maui-v-Hawaii-Wildlife-Fund-2020",
+        "Maui-remand-DHaw-2021"
+      ]
     },
     {
       "reading_id": "cwa-505-citizen-suit",
@@ -142,7 +277,13 @@
       "agency": "Private plaintiffs (riverkeepers, residents) in federal court",
       "what_it_covers": "Any citizen may sue a discharger for ongoing permit violations (or EPA for non-discretionary failures) after 60-day notice, with civil penalties payable to the Treasury and fee-shifting. Riverkeeper groups built much of the modern enforcement record this way; Port of Tacoma and CERF v. Naples set current scope/mootness limits.",
       "dc_applicability": "The enforcement backstop when agencies stand down: DMR exceedances at a DC's own NPDES permit, at its contractor's CGP coverage, or at the receiving POTW are all citizen-suit predicates — and this tracker's ECHO SNC/DMR pull is exactly the evidence base a §505 notice letter needs. QTS Fayetteville and TransGas Adams Fork began as riverkeeper notices.",
-      "example_case_ids": ["Atlanta-RMClayton-CRK-2024-2026", "QTS-Fayetteville-GA-2024", "TransGas-AdamsFork-WV-2025", "PortOfTacoma-v-PugetSoundkeeper-9thCir-2024", "CERF-v-Naples-9thCir-2024"]
+      "example_case_ids": [
+        "Atlanta-RMClayton-CRK-2024-2026",
+        "QTS-Fayetteville-GA-2024",
+        "TransGas-AdamsFork-WV-2025",
+        "PortOfTacoma-v-PugetSoundkeeper-9thCir-2024",
+        "CERF-v-Naples-9thCir-2024"
+      ]
     },
     {
       "reading_id": "sdwa-1431-emergency",
@@ -152,7 +293,13 @@
       "agency": "EPA (direct federal order authority)",
       "what_it_covers": "When a contaminant present in or likely to enter a public water system or underground source of drinking water may present an imminent and substantial endangerment, EPA can issue immediate administrative orders or sue — without waiting for state action or a permit violation. Used against DuPont for PFOA in Ohio Valley drinking water and in Flint (2016).",
       "dc_applicability": "The fastest federal hook if a data-center-linked contaminant (fuel release, cooling-chemistry constituents, construction-driven nitrate or sediment) shows up in wells or a public system's source water. The Amazon Boardman nitrate fact pattern — contaminated domestic wells near DC-hosting farmland — is exactly the §1431 profile, and EPA has pledged investigation of the Meta Newton County GA well complaints.",
-      "example_case_ids": ["Flint-MI-SDWA-1431-2016", "DuPont-WashingtonWorks-PFOA-2005-2009", "Trinity-American-v-EPA-SDWA-1431-1998", "Amazon-Boardman-OR-nitrate-2026", "Meta-MorganCo-GA-investigation-2026"]
+      "example_case_ids": [
+        "Flint-MI-SDWA-1431-2016",
+        "DuPont-WashingtonWorks-PFOA-2005-2009",
+        "Trinity-American-v-EPA-SDWA-1431-1998",
+        "Amazon-Boardman-OR-nitrate-2026",
+        "Meta-MorganCo-GA-investigation-2026"
+      ]
     },
     {
       "reading_id": "sdwa-uic-classv",
@@ -162,7 +309,9 @@
       "agency": "EPA / primacy states",
       "what_it_covers": "Any subsurface fluid emplacement is an 'injection well.' Class V covers shallow, non-hazardous injection — stormwater drywells, aquifer recharge, cooling-water return-flow wells, large septic systems. Wells that may endanger an underground source of drinking water can be closed or permitted with conditions; EPA banned entire well subclasses (motor-vehicle waste wells, 1999) where the endangerment was categorical.",
       "dc_applicability": "Directly regulates common campus infrastructure: stormwater drywells and infiltration galleries, geothermal/aquifer-thermal cooling return wells, and any on-site disposal of treated effluent to the subsurface are Class V wells requiring inventory, rule authorization, or permits — an underused federal hook over inland campuses that never touch surface water.",
-      "example_case_ids": ["EPA-UIC-ClassV-MotorVehicleWells-1999"]
+      "example_case_ids": [
+        "EPA-UIC-ClassV-MotorVehicleWells-1999"
+      ]
     },
     {
       "reading_id": "sdwa-1424e-sole-source-aquifer",
@@ -172,7 +321,9 @@
       "agency": "EPA",
       "what_it_covers": "Where EPA has designated an aquifer as the sole or principal drinking-water source for an area (Edwards Aquifer, 1975, was the first), no federal financial assistance may go to a project that EPA determines may contaminate the aquifer. A review trigger, not a general permit program.",
       "dc_applicability": "Reaches data-center projects only through a federal-funding hook — federally backed loans, grants, or infrastructure assistance for a campus or its supporting utilities over a designated aquifer trigger EPA review. Relevant to Texas Hill Country and San Antonio-area siting over the Edwards, and to any federally financed AI-infrastructure build-out.",
-      "example_case_ids": ["Edwards-Aquifer-SoleSource-Designation-1975"]
+      "example_case_ids": [
+        "Edwards-Aquifer-SoleSource-Designation-1975"
+      ]
     },
     {
       "reading_id": "sdwa-pws-compliance",
@@ -182,7 +333,10 @@
       "agency": "EPA / primacy states",
       "what_it_covers": "Systems serving 25+ people or 15+ connections are public water systems bound by maximum contaminant levels, monitoring, and reporting; chronic violators face escalating enforcement up to court-appointed receivership (Alisal Water).",
       "dc_applicability": "Two directions: (1) a large campus with its own wells serving hundreds of workers can itself become a regulated PWS; (2) the small municipal systems that serve mega-campuses take on PWS compliance risk when DC demand strains capacity or forces new sources — the Richland Parish LA and Bessemer AL supply fights are about systems absorbing that risk.",
-      "example_case_ids": ["US-v-Alisal-Water-Corp-2005", "Flint-MI-SDWA-1431-2016"]
+      "example_case_ids": [
+        "US-v-Alisal-Water-Corp-2005",
+        "Flint-MI-SDWA-1431-2016"
+      ]
     },
     {
       "reading_id": "sdwa-source-water-protection",
@@ -192,7 +346,10 @@
       "agency": "States (EPA-approved programs)",
       "what_it_covers": "Every state maintains EPA-approved source-water assessments delineating the recharge and intake zones that feed public systems; many states and localities layer land-use restrictions (wellhead protection ordinances, recharge-zone rules) on top. Largely non-regulatory federally, but the assessments are the evidentiary backbone for local fights.",
       "dc_applicability": "The mapping layer for siting fights: a campus, fuel farm, or drainfield inside a delineated source-water protection area gives residents and utilities a concrete, government-authored basis to object — the posture of the Occoquan Reservoir objections to the PW Digital Gateway and the aquifer-recharge zoning fights in Texas and Georgia.",
-      "example_case_ids": ["Google-Berkeley-SC-Middendorf-aquifer-2019", "CorpusChristi-SintonTX-EvangelineAquifer-wells-2026"]
+      "example_case_ids": [
+        "Google-Berkeley-SC-Middendorf-aquifer-2019",
+        "CorpusChristi-SintonTX-EvangelineAquifer-wells-2026"
+      ]
     },
     {
       "reading_id": "tsca-8e-substantial-risk",
@@ -202,7 +359,10 @@
       "agency": "EPA",
       "what_it_covers": "Anyone who manufactures, processes, or distributes a chemical and obtains information reasonably supporting a conclusion of substantial risk to health or the environment must tell EPA immediately. DuPont's failure to report PFOA blood and drinking-water data drew what was then the largest civil administrative penalty in EPA history ($10.25M + $6.25M SEPs, 2005); 3M settled similar PFAS non-reporting in 2006.",
       "dc_applicability": "Reaches the chemical suppliers behind data-center water chemistry — cooling-tower biocides, corrosion inhibitors, film-forming additives, and legacy AFFF fire suppressants. If a supplier or large processor learns its formulation is contaminating water near campuses and sits on it, that is the DuPont fact pattern.",
-      "example_case_ids": ["DuPont-WashingtonWorks-PFOA-2005-2009", "3M-TSCA-8e-PFAS-2006"]
+      "example_case_ids": [
+        "DuPont-WashingtonWorks-PFOA-2005-2009",
+        "3M-TSCA-8e-PFAS-2006"
+      ]
     },
     {
       "reading_id": "tsca-8a7-pfas-reporting",
@@ -212,7 +372,10 @@
       "agency": "EPA",
       "what_it_covers": "The 2023 rule requires anyone who manufactured or imported PFAS (including in articles) since 2011 to report uses, volumes, byproducts, exposure, and disposal — no de minimis exemption. The resulting dataset maps who put which PFAS where.",
       "dc_applicability": "Indirect but growing: imported electrical equipment, coolants (some immersion-cooling fluids are PFAS), and fire-suppression stocks can pull vendors into reporting, and the public dataset gives water advocates a way to trace PFAS found near a campus back to a supply chain as NPDES PFAS limits tighten (see the Chemours Washington Works effluent-limits consent agreement).",
-      "example_case_ids": ["TSCA-PFAS-Reporting-Rule-2023", "Chemours-Washington-Works-PFAS-2023"]
+      "example_case_ids": [
+        "TSCA-PFAS-Reporting-Rule-2023",
+        "Chemours-Washington-Works-PFAS-2023"
+      ]
     },
     {
       "reading_id": "rcra-7002-7003-endangerment",
@@ -222,7 +385,10 @@
       "agency": "EPA (§7003) and citizen plaintiffs (§7002(a)(1)(B))",
       "what_it_covers": "Where the handling or disposal of any solid or hazardous waste may present an imminent and substantial endangerment, EPA or any citizen can obtain injunctive cleanup orders — no permit violation needed and no CWA jurisdictional water required. Interfaith v. Honeywell forced a ~$400M chromium cleanup on this theory.",
       "dc_applicability": "The gap-filler where Sackett cuts off CWA jurisdiction: contamination migrating through soil and groundwater from fuel releases, construction fill, sludge, or spent cooling-treatment chemicals at a campus can support a §7002(a)(1)(B) citizen suit even with no surface-water connection at all — the same post-Sackett role Maui plays for connected waters.",
-      "example_case_ids": ["Interfaith-v-Honeywell-RCRA-2003-2005", "Amazon-Boardman-OR-nitrate-2026"]
+      "example_case_ids": [
+        "Interfaith-v-Honeywell-RCRA-2003-2005",
+        "Amazon-Boardman-OR-nitrate-2026"
+      ]
     },
     {
       "reading_id": "rha-10-structures",
@@ -232,7 +398,238 @@
       "agency": "U.S. Army Corps of Engineers",
       "what_it_covers": "Building any structure in, or affecting the course/capacity of, traditionally navigable waters requires a Corps §10 permit — intakes, outfall structures, piers, pipeline crossings. Republic Steel (1960) read the Act to reach industrial deposits that reduce channel depth. Unlike CWA §404, §10 jurisdiction was untouched by Sackett.",
       "dc_applicability": "Any data-center or DC-power-plant cooling intake or outfall structure placed in a navigable river or lake needs §10 authorization on top of NPDES/§404 — a second, Sackett-proof Corps permit gate (relevant to Lake Anna-style surface-water cooling and river-supplied campuses).",
-      "example_case_ids": ["US-v-Republic-Steel-RHA-1960", "AWS-LakeAnnaVA-VPDES-cooling-discharge-2026"]
+      "example_case_ids": [
+        "US-v-Republic-Steel-RHA-1960",
+        "AWS-LakeAnnaVA-VPDES-cooling-discharge-2026"
+      ]
+    },
+    {
+      "reading_id": "eqap-interstate-aquifer",
+      "statute": "EQAP",
+      "section": "U.S. Const. art. III, §2 original jurisdiction — equitable apportionment of an interstate aquifer",
+      "name": "Equitable apportionment reaches groundwater",
+      "agency": "U.S. Supreme Court (original jurisdiction)",
+      "what_it_covers": "Disputes between states over a shared water resource. Historically applied to rivers; in 2021 the Supreme Court held for the first time that groundwater in an interstate aquifer is equally subject to equitable apportionment — no state owns the water beneath it outright, and a state claiming injury must sue for an apportionment rather than for conversion.",
+      "dc_applicability": "A data center pumping heavily from an aquifer that crosses a state line creates precisely the fact pattern this doctrine governs, and the injured party is the neighbouring *state*, not the neighbouring landowner. The practical barrier is evidentiary: an apportionment claim needs clear-and-convincing proof of real injury, which means utility-level aggregate withdrawal data — the class of data the HB 496-style reporting laws tracked in this dataset are starting to generate.",
+      "example_case_ids": [
+        "Mississippi-v-Tennessee-2021"
+      ]
+    },
+    {
+      "reading_id": "eqap-commerce-clause",
+      "statute": "EQAP",
+      "section": "Dormant Commerce Clause (U.S. Const. art. I, §8, cl. 3)",
+      "name": "Groundwater is an article of interstate commerce",
+      "agency": "Federal courts",
+      "what_it_covers": "Limits on a state's power to restrict the export of water across its borders. Groundwater is an article of commerce, so a state law blocking or conditioning its transfer out of state faces Commerce Clause scrutiny and must be genuinely tailored to conservation rather than to hoarding.",
+      "dc_applicability": "Runs in the opposite direction from most doctrines here: it is the constraint on a *state* that tries to keep its water away from out-of-state data-center demand. A statute written to stop water leaving for a neighbouring state's campus is more vulnerable than one that limits large withdrawals regardless of where the user sits — which is why the durable instruments in this dataset regulate by volume and use, not by destination.",
+      "example_case_ids": [
+        "Sporhase-v-Nebraska-1982"
+      ]
+    },
+    {
+      "reading_id": "ptd-reopener",
+      "statute": "PTD",
+      "section": "Public trust doctrine — continuing supervision over allocated water",
+      "name": "No water right is immune from trust reconsideration",
+      "agency": "State courts; state water boards",
+      "what_it_covers": "The state holds navigable waters in trust and retains a continuing duty of supervision. A previously granted water right is not settled forever: it remains subject to reconsideration and adjustment where the diversion harms trust interests and a feasible alternative exists.",
+      "dc_applicability": "The doctrine that makes an already-issued water allocation reviewable. A data center supplied under a long-standing municipal or appropriative right is not insulated by that right if the resulting draw damages a trust resource — which matters because most data-center supply arrives through existing utility entitlements rather than new permits, and those are exactly what this doctrine reopens.",
+      "example_case_ids": [
+        "National-Audubon-v-Superior-Court-1983"
+      ]
+    },
+    {
+      "reading_id": "ptd-groundwater-nexus",
+      "statute": "PTD",
+      "section": "Public trust doctrine as applied to groundwater extraction affecting navigable waters",
+      "name": "The trust follows groundwater into surface flow",
+      "agency": "State courts; counties issuing well permits",
+      "what_it_covers": "Groundwater pumping that measurably reduces flow in a navigable waterway falls within the public trust, and a comprehensive statutory groundwater regime does not displace that duty. The permitting authority — often a county — must consider trust resources when issuing well permits.",
+      "dc_applicability": "Closes the gap a data center's hydrology usually falls into. Campus wells are rarely regulated as a surface-water diversion, but where drawdown depletes a connected stream the trust duty attaches to the well permit itself. It also means a state groundwater-management statute is a floor, not a ceiling: complying with the statute does not answer the trust claim.",
+      "example_case_ids": [
+        "ELF-v-SWRCB-2018"
+      ]
+    },
+    {
+      "reading_id": "ptd-precautionary",
+      "statute": "PTD",
+      "section": "Public trust doctrine — burden of proof and the precautionary principle",
+      "name": "Uncertainty weighs toward protecting the resource",
+      "agency": "State water commissions; state courts",
+      "what_it_covers": "The trust establishes a presumption in favour of its purposes. The burden sits on the party seeking water for private gain to justify the use and its impacts, not on the public to prove harm; and where the science is unresolved, that uncertainty counts in favour of protection rather than against it.",
+      "dc_applicability": "Directly inverts the usual posture of a data-center water fight. The recurring complaint in this dataset is that opponents cannot prove harm because consumption figures are confidential — under this reading the applicant carries the burden, and unresolved hydrology argues for the resource. Its force is jurisdiction-specific: Hawai'i's constitutional water provisions are unusually strong, so this is the ceiling of the doctrine rather than its typical reach.",
+      "example_case_ids": [
+        "Waiahole-Ditch-2000"
+      ]
+    },
+    {
+      "reading_id": "gw-ownership-takings",
+      "statute": "GW",
+      "section": "Groundwater owned in place; regulation as a constitutional taking",
+      "name": "Groundwater as a compensable property interest",
+      "agency": "State courts; groundwater conservation districts",
+      "what_it_covers": "In states following ownership-in-place, a landowner holds a constitutionally protected interest in the groundwater beneath the surface before it is pumped. Regulation that restricts pumping can therefore support a takings claim requiring compensation.",
+      "dc_applicability": "Cuts both ways, which is why it belongs in the registry. It is the doctrine a data center would invoke against a withdrawal cap imposed after it acquired the land — and equally the one a neighbouring landowner invokes when a regulator permits the campus to draw down the property interest under their own acreage. It also explains why states in this family regulate through districts and permits rather than by prohibition: outright restriction carries a compensation risk.",
+      "example_case_ids": [
+        "Edwards-Aquifer-Authority-v-Day-2012"
+      ]
+    },
+    {
+      "reading_id": "well-cumulative-impact",
+      "statute": "WELL",
+      "section": "State high-capacity well permitting — agency duty to consider harm to waters of the state",
+      "name": "The permitting agency must weigh a well's off-site impact",
+      "agency": "State natural-resource agencies",
+      "what_it_covers": "Whether an agency issuing a high-capacity well permit must look beyond the applicant's own parcel. Where the state holds navigable waters in trust and the permitting statute protects waters of the state generally, the agency has both authority and a general duty to consider whether the proposed well may harm those waters — but the duty is triggered by concrete scientific evidence of potential harm, not by objection alone.",
+      "dc_applicability": "The most practically usable doctrine in the registry for an opponent, because it operates at the permit stage rather than after the damage. It also sets the price of admission: objections to a data-center well must arrive as hydrologic evidence, since generalized concern does not trigger the agency's duty. That is precisely the bind sites in this dataset describe — the evidence needs consumption data the operator holds.",
+      "example_case_ids": [
+        "Lake-Beulah-v-DNR-2011"
+      ]
+    },
+    {
+      "reading_id": "cl-negligent-subsidence",
+      "statute": "CL",
+      "section": "Negligence, willful waste and malicious injury as limits on the rule of capture",
+      "name": "Capture shields depletion, not negligent harm",
+      "agency": "State courts",
+      "what_it_covers": "In rule-of-capture states a landowner may generally pump without liability for draining a neighbour. That immunity is not total: where the *manner* of withdrawal is negligent, willfully wasteful or malicious and proximately causes damage to another's land — the classic case being subsidence from closely spaced high-volume wells — the pumper is liable.",
+      "dc_applicability": "The opening in an otherwise closed door. A neighbour in a capture state cannot complain that a data center took the water, but can complain about how: well spacing, siting near a boundary, and pumping rates chosen despite engineering forecasts of subsidence. Coastal and alluvial settings are where this bites, because that is where measurable subsidence follows drawdown.",
+      "example_case_ids": [
+        "Friendswood-v-Smith-Southwest-1978"
+      ]
+    },
+    {
+      "reading_id": "cl-citizen-standing-limit",
+      "statute": "CL",
+      "section": "Standing under state environmental-protection statutes — particularized injury",
+      "name": "The standing trap for opposition groups",
+      "agency": "State courts",
+      "what_it_covers": "How far a statutory 'any person may sue' provision actually reaches. A citizens' group may sue over a withdrawal that injures its members' own recreational, aesthetic, economic or property interests, but not over harm to the environment at large — the injury must be concrete and particularized to identifiable members.",
+      "dc_applicability": "Explains a pattern visible across this dataset: why data-center opposition succeeds through zoning votes, moratoriums and records requests far more often than through lawsuits. A group organized around a watershed rather than around injured members can be dismissed before the merits. It also says which plaintiff wins — the household whose well failed, not the coalition, which is why the Newton County fact pattern is legally stronger than a general-harm campaign.",
+      "example_case_ids": [
+        "MCWC-v-Nestle-Waters-2007"
+      ]
+    },
+    {
+      "reading_id": "util-shortage-moratorium",
+      "statute": "UTIL",
+      "section": "Municipal water service — no right to new service; moratorium review",
+      "name": "A utility may refuse to serve a new large customer",
+      "agency": "Municipal utilities and districts; state courts",
+      "what_it_covers": "A prospective new water user holds no absolute right to service and need not be treated like established customers. Where a utility faces a genuine imbalance between supply and demand it has a rational basis for a moratorium on new connections, and a court will disturb that decision only for fraud, arbitrariness or caprice.",
+      "dc_applicability": "Runs the opposite way from how these fights are usually argued. The tracked conflicts assume the utility is under pressure to say yes; this reading says a utility facing real supply constraint is on strong legal ground saying no, and the data center has no entitlement to be served. Where a utility has already conceded on the record that it cannot serve the load without major upgrades — Bessemer being the clearest instance here — that admission is the rational basis a refusal would rest on.",
+      "example_case_ids": [
+        "Swanson-v-Marin-MWD-1976"
+      ]
+    },
+    {
+      "reading_id": "esa-proximate-cause-limit",
+      "statute": "ESA",
+      "section": "ESA §9 take, 16 U.S.C. §1538 — proximate cause between state permitting and downstream harm",
+      "name": "State water permitting is usually too remote to be a take",
+      "agency": "Federal courts; U.S. Fish and Wildlife Service",
+      "what_it_covers": "Whether a state agency's issuance of upstream withdrawal permits can be the proximate cause of downstream harm to a listed species. The Fifth Circuit held it cannot on the record before it: with multiple natural, independent and unpredictable forces acting on the habitat, the causal chain from permit to death of the animals was not reasonably foreseeable, and the injunction against further permitting was an abuse of discretion.",
+      "dc_applicability": "Included as a *negative* reading, because knowing where a theory fails is worth as much as knowing where it works. ESA is the intuitive federal hook for a data center drying a river reach, and in the Fifth Circuit this is binding law that the hook will usually miss when the defendant is the state permitting authority. A §9 claim would need to run at the withdrawer directly, with a much shorter causal chain than 'permit issued, species died'.",
+      "example_case_ids": [
+        "Aransas-Project-v-Shaw-2014"
+      ]
+    },
+    {
+      "reading_id": "gwmgmt-az-ama",
+      "statute": "GWMGMT",
+      "section": "Arizona Groundwater Management Act of 1980 — Active Management Areas and assured water supply",
+      "name": "Assured-water-supply rules inside an Active Management Area",
+      "agency": "Arizona Department of Water Resources",
+      "what_it_covers": "Inside an Active Management Area, groundwater is governed by statute rather than by common-law pumping rights: withdrawals are permitted and metered, and new development must demonstrate an assured supply — water physically and legally available for a century — before it can proceed.",
+      "dc_applicability": "This, and not the common-law reasonable-use rule, is what an Arizona data center actually answers to, which is why Arizona fights look different from Georgia or Texas ones: the question is decided in a statutory supply-designation process rather than in a nuisance suit. It cuts both ways — the regime is a real constraint on new demand, and it also gives a project that clears it a defensible answer to critics.",
+      "example_case_ids": [
+        "ProjectBlue-Tucson-AMES-2026"
+      ]
+    },
+    {
+      "reading_id": "gwmgmt-sgma",
+      "statute": "GWMGMT",
+      "section": "California Sustainable Groundwater Management Act, Cal. Water Code §10720 et seq.",
+      "name": "Basin sustainability plans, and what they do not displace",
+      "agency": "Groundwater sustainability agencies; California Water Board",
+      "what_it_covers": "Requires local agencies in high- and medium-priority basins to adopt plans achieving sustainable yield and avoiding undesirable results including chronic lowering of groundwater levels. Critically, the statute is a floor rather than a ceiling: enacting it did not occupy the field or extinguish the public-trust duty that runs alongside it.",
+      "dc_applicability": "Sets the numeric constraint a large new California groundwater user has to fit inside, and answers the compliance defence in advance. An operator pointing to its sustainability-plan allocation has not thereby answered a public-trust objection, because the two obligations coexist.",
+      "example_case_ids": [
+        "ELF-v-SWRCB-2018"
+      ]
+    },
+    {
+      "reading_id": "xfer-area-of-origin",
+      "statute": "XFER",
+      "section": "Tex. Water Code §11.085 — inter-basin transfers junior in priority",
+      "name": "Moving water between basins costs you your seniority",
+      "agency": "Texas Commission on Environmental Quality",
+      "what_it_covers": "No one may divert state water from one river basin to another without a water right or permit amendment authorizing the transfer, and any right transferred out of basin becomes junior in priority to every right granted in the basin of origin before the transfer application was filed. In a shortage the transferred water is cut first.",
+      "dc_applicability": "The sharpest and least-used tool against a campus supplied by out-of-basin piping. Opposition to these projects is usually political — hearings, petitions, county votes — when the statute already imposes a structural penalty: the transferred supply sits at the back of the priority queue exactly when drought makes it matter. Worth checking wherever a project's water arrives from a reservoir in another basin.",
+      "example_case_ids": [
+        "Rowan-ProjectCinco-Medina-TX-2025"
+      ]
+    },
+    {
+      "reading_id": "tribal-winters",
+      "statute": "TRIBAL",
+      "section": "Winters doctrine — implied reservation of water, 207 U.S. 564 (1908)",
+      "name": "Reserved rights are senior to everything that came after",
+      "agency": "Federal courts; Department of the Interior",
+      "what_it_covers": "Setting land aside for a federal purpose impliedly reserves enough water to serve that purpose. The priority date is the date the reservation was created, not the date use began — so reserved rights are typically senior to nearly every state-law right in the basin, and are unaffected by a state's later admission to the Union or its own allocation scheme.",
+      "dc_applicability": "Matters wherever a campus draws from a basin that also serves a reservation, which describes much of the arid Southwest. The exposure is not that a tribe sues the data center — it is that quantifying a senior reserved right shrinks the pool the state had been allocating, and junior users get cut in order. A supply contract resting on a junior state-law right is worth less than it appears in such a basin.",
+      "example_case_ids": [
+        "Winters-v-United-States-1908"
+      ]
+    },
+    {
+      "reading_id": "tribal-groundwater",
+      "statute": "TRIBAL",
+      "section": "Reserved rights extend to groundwater — Agua Caliente, 849 F.3d 1262 (9th Cir. 2017)",
+      "name": "The reserved right reaches the aquifer, not just the river",
+      "agency": "Federal courts",
+      "what_it_covers": "The Winters doctrine draws no line between surface water and groundwater. Where the United States reserved land in an arid region, it impliedly reserved the appurtenant water sources including groundwater; the tribe's not having historically pumped does not forfeit the right, and state water law is preempted where the two conflict.",
+      "dc_applicability": "Closes the escape route. A project can be told a basin's surface water is fully claimed and turn to wells instead — this says the senior federal right follows it underground. In arid basins with a reservation overlying or adjoining the aquifer, groundwater is not the unencumbered alternative it is usually treated as.",
+      "example_case_ids": [
+        "Agua-Caliente-v-CVWD-2017"
+      ]
+    },
+    {
+      "reading_id": "sepa-supply-adequacy",
+      "statute": "SEPA",
+      "section": "State environmental review — long-term water supply must be realistic, not on paper",
+      "name": "An environmental document must show water that actually exists",
+      "agency": "Lead agencies under state environmental review statutes; state courts",
+      "what_it_covers": "An environmental impact document approving a large project must identify and analyse the water supply for the project's full life, not merely its first phase. Deferring the analysis to a future regional planning document, or relying on a mitigation measure that would curtail development if the water never materializes, is procedurally inadequate — as is leaving unexplained discrepancies between claimed supply and regional estimates.",
+      "dc_applicability": "The most transferable procedural attack on a data-center approval, because it does not require proving hydrologic harm — only that the paperwork assumed water it could not demonstrate. Campus approvals routinely analyse phase one and defer the rest, which is the precise defect this reading names. It is also the doctrine that most often produces the outcome opponents actually want: the approval is vacated and redone, rather than damages awarded years later.",
+      "example_case_ids": [
+        "Vineyard-v-Rancho-Cordova-2007"
+      ]
+    },
+    {
+      "reading_id": "sepa-review-injunction",
+      "statute": "SEPA",
+      "section": "State environmental review — interim relief where water disclosure is inadequate",
+      "name": "Inadequate water disclosure can stop the project now",
+      "agency": "State courts",
+      "what_it_covers": "Where a challenger shows a state environmental review failed to disclose a project's water impacts adequately, courts have treated proceeding on that record as irreparable harm and granted interim relief rather than leaving the challenge to be resolved after construction.",
+      "dc_applicability": "The timing half of the supply-adequacy reading, and the reason state environmental review outranks most federal theories in practice for these projects: it can halt work while the dispute is live. Data-center construction moves faster than litigation, so a remedy that only arrives after the campus is built is not much of a remedy.",
+      "example_case_ids": [
+        "MCEA-PineIsland-MN-ProjectSkyway-2026"
+      ]
+    },
+    {
+      "reading_id": "sl-greenwashing-udap",
+      "statute": "SL",
+      "section": "State deceptive-trade-practices / consumer-protection statutes",
+      "name": "Water claims as a deceptive trade practice",
+      "agency": "State attorneys general; state courts; private plaintiffs",
+      "what_it_covers": "Statements a company makes to the public about its environmental performance, where those statements are alleged to be materially misleading. The subject of the claim is the company's own published figures rather than any discharge, withdrawal or permit, and the remedy sought is typically corrective disclosure and an accounting.",
+      "dc_applicability": "The one reading in this registry that does not require a permit, a discharge or an aquifer. It reaches the water-positive pledges and efficiency percentages that operators publish — which is significant because those figures are the industry's main public answer on water, and until 2026 nothing in the tracker connected a claim to a legal consequence. Its evidentiary base is utility billing records obtained by FOIA, so it is unusually available to outsiders compared with the hydrologic proof most other readings demand.",
+      "example_case_ids": [
+        "Wangusi-v-Amazon-Web-Services-VA-2026"
+      ]
     }
   ]
 }

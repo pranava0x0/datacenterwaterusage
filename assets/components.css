@@ -467,6 +467,30 @@
     font-weight: 700;
     color: #fff;
 }
+/* Outline chips for classification tags. Filled pills are reserved for
+   status, so a type tag must not read as one — hence transparent ground and
+   a coloured rule. .instrument-pill takes its colour inline from
+   INSTRUMENT_TYPE_COLORS; .issue-pill is neutral because the issue taxonomy
+   has 11 values and colouring them all would be decoration, not information. */
+.instrument-pill {
+    background: transparent;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    padding: 0.1rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+.issue-pill {
+    background: transparent;
+    color: #4b5563;
+    border: 1px dashed #9ca3af;
+    border-radius: 999px;
+    padding: 0.1rem 0.6rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: help;
+}
 .cwa-instrument {
     font-size: 0.8rem;
     color: #374151;
@@ -480,6 +504,31 @@
     color: #1a1a2e;
     line-height: 1.5;
     border-radius: 0 0.25rem 0.25rem 0;
+}
+/* Derived "what happened in comparable matters" line. Deliberately quiet —
+   it is context, not a finding about this site. */
+.conflict-outcome-note {
+    background: #f2f9fd;
+    border-left: 3px solid #6baed6;
+    padding: 0.5rem 0.75rem;
+    margin: 0.4rem 0 0.6rem;
+    font-size: 0.86rem;
+    line-height: 1.5;
+    border-radius: 0 0.25rem 0.25rem 0;
+}
+/* Site x doctrine-family matrix cells. */
+.doctrine-matrix td { text-align: center; }
+.doctrine-matrix .dm-hit { background: #eff3ff; color: #08519c; font-weight: 700; }
+.doctrine-matrix .dm-neg { color: #9ca3af; font-weight: 700; }
+.doctrine-matrix .dm-site { text-align: left; font-weight: 600; white-space: normal; }
+
+/* A doctrine that does NOT reach a site. Neutral grey rather than the amber
+   of a live pathway: the information is valuable but must not read as
+   exposure. */
+.cwa-pathway-negative {
+    background: #f6f7f8;
+    border-left: 3px solid #9ca3af;
+    color: #4b5563;
 }
 .cwa-analogs {
     margin-top: 0.35rem;

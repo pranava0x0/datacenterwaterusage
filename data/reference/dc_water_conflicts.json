@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-07-02",
+  "last_updated": "2026-07-26",
   "note": "Named data-center sites with documented water issues or community pushback, each mapped to the federal statutory readings (reading_ids from water_authorities.json) that could reach the fact pattern, with the historical cases (case_ids from cwa_investigations.json) that show each reading in use. Mappings deliberately overlap — one site can trigger several readings. Sites verified against news/government sources July 2026; status_2026 reflects the latest reporting found at that pass.",
   "sites": [
     {
@@ -11,14 +11,45 @@
       "pushback_summary": "The district attorney sided with the newspaper; the city settled in late 2022 and released ten years of data, and Google said it would stop claiming site-level water figures as trade secrets nationwide — the landmark transparency precedent for the industry.",
       "status_2026": "Resolved — data disclosed; the case is now the template other communities cite when operators claim water use is confidential.",
       "applicable_readings": [
-        {"reading_id": "sdwa-pws-compliance", "how": "A single customer taking a quarter-plus of a small city's supply concentrates public-water-system capacity and compliance risk on everyone else's taps — the SDWA regime that receivership-era enforcement polices.", "analogous_cases": ["US-v-Alisal-Water-Corp-2005"]},
-        {"reading_id": "cwa-307-pretreatment", "how": "Cooling water Google evaporates or returns goes through the municipal system; blowdown returned to the sewer sits under the POTW's industrial-user pretreatment authority.", "analogous_cases": ["PortOfMorrow-DEQ-OR-2024"]}
+        {
+          "reading_id": "sdwa-pws-compliance",
+          "how": "A single customer taking a quarter-plus of a small city's supply concentrates public-water-system capacity and compliance risk on everyone else's taps — the SDWA regime that receivership-era enforcement polices.",
+          "analogous_cases": [
+            "US-v-Alisal-Water-Corp-2005"
+          ]
+        },
+        {
+          "reading_id": "cwa-307-pretreatment",
+          "how": "Cooling water Google evaporates or returns goes through the municipal system; blowdown returned to the sewer sits under the POTW's industrial-user pretreatment authority.",
+          "analogous_cases": [
+            "PortOfMorrow-DEQ-OR-2024"
+          ]
+        },
+        {
+          "reading_id": "sl-greenwashing-udap",
+          "how": "The precedent that made every later water claim checkable. Litigation here forced release of a decade of figures and prompted Google to stop asserting site-level water use as a trade secret nationwide — the disclosure that consumer-protection theories now build on.",
+          "analogous_cases": [
+            "Wangusi-v-Amazon-Web-Services-VA-2026"
+          ]
+        }
       ],
       "related_case_ids": [],
       "sources": [
-        {"title": "RCFP: Oregon's city of The Dalles agrees to reveal Google's local water usage", "url": "https://www.rcfp.org/dalles-google-oregonian-settlement/"},
-        {"title": "GovTech: The Dalles, Ore., Settles Lawsuit Over Google Data Centers", "url": "https://www.govtech.com/analytics/the-dalles-ore-settles-lawsuit-over-google-data-centers"}
-      ]
+        {
+          "title": "RCFP: Oregon's city of The Dalles agrees to reveal Google's local water usage",
+          "url": "https://www.rcfp.org/dalles-google-oregonian-settlement/"
+        },
+        {
+          "title": "GovTech: The Dalles, Ore., Settles Lawsuit Over Google Data Centers",
+          "url": "https://www.govtech.com/analytics/the-dalles-ore-settles-lawsuit-over-google-data-centers"
+        }
+      ],
+      "issue_types": [
+        "supply-secrecy",
+        "supply-strain",
+        "disclosure-gap"
+      ],
+      "issue_types_rationale": "City sued a newspaper (Google paying its fees) to keep water figures secret as a trade secret, while Google's draw passed a quarter of city supply."
     },
     {
       "site_id": "xai-colossus-memphis-tn",
@@ -29,15 +60,70 @@
       "pushback_summary": "Protect Our Aquifer called the pause 'alarming'; the city council pressed for public meetings on water impacts, and Mayor Young says xAI committed to resume construction no later than Q1 2027.",
       "status_2026": "Operating on aquifer-sourced water; recycling plant paused with a promised Q1 2027 restart.",
       "applicable_readings": [
-        {"reading_id": "cwa-402-npdes", "how": "The promised recycling plant would hold its own NPDES permit — a clean, trackable point source whose DMRs become public the day it operates.", "analogous_cases": ["PortOfMorrow-DEQ-OR-2024"]},
-        {"reading_id": "cwa-307-pretreatment", "how": "Until then, cooling blowdown to the Memphis sewer sits under MLGW/City industrial-pretreatment authority, and Colossus-scale loading is exactly the pass-through risk the POTW's permit carries.", "analogous_cases": ["Swift-Beef-Grand-Island-2011", "PortOfMorrow-DEQ-OR-2024"]},
-        {"reading_id": "sdwa-source-water-protection", "how": "The Memphis Sand is a delineated sole drinking-water source; source-water assessments give residents a government-authored basis to contest withdrawals and siting over recharge areas.", "analogous_cases": ["Google-Berkeley-SC-Middendorf-aquifer-2019"]}
+        {
+          "reading_id": "cwa-402-npdes",
+          "how": "The promised recycling plant would hold its own NPDES permit — a clean, trackable point source whose DMRs become public the day it operates.",
+          "analogous_cases": [
+            "PortOfMorrow-DEQ-OR-2024"
+          ]
+        },
+        {
+          "reading_id": "cwa-307-pretreatment",
+          "how": "Until then, cooling blowdown to the Memphis sewer sits under MLGW/City industrial-pretreatment authority, and Colossus-scale loading is exactly the pass-through risk the POTW's permit carries.",
+          "analogous_cases": [
+            "Swift-Beef-Grand-Island-2011",
+            "PortOfMorrow-DEQ-OR-2024"
+          ]
+        },
+        {
+          "reading_id": "sdwa-source-water-protection",
+          "how": "The Memphis Sand is a delineated sole drinking-water source; source-water assessments give residents a government-authored basis to contest withdrawals and siting over recharge areas.",
+          "analogous_cases": [
+            "Google-Berkeley-SC-Middendorf-aquifer-2019"
+          ]
+        },
+        {
+          "reading_id": "eqap-interstate-aquifer",
+          "how": "The Memphis Sand is the same aquifer the Supreme Court held apportionable in 2021, so the question of who may complain about heavy pumping here is already answered: a neighbouring state, suing for an equitable apportionment. The obstacle is evidentiary rather than legal — an apportioning court needs clear and convincing proof of injury, which means aggregate withdrawal data of the kind utility reporting laws produce.",
+          "analogous_cases": [
+            "Mississippi-v-Tennessee-2021"
+          ]
+        },
+        {
+          "reading_id": "esa-proximate-cause-limit",
+          "reaches": false,
+          "how": "No listed species depends on Memphis Sand springflow, and even where one did, suing the permitting authority for downstream harm is foreclosed on these facts. The Endangered Species Act is a natural instinct for a depleted aquifer and is not the hook here.",
+          "analogous_cases": [
+            "Aransas-Project-v-Shaw-2014"
+          ]
+        },
+        {
+          "reading_id": "tribal-winters",
+          "reaches": false,
+          "how": "No federal reservation overlies or adjoins the Memphis Sand in this reach, so no senior reserved right competes for the water. Reserved rights are decisive in the arid Southwest and simply absent here.",
+          "analogous_cases": [
+            "Winters-v-United-States-1908"
+          ]
+        }
       ],
-      "related_case_ids": ["xAI-Colossus-Memphis-TN-2026"],
+      "related_case_ids": [
+        "xAI-Colossus-Memphis-TN-2026"
+      ],
       "sources": [
-        {"title": "Daily Memphian: Memphis xAI water recycling plant on confirmed indefinite pause", "url": "https://dailymemphian.com/section/metro/article/61680/xai-water-recycling-plant-in-question"},
-        {"title": "Action News 5: 'Alarming:' xAI is 'prioritizing other projects'", "url": "https://www.actionnews5.com/2026/04/09/xai-pauses-plans-build-water-recycling-plant-memphis/"}
-      ]
+        {
+          "title": "Daily Memphian: Memphis xAI water recycling plant on confirmed indefinite pause",
+          "url": "https://dailymemphian.com/section/metro/article/61680/xai-water-recycling-plant-in-question"
+        },
+        {
+          "title": "Action News 5: 'Alarming:' xAI is 'prioritizing other projects'",
+          "url": "https://www.actionnews5.com/2026/04/09/xai-pauses-plans-build-water-recycling-plant-memphis/"
+        }
+      ],
+      "issue_types": [
+        "aquifer-depletion",
+        "alt-source-adoption"
+      ],
+      "issue_types_rationale": "~3 MGD of cooling water from the Memphis Sand sole-source aquifer, with a greywater recycling plant as the mitigation."
     },
     {
       "site_id": "meta-newton-county-ga",
@@ -48,15 +134,63 @@
       "pushback_summary": "The July 2025 New York Times investigation made this the national reference case for data-center groundwater impacts; EPA has pledged investigation of the well complaints in adjoining Morgan County.",
       "status_2026": "Ongoing dispute; no formal enforcement yet.",
       "applicable_readings": [
-        {"reading_id": "sdwa-1431-emergency", "how": "If construction dewatering or site releases are shown to have contaminated or dried domestic wells, EPA's emergency powers reach it on a 'contributed to' standard without waiting for a permit violation.", "analogous_cases": ["Trinity-American-v-EPA-SDWA-1431-1998", "DuPont-WashingtonWorks-PFOA-2005-2009"]},
-        {"reading_id": "sdwa-source-water-protection", "how": "Wellhead-protection delineations around the affected domestic and municipal wells are the evidentiary frame for the county's zoning and permitting response.", "analogous_cases": ["Google-Berkeley-SC-Middendorf-aquifer-2019"]},
-        {"reading_id": "cwa-402-construction-stormwater", "how": "The reported sediment in neighbors' water during mass grading is the classic construction-general-permit fact pattern.", "analogous_cases": ["Google-Stillwater-OK-stormwater-2025", "Microsoft-Boydton-VA-2023"]}
+        {
+          "reading_id": "sdwa-1431-emergency",
+          "how": "If construction dewatering or site releases are shown to have contaminated or dried domestic wells, EPA's emergency powers reach it on a 'contributed to' standard without waiting for a permit violation.",
+          "analogous_cases": [
+            "Trinity-American-v-EPA-SDWA-1431-1998",
+            "DuPont-WashingtonWorks-PFOA-2005-2009"
+          ]
+        },
+        {
+          "reading_id": "sdwa-source-water-protection",
+          "how": "Wellhead-protection delineations around the affected domestic and municipal wells are the evidentiary frame for the county's zoning and permitting response.",
+          "analogous_cases": [
+            "Google-Berkeley-SC-Middendorf-aquifer-2019"
+          ]
+        },
+        {
+          "reading_id": "cwa-402-construction-stormwater",
+          "how": "The reported sediment in neighbors' water during mass grading is the classic construction-general-permit fact pattern.",
+          "analogous_cases": [
+            "Google-Stillwater-OK-stormwater-2025",
+            "Microsoft-Boydton-VA-2023"
+          ]
+        },
+        {
+          "reading_id": "cl-negligent-subsidence",
+          "how": "Georgia's reasonable-use approach to groundwater gives failed-well neighbours a direct common-law theory that a landowner in a strict rule-of-capture state would lack. The households nearest the campus are the strongest available plaintiffs precisely because their injury is concrete and individual.",
+          "analogous_cases": [
+            "Friendswood-v-Smith-Southwest-1978",
+            "MCWC-v-Nestle-Waters-2007"
+          ]
+        },
+        {
+          "reading_id": "ptd-groundwater-nexus",
+          "how": "Where campus drawdown measurably reduces flow in a connected navigable stream, the trust duty attaches to the well permit itself, and the duty sits with the permitting authority rather than the operator. Requires hydrologic evidence of the groundwater-to-surface connection.",
+          "analogous_cases": [
+            "ELF-v-SWRCB-2018"
+          ]
+        }
       ],
-      "related_case_ids": ["Meta-NewtonCountyGA-well-failures-2018-2025", "Meta-MorganCo-GA-investigation-2026"],
+      "related_case_ids": [
+        "Meta-NewtonCountyGA-well-failures-2018-2025",
+        "Meta-MorganCo-GA-investigation-2026"
+      ],
       "sources": [
-        {"title": "NYT (syndicated): Their Water Taps Ran Dry When Meta Built Next Door", "url": "https://www.sanjuandailystar.com/post/their-water-taps-ran-dry-when-meta-built-next-door"},
-        {"title": "Fortune: America's data centers are thirsty (GA/AZ water wars)", "url": "https://fortune.com/2026/05/13/data-center-georgia-arizona-water-wars/"}
-      ]
+        {
+          "title": "NYT (syndicated): Their Water Taps Ran Dry When Meta Built Next Door",
+          "url": "https://www.sanjuandailystar.com/post/their-water-taps-ran-dry-when-meta-built-next-door"
+        },
+        {
+          "title": "Fortune: America's data centers are thirsty (GA/AZ water wars)",
+          "url": "https://fortune.com/2026/05/13/data-center-georgia-arizona-water-wars/"
+        }
+      ],
+      "issue_types": [
+        "aquifer-depletion"
+      ],
+      "issue_types_rationale": "Well-dependent households nearest the campus lost water after construction — the clearest neighbour-well-failure fact pattern in the record."
     },
     {
       "site_id": "project-blue-tucson-az",
@@ -67,14 +201,62 @@
       "pushback_summary": "AWS pulled out in late 2025; Beale is proceeding on county land outside city limits with a redesigned air-cooled plan while Tucson cut off water service and sought payback — the clearest municipal-veto precedent over data-center water demand.",
       "status_2026": "City rejection stands; redesigned county-land project proceeding without city water.",
       "applicable_readings": [
-        {"reading_id": "sdwa-pws-compliance", "how": "The fight was over a public system's obligation to its existing users — the demand-concentration risk the SDWA regime polices.", "analogous_cases": ["US-v-Alisal-Water-Corp-2005", "Flint-MI-SDWA-1431-2016"]},
-        {"reading_id": "sdwa-1424e-sole-source-aquifer", "how": "Tucson sits over the EPA-designated Upper Santa Cruz / Avra Basin sole-source aquifer: any federally assisted piece of the project (loans, grants, federal infrastructure money) triggers EPA contamination review with funding-denial teeth.", "analogous_cases": ["Edwards-Aquifer-SoleSource-Designation-1975"]}
+        {
+          "reading_id": "sdwa-pws-compliance",
+          "how": "The fight was over a public system's obligation to its existing users — the demand-concentration risk the SDWA regime polices.",
+          "analogous_cases": [
+            "US-v-Alisal-Water-Corp-2005",
+            "Flint-MI-SDWA-1431-2016"
+          ]
+        },
+        {
+          "reading_id": "sdwa-1424e-sole-source-aquifer",
+          "how": "Tucson sits over the EPA-designated Upper Santa Cruz / Avra Basin sole-source aquifer: any federally assisted piece of the project (loans, grants, federal infrastructure money) triggers EPA contamination review with funding-denial teeth.",
+          "analogous_cases": [
+            "Edwards-Aquifer-SoleSource-Designation-1975"
+          ]
+        },
+        {
+          "reading_id": "gwmgmt-az-ama",
+          "how": "Inside an Active Management Area the assured-water-supply rules, not common-law pumping rights, are what the project answers to — which is why this was decided in a statutory supply process and local politics rather than in a nuisance suit.",
+          "analogous_cases": [
+            "ProjectBlue-Tucson-AMES-2026"
+          ]
+        },
+        {
+          "reading_id": "ptd-groundwater-nexus",
+          "reaches": false,
+          "how": "Arizona has never extended the public trust doctrine to groundwater. The trust argument that succeeded in California is not available here, and the statutory AMA regime is the whole of the constraint.",
+          "analogous_cases": [
+            "ELF-v-SWRCB-2018"
+          ]
+        },
+        {
+          "reading_id": "tribal-groundwater",
+          "how": "Reserved rights are live across this basin and extend to groundwater, so quantification would reduce what the state has to allocate. The exposure runs through the supply contract rather than through any conduct by the project.",
+          "analogous_cases": [
+            "Agua-Caliente-v-CVWD-2017"
+          ]
+        }
       ],
-      "related_case_ids": ["ProjectBlue-Tucson-AMES-2026"],
+      "related_case_ids": [
+        "ProjectBlue-Tucson-AMES-2026"
+      ],
       "sources": [
-        {"title": "AZ Luminaria: Tucson City Council rejects Project Blue amid intense community pressure", "url": "https://azluminaria.org/2025/08/06/tucson-city-council-rejects-project-blue-amid-intense-community-pressure/"},
-        {"title": "KJZZ: Rejected by Tucson and abandoned by Amazon, Project Blue moves forward", "url": "https://www.kjzz.org/the-show/2025-12-09/rejected-by-tucson-and-abandoned-by-amazon-project-blue-data-center-moves-forward"}
-      ]
+        {
+          "title": "AZ Luminaria: Tucson City Council rejects Project Blue amid intense community pressure",
+          "url": "https://azluminaria.org/2025/08/06/tucson-city-council-rejects-project-blue-amid-intense-community-pressure/"
+        },
+        {
+          "title": "KJZZ: Rejected by Tucson and abandoned by Amazon, Project Blue moves forward",
+          "url": "https://www.kjzz.org/the-show/2025-12-09/rejected-by-tucson-and-abandoned-by-amazon-project-blue-data-center-moves-forward"
+        }
+      ],
+      "issue_types": [
+        "siting-zoning-defeat",
+        "supply-strain"
+      ],
+      "issue_types_rationale": "~2,000 acre-feet/yr would have made it Tucson Water's largest customer; the project was rejected."
     },
     {
       "site_id": "meta-mesa-microsoft-goodyear-az",
@@ -85,14 +267,51 @@
       "pushback_summary": "Sustained criticism that the build-out continues through shortage; the operators' answer is mitigation — water-rights offsets, ~64.9M gal/yr of N-Drip restoration credits, and Microsoft's pledge of zero-water closed-loop designs for new Arizona builds.",
       "status_2026": "Both operating and expanding under negotiated water commitments.",
       "applicable_readings": [
-        {"reading_id": "sdwa-pws-compliance", "how": "Municipal systems absorbing multi-MGD contracts during a Colorado River shortage carry the compliance and capacity risk for all other users.", "analogous_cases": ["US-v-Alisal-Water-Corp-2005"]},
-        {"reading_id": "sdwa-source-water-protection", "how": "Groundwater-dependent Phoenix-metro supply makes recharge-area protection and assured-water-supply delineations the operative water-siting constraint.", "analogous_cases": ["CorpusChristi-SintonTX-EvangelineAquifer-wells-2026"]}
+        {
+          "reading_id": "sdwa-pws-compliance",
+          "how": "Municipal systems absorbing multi-MGD contracts during a Colorado River shortage carry the compliance and capacity risk for all other users.",
+          "analogous_cases": [
+            "US-v-Alisal-Water-Corp-2005"
+          ]
+        },
+        {
+          "reading_id": "sdwa-source-water-protection",
+          "how": "Groundwater-dependent Phoenix-metro supply makes recharge-area protection and assured-water-supply delineations the operative water-siting constraint.",
+          "analogous_cases": [
+            "CorpusChristi-SintonTX-EvangelineAquifer-wells-2026"
+          ]
+        },
+        {
+          "reading_id": "gwmgmt-az-ama",
+          "how": "Every campus in this metro sits inside an Active Management Area, so growth is gated by assured-water-supply designation rather than by discretionary permitting — the constraint is statutory and quantitative.",
+          "analogous_cases": [
+            "ProjectBlue-Tucson-AMES-2026"
+          ]
+        },
+        {
+          "reading_id": "tribal-winters",
+          "how": "With Colorado River allocations facing deep cuts, senior reserved rights across this basin outrank most state-law entitlements. A campus supplied under a junior right holds less than its face value in a shortage, which is a due-diligence question rather than a litigation risk.",
+          "analogous_cases": [
+            "Winters-v-United-States-1908"
+          ]
+        }
       ],
       "related_case_ids": [],
       "sources": [
-        {"title": "DCD: Huge data center moves forward in Mesa despite Arizona water concerns", "url": "https://www.datacenterdynamics.com/en/news/huge-data-center-moves-forward-in-mesa-despite-arizona-water-concerns/"},
-        {"title": "Grist: Arizona's water is drying up. That won't stop its data center rush.", "url": "https://grist.org/technology/arizona-water-data-centers-semiconducters/"}
-      ]
+        {
+          "title": "DCD: Huge data center moves forward in Mesa despite Arizona water concerns",
+          "url": "https://www.datacenterdynamics.com/en/news/huge-data-center-moves-forward-in-mesa-despite-arizona-water-concerns/"
+        },
+        {
+          "title": "Grist: Arizona's water is drying up. That won't stop its data center rush.",
+          "url": "https://grist.org/technology/arizona-water-data-centers-semiconducters/"
+        }
+      ],
+      "issue_types": [
+        "supply-strain",
+        "aquifer-depletion"
+      ],
+      "issue_types_rationale": "~91 metro Phoenix data centers against a potential 77% cut to Arizona's Colorado River allocation."
     },
     {
       "site_id": "pw-digital-gateway-va",
@@ -103,16 +322,67 @@
       "pushback_summary": "Residents and the American Battlefield Trust sued; on March 31, 2026 the Virginia Court of Appeals unanimously voided the rezonings, and the county — having spent $1.72M defending them — withdrew from further appeals. The largest data-center project yet stopped primarily on process, with drinking-water protection at the center of the record.",
       "status_2026": "Halted — rezonings voided; project dead absent a restart.",
       "applicable_readings": [
-        {"reading_id": "sdwa-source-water-protection", "how": "The Occoquan is a delineated source-water area for two utilities; the assessments and the reservoir's protective overlay were the government-authored backbone of the objections.", "analogous_cases": ["Google-Berkeley-SC-Middendorf-aquifer-2019"]},
-        {"reading_id": "cwa-402-construction-stormwater", "how": "Grading thousands of acres in a reservoir's headwaters is the largest construction-stormwater exposure in the record — sediment control under the CGP would have been the binding operational constraint.", "analogous_cases": ["Microsoft-Boydton-VA-2023", "Energix-VA-2024"]},
-        {"reading_id": "cwa-404-dredge-fill", "how": "Campus build-out across the corridor's headwater streams would require Corps §404 authorization with §401 state certification.", "analogous_cases": ["Google-ProjectRaspberry-VA-2026", "SDC-ATLA-DouglasCounty-GA-404-401-2025"]},
-        {"reading_id": "cwa-303-wqs", "how": "The Occoquan carries nutrient/sediment water-quality constraints; new loads in its watershed inherit those limits through any permit issued.", "analogous_cases": ["AWS-LakeAnnaVA-VPDES-cooling-discharge-2026"]}
+        {
+          "reading_id": "sdwa-source-water-protection",
+          "how": "The Occoquan is a delineated source-water area for two utilities; the assessments and the reservoir's protective overlay were the government-authored backbone of the objections.",
+          "analogous_cases": [
+            "Google-Berkeley-SC-Middendorf-aquifer-2019"
+          ]
+        },
+        {
+          "reading_id": "cwa-402-construction-stormwater",
+          "how": "Grading thousands of acres in a reservoir's headwaters is the largest construction-stormwater exposure in the record — sediment control under the CGP would have been the binding operational constraint.",
+          "analogous_cases": [
+            "Microsoft-Boydton-VA-2023",
+            "Energix-VA-2024"
+          ]
+        },
+        {
+          "reading_id": "cwa-404-dredge-fill",
+          "how": "Campus build-out across the corridor's headwater streams would require Corps §404 authorization with §401 state certification.",
+          "analogous_cases": [
+            "Google-ProjectRaspberry-VA-2026",
+            "SDC-ATLA-DouglasCounty-GA-404-401-2025"
+          ]
+        },
+        {
+          "reading_id": "cwa-303-wqs",
+          "how": "The Occoquan carries nutrient/sediment water-quality constraints; new loads in its watershed inherit those limits through any permit issued.",
+          "analogous_cases": [
+            "AWS-LakeAnnaVA-VPDES-cooling-discharge-2026"
+          ]
+        },
+        {
+          "reading_id": "sepa-supply-adequacy",
+          "how": "The rezoning was voided on process after the county declined to wait for a water-quality study — the same defect the supply-adequacy line addresses, reached through Virginia procedure rather than a state review statute. Where such a statute exists, an approval that analyses one phase and defers the rest is directly vulnerable.",
+          "analogous_cases": [
+            "Vineyard-v-Rancho-Cordova-2007"
+          ]
+        },
+        {
+          "reading_id": "ptd-reopener",
+          "how": "Supply here would arrive through existing utility entitlements rather than a new permit. Where a state recognises the trust reopener, those settled rights remain reviewable if the resulting draw harms a trust resource — which is what makes the Occoquan Reservoir's role the durable issue.",
+          "analogous_cases": [
+            "National-Audubon-v-Superior-Court-1983"
+          ]
+        }
       ],
       "related_case_ids": [],
       "sources": [
-        {"title": "PEC: Massive 'Digital Gateway' Data Center Project Has Been Halted", "url": "https://www.pecva.org/region/regional-state-national-region/prince-william/massive-digital-gateway-data-center-project-has-been-halted/"},
-        {"title": "InsideNoVa: Prince William County withdraws from Digital Gateway lawsuit", "url": "https://www.insidenova.com/news/prince_william/prince-william-county-withdraws-from-digital-gateway-lawsuit-reversing-course-from-2023/article_2aa0e791-1ac9-490e-8e30-a1c4880bce35.html"}
-      ]
+        {
+          "title": "PEC: Massive 'Digital Gateway' Data Center Project Has Been Halted",
+          "url": "https://www.pecva.org/region/regional-state-national-region/prince-william/massive-digital-gateway-data-center-project-has-been-halted/"
+        },
+        {
+          "title": "InsideNoVa: Prince William County withdraws from Digital Gateway lawsuit",
+          "url": "https://www.insidenova.com/news/prince_william/prince-william-county-withdraws-from-digital-gateway-lawsuit-reversing-course-from-2023/article_2aa0e791-1ac9-490e-8e30-a1c4880bce35.html"
+        }
+      ],
+      "issue_types": [
+        "siting-zoning-defeat",
+        "supply-strain"
+      ],
+      "issue_types_rationale": "Rezoning voided on appeal; the corridor drains to the Occoquan Reservoir supplying ~40% of Northern Virginia drinking water."
     },
     {
       "site_id": "aws-lake-anna-va",
@@ -123,17 +393,60 @@
       "pushback_summary": "100+ residents at hearings demanding additive disclosure, PFAS monitoring, and testing transparency before the lake's recreation and drinking-water uses absorb a new industrial outfall.",
       "status_2026": "DEQ finalizing its decision after the June hearing; permit not yet issued as of early July 2026.",
       "applicable_readings": [
-        {"reading_id": "cwa-402-npdes", "how": "This IS the NPDES reading in action — once issued, every exceedance of the permit's numeric limits is ECHO-visible and enforceable, including by citizen suit.", "analogous_cases": ["Smithfield-Pagan-River-1997", "Hanover-Foods-2025"]},
-        {"reading_id": "cwa-316-cooling", "how": "A cooling-water discharge to a recreation lake puts §316(a) thermal review squarely into the permit record.", "analogous_cases": ["Brayton-Point-Dominion-2003-2007", "Greenidge-SenecaLake-NY-2025"]},
-        {"reading_id": "cwa-303-wqs", "how": "Commenters invoked antidegradation — a new outfall to high-quality waters must survive an alternatives analysis (closed-loop or dry cooling).", "analogous_cases": []},
-        {"reading_id": "rha-10-structures", "how": "Any intake or outfall structure placed in navigable waters needs Corps §10 authorization on top of the VPDES permit.", "analogous_cases": ["US-v-Republic-Steel-RHA-1960"]},
-        {"reading_id": "tsca-8a7-pfas-reporting", "how": "The PFAS fight over the draft permit will eventually be armed by §8(a)(7) reporting data tracing fluorochemicals in cooling additives to their suppliers.", "analogous_cases": ["TSCA-PFAS-Reporting-Rule-2023", "Chemours-Washington-Works-PFAS-2023"]}
+        {
+          "reading_id": "cwa-402-npdes",
+          "how": "This IS the NPDES reading in action — once issued, every exceedance of the permit's numeric limits is ECHO-visible and enforceable, including by citizen suit.",
+          "analogous_cases": [
+            "Smithfield-Pagan-River-1997",
+            "Hanover-Foods-2025"
+          ]
+        },
+        {
+          "reading_id": "cwa-316-cooling",
+          "how": "A cooling-water discharge to a recreation lake puts §316(a) thermal review squarely into the permit record.",
+          "analogous_cases": [
+            "Brayton-Point-Dominion-2003-2007",
+            "Greenidge-SenecaLake-NY-2025"
+          ]
+        },
+        {
+          "reading_id": "cwa-303-wqs",
+          "how": "Commenters invoked antidegradation — a new outfall to high-quality waters must survive an alternatives analysis (closed-loop or dry cooling).",
+          "analogous_cases": []
+        },
+        {
+          "reading_id": "rha-10-structures",
+          "how": "Any intake or outfall structure placed in navigable waters needs Corps §10 authorization on top of the VPDES permit.",
+          "analogous_cases": [
+            "US-v-Republic-Steel-RHA-1960"
+          ]
+        },
+        {
+          "reading_id": "tsca-8a7-pfas-reporting",
+          "how": "The PFAS fight over the draft permit will eventually be armed by §8(a)(7) reporting data tracing fluorochemicals in cooling additives to their suppliers.",
+          "analogous_cases": [
+            "TSCA-PFAS-Reporting-Rule-2023",
+            "Chemours-Washington-Works-PFAS-2023"
+          ]
+        }
       ],
-      "related_case_ids": ["AWS-LakeAnnaVA-VPDES-cooling-discharge-2026"],
+      "related_case_ids": [
+        "AWS-LakeAnnaVA-VPDES-cooling-discharge-2026"
+      ],
       "sources": [
-        {"title": "12 On Your Side: DEQ meeting about data center discharge water into Lake Anna tributaries turns contentious", "url": "https://www.12onyourside.com/2026/06/10/deq-meeting-about-data-center-water-discharging-into-lake-anna-tributaries-turns-contentious/"},
-        {"title": "Virginia Mercury: What's in the water? Data center water discharge in Virginia", "url": "https://virginiamercury.com/2026/06/01/whats-in-the-water-what-we-know-and-dont-know-about-data-center-water-discharge-in-virginia/"}
-      ]
+        {
+          "title": "12 On Your Side: DEQ meeting about data center discharge water into Lake Anna tributaries turns contentious",
+          "url": "https://www.12onyourside.com/2026/06/10/deq-meeting-about-data-center-water-discharging-into-lake-anna-tributaries-turns-contentious/"
+        },
+        {
+          "title": "Virginia Mercury: What's in the water? Data center water discharge in Virginia",
+          "url": "https://virginiamercury.com/2026/06/01/whats-in-the-water-what-we-know-and-dont-know-about-data-center-water-discharge-in-virginia/"
+        }
+      ],
+      "issue_types": [
+        "discharge-quality"
+      ],
+      "issue_types_rationale": "A VPDES individual permit for cooling-water discharge to Sedges Creek — the direct-discharge fact pattern."
     },
     {
       "site_id": "amazon-boardman-umatilla-or",
@@ -144,16 +457,62 @@
       "pushback_summary": "Amazon agreed in March 2026 to pay $20.5M (no admission of liability) — the first eight-figure direct-hyperscaler water settlement. Advocates continue pressing Amazon to treat the wastewater and slow expansion.",
       "status_2026": "Settlement announced March 31, 2026; underlying reuse-and-land-application system still operating.",
       "applicable_readings": [
-        {"reading_id": "sdwa-1431-emergency", "how": "Contaminated domestic wells from industrial land application is the exact fact pattern on which EPA's §1431 order was upheld in Trinity American — the federal emergency hook remains available while the basin's wells stay unsafe.", "analogous_cases": ["Trinity-American-v-EPA-SDWA-1431-1998", "Flint-MI-SDWA-1431-2016"]},
-        {"reading_id": "rcra-7002-7003-endangerment", "how": "Nitrate-bearing process wastewater applied to land that endangers groundwater supports a RCRA imminent-endangerment citizen suit — no CWA jurisdictional water needed.", "analogous_cases": ["Interfaith-v-Honeywell-RCRA-2003-2005"]},
-        {"reading_id": "cwa-402-maui-groundwater", "how": "Where land-applied water migrates through groundwater to the Umatilla or Columbia, Maui's functional-equivalent test can require an NPDES permit for the application itself.", "analogous_cases": ["County-of-Maui-v-Hawaii-Wildlife-Fund-2020"]},
-        {"reading_id": "cwa-307-pretreatment", "how": "The cooling loop's loading on the Port of Morrow's permit is what drew the port its own $727K penalty — the receiving-plant exposure this tracker was built to watch.", "analogous_cases": ["PortOfMorrow-DEQ-OR-2024"]}
+        {
+          "reading_id": "sdwa-1431-emergency",
+          "how": "Contaminated domestic wells from industrial land application is the exact fact pattern on which EPA's §1431 order was upheld in Trinity American — the federal emergency hook remains available while the basin's wells stay unsafe.",
+          "analogous_cases": [
+            "Trinity-American-v-EPA-SDWA-1431-1998",
+            "Flint-MI-SDWA-1431-2016"
+          ]
+        },
+        {
+          "reading_id": "rcra-7002-7003-endangerment",
+          "how": "Nitrate-bearing process wastewater applied to land that endangers groundwater supports a RCRA imminent-endangerment citizen suit — no CWA jurisdictional water needed.",
+          "analogous_cases": [
+            "Interfaith-v-Honeywell-RCRA-2003-2005"
+          ]
+        },
+        {
+          "reading_id": "cwa-402-maui-groundwater",
+          "how": "Where land-applied water migrates through groundwater to the Umatilla or Columbia, Maui's functional-equivalent test can require an NPDES permit for the application itself.",
+          "analogous_cases": [
+            "County-of-Maui-v-Hawaii-Wildlife-Fund-2020"
+          ]
+        },
+        {
+          "reading_id": "cwa-307-pretreatment",
+          "how": "The cooling loop's loading on the Port of Morrow's permit is what drew the port its own $727K penalty — the receiving-plant exposure this tracker was built to watch.",
+          "analogous_cases": [
+            "PortOfMorrow-DEQ-OR-2024"
+          ]
+        },
+        {
+          "reading_id": "ptd-groundwater-nexus",
+          "how": "Nitrate concentration over a designated groundwater management area links the discharge to the aquifer, and where that aquifer feeds a navigable water the trust duty reaches the permitting decision as well as the discharge permit already in play.",
+          "analogous_cases": [
+            "ELF-v-SWRCB-2018"
+          ]
+        }
       ],
-      "related_case_ids": ["Amazon-Boardman-OR-nitrate-2026", "PortOfMorrow-DEQ-OR-2024"],
+      "related_case_ids": [
+        "Amazon-Boardman-OR-nitrate-2026",
+        "PortOfMorrow-DEQ-OR-2024"
+      ],
       "sources": [
-        {"title": "Oregon Capital Chronicle: Amazon to pay $20.5 million settlement over northeast Oregon nitrate pollution", "url": "https://oregoncapitalchronicle.com/2026/03/31/amazon-to-pay-20-5-million-settlement-over-northeast-oregon-nitrate-pollution/"},
-        {"title": "KGW: Amazon $20M Morrow County nitrate settlement", "url": "https://www.kgw.com/article/tech/science/environment/amazon-20m-morrow-county-nitrate-contaminated-water-crisis/283-84b156c8-4acf-4242-a682-ecab1b5dcd70"}
-      ]
+        {
+          "title": "Oregon Capital Chronicle: Amazon to pay $20.5 million settlement over northeast Oregon nitrate pollution",
+          "url": "https://oregoncapitalchronicle.com/2026/03/31/amazon-to-pay-20-5-million-settlement-over-northeast-oregon-nitrate-pollution/"
+        },
+        {
+          "title": "KGW: Amazon $20M Morrow County nitrate settlement",
+          "url": "https://www.kgw.com/article/tech/science/environment/amazon-20m-morrow-county-nitrate-contaminated-water-crisis/283-84b156c8-4acf-4242-a682-ecab1b5dcd70"
+        }
+      ],
+      "issue_types": [
+        "discharge-quality",
+        "aquifer-depletion"
+      ],
+      "issue_types_rationale": "Cooling evaporation concentrates nitrate in Port of Morrow wastewater over a designated groundwater management area."
     },
     {
       "site_id": "corpus-christi-sinton-tx",
@@ -164,14 +523,68 @@
       "pushback_summary": "A three-way municipal water war where data-center demand is the accelerant on both sides of a drought-stressed aquifer.",
       "status_2026": "In contested hearings; Corpus continues pipeline spending without drilling permits.",
       "applicable_readings": [
-        {"reading_id": "sdwa-source-water-protection", "how": "Competing municipal claims on one aquifer are fought on source-water delineations and groundwater-district science — the federal assessments frame who is endangering whose supply.", "analogous_cases": ["CorpusChristi-SintonTX-EvangelineAquifer-wells-2026"]},
-        {"reading_id": "sdwa-pws-compliance", "how": "Both cities' public systems carry SDWA obligations to existing users that a speculative data-center allocation would strain.", "analogous_cases": ["US-v-Alisal-Water-Corp-2005"]}
+        {
+          "reading_id": "sdwa-source-water-protection",
+          "how": "Competing municipal claims on one aquifer are fought on source-water delineations and groundwater-district science — the federal assessments frame who is endangering whose supply.",
+          "analogous_cases": [
+            "CorpusChristi-SintonTX-EvangelineAquifer-wells-2026"
+          ]
+        },
+        {
+          "reading_id": "sdwa-pws-compliance",
+          "how": "Both cities' public systems carry SDWA obligations to existing users that a speculative data-center allocation would strain.",
+          "analogous_cases": [
+            "US-v-Alisal-Water-Corp-2005"
+          ]
+        },
+        {
+          "reading_id": "gw-ownership-takings",
+          "how": "Ownership in place is why this fight runs through district permitting and emergency wellfield politics rather than a private suit to stop the pumping: a cap on withdrawal risks a compensation claim, so the state regulates by permit instead of prohibition.",
+          "analogous_cases": [
+            "Edwards-Aquifer-Authority-v-Day-2012"
+          ]
+        },
+        {
+          "reading_id": "cl-negligent-subsidence",
+          "how": "The sharper theory than the permit fight. Capture immunises taking the water but not the manner of taking it, so if Evangeline drawdown produces measurable Coastal Bend subsidence, negligent well spacing and pumping rates are actionable — and this is Gulf-coast hydrology, where drawdown and subsidence are known to travel together.",
+          "analogous_cases": [
+            "Friendswood-v-Smith-Southwest-1978"
+          ]
+        },
+        {
+          "reading_id": "esa-proximate-cause-limit",
+          "reaches": false,
+          "how": "This site sits in the Aransas/San Antonio Bay hydrology where the Fifth Circuit's proximate-cause holding is binding law. A claim that upstream withdrawal permits harm downstream listed species is the most likely federal theory to be reached for here, and the most likely to fail.",
+          "analogous_cases": [
+            "Aransas-Project-v-Shaw-2014"
+          ]
+        },
+        {
+          "reading_id": "xfer-area-of-origin",
+          "how": "Insofar as supply is moved between basins to serve this demand, the transferred right is junior to every right granted in the basin of origin before the transfer was filed — so it is cut first in exactly the drought conditions that produced the emergency wellfield.",
+          "analogous_cases": [
+            "Rowan-ProjectCinco-Medina-TX-2025"
+          ]
+        }
       ],
-      "related_case_ids": ["CorpusChristi-SintonTX-EvangelineAquifer-wells-2026"],
+      "related_case_ids": [
+        "CorpusChristi-SintonTX-EvangelineAquifer-wells-2026"
+      ],
       "sources": [
-        {"title": "Inside Climate News: Corpus Christi emergency water supply delays", "url": "https://insideclimatenews.org/news/19052026/corpus-christi-emergency-water-supply-delays/"},
-        {"title": "KIII-TV: South Texas water war heads to court", "url": "https://www.kiiitv.com/article/news/local/south-texas-groundwater-dispute-court-case/503-b81b0c7f-19a1-4657-9a1c-e4ab43e17805"}
-      ]
+        {
+          "title": "Inside Climate News: Corpus Christi emergency water supply delays",
+          "url": "https://insideclimatenews.org/news/19052026/corpus-christi-emergency-water-supply-delays/"
+        },
+        {
+          "title": "KIII-TV: South Texas water war heads to court",
+          "url": "https://www.kiiitv.com/article/news/local/south-texas-groundwater-dispute-court-case/503-b81b0c7f-19a1-4657-9a1c-e4ab43e17805"
+        }
+      ],
+      "issue_types": [
+        "aquifer-depletion",
+        "supply-strain"
+      ],
+      "issue_types_rationale": "A 22-well emergency Evangeline Aquifer field built with reservoirs below 10% full."
     },
     {
       "site_id": "hood-county-granbury-tx",
@@ -182,13 +595,46 @@
       "pushback_summary": "A residents' attempt to incorporate a town to gain regulatory authority failed 76-50 in November 2025, and county commissioners rejected a one-year AI/crypto moratorium 3-2 in February 2026 — the clearest example of communities having no local vehicle at all.",
       "status_2026": "No moratorium; nuisance litigation and expansion continue.",
       "applicable_readings": [
-        {"reading_id": "sdwa-source-water-protection", "how": "With no county zoning power, the delineated wellhead and source-water areas over the Paluxy are the only government-authored constraint residents can invoke against siting.", "analogous_cases": ["Sailfish-HoodCountyTX-ComancheCircle-aquifer-moratorium-2025-2026"]}
+        {
+          "reading_id": "sdwa-source-water-protection",
+          "how": "With no county zoning power, the delineated wellhead and source-water areas over the Paluxy are the only government-authored constraint residents can invoke against siting.",
+          "analogous_cases": [
+            "Sailfish-HoodCountyTX-ComancheCircle-aquifer-moratorium-2025-2026"
+          ]
+        },
+        {
+          "reading_id": "gw-ownership-takings",
+          "how": "Texas counties have no zoning power over unincorporated land and groundwater is owned in place, which together explain why residents were left with only district permitting: the tools that would work elsewhere either do not exist here or carry a compensation risk.",
+          "analogous_cases": [
+            "Edwards-Aquifer-Authority-v-Day-2012"
+          ]
+        },
+        {
+          "reading_id": "cl-negligent-subsidence",
+          "how": "The residual private theory once permitting is exhausted: not that the water was taken, but that the manner of taking it was negligent and caused measurable harm to neighbouring land.",
+          "analogous_cases": [
+            "Friendswood-v-Smith-Southwest-1978"
+          ]
+        }
       ],
-      "related_case_ids": ["Sailfish-HoodCountyTX-ComancheCircle-aquifer-moratorium-2025-2026"],
+      "related_case_ids": [
+        "Sailfish-HoodCountyTX-ComancheCircle-aquifer-moratorium-2025-2026"
+      ],
       "sources": [
-        {"title": "Texas Tribune: A Texas county rejects moratorium on data center development", "url": "https://www.texastribune.org/2026/02/10/texas-hood-county-rejects-data-center-development-pause-ai/"},
-        {"title": "Earthjustice: Granbury residents demand answers from MARA's bitcoin mine", "url": "https://earthjustice.org/press/2025/granbury-residents-demand-answers-from-maras-bitcoin-mine-as-lawsuit-over-noise-nuisance-continues"}
-      ]
+        {
+          "title": "Texas Tribune: A Texas county rejects moratorium on data center development",
+          "url": "https://www.texastribune.org/2026/02/10/texas-hood-county-rejects-data-center-development-pause-ai/"
+        },
+        {
+          "title": "Earthjustice: Granbury residents demand answers from MARA's bitcoin mine",
+          "url": "https://earthjustice.org/press/2025/granbury-residents-demand-answers-from-maras-bitcoin-mine-as-lawsuit-over-noise-nuisance-continues"
+        }
+      ],
+      "issue_types": [
+        "aquifer-depletion",
+        "moratorium-pause"
+      ],
+      "issue_types_rationale": "Aquifer concerns around proposed AI campuses drove a county moratorium (later rescinded)."
     },
     {
       "site_id": "charlotte-nc-moratorium",
@@ -199,13 +645,40 @@
       "pushback_summary": "City Council voted 11-0 on June 8, 2026 for a 150-day moratorium on new data centers (through November 5, 2026) while staff draft regulations; already-approved projects are exempt.",
       "status_2026": "Moratorium in force; regulations being drafted.",
       "applicable_readings": [
-        {"reading_id": "sdwa-pws-compliance", "how": "Drought-constrained municipal supply plus a single 1.2 MGD customer is the demand-concentration problem the SDWA public-system regime exists to keep from breaking everyone else's service.", "analogous_cases": ["Flint-MI-SDWA-1431-2016", "US-v-Alisal-Water-Corp-2005"]}
+        {
+          "reading_id": "sdwa-pws-compliance",
+          "how": "Drought-constrained municipal supply plus a single 1.2 MGD customer is the demand-concentration problem the SDWA public-system regime exists to keep from breaking everyone else's service.",
+          "analogous_cases": [
+            "Flint-MI-SDWA-1431-2016",
+            "US-v-Alisal-Water-Corp-2005"
+          ]
+        },
+        {
+          "reading_id": "util-shortage-moratorium",
+          "how": "A connection moratorium adopted during a genuine supply shortfall is the fact pattern courts have upheld, reviewable only for fraud, arbitrariness or caprice. The grandfathering of two projects already approved is the part most exposed to challenge, not the moratorium itself.",
+          "analogous_cases": [
+            "Swanson-v-Marin-MWD-1976"
+          ]
+        }
       ],
-      "related_case_ids": ["Charlotte-NC-drought-datacenter-moratorium-2026"],
+      "related_case_ids": [
+        "Charlotte-NC-drought-datacenter-moratorium-2026"
+      ],
       "sources": [
-        {"title": "WFAE: Charlotte City Council approves 150-day data center moratorium", "url": "https://www.wfae.org/politics/2026-06-08/charlotte-city-council-approves-150-day-data-center-moratorium"},
-        {"title": "WBTV: Council member calls for data center regulations amid ongoing drought", "url": "https://www.wbtv.com/2026/04/21/charlotte-city-council-member-calls-data-center-regulations-moratorium-amid-ongoing-drought/"}
-      ]
+        {
+          "title": "WFAE: Charlotte City Council approves 150-day data center moratorium",
+          "url": "https://www.wfae.org/politics/2026-06-08/charlotte-city-council-approves-150-day-data-center-moratorium"
+        },
+        {
+          "title": "WBTV: Council member calls for data center regulations amid ongoing drought",
+          "url": "https://www.wbtv.com/2026/04/21/charlotte-city-council-member-calls-data-center-regulations-moratorium-amid-ongoing-drought/"
+        }
+      ],
+      "issue_types": [
+        "moratorium-pause",
+        "supply-strain"
+      ],
+      "issue_types_rationale": "A citywide moratorium adopted during the worst drought since 2007, with a facility's peak draw as the trigger."
     },
     {
       "site_id": "microsoft-racine-county-wi",
@@ -216,15 +689,63 @@
       "pushback_summary": "Riverkeeper groups sued for the campus's water records (released 2025); the Caledonia defeat showed rezoning as the community veto, while the Compact diversion keeps regional scrutiny on every gallon.",
       "status_2026": "Caledonia dead; Mount Pleasant $4B+ expansion approved with minimal opposition.",
       "applicable_readings": [
-        {"reading_id": "cwa-404-dredge-fill", "how": "Campus build-out across the site's wetlands runs through individual wetland permitting — the state/federal §404-coordinated gate already exercised here.", "analogous_cases": ["Microsoft-MountPleasantWI-wetland-individual-permit-2024"]},
-        {"reading_id": "cwa-401-certification", "how": "State certification conditions ride on the wetland permits, giving Wisconsin DNR independent leverage over the expansion.", "analogous_cases": ["SierraClub-WVDEP-401-2023"]},
-        {"reading_id": "sdwa-pws-compliance", "how": "The Lake Michigan diversion is Compact-governed rather than SDWA-governed, but the receiving municipal system's obligations to existing users frame the records fights over how much the campus actually draws.", "analogous_cases": ["MilwaukeeRiverkeeper-RacineWI-water-records-suit-2025"]}
+        {
+          "reading_id": "cwa-404-dredge-fill",
+          "how": "Campus build-out across the site's wetlands runs through individual wetland permitting — the state/federal §404-coordinated gate already exercised here.",
+          "analogous_cases": [
+            "Microsoft-MountPleasantWI-wetland-individual-permit-2024"
+          ]
+        },
+        {
+          "reading_id": "cwa-401-certification",
+          "how": "State certification conditions ride on the wetland permits, giving Wisconsin DNR independent leverage over the expansion.",
+          "analogous_cases": [
+            "SierraClub-WVDEP-401-2023"
+          ]
+        },
+        {
+          "reading_id": "sdwa-pws-compliance",
+          "how": "The Lake Michigan diversion is Compact-governed rather than SDWA-governed, but the receiving municipal system's obligations to existing users frame the records fights over how much the campus actually draws.",
+          "analogous_cases": [
+            "MilwaukeeRiverkeeper-RacineWI-water-records-suit-2025"
+          ]
+        },
+        {
+          "reading_id": "well-cumulative-impact",
+          "how": "Any high-capacity well permit for the campus would be reviewed by the same state agency, in the same court system, that was held to owe an affirmative duty to consider a well's effect on waters of the state. Objectors would have to put concrete hydrologic evidence in front of the agency to trigger that duty — which is what the water-records litigation over this campus was ultimately about.",
+          "analogous_cases": [
+            "Lake-Beulah-v-DNR-2011"
+          ]
+        },
+        {
+          "reading_id": "cl-citizen-standing-limit",
+          "how": "The pattern here — a rezoning defeated by residents while the adjacent campus expanded through permitting — is what the standing rule predicts. A watershed coalition can be dismissed before the merits; the community veto that actually worked was a zoning vote, not a suit.",
+          "analogous_cases": [
+            "MCWC-v-Nestle-Waters-2007"
+          ]
+        }
       ],
-      "related_case_ids": ["Microsoft-CaledoniaWI-rezoning-withdrawal-2025", "Microsoft-MountPleasantWI-wetland-individual-permit-2024", "MilwaukeeRiverkeeper-RacineWI-water-records-suit-2025"],
+      "related_case_ids": [
+        "Microsoft-CaledoniaWI-rezoning-withdrawal-2025",
+        "Microsoft-MountPleasantWI-wetland-individual-permit-2024",
+        "MilwaukeeRiverkeeper-RacineWI-water-records-suit-2025"
+      ],
       "sources": [
-        {"title": "WPR: Microsoft scraps plans for Caledonia data center site", "url": "https://www.wpr.org/news/microsoft-caledonia-data-center-site-ozaukee-county"},
-        {"title": "CNBC: Microsoft's plans for 15 more data centers win approval at former Wisconsin Foxconn site", "url": "https://www.cnbc.com/2026/01/26/microsoft-wins-approval-for-15-data-centers-at-wisconsin-foxconn-site.html"}
-      ]
+        {
+          "title": "WPR: Microsoft scraps plans for Caledonia data center site",
+          "url": "https://www.wpr.org/news/microsoft-caledonia-data-center-site-ozaukee-county"
+        },
+        {
+          "title": "CNBC: Microsoft's plans for 15 more data centers win approval at former Wisconsin Foxconn site",
+          "url": "https://www.cnbc.com/2026/01/26/microsoft-wins-approval-for-15-data-centers-at-wisconsin-foxconn-site.html"
+        }
+      ],
+      "issue_types": [
+        "siting-zoning-defeat",
+        "supply-secrecy",
+        "supply-contract-dispute"
+      ],
+      "issue_types_rationale": "Caledonia rezoning withdrawn after opposition; Riverkeeper groups sued for water records; Mount Pleasant sits inside the contested Foxconn-era Great Lakes diversion."
     },
     {
       "site_id": "qts-fayette-county-ga",
@@ -235,15 +756,56 @@
       "pushback_summary": "Riverkeeper monitoring continues; the metering gap became the state's reference case for utilities losing track of hyperscale construction demand.",
       "status_2026": "Bill paid and metering fixed; construction-discharge scrutiny continues.",
       "applicable_readings": [
-        {"reading_id": "cwa-402-construction-stormwater", "how": "The documented sediment plumes below the site are the construction-general-permit fact pattern already enforced here by GA EPD.", "analogous_cases": ["QTS-Fayetteville-GA-2024", "Google-Stillwater-OK-stormwater-2025"]},
-        {"reading_id": "cwa-505-citizen-suit", "how": "Flint Riverkeeper's monitoring is the evidence base for a §505 notice if state enforcement stalls — the path the original QTS matter already took.", "analogous_cases": ["QTS-Fayetteville-GA-2024", "Atlanta-RMClayton-CRK-2024-2026"]},
-        {"reading_id": "sdwa-pws-compliance", "how": "Thirty million unmetered gallons during drought is a public-system accountability failure — the supply-side counterpart to the discharge story.", "analogous_cases": ["QTS-Fayette-GA-unbilled-water-2026"]}
+        {
+          "reading_id": "cwa-402-construction-stormwater",
+          "how": "The documented sediment plumes below the site are the construction-general-permit fact pattern already enforced here by GA EPD.",
+          "analogous_cases": [
+            "QTS-Fayetteville-GA-2024",
+            "Google-Stillwater-OK-stormwater-2025"
+          ]
+        },
+        {
+          "reading_id": "cwa-505-citizen-suit",
+          "how": "Flint Riverkeeper's monitoring is the evidence base for a §505 notice if state enforcement stalls — the path the original QTS matter already took.",
+          "analogous_cases": [
+            "QTS-Fayetteville-GA-2024",
+            "Atlanta-RMClayton-CRK-2024-2026"
+          ]
+        },
+        {
+          "reading_id": "sdwa-pws-compliance",
+          "how": "Thirty million unmetered gallons during drought is a public-system accountability failure — the supply-side counterpart to the discharge story.",
+          "analogous_cases": [
+            "QTS-Fayette-GA-unbilled-water-2026"
+          ]
+        },
+        {
+          "reading_id": "sl-greenwashing-udap",
+          "how": "Unmetered, unbilled connections are the evidentiary situation these claims turn on. Where consumption is not measured, published figures cannot be checked — and utility billing records are the exhibit a consumer-protection claim would rest on.",
+          "analogous_cases": [
+            "Wangusi-v-Amazon-Web-Services-VA-2026"
+          ]
+        }
       ],
-      "related_case_ids": ["QTS-Fayetteville-GA-2024", "QTS-Fayette-GA-unbilled-water-2026"],
+      "related_case_ids": [
+        "QTS-Fayetteville-GA-2024",
+        "QTS-Fayette-GA-unbilled-water-2026"
+      ],
       "sources": [
-        {"title": "The Citizen: Behind Fayette's QTS Water Controversy — A Missed Meter, 8,000 Workers, and a Massive Construction Project", "url": "https://thecitizen.com/2026/05/11/behind-fayettes-qts-water-controversy-a-missed-meter-8000-workers-and-a-massive-construction-project/"},
-        {"title": "Fortune: America's data centers are thirsty (GA/AZ water wars)", "url": "https://fortune.com/2026/05/13/data-center-georgia-arizona-water-wars/"}
-      ]
+        {
+          "title": "The Citizen: Behind Fayette's QTS Water Controversy — A Missed Meter, 8,000 Workers, and a Massive Construction Project",
+          "url": "https://thecitizen.com/2026/05/11/behind-fayettes-qts-water-controversy-a-missed-meter-8000-workers-and-a-massive-construction-project/"
+        },
+        {
+          "title": "Fortune: America's data centers are thirsty (GA/AZ water wars)",
+          "url": "https://fortune.com/2026/05/13/data-center-georgia-arizona-water-wars/"
+        }
+      ],
+      "issue_types": [
+        "rate-cost-shift",
+        "disclosure-gap"
+      ],
+      "issue_types_rationale": "Two high-capacity connections ran unmetered and unbilled — other ratepayers carried the cost of water nobody measured."
     },
     {
       "site_id": "meta-richland-parish-la",
@@ -254,15 +816,54 @@
       "pushback_summary": "Earthjustice and Sierra Club flag NDA-driven secrecy and rushed approvals; an Earthjustice utility-cost complaint went to the PSC in February 2026.",
       "status_2026": "Under construction, operational target 2028; transparency and cost fights ongoing.",
       "applicable_readings": [
-        {"reading_id": "sdwa-source-water-protection", "how": "An unmonitored 23 MGD authorization over the aquifer that supplies surrounding communities is precisely what source-water assessments exist to make visible and contestable.", "analogous_cases": ["Meta-RichlandParish-LA-WaterSupply-2025"]},
-        {"reading_id": "sdwa-pws-compliance", "how": "Small parish systems absorbing hyperscale demand inherit SDWA obligations they may lack capacity to meet — the Flint lesson at rural scale.", "analogous_cases": ["Flint-MI-SDWA-1431-2016", "Bessemer-AL-Hyperscale-WaterSupply-2025"]},
-        {"reading_id": "cwa-402-npdes", "how": "Once operating, the campus's cooling discharge — direct or via an on-site plant — becomes a permitted, DMR-reporting point source; the permit terms are where the 23 MGD question gets real numbers.", "analogous_cases": ["AWS-LakeAnnaVA-VPDES-cooling-discharge-2026"]}
+        {
+          "reading_id": "sdwa-source-water-protection",
+          "how": "An unmonitored 23 MGD authorization over the aquifer that supplies surrounding communities is precisely what source-water assessments exist to make visible and contestable.",
+          "analogous_cases": [
+            "Meta-RichlandParish-LA-WaterSupply-2025"
+          ]
+        },
+        {
+          "reading_id": "sdwa-pws-compliance",
+          "how": "Small parish systems absorbing hyperscale demand inherit SDWA obligations they may lack capacity to meet — the Flint lesson at rural scale.",
+          "analogous_cases": [
+            "Flint-MI-SDWA-1431-2016",
+            "Bessemer-AL-Hyperscale-WaterSupply-2025"
+          ]
+        },
+        {
+          "reading_id": "cwa-402-npdes",
+          "how": "Once operating, the campus's cooling discharge — direct or via an on-site plant — becomes a permitted, DMR-reporting point source; the permit terms are where the 23 MGD question gets real numbers.",
+          "analogous_cases": [
+            "AWS-LakeAnnaVA-VPDES-cooling-discharge-2026"
+          ]
+        },
+        {
+          "reading_id": "sepa-supply-adequacy",
+          "how": "A 23 MGD registration carrying no monitoring requirement is the documentary gap this line targets: the authorization assumes water without demonstrating it over the project's life.",
+          "analogous_cases": [
+            "Vineyard-v-Rancho-Cordova-2007"
+          ]
+        }
       ],
-      "related_case_ids": ["Meta-RichlandParish-LA-WaterSupply-2025"],
+      "related_case_ids": [
+        "Meta-RichlandParish-LA-WaterSupply-2025"
+      ],
       "sources": [
-        {"title": "NOLA.com: How much water will Meta's Louisiana data center use?", "url": "https://www.nola.com/news/environment/meta-louisiana-data-center-water-ai/article_d27dea17-d571-453c-b5a5-0deb571ea272.html"},
-        {"title": "Sierra Club: In Rural Louisiana, Meta's New Data Center Promises Growth — But at What Cost?", "url": "https://www.sierraclub.org/sierra/rural-louisiana-meta-s-new-data-center-promises-growth-what-cost"}
-      ]
+        {
+          "title": "NOLA.com: How much water will Meta's Louisiana data center use?",
+          "url": "https://www.nola.com/news/environment/meta-louisiana-data-center-water-ai/article_d27dea17-d571-453c-b5a5-0deb571ea272.html"
+        },
+        {
+          "title": "Sierra Club: In Rural Louisiana, Meta's New Data Center Promises Growth — But at What Cost?",
+          "url": "https://www.sierraclub.org/sierra/rural-louisiana-meta-s-new-data-center-promises-growth-what-cost"
+        }
+      ],
+      "issue_types": [
+        "supply-strain",
+        "disclosure-gap"
+      ],
+      "issue_types_rationale": "Registered for up to 23 MGD (8.4B gal/yr) with no monitoring requirement attached."
     },
     {
       "site_id": "quantum-loophole-frederick-md",
@@ -273,15 +874,52 @@
       "pushback_summary": "Riverkeeper and county scrutiny drove the escalation; Quantum Loophole itself exited the project in December 2024 with TPG taking control.",
       "status_2026": "AG enforcement track operative per latest reporting; campus development continuing under new ownership.",
       "applicable_readings": [
-        {"reading_id": "cwa-402-npdes", "how": "The frac-out releases were enforced as unpermitted discharges under Maryland's delegated §402 program — the operative instrument in the existing case entry.", "analogous_cases": ["QuantumLoophole-FrederickMD-boring-discharges-2022-2024"]},
-        {"reading_id": "cwa-404-dredge-fill", "how": "Conduit crossings of streams and wetlands require Corps authorization; inadvertent returns during drilling are the recurring §404 compliance risk of every multi-site fiber loop.", "analogous_cases": ["Amazon-NewCarlisle-IN-wetlands-2025"]},
-        {"reading_id": "rha-10-structures", "how": "Boring under the Potomac — a traditionally navigable water — sits under Corps §10 jurisdiction independent of the CWA, Sackett notwithstanding.", "analogous_cases": ["US-v-Republic-Steel-RHA-1960"]}
+        {
+          "reading_id": "cwa-402-npdes",
+          "how": "The frac-out releases were enforced as unpermitted discharges under Maryland's delegated §402 program — the operative instrument in the existing case entry.",
+          "analogous_cases": [
+            "QuantumLoophole-FrederickMD-boring-discharges-2022-2024"
+          ]
+        },
+        {
+          "reading_id": "cwa-404-dredge-fill",
+          "how": "Conduit crossings of streams and wetlands require Corps authorization; inadvertent returns during drilling are the recurring §404 compliance risk of every multi-site fiber loop.",
+          "analogous_cases": [
+            "Amazon-NewCarlisle-IN-wetlands-2025"
+          ]
+        },
+        {
+          "reading_id": "rha-10-structures",
+          "how": "Boring under the Potomac — a traditionally navigable water — sits under Corps §10 jurisdiction independent of the CWA, Sackett notwithstanding.",
+          "analogous_cases": [
+            "US-v-Republic-Steel-RHA-1960"
+          ]
+        },
+        {
+          "reading_id": "cl-negligent-subsidence",
+          "how": "Frac-outs during boring are harm from the manner of the work rather than from any authorized discharge, which is the register common-law negligence operates in — and the escalation to the state attorney general reflects that the permit framework alone did not resolve it.",
+          "analogous_cases": [
+            "Friendswood-v-Smith-Southwest-1978"
+          ]
+        }
       ],
-      "related_case_ids": ["QuantumLoophole-FrederickMD-boring-discharges-2022-2024"],
+      "related_case_ids": [
+        "QuantumLoophole-FrederickMD-boring-discharges-2022-2024"
+      ],
       "sources": [
-        {"title": "Bay Journal: Frustrations mount with developer of Maryland data center complex", "url": "https://www.bayjournal.com/news/energy/frustrations-mount-with-developer-of-maryland-data-center-complex/article_3af1522a-1d2b-11ef-bbbf-c727c4493083.html"},
-        {"title": "Frederick News-Post: Quantum Loophole continuing coverage", "url": "https://www.fredericknewspost.com/news/continuing_coverage/quantum_loophole/"}
-      ]
+        {
+          "title": "Bay Journal: Frustrations mount with developer of Maryland data center complex",
+          "url": "https://www.bayjournal.com/news/energy/frustrations-mount-with-developer-of-maryland-data-center-complex/article_3af1522a-1d2b-11ef-bbbf-c727c4493083.html"
+        },
+        {
+          "title": "Frederick News-Post: Quantum Loophole continuing coverage",
+          "url": "https://www.fredericknewspost.com/news/continuing_coverage/quantum_loophole/"
+        }
+      ],
+      "issue_types": [
+        "construction-impacts"
+      ],
+      "issue_types_rationale": "At least four frac-outs boring the Q-LOOP conduit under the Potomac and Monocacy — harm from building, not operating."
     },
     {
       "site_id": "microsoft-west-des-moines-ia",
@@ -292,14 +930,45 @@
       "pushback_summary": "The reporting drove national scrutiny of AI water intensity; Microsoft announced in January 2026 that its next West Des Moines buildings will use zero-water closed-loop cooling.",
       "status_2026": "Operating; zero-water designs pledged for new buildings.",
       "applicable_readings": [
-        {"reading_id": "cwa-307-pretreatment", "how": "Cooling blowdown to the West Des Moines sewer sits under the receiving plant's industrial-pretreatment authority — the operational exposure that scales with every training run.", "analogous_cases": ["Swift-Beef-Grand-Island-2011", "PortOfMorrow-DEQ-OR-2024"]},
-        {"reading_id": "sdwa-pws-compliance", "how": "Peak-month draws of 6% of district supply concentrate system risk in exactly the way the SDWA public-system regime polices.", "analogous_cases": ["US-v-Alisal-Water-Corp-2005"]}
+        {
+          "reading_id": "cwa-307-pretreatment",
+          "how": "Cooling blowdown to the West Des Moines sewer sits under the receiving plant's industrial-pretreatment authority — the operational exposure that scales with every training run.",
+          "analogous_cases": [
+            "Swift-Beef-Grand-Island-2011",
+            "PortOfMorrow-DEQ-OR-2024"
+          ]
+        },
+        {
+          "reading_id": "sdwa-pws-compliance",
+          "how": "Peak-month draws of 6% of district supply concentrate system risk in exactly the way the SDWA public-system regime polices.",
+          "analogous_cases": [
+            "US-v-Alisal-Water-Corp-2005"
+          ]
+        },
+        {
+          "reading_id": "sl-greenwashing-udap",
+          "how": "Consumption here became public through reporting rather than disclosure, and the gap between published efficiency statements and a single month at roughly 6% of district supply is the kind of discrepancy a consumer-protection theory is built on.",
+          "analogous_cases": [
+            "Wangusi-v-Amazon-Web-Services-VA-2026"
+          ]
+        }
       ],
       "related_case_ids": [],
       "sources": [
-        {"title": "Gizmodo/AP: Microsoft Is Using a Hell of a Lot of Water to Flood the World With AI", "url": "https://gizmodo.com/microsoft-water-usage-ai-iowa-data-center-1850826419"},
-        {"title": "Axios Des Moines: Microsoft's next data center buildings to use 'zero-water' technology", "url": "https://www.axios.com/local/des-moines/2026/01/16/microsoft-west-des-moines-data-center-water-zero"}
-      ]
+        {
+          "title": "Gizmodo/AP: Microsoft Is Using a Hell of a Lot of Water to Flood the World With AI",
+          "url": "https://gizmodo.com/microsoft-water-usage-ai-iowa-data-center-1850826419"
+        },
+        {
+          "title": "Axios Des Moines: Microsoft's next data center buildings to use 'zero-water' technology",
+          "url": "https://www.axios.com/local/des-moines/2026/01/16/microsoft-west-des-moines-data-center-water-zero"
+        }
+      ],
+      "issue_types": [
+        "supply-strain",
+        "disclosure-gap"
+      ],
+      "issue_types_rationale": "11.5M gallons in a single month, ~6% of the district's supply, surfaced only through reporting."
     },
     {
       "site_id": "bessemer-al-hyperscale",
@@ -310,15 +979,54 @@
       "pushback_summary": "NAACP and SELC opposed; residents packed hearings. The city council approved the 670-acre rezoning 5-2 in November 2025 anyway; hurdles remain, including Northern Beltline conflicts and endangered-species habitat.",
       "status_2026": "Rezoning approved; water-capacity question unresolved ahead of permitting.",
       "applicable_readings": [
-        {"reading_id": "sdwa-pws-compliance", "how": "A demand equal to a third of the water authority's capacity is a direct SDWA-regime capacity question for every existing customer of the system.", "analogous_cases": ["US-v-Alisal-Water-Corp-2005", "Flint-MI-SDWA-1431-2016"]},
-        {"reading_id": "cwa-303-wqs", "how": "New withdrawals and eventual discharges on the shared Mulberry Fork inherit the Black Warrior's water-quality constraints — the basin is the operative limit, not the campus fence line.", "analogous_cases": ["AWS-LakeAnnaVA-VPDES-cooling-discharge-2026"]},
-        {"reading_id": "cwa-404-dredge-fill", "how": "A 670-acre greenfield build-out in stream-crossed terrain will need Corps authorization for any wetland or stream fill during grading.", "analogous_cases": ["SDC-ATLA-DouglasCounty-GA-404-401-2025"]}
+        {
+          "reading_id": "sdwa-pws-compliance",
+          "how": "A demand equal to a third of the water authority's capacity is a direct SDWA-regime capacity question for every existing customer of the system.",
+          "analogous_cases": [
+            "US-v-Alisal-Water-Corp-2005",
+            "Flint-MI-SDWA-1431-2016"
+          ]
+        },
+        {
+          "reading_id": "cwa-303-wqs",
+          "how": "New withdrawals and eventual discharges on the shared Mulberry Fork inherit the Black Warrior's water-quality constraints — the basin is the operative limit, not the campus fence line.",
+          "analogous_cases": [
+            "AWS-LakeAnnaVA-VPDES-cooling-discharge-2026"
+          ]
+        },
+        {
+          "reading_id": "cwa-404-dredge-fill",
+          "how": "A 670-acre greenfield build-out in stream-crossed terrain will need Corps authorization for any wetland or stream fill during grading.",
+          "analogous_cases": [
+            "SDC-ATLA-DouglasCounty-GA-404-401-2025"
+          ]
+        },
+        {
+          "reading_id": "util-shortage-moratorium",
+          "how": "Swanson read in reverse. The authority's own statement that it cannot serve 2 MGD without significant upgrades is the rational basis a refusal would rest on, and a prospective customer has no right to service — so the doctrine runs for the utility saying no, not for the developer demanding yes.",
+          "analogous_cases": [
+            "Swanson-v-Marin-MWD-1976"
+          ]
+        }
       ],
-      "related_case_ids": ["Bessemer-AL-Hyperscale-WaterSupply-2025"],
+      "related_case_ids": [
+        "Bessemer-AL-Hyperscale-WaterSupply-2025"
+      ],
       "sources": [
-        {"title": "Inside Climate News: Water Utility Says It Can't Meet Demand for Alabama Data Center Without 'Significant Upgrades'", "url": "https://insideclimatenews.org/news/12072025/bessemer-alabama-water-utility-data-center-upgrades/"},
-        {"title": "Alabama Reflector: How could a proposed hyperscale data center affect Bessemer?", "url": "https://alabamareflector.com/2025/07/27/how-could-a-proposed-hyperscale-data-center-affect-bessemer/"}
-      ]
+        {
+          "title": "Inside Climate News: Water Utility Says It Can't Meet Demand for Alabama Data Center Without 'Significant Upgrades'",
+          "url": "https://insideclimatenews.org/news/12072025/bessemer-alabama-water-utility-data-center-upgrades/"
+        },
+        {
+          "title": "Alabama Reflector: How could a proposed hyperscale data center affect Bessemer?",
+          "url": "https://alabamareflector.com/2025/07/27/how-could-a-proposed-hyperscale-data-center-affect-bessemer/"
+        }
+      ],
+      "issue_types": [
+        "supply-strain",
+        "rate-cost-shift"
+      ],
+      "issue_types_rationale": "A 2 MGD request against a third of the authority's capacity, with the utility conceding it could not serve without significant upgrades."
     },
     {
       "site_id": "missouri-peculiar-stcharles",
@@ -329,12 +1037,80 @@
       "pushback_summary": "With the legislature passing no data-center regulation in 2026, Missouri's fights are being decided city by city — moratoriums, rejections, and council turnover.",
       "status_2026": "Peculiar project dead; St. Charles moratorium era continuing with no state framework.",
       "applicable_readings": [
-        {"reading_id": "sdwa-pws-compliance", "how": "Small municipal systems are the regulatory pressure point when the state provides no siting framework — their SDWA obligations to existing users are the concrete stake behind the rate and supply objections.", "analogous_cases": ["Flint-MI-SDWA-1431-2016"]}
+        {
+          "reading_id": "sdwa-pws-compliance",
+          "how": "Small municipal systems are the regulatory pressure point when the state provides no siting framework — their SDWA obligations to existing users are the concrete stake behind the rate and supply objections.",
+          "analogous_cases": [
+            "Flint-MI-SDWA-1431-2016"
+          ]
+        },
+        {
+          "reading_id": "util-shortage-moratorium",
+          "how": "With no state framework, these fights are decided municipally — and a municipal moratorium grounded in a real supply-and-demand imbalance is defensible, whereas one that reads as a no-growth policy is the vulnerable case.",
+          "analogous_cases": [
+            "Swanson-v-Marin-MWD-1976"
+          ]
+        }
       ],
       "related_case_ids": [],
       "sources": [
-        {"title": "Missouri Independent: 'They're already here' — Regulating data centers stalls in Missouri", "url": "https://missouriindependent.com/2026/06/05/theyre-already-here-regulating-data-centers-stalls-in-missouri/"},
-        {"title": "KCUR: Missouri elections show data centers are expensive, unpopular", "url": "https://www.kcur.org/politics-elections-and-government/2026-04-22/missouri-elections-data-centers-expensive-unpopular-independence"}
+        {
+          "title": "Missouri Independent: 'They're already here' — Regulating data centers stalls in Missouri",
+          "url": "https://missouriindependent.com/2026/06/05/theyre-already-here-regulating-data-centers-stalls-in-missouri/"
+        },
+        {
+          "title": "KCUR: Missouri elections show data centers are expensive, unpopular",
+          "url": "https://www.kcur.org/politics-elections-and-government/2026-04-22/missouri-elections-data-centers-expensive-unpopular-independence"
+        }
+      ],
+      "issue_types": [
+        "siting-zoning-defeat",
+        "rate-cost-shift",
+        "moratorium-pause"
+      ],
+      "issue_types_rationale": "A project defeated on water-rate grounds, then one of the first US municipal data-center moratoriums driven partly by water supply."
+    },
+    {
+      "site_id": "meta-cheyenne-wy",
+      "site": "Meta — Cheyenne, WY",
+      "location": "Cheyenne, Laramie County, Wyoming",
+      "operator": "Meta (campus built by Goat Systems LLC)",
+      "issue_summary": "Commissioning discharges from Meta's 715,000 sq ft campus introduced the rare metal-resistant bacterium Cupriavidus gilardii into Cheyenne's reclaimed-water system in February 2026, interfering with two reclamation plants and affecting 801,475 gallons of wastewater. The city's utility board classified it as significant noncompliance with federal pretreatment regulations.",
+      "pushback_summary": "BOPU suspended the reclaimed-water irrigation program, permanently terminated the discharge privileges, and adopted a standing policy refusing wastewater from data centers using closed-loop cooling and fill-and-flush systems — a categorical restriction on an entire cooling practice rather than a penalty against one project. Follow-up testing found the bacterium cleared and the reuse system is operating again under continued sampling.",
+      "status_2026": "Discharge privileges terminated; reuse system restored under new policy",
+      "issue_types": [
+        "pretreatment-potw",
+        "discharge-quality"
+      ],
+      "issue_types_rationale": "Contamination introduced into a municipal reclaimed-water system by a commissioning discharge, resolved through the utility's pretreatment authority rather than any data-center permit.",
+      "applicable_readings": [
+        {
+          "reading_id": "cwa-307-pretreatment",
+          "how": "The operative authority was the receiving utility's federally delegated pretreatment program, not any permit held by the data center — the utility could bar the discharge outright without an enforcement action against the operator.",
+          "analogous_cases": [
+            "Meta-Cheyenne-WY-reclaimed-contamination-2026"
+          ]
+        },
+        {
+          "reading_id": "util-shortage-moratorium",
+          "how": "The utility's categorical refusal to accept wastewater from closed-loop and fill-and-flush data-center systems is the service-law counterpart to the pretreatment finding: a utility may decline to serve, and a prospective discharger has no entitlement to be taken.",
+          "analogous_cases": [
+            "Swanson-v-Marin-MWD-1976"
+          ]
+        }
+      ],
+      "related_case_ids": [
+        "Meta-Cheyenne-WY-reclaimed-contamination-2026"
+      ],
+      "sources": [
+        {
+          "title": "Cheyenne BOPU traces rare bacteria discharge to Meta data center contractor",
+          "url": "https://www.wyomingnews.com/news/local_news/cheyenne-bopu-traces-rare-bacteria-discharge-to-meta-data-center-contractor/article_1c538467-06ec-427d-9a6f-33797cd3c6ce.html"
+        },
+        {
+          "title": "Cheyenne BOPU releases wastewater contamination timeline; over 800K gallons affected",
+          "url": "https://capcity.news/community/city/2026/07/20/cheyenne-bopu-releases-wastewater-contamination-timeline-over-800k-gallons-affected/"
+        }
       ]
     }
   ]

@@ -78,7 +78,11 @@ class TestStaticBuild:
         cases = dashboard.load_cwa_investigations().get("cases", [])
         readings = dashboard.load_water_authorities().get("readings", [])
         sites = dashboard.load_dc_water_conflicts().get("sites", [])
-        assert html.count('class="bill-card"') == (
+        # Boundary-aware: conflict cards carry `class="bill-card dc-site"` so
+        # the filter JS can select them, so an exact-attribute match drops all
+        # 18 — but a bare prefix match also catches .bill-card-head and
+        # friends. Require the class name to end at a quote or a space.
+        assert len(re.findall(r'class="bill-card[" ]', html)) == (
             len(bills) + len(cases) + len(readings) + len(sites)
         )
         assert html.count('class="claim-card"') == len(claims)
@@ -94,10 +98,12 @@ class TestStaticBuild:
         # The prioritized-theories panel is present on the CWA tab...
         assert "Prioritized CWA-application theories" in html
         assert 'class="theory-table"' in html
-        # ...with every theory row (12 + 1 header) reaching the page...
+        # ...with every theory row from BOTH tables reaching the page. The
+        # doctrine table is a sibling, not a replacement: the CWA panel became
+        # a minority view once the registry grew past five federal statutes.
         assert html.count('class="theory-rank"') == len(
             dashboard.CWA_APPLICATION_THEORIES
-        )
+        ) + len(dashboard.DOCTRINE_APPLICATION_THEORIES)
         # ...the novel Maui theory and the §505 lead row both surface.
         assert "functional equivalent" in html
         assert "receiving POTW" in html
@@ -113,7 +119,11 @@ class TestStaticBuild:
         assert html.count('class="cwa-case"') == len(historical)
         readings = dashboard.load_water_authorities().get("readings", [])
         sites = dashboard.load_dc_water_conflicts().get("sites", [])
-        assert html.count('class="bill-card"') == (
+        # Boundary-aware: conflict cards carry `class="bill-card dc-site"` so
+        # the filter JS can select them, so an exact-attribute match drops all
+        # 18 — but a bare prefix match also catches .bill-card-head and
+        # friends. Require the class name to end at a quote or a space.
+        assert len(re.findall(r'class="bill-card[" ]', html)) == (
             len(bills) + len(cases) + len(readings) + len(sites)
         )
 
@@ -253,3 +263,123 @@ class TestWriteOutput:
         assert out.exists()
         assert out.stat().st_size > 200_000
         assert (tmp_path / "llms.txt").exists()
+
+
+class TestConflictIssueFilter:
+    """Part 4's issue-type filter — the thing that makes the A1 taxonomy usable
+    rather than merely visible."""
+
+    def test_filter_controls_and_hooks_present(self):
+        html = _html()
+        sites = dashboard.load_dc_water_conflicts().get("sites", [])
+        used = {t for s in sites for t in s["issue_types"]}
+        # One checkbox per issue type actually in use, plus the count line and
+        # the handler that drives them.
+        assert len(re.findall(r'class="dc-issue"', html)) == len(used)
+        assert 'id="conflict-count"' in html
+        assert "applyIssueFilter" in html
+
+    def test_every_site_is_reachable_through_some_filter(self):
+        """A site whose tags are all absent from the control row can never be
+        shown once the user touches the filter."""
+        html = _html()
+        offered = set(re.findall(r'class="dc-issue" value="([^"]+)"', html))
+        for site in dashboard.load_dc_water_conflicts().get("sites", []):
+            assert set(site["issue_types"]) & offered, site["site_id"]
+
+
+class TestInstrumentFilter:
+    """Spec B1's filter — makes the instrument_type data usable, not just visible."""
+
+    def test_controls_and_hooks_present(self):
+        html = _html()
+        bills = dashboard.load_legislation().get("bills", [])
+        used = {b.get("instrument_type", "bill") for b in bills}
+        assert len(re.findall(r'class="leg-instrument"', html)) == len(used)
+        # Every card carries the attribute the filter reads.
+        assert len(re.findall(r"data-instrument=", html)) == len(bills)
+
+    def test_every_instrument_type_in_use_is_offered(self):
+        html = _html()
+        offered = set(re.findall(r'class="leg-instrument" value="([^"]+)"', html))
+        for bill in dashboard.load_legislation().get("bills", []):
+            assert bill.get("instrument_type", "bill") in offered, bill["bill_id"]
+
+    def test_count_line_says_instruments_not_bills(self):
+        """15 of 67 entries are not bills; the old copy contradicted the data
+        model B1 introduced."""
+        html = _html()
+        assert "' instruments'" in html or " instruments'" in html
+
+
+class TestIssuesAndClaimsTab:
+    """Spec A3 — one surface for 'what is the problem, and what do they say?'"""
+
+    def test_tab_exists_with_both_halves(self):
+        html = _html()
+        assert 'data-tab="issues"' in html
+        assert 'id="panel-issues"' in html
+        panel = html[html.index('id="panel-issues"'):html.index('id="panel-news"')]
+        sites = dashboard.load_dc_water_conflicts().get("sites", [])
+        claims = dashboard.load_company_water_claims().get("claims", [])
+        assert panel.count("dc-site") == len(sites)
+        assert panel.count('class="claim-card"') == len(claims)
+
+    def test_old_homes_no_longer_carry_the_moved_content(self):
+        """A half-completed move leaves the content in two places, which is
+        worse than either home alone."""
+        html = _html()
+        leg = html[html.index('id="panel-legislation"'):html.index('id="panel-cwa"')]
+        cwa = html[html.index('id="panel-cwa"'):html.index('id="panel-issues"')]
+        assert 'class="claim-card"' not in leg
+        assert "dc-site" not in cwa
+        assert "cwa-p4" not in html
+
+    def test_says_vs_does_join_renders(self):
+        """The product's sharpest feature: an operator's own pledge shown on
+        the card describing what its campus is accused of."""
+        html = _html()
+        assert html.count('class="says-vs-does"') >= 8
+        newton = html[html.index('id="site-meta-newton-county-ga"'):]
+        newton = newton[: newton.index("</details>")]
+        assert "says-vs-does" in newton
+        assert "restoring more water than we consume" in newton
+
+    def test_issue_summary_strip_present(self):
+        html = _html()
+        assert 'class="issue-summary"' in html
+        assert "kinds of water problem" in html
+
+
+class TestNoDanglingAnchors:
+    """Closes a whole class of bug in one assertion.
+
+    refdata.integrity proves a cross-reference id resolves *in the registry*;
+    it never proves the generated page contains the anchor. A shipped
+    `href="#solution-wue-reporting"` pointed at nothing, because the registry
+    advertised `solution-*` anchors that no builder emitted — and the JS
+    handler bails before preventDefault, so the click did nothing at all.
+    """
+
+    def test_every_internal_href_has_a_matching_id(self):
+        html = _html()
+        ids = set(re.findall(r'\bid="([^"]+)"', html))
+        hrefs = {
+            h for h in re.findall(r'href="#([^"]+)"', html) if h and h != "top"
+        }
+        dangling = sorted(hrefs - ids)
+        assert not dangling, f"hrefs pointing at no element: {dangling}"
+
+    def test_registry_anchor_kinds_are_all_emitted(self):
+        """Every record kind the registry can hand out an anchor for must
+        actually appear as an id on the page."""
+        from refdata.registry import build_registry
+
+        html = _html()
+        ids = set(re.findall(r'\bid="([^"]+)"', html))
+        by_kind: dict[str, list] = {}
+        for ref in build_registry().values():
+            by_kind.setdefault(ref.kind, []).append(ref.anchor)
+        for kind, anchors in by_kind.items():
+            present = sum(1 for a in anchors if a in ids)
+            assert present, f"no {kind} anchor reaches the page (of {len(anchors)})"

@@ -272,6 +272,69 @@ the ~3-4× waste patterns. Score each run on:
 
 ### Agent-use evaluation log
 
+**2026-07-27 — one code-reviewer agent over a 12k-line PR. Verdict: justified,
+and the cheapest defect-per-token of any agent run logged here.**
+
+- *Agent — review the Python diff of PR #20:* 170k subagent tokens, 48 tool
+  uses, ~8 min. Returned **8 defects, every one reproduced with an executable
+  repro rather than inferred from reading** — including a critical API-key leak
+  and a quadratic-regex stall it measured at three input sizes. ~21k tokens per
+  verified defect. All 8 were real; zero false positives.
+- **Why it beat doing it inline:** I had just written the code, and the two
+  worst findings were bugs my own tests actively masked (a corrupt-queue test
+  asserting the wrong half; an excerpt test whose 20-char fixture made the
+  broken and correct implementations indistinguishable). Self-review re-reads
+  the same assumptions. The agent ran the code instead.
+- **Scoping that made it cheap:** the prompt excluded JSON data and generated
+  `pages/*.html`, named the specific hazards to look for (streamlit purity,
+  cache invalidation, ReDoS, secret-in-URL, escaping under `unsafe_allow_html`),
+  and demanded `file:line` + a fix. Reviewing the full 12k-line diff
+  undifferentiated would have cost far more and surfaced style noise.
+
+**Free external review is complementary, not redundant — run both.** Codex
+reviewed the same PR across two rounds: 5 findings, **3 overlapping my agent's
+and 2 unique**, including the session's worst bug (LegiScan `getBill` takes a
+numeric id, so with no response-status validation the watch hashed an error
+payload into a *stable* fingerprint and could never have fired). The agent
+missed it; Codex missed the key leak. Different blind spots, and Codex costs
+nothing — **always `@codex review` before merging, and re-request after
+pushing fixes.**
+
+**Where reviewers concentrate is itself a signal.** 15 defects across three
+rounds: **11 in `scrapers/monitors/`**, the only genuinely new subsystem, and
+~0 in the much larger data-and-refactor surface. When a subsystem's
+characteristic failure is one where broken and working look identical from
+outside, most of its tests should exist to tell those two states apart.
+
+**No research agents this session** (implementation, not discovery) —
+consistent with the 2026-07-25 finding: delegate discovery, confirm inline.
+Direct WebSearch verified ~20 URLs and caught 3 errors the plan carried.
+
+**2026-07-25 — plan implementation (P0–P4 partial). Zero agents spawned;
+verification done with ~10 direct WebSearch calls. Verdict: correct call for
+this shape of work — log it as the counter-example to reflexive delegation.**
+
+- The task was *implementing* an already-researched plan, not discovering
+  facts. The research agents had run in the planning session (~447k tokens);
+  re-delegating verification would have paid that cost twice for claims the
+  plan already stated.
+- What still needed checking was narrow and enumerable: a source URL per new
+  record. Direct WebSearch, ~2 per response, produced **three material
+  corrections** the plan had wrong — the Michigan standing case (2007 Supreme
+  Court, not the 2005 Court of Appeals decision that was *reversed*), the
+  Swanson holding (no "duty to augment supply"), and a stale CA AB 93 veto
+  date. An agent would have found the same things at several times the cost
+  and returned prose I'd have had to re-read.
+- **Lesson:** delegate *discovery* (open-ended, unknown answer set); do
+  *confirmation* inline (bounded, one lookup per known item). The tell is
+  whether you can enumerate the questions before you start.
+- **Infrastructure finding worth keeping:** Justia 403s all automated
+  requests and CourtListener returns blank to WebFetch, so legal-citation
+  URLs cannot be verified by fetching — and cannot be pattern-guessed either,
+  since a wrong guess is indistinguishable from a blocked valid one. Search
+  results are the only reliable channel. Any future case-law batch should
+  budget ~1 search per 1–2 cases and hold back anything unsourced.
+
 **2026-07-02 — two parallel background research agents (water-authorities
 expansion). Verdict: both justified; keep this pattern.**
 
@@ -354,6 +417,60 @@ so future sessions prefer seeding when a candidate list already exists.**
   the existing category/date boundaries up front (as done here) but consider
   narrowing scope further (e.g. one agent per statute, not per broad topic) to
   cut the search-then-reject overhead that drove the 7-8x token gap.
+
+**2026-07-25 — three parallel background research agents feeding the
+issues/policy/precedent implementation plan (`docs/plan-2026-07-25-issues-policy-precedent.md`).
+Verdict: all three justified; hybrid seed+sweep lands mid-band on cost, and
+the correction yield is what paid for it.**
+
+- *Agent A — issues/claims (seeded verify + 3-week news sweep):* 181.1k
+  subagent tokens, 50 tool uses, ~8.5 min. All 7 seeds verified with 4
+  substantive refinements (AWS suit is a *whistleblower* state
+  consumer-protection action; Google silently dropped the "120%" figure its
+  tracked claim still quotes; Microsoft's "90%" is two-decade fleet WUE, not
+  new-facility marketing; heatwave/UT-Austin seeds predate the window). New:
+  Meta Cheyenne WY pretreatment-SNC contamination, WVWA/Google Botetourt
+  real contract numbers (2 MGD / 8 MGD ceiling vs the rejected 11 MGD),
+  Brookhaven/Missoula/Albany/Spokane moratoria, xAI greywater restart, and a
+  14-value issue-type taxonomy. Flagged 4 unverifiable specifics instead of
+  asserting them (docket no., Snopes verdict, Meta 6B-gal figure).
+- *Agent B — legislation/EO/policy (seeded verify + docket triage):* 128.6k
+  tokens, 45 tool uses, ~7.6 min. Mapped the entire untracked federal
+  executive layer (EO 14318 anatomy — §404-only, *no NPDES directive*,
+  correcting the seed; NWP-39 chain; first FAST-41 data center QTS Richmond)
+  and produced 5 status changes on tracked entries (NY EO 62 *instead of*
+  signing/vetoing the bill; AWS Lake Anna permit final at 0.28 MGD; VA HB 496
+  regs with concrete dates; WV HB 4832 dead with protections stripped on
+  floor votes; MI 5-bill package). Killed 3 false seeds outright, including
+  "Ohio enacted water provisions beyond the pledge" (energy-only) — which
+  descoped Spec B2 before it was built wrong.
+- *Agent C — precedent doctrines (seeded legal verification):* 137.8k tokens,
+  42 tool uses, ~9.2 min. 20/20 anchor cases verified with 2 caption
+  corrections (Sierra Club v. *Lujan*, not Babbitt, for the 1993 Edwards
+  springflow order; Racine/Foxconn ALJ posture), 1 candidate family
+  *affirmatively excluded* as non-additive (state antidegradation), 1 gap
+  honestly flagged rather than filled (no litigated MI WWAT case), and 4 new
+  families proposed that reshaped the design (SGMA/AZ-GMA → `GWMGMT`,
+  area-of-origin + forfeiture → `XFER`). Also produced the site-by-site
+  innovative-application mappings (Mount Pleasant double exposure, Sinton
+  triple, Bessemer "Swanson in reverse", Imperial tribal-seniority angle) and
+  *negative* mappings (ESA ∅ Memphis) that became a product feature.
+- *Efficiency:* ~447.5k combined tokens for ~45 verified, plan-ready units
+  (items, status changes, anchor cases, taxonomy) ≈ **~10k/unit** — between
+  the 4.6k pure-seeded benchmark (2026-07-02) and the 35.5k open-discovery
+  regime (2026-07-06), exactly where a hybrid seed+bounded-sweep design
+  should land. The 3-week date window on sweeps is what kept discovery from
+  drifting into the 35k regime.
+- *Necessity:* yes — the deliverable was a plan whose specs would have baked
+  in ~8 material errors without verification (wrong case caption, wrong EO
+  scope, a "pending" bill that was actually superseded by an EO, an
+  energy-only docket layer). Main-context inline equivalent was 50+
+  serialized fetches with no parallelism; plan-writing proceeded while
+  agents ran.
+- *Improvement for next time:* asking agents to state "maps to <dataset> /
+  does NOT fit current schema" turned research output directly into design
+  input (the AWS suit's state-law theory forced the `SL` authority family) —
+  keep that clause in every research-agent prompt for this repo.
 
 ---
 

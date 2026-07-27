@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-07-05",
+  "last_updated": "2026-07-27",
   "note": "State + federal data center water/energy legislation, plus selected regulatory actions and major local zoning decisions. Verified entries had their status confirmed against a primary source (state legislature page, Congress.gov / GovInfo, official sponsor press release) on the listed last_verified date; unverified entries should be re-checked before being relied upon. July 5, 2026 addition: FL SB 484 — enacted (signed May 7, 2026, effective July 1, 2026), ratepayer cost-allocation protections, a 100,000 gal/day reclaimed-water cooling requirement, and preserved local zoning authority; resolves the 'Florida hyperscale data-center regulatory framework' backlog candidate with a confirmed bill number. June 27, 2026 additions: IA HF 2690 (water + energy reporting and a separate data-center electric tariff; introduced) and CT SB 245 (would have repealed Connecticut's data-center tax incentives and added clean-energy/sustainability conditions; failed — died on the Senate calendar). Each bill is enriched with recent_news (up to 3 dated items with source URLs), public_sentiment (a paragraph naming supporters/opponents), general_principles (tagged policy concepts), and a procedural timeline. These fields are best-effort as of last_updated and should be re-verified before being cited. Scope expanded 2026-05-28 to include regulatory rulemakings (OH EPA OHD000001) and major local ordinances (Loudoun ZOAM) that function as de facto data-center policy.",
   "bills": [
     {
@@ -81,7 +81,8 @@
           "milestone": "Signed into law",
           "detail": "Gov. Spanberger signed both transparency bills (approximate date — within the April action window)."
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "MN HF 16",
@@ -163,22 +164,23 @@
           "milestone": "Effective date",
           "detail": "Most provisions took effect day after enactment."
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "CA AB 93",
       "jurisdiction": "California",
       "level": "state",
       "title": "Data center water-use disclosure",
-      "sponsor": "",
-      "summary": "Would have required annual water-use disclosure by data centers.",
+      "sponsor": "Assemblymember Diane Papan (D–San Mateo)",
+      "summary": "Would have required data centers to disclose projected water use to their water supplier at business-license application and certify actual annual water use at license renewal.",
       "scope": [
         "water"
       ],
       "status": "failed",
-      "status_detail": "Vetoed by Gov. Newsom, Oct 2024.",
-      "source_url": "",
-      "last_verified": "2026-05-25",
+      "status_detail": "Vetoed by Gov. Newsom on 2025-10-11, who cited an incomplete understanding of the impact on businesses and consumers. Would have required data centers to report expected water use to their supplier before applying for a business license, certify that disclosure at application, and certify actual annual use at renewal. (Corrected 2026-07-25: the record previously dated the veto to October 2024.)",
+      "source_url": "https://calmatters.digitaldemocracy.org/bills/ca_202520260ab93",
+      "last_verified": "2026-07-25",
       "verified": true,
       "confidence": "high",
       "recent_news": [
@@ -239,7 +241,8 @@
           "milestone": "Vetoed",
           "detail": "Gov. Gavin Newsom vetoed the bill, ending its progress."
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "GA SB 421",
@@ -312,7 +315,8 @@
           "milestone": "Died sine die",
           "detail": "Session adjourned shortly after midnight April 3 with bill never receiving a hearing or vote."
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "OH SB 378",
@@ -379,7 +383,8 @@
           "milestone": "Referred to committee",
           "detail": "Senate Public Utilities Committee."
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "OH HB 784",
@@ -446,7 +451,8 @@
           "milestone": "Referred to committee",
           "detail": "Awaiting House committee action."
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "SC H 4583",
@@ -527,7 +533,8 @@
           "milestone": "Co-sponsor added",
           "detail": "Rep. Atkinson; total co-sponsors now eight."
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "CA AB 1577",
@@ -621,7 +628,8 @@
           "milestone": "Amended; second reading",
           "detail": "Floor vote pending on Assembly 3rd Reading File."
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "IA HF 2447",
@@ -698,7 +706,8 @@
           "milestone": "Successor HF 2690 fails second funnel",
           "detail": "Effectively kills the package for the 91st General Assembly."
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "MI SB 762",
@@ -766,7 +775,8 @@
           "milestone": "House Oversight hears related data center testimony",
           "detail": "Indirect momentum; SB 762 itself remained in Senate committee."
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "KS SB 400",
@@ -826,7 +836,8 @@
           "milestone": "Died in committee",
           "detail": "No floor action; bill page confirms the measure failed to advance past committee."
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "US HR 6984",
@@ -899,7 +910,8 @@
           "milestone": "Cosponsors added",
           "detail": "Grew to ~5 Democratic cosponsors (Houlahan, Carson, Craig) through spring 2026; no markup scheduled."
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "US HR 5332",
@@ -976,7 +988,8 @@
           "milestone": "Senate subcommittee hearing",
           "detail": "Senate Energy and Natural Resources subcommittee held a related hearing on companion bill."
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "US S. 4213",
@@ -990,9 +1003,9 @@
         "energy"
       ],
       "status": "introduced",
-      "status_detail": "Introduced March 25, 2026 and referred to committee. Confirmed as S. 4213 in the 119th Congress; do not confuse with S. 4214 (AI Data Center Moratorium Act, introduced the same day).",
+      "status_detail": "Introduced March 25, 2026 and referred to committee. Confirmed as S. 4213 in the 119th Congress; do not confuse with S. 4214 (AI Data Center Moratorium Act, introduced the same day). (Merged 2026-07-27: the dataset separately carried this same act as a 'number TBD' stub from the press release; the duplicate was folded in here.)",
       "source_url": "https://www.congress.gov/bill/119th-congress/senate-bill/4213",
-      "last_verified": "2026-06-22",
+      "last_verified": "2026-07-27",
       "verified": true,
       "confidence": "high",
       "recent_news": [
@@ -1016,6 +1029,13 @@
           "source": "Office of Sen. Dick Durbin",
           "url": "https://www.durbin.senate.gov/newsroom/press-releases/as-utility-costs-rise-durbin-introduces-new-legislation-to-bring-transparency-to-energy-and-water-consumption-by-data-centers",
           "takeaway": "Original release: 5-year pre-construction projections, state-level reporting, EPA/DOE/USDA aggregated regional reports, and per-day fines for noncompliance."
+        },
+        {
+          "date": "2026-03-25",
+          "title": "As utility bills rise, Durbin presses data centers on water and energy use",
+          "source": "Office of Sen. Dick Durbin",
+          "url": "https://www.durbin.senate.gov/newsroom/press-releases/as-utility-costs-rise-durbin-introduces-new-legislation-to-bring-transparency-to-energy-and-water-consumption-by-data-centers",
+          "takeaway": "The sponsor's announcement of the bill, carried over from a duplicate record entered before the S. number was confirmed."
         }
       ],
       "public_sentiment": "Coverage aligns the bill with positions taken by Sierra Club Illinois, the Illinois Clean Jobs Coalition, and environmental advocates pushing parallel state-level transparency (Illinois POWER Act). The Data Center Coalition has opposed similar prescriptive transparency provisions in state legislation. Unlike the initial framing, S. 4213 drew bipartisan cosponsors, with reporting naming Sens. Josh Hawley (R-MO), Elizabeth Warren (D-MA), Richard Blumenthal (D-CT), Chris Van Hollen (D-MD), and Tom Cotton (R-AR).",
@@ -1043,7 +1063,13 @@
           "milestone": "Introduced",
           "detail": "Sen. Dick Durbin (D-IL) introduced S. 4213; referred to committee."
         }
-      ]
+      ],
+      "instrument_type": "bill",
+      "monitor": {
+        "kind": "legiscan",
+        "key": "US SB4213",
+        "note": "Federal transparency bill — watch for committee action or floor movement. NB: the LegiScan bill-number string is not verified against the live API (no key available here). If it is wrong the watch fails LOUDLY on the first keyed run — getSearch matches the bill number exactly — rather than silently never firing."
+      }
     },
     {
       "bill_id": "TX SB 6",
@@ -1109,7 +1135,8 @@
           "date": "2025-12-31",
           "milestone": "Applies to all new large loads connecting after this date"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "OR HB 3546",
@@ -1175,7 +1202,8 @@
           "date": "2026-03-01",
           "milestone": "PGE implementation rules adopted by OPUC (approximate; Q1 2026)"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "NJ S3379",
@@ -1238,7 +1266,8 @@
           "date": "2026-05-27",
           "milestone": "Governor calls for stronger construction limits"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "NY S6394 / A9086",
@@ -1305,7 +1334,8 @@
           "date": "2026-01-08",
           "milestone": "Carried over to 2026 session"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "NY S9144 / A10141",
@@ -1364,7 +1394,8 @@
           "date": "2026-05-10",
           "milestone": "500-business coalition endorsement"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "IL SB 4016 / HB 5513",
@@ -1431,7 +1462,8 @@
           "date": "2026-04-15",
           "milestone": "Committee hearing with Alliance for the Great Lakes testimony"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "PA HB 2246",
@@ -1493,7 +1525,8 @@
           "date": "2026-05-24",
           "milestone": "Stalled by Senate Republican leadership"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "PA HB 2150",
@@ -1541,7 +1574,8 @@
           "date": "2026-05-19",
           "milestone": "Passed PA House"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "NC HB 1063",
@@ -1600,7 +1634,8 @@
           "date": "2026-05-21",
           "milestone": "Referred to Energy and Public Utilities Committee"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "AL SB 270",
@@ -1662,7 +1697,8 @@
           "date": "2026-04-10",
           "milestone": "House committee approval"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "OH HB 706",
@@ -1713,7 +1749,8 @@
           "date": "2026-02-25",
           "milestone": "HB 706 introduced"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "US S. 4214",
@@ -1772,7 +1809,8 @@
           "date": "2026-03-25",
           "milestone": "Referred to Senate Commerce Committee"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "US S. 3682",
@@ -1830,7 +1868,8 @@
           "date": "2026-01-15",
           "milestone": "Referred to Senate Energy & Natural Resources Committee"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "US HR 7066",
@@ -1877,7 +1916,8 @@
           "date": "2026-02-12",
           "milestone": "Introduced by Reps. Levin and Castor"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "US HR 8488",
@@ -1933,7 +1973,8 @@
           "date": "2026-05-15",
           "milestone": "Referred to House Energy and Commerce Committee"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "OH EPA OHD000001 (draft general permit)",
@@ -1999,7 +2040,13 @@
           "date": "2026-09-01",
           "milestone": "Final permit decision expected (approximate; Q3 2026)"
         }
-      ]
+      ],
+      "instrument_type": "agency-rule",
+      "monitor": {
+        "kind": "url-watch",
+        "key": "https://ohioepa.commentinput.com/?id=csDN8pRrg",
+        "note": "Ohio EPA's public-comment portal for the draft permit — the page that changes when the comment period closes or the permit is finalized. (The agency's own permits index 404s; found by the first live sweep.)"
+      }
     },
     {
       "bill_id": "Loudoun County ZOAM 2025",
@@ -2070,7 +2117,8 @@
           "date": "2026-12-31",
           "milestone": "Phase 2 full Board action expected"
         }
-      ]
+      ],
+      "instrument_type": "local-ordinance"
     },
     {
       "bill_id": "ID H 895",
@@ -2130,7 +2178,8 @@
           "milestone": "Signed by Governor",
           "detail": "Session Law Chapter 291, effective July 1, 2026"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "SD SB 135",
@@ -2202,7 +2251,8 @@
           "milestone": "Signed into law",
           "detail": "Signed by Gov. Larry Rhoden."
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "UT HB 76",
@@ -2267,7 +2317,8 @@
           "milestone": "Signed into law",
           "detail": "Signed by Gov. Spencer Cox among 87 bills."
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "WV HB 4983",
@@ -2345,7 +2396,8 @@
           "milestone": "Approved by Governor",
           "detail": "Approved by Gov. Patrick Morrisey."
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "MD HB 270 / SB 116",
@@ -2415,7 +2467,8 @@
           "date": "2026-09-01",
           "milestone": "Report due"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "WA HB 2515",
@@ -2483,7 +2536,8 @@
           "milestone": "Died at cutoff",
           "detail": "Failed to advance before the 2026 session deadline."
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "IN SB 79",
@@ -2544,7 +2598,8 @@
           "milestone": "Died in committee",
           "detail": "Never granted a hearing in the Senate Utilities Committee before session end."
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "NY S10642 / A11560",
@@ -2558,9 +2613,9 @@
         "energy"
       ],
       "status": "introduced",
-      "status_detail": "Passed Senate 43-17 on June 4, 2026 and Assembly (via substituted A11560) as session closed June 5; awaiting Gov. Hochul's signature as of June 10, 2026 — would be the first statewide data center moratorium in the nation. Verified on nysenate.gov. Late-session successor to the three-year moratorium concept in S9144/A10141 (tracked separately).",
+      "status_detail": "Passed both chambers June 2026 — the first statewide data-center moratorium bill to clear a legislature. Gov. Hochul neither signed nor vetoed it; on 2026-07-14 she superseded it with Executive Order 62, which imposes a one-year DEC permit moratorium at a 50 MW threshold rather than the bill's 20 MW. Track NY EO 62 for the operative instrument; an eventual veto of this bill is the expected outcome.",
       "source_url": "https://www.nysenate.gov/legislation/bills/2025/S10642",
-      "last_verified": "2026-06-10",
+      "last_verified": "2026-07-25",
       "verified": true,
       "confidence": "high",
       "recent_news": [
@@ -2616,7 +2671,13 @@
           "date": "2026-06-10",
           "milestone": "Awaiting governor's action"
         }
-      ]
+      ],
+      "instrument_type": "bill",
+      "monitor": {
+        "kind": "legiscan",
+        "key": "NY S10642",
+        "note": "Never signed or vetoed — superseded by EO 62. Watch for an eventual veto. NB: the LegiScan bill-number string is not verified against the live API (no key available here). If it is wrong the watch fails LOUDLY on the first keyed run — getSearch matches the bill number exactly — rather than silently never firing."
+      }
     },
     {
       "bill_id": "UT EO 2026-03",
@@ -2661,7 +2722,8 @@
           "milestone": "Signed and effective",
           "detail": "Gov. Spencer Cox signed EO 2026-03, effective immediately"
         }
-      ]
+      ],
+      "instrument_type": "executive-order"
     },
     {
       "bill_id": "CA AB 2619",
@@ -2713,7 +2775,8 @@
           "date": "2026-06-24",
           "milestone": "Advancing in Assembly/Senate committees"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "CA SB 887",
@@ -2765,7 +2828,8 @@
           "date": "2026-06-22",
           "milestone": "Assembly Natural Resources Committee hearing"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "IL SB 3830 (POWER Act)",
@@ -2818,7 +2882,8 @@
           "milestone": "Pritzker pauses new Data Center Investment Program incentive agreements",
           "detail": "Executive action in response to POWER Act failure"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "MI SB 1018-1020",
@@ -2867,7 +2932,8 @@
           "milestone": "Bipartisan Capitol event renews push for moratorium",
           "detail": "No hearing scheduled; Senate leadership prefers targeted regulation"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "SC HB 4583",
@@ -2910,7 +2976,8 @@
           "date": "2026-05-01",
           "milestone": "SC General Assembly adjourned; bill carried over to 2027"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "VA SB 417",
@@ -2974,67 +3041,8 @@
           "date": "2027-01-13",
           "milestone": "Expected reconsideration when legislature reconvenes in 2027"
         }
-      ]
-    },
-    {
-      "bill_id": "US S. — Data Center Water and Energy Transparency Act (Durbin; number TBD)",
-      "jurisdiction": "Federal (US)",
-      "level": "federal",
-      "title": "Data Center Water and Energy Transparency Act",
-      "sponsor": "Sen. Dick Durbin (D-IL)",
-      "summary": "Would require data-center operators to report actual energy and water consumption (plus five-year pre-construction estimates) to their states; states would aggregate/anonymize data for EPA, DOE, and USDA, who would issue joint regional reports and could fine non-compliance.",
-      "scope": [
-        "water",
-        "energy"
       ],
-      "status": "introduced",
-      "status_detail": "Introduced ~2026-03-25 per Senator's press release. Canonical S. bill number not confirmed against Congress.gov; do not confuse with S. 4214 (AI Data Center Moratorium Act, introduced the same day).",
-      "source_url": "https://www.durbin.senate.gov/newsroom/press-releases/as-utility-costs-rise-durbin-introduces-new-legislation-to-bring-transparency-to-energy-and-water-consumption-by-data-centers",
-      "last_verified": "2026-05-25",
-      "verified": false,
-      "confidence": "low",
-      "recent_news": [
-        {
-          "date": "2026-03-26",
-          "title": "Data center boom raises water, power questions",
-          "source": "Western Water",
-          "url": "https://www.western-water.com/2026/03/26/data-center-boom-raises-water-power-questions/",
-          "takeaway": "Day-after coverage notes the bill responds to ~4,000 active and ~3,000 planned U.S. data centers and a 100-MW facility's water use roughly equaling 2,600 households."
-        },
-        {
-          "date": "2026-03-25",
-          "title": "As Utility Costs Rise, Durbin Introduces New Legislation To Bring Transparency To Energy & Water Consumption By Data Centers",
-          "source": "Office of Sen. Dick Durbin",
-          "url": "https://www.durbin.senate.gov/newsroom/press-releases/as-utility-costs-rise-durbin-introduces-new-legislation-to-bring-transparency-to-energy-and-water-consumption-by-data-centers",
-          "takeaway": "Original release: 5-year pre-construction projections, state-level reporting, EPA/DOE/USDA aggregated regional reports, and per-day fines for noncompliance."
-        }
-      ],
-      "public_sentiment": "Coverage is thin and no formal endorsements have been published in available reporting. The bill aligns with positions taken by Sierra Club Illinois, the Illinois Clean Jobs Coalition, and environmental advocates pushing parallel state-level transparency (Illinois POWER Act). No direct Data Center Coalition or NetChoice response to this specific federal bill has surfaced, though DCC has opposed similar prescriptive transparency provisions in Illinois state legislation. Durbin introduced it solo with no Senate cosponsors at launch.",
-      "general_principles": [
-        {
-          "tag": "Transparency",
-          "note": "Mandates actual + 5-year projected energy and water consumption disclosure for new and existing facilities."
-        },
-        {
-          "tag": "Preemptive review",
-          "note": "Requires pre-construction estimates so local governments can evaluate before approving facilities."
-        },
-        {
-          "tag": "Federal coordination",
-          "note": "States aggregate and anonymize data for EPA, DOE, and USDA joint regional reports."
-        },
-        {
-          "tag": "Cost allocation",
-          "note": "Frames disclosure as a response to data center demand driving up consumer utility costs."
-        }
-      ],
-      "timeline": [
-        {
-          "date": "2026-03-25",
-          "milestone": "Introduced",
-          "detail": "Sen. Dick Durbin (D-IL) introduced solo; Senate bill number not yet confirmed in public Congress.gov listings as of late May 2026."
-        }
-      ]
+      "instrument_type": "bill"
     },
     {
       "bill_id": "CO SB26-102",
@@ -3101,7 +3109,8 @@
           "date": "2026-05-11",
           "milestone": "Postponed indefinitely 9-0 at sponsor's request"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "WI AB 840 / SB 843",
@@ -3169,7 +3178,8 @@
           "milestone": "Died at end of 2025-26 session without Senate passage",
           "detail": "Date approximate — re-verify adjournment disposition"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "ME LD 307",
@@ -3236,7 +3246,8 @@
           "date": "2026-04-29",
           "milestone": "Veto sustained in House"
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "Denver CB 26-0431",
@@ -3304,7 +3315,8 @@
           "milestone": "Scheduled expiration",
           "detail": "Council may extend or shorten"
         }
-      ]
+      ],
+      "instrument_type": "local-ordinance"
     },
     {
       "bill_id": "IA HF 2690",
@@ -3360,7 +3372,8 @@
           "milestone": "Introduced",
           "detail": "Committee bill introduced by the House Committee on Commerce during the 2026 session."
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "CT SB 245",
@@ -3421,7 +3434,8 @@
           "milestone": "Died on the calendar",
           "detail": "2026 General Assembly adjourned sine die without a Senate floor vote on SB 245."
         }
-      ]
+      ],
+      "instrument_type": "bill"
     },
     {
       "bill_id": "FL SB 484",
@@ -3487,7 +3501,712 @@
           "milestone": "Effective date",
           "detail": "Ratepayer, reclaimed-water, and permitting provisions take effect."
         }
-      ]
+      ],
+      "instrument_type": "bill"
+    },
+    {
+      "bill_id": "US EO 14318",
+      "instrument_type": "executive-order",
+      "jurisdiction": "United States",
+      "level": "federal",
+      "title": "Accelerating Federal Permitting of Data Center Infrastructure",
+      "sponsor": "President Trump (Executive Order 14318, 90 FR 142)",
+      "summary": "Directs the Army Corps to identify or develop a data-center-specific nationwide permit under CWA §404 and Rivers and Harbors Act §10, establishes NEPA categorical exclusions for data-center infrastructure, provides for programmatic ESA §7 consultation covering multi-year construction windows, and expands FAST-41 coverage to qualifying data centers. Sets the >100 MW 'Data Center Project' and $500M / national-security 'Qualifying Project' thresholds the implementing actions key off.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Signed 2025-07-23; in force and substantially implemented — the Army Corps' 2026 reissuance of Nationwide Permit 39 expressly enumerating data centers is the §404 directive carried out. NB: the order reaches §404 dredge-and-fill and RHA §10 only; it contains no NPDES (§402) directive, so operational discharge permitting is untouched by it.",
+      "source_url": "https://www.whitehouse.gov/presidential-actions/2025/07/accelerating-federal-permitting-of-data-center-infrastructure/",
+      "last_verified": "2026-07-25",
+      "verified": true,
+      "confidence": "high",
+      "related_case_ids": [
+        "USACE-NWP39-DataCenters-2026"
+      ],
+      "implements": [
+        "US AI Action Plan 2025"
+      ],
+      "general_principles": [
+        {
+          "tag": "Permitting acceleration",
+          "note": "The defining federal instrument on the deregulatory side: it directs agencies to find faster §404/§10 pathways for data centers rather than to condition them."
+        },
+        {
+          "tag": "Federal coordination",
+          "note": "Centralizes data-center permitting through FAST-41 and programmatic consultations instead of project-by-project review."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2025-07-23",
+          "milestone": "Signed",
+          "detail": "Issued alongside America's AI Action Plan; published at 90 FR 142"
+        },
+        {
+          "date": "2026-04-02",
+          "milestone": "First FAST-41 data center",
+          "detail": "QTS Richmond Technology Park DC5 becomes the first data center covered"
+        }
+      ],
+      "recent_news": [
+        {
+          "date": "2025-07-23",
+          "title": "Accelerating Federal Permitting of Data Center Infrastructure",
+          "source": "The White House",
+          "url": "https://www.whitehouse.gov/presidential-actions/2025/07/accelerating-federal-permitting-of-data-center-infrastructure/",
+          "takeaway": "Directs the Army Corps to apply or develop a data-center nationwide permit under CWA §404 and RHA §10."
+        },
+        {
+          "date": "2025-07-28",
+          "title": "White House Aims To Accelerate Environmental Permitting For Data Centers",
+          "source": "Allen Matkins",
+          "url": "https://www.allenmatkins.com/real-ideas/white-house-aims-to-accelerate-environmental-permitting-for-data-centers.html",
+          "takeaway": "Practitioner read of the order's scope: NEPA categorical exclusions, §404/§10 nationwide permit, FAST-41 expansion."
+        }
+      ],
+      "public_sentiment": "Sharply split. Industry and permitting-reform advocates treat it as removing a genuine bottleneck; water and conservation groups read the §404 nationwide-permit route as replacing individual wetland review with a checkbox precisely as data-center footprints grow."
+    },
+    {
+      "bill_id": "US AI Action Plan 2025",
+      "instrument_type": "executive-order",
+      "jurisdiction": "United States",
+      "level": "federal",
+      "title": "Winning the Race: America's AI Action Plan",
+      "sponsor": "White House Office of Science and Technology Policy",
+      "summary": "The policy blueprint EO 14318 implements. Calls for a data-center-tailored Clean Water Act §404 nationwide permit, new NEPA categorical exclusions, FAST-41 expansion, and streamlining or reduction of Clean Air Act, Clean Water Act and CERCLA requirements for AI infrastructure.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Released 2025-07-23, the same day as EO 14318. A blueprint rather than a legal instrument — it binds nobody directly, but it is the stated source of the §404 and FAST-41 directives that do.",
+      "source_url": "https://www.whitehouse.gov/wp-content/uploads/2025/07/Americas-AI-Action-Plan.pdf",
+      "last_verified": "2026-07-25",
+      "verified": true,
+      "confidence": "high",
+      "general_principles": [
+        {
+          "tag": "Permitting acceleration",
+          "note": "Names the CWA, CAA and CERCLA as burdens to reduce for AI infrastructure — the clearest statement of the federal posture."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2025-07-23",
+          "milestone": "Released",
+          "detail": "Published alongside EO 14318"
+        }
+      ],
+      "recent_news": [
+        {
+          "date": "2025-07-28",
+          "title": "New Federal AI Action Plan Prioritizes Deregulation, Infrastructure, and Global Leadership",
+          "source": "Morrison Foerster",
+          "url": "https://www.mofo.com/resources/insights/250728-new-federal-ai-action-plan-prioritizes-deregulation",
+          "takeaway": "Confirms the plan's environmental-permitting asks, including the data-center §404 nationwide permit later reissued as NWP 39."
+        }
+      ],
+      "public_sentiment": "Received as the administration's clearest statement that AI-infrastructure buildout outranks incremental environmental review."
+    },
+    {
+      "bill_id": "NY EO 62",
+      "instrument_type": "executive-order",
+      "jurisdiction": "New York",
+      "level": "state",
+      "title": "Temporary Moratorium on Data Centers While the State Develops Standards",
+      "sponsor": "Gov. Kathy Hochul",
+      "summary": "One-year pause on DEC discretionary permits for data centers at or above 50 MW. Orders the Department of Public Service to report on data-center impacts including water use and water quality, and directs DEC to assess within 12 months whether the state's water-withdrawal program needs new rules for very large users.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Signed 2026-07-14; in force. This — not the tracked NY S10642/A11560 — is the instrument that actually imposed New York's moratorium. The Governor neither signed nor vetoed the bill; she superseded it with an executive order at a higher threshold (50 MW vs the bill's 20 MW), which is a materially narrower pause than the bill would have imposed.",
+      "source_url": "https://www.governor.ny.gov/executive-order/no-62-establishing-temporary-moratorium-data-centers-new-york-while-state-develops",
+      "last_verified": "2026-07-25",
+      "verified": true,
+      "confidence": "high",
+      "general_principles": [
+        {
+          "tag": "Moratorium",
+          "note": "First statewide data-center moratorium actually in effect anywhere in the US."
+        },
+        {
+          "tag": "Permit oversight",
+          "note": "Pauses DEC discretionary permitting rather than banning construction outright."
+        },
+        {
+          "tag": "Preemptive review",
+          "note": "Orders the DEC water-withdrawal-program assessment and the DPS impact report before standards are set."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-06-17",
+          "milestone": "Legislature passes S10642/A11560",
+          "detail": "First statewide data-center moratorium bill to clear a legislature"
+        },
+        {
+          "date": "2026-07-14",
+          "milestone": "EO 62 signed",
+          "detail": "1-year DEC permit moratorium at ≥50 MW; DPS and DEC studies ordered"
+        }
+      ],
+      "recent_news": [
+        {
+          "date": "2026-07-14",
+          "title": "No. 62: Establishing a Temporary Moratorium on Data Centers in New York While the State Develops Standards",
+          "source": "Office of the Governor of New York",
+          "url": "https://www.governor.ny.gov/executive-order/no-62-establishing-temporary-moratorium-data-centers-new-york-while-state-develops",
+          "takeaway": "Sets the 50 MW threshold and orders the DEC water-withdrawal rulemaking assessment within 12 months."
+        }
+      ],
+      "public_sentiment": "Advocates who pushed S10642 read the 50 MW threshold and one-year clock as a dilution of the bill they passed; industry treats the executive route as the more workable outcome because it expires without further action.",
+      "monitor": {
+        "kind": "url-watch",
+        "key": "https://www.governor.ny.gov/executive-orders",
+        "note": "One-year moratorium; watch for extension, expiry, or the DEC withdrawal rulemaking."
+      }
+    },
+    {
+      "bill_id": "NY DPS Data Center Impact Report (EO 62)",
+      "instrument_type": "commission-docket",
+      "jurisdiction": "New York",
+      "level": "state",
+      "title": "Department of Public Service data-center impact report",
+      "sponsor": "NY Department of Public Service, on order of EO 62",
+      "summary": "The proceeding EO 62 orders: a DPS report on data-center impacts with water use and water quality expressly in scope, running alongside DEC's assessment of whether the water-withdrawal permitting program needs large-user rules.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "introduced",
+      "status_detail": "Ordered 2026-07-14 with a 12-month deadline; no docket number published as of 2026-07-25. Re-verify the DPS case number once the proceeding opens.",
+      "source_url": "https://www.governor.ny.gov/executive-order/no-62-establishing-temporary-moratorium-data-centers-new-york-while-state-develops",
+      "last_verified": "2026-07-25",
+      "verified": false,
+      "confidence": "medium",
+      "implements": [
+        "NY EO 62"
+      ],
+      "general_principles": [
+        {
+          "tag": "Preemptive review",
+          "note": "Studies water impacts during the pause rather than after buildout."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "The report is the mechanism that would make New York data-center water use public."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-07-14",
+          "milestone": "Ordered",
+          "detail": "EO 62 directs DPS to report on impacts including water use and quality"
+        }
+      ],
+      "recent_news": [],
+      "public_sentiment": "Watched as the test of whether the moratorium produces enforceable water standards or expires with a report on a shelf."
+    },
+    {
+      "bill_id": "VA DEQ waterworks data-center reporting regulations",
+      "instrument_type": "agency-rule",
+      "jurisdiction": "Virginia",
+      "level": "state",
+      "title": "Waterworks reporting regulations implementing HB 496 / SB 553",
+      "sponsor": "Virginia Department of Environmental Quality",
+      "summary": "Requires waterworks operators to report monthly water sales categorized as data-center-with-air-permit, domestic, industrial-commercial, or other, each split potable vs non-potable. Individual facility figures remain trade-secret protected; the published data is aggregate.",
+      "scope": [
+        "water"
+      ],
+      "status": "enacted",
+      "status_detail": "Adopted mid-2026. First aggregate report due 2026-10-01; categorized monthly reporting begins 2027-01-01. This resolves the tracker's open question about HB 496's reporting channel: it runs through waterworks operators to DEQ, and what becomes public is aggregate, not facility-level — so the scraper target is the categorical report, not a per-data-center filing.",
+      "source_url": "https://www.whro.org/environment/2026-06-26/new-regulations-beef-up-data-centers-required-water-use-reporting-in-virginia",
+      "last_verified": "2026-07-25",
+      "verified": true,
+      "confidence": "high",
+      "implements": [
+        "VA HB 496 / SB 553"
+      ],
+      "general_principles": [
+        {
+          "tag": "Disclosure",
+          "note": "Turns the statute's reporting mandate into a specific monthly filing with named categories."
+        },
+        {
+          "tag": "Transparency",
+          "note": "Partial: category-level aggregates become public, but the trade-secret shield keeps individual facilities out of the data."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-06-26",
+          "milestone": "Regulations reported adopted",
+          "detail": "Categories and potable/non-potable split fixed"
+        },
+        {
+          "date": "2026-10-01",
+          "milestone": "First aggregate report due",
+          "detail": "The first Tier-1 data this tracker can ingest under HB 496"
+        },
+        {
+          "date": "2027-01-01",
+          "milestone": "Categorized monthly reporting begins",
+          "detail": "Ongoing monthly series starts"
+        }
+      ],
+      "recent_news": [
+        {
+          "date": "2026-06-26",
+          "title": "New regulations beef up data centers' required water use reporting in Virginia",
+          "source": "WHRO",
+          "url": "https://www.whro.org/environment/2026-06-26/new-regulations-beef-up-data-centers-required-water-use-reporting-in-virginia",
+          "takeaway": "Sets the reporting categories and the October 2026 / January 2027 effective dates, and confirms facility-level data stays shielded."
+        }
+      ],
+      "public_sentiment": "Transparency advocates call the aggregate-only publication the compromise that keeps the data too coarse to hold any single campus accountable.",
+      "monitor": {
+        "kind": "url-watch",
+        "key": "https://townhall.virginia.gov/L/ViewBoard.cfm?BoardID=125",
+        "note": "Virginia Regulatory Town Hall board page for the State Water Control Board — tracks regulatory stages. deq.virginia.gov itself is WAF-blocked for automated clients (errors.md, 2026-02-24), so watch the Town Hall instead. First aggregate report due 2026-10-01."
+      }
+    },
+    {
+      "bill_id": "QTS Richmond Technology Park DC5 (FAST-41)",
+      "instrument_type": "agency-rule",
+      "jurisdiction": "Virginia",
+      "level": "federal",
+      "title": "First data center designated a FAST-41 covered project",
+      "sponsor": "Federal Permitting Improvement Steering Council; sponsor QTS Richmond V, LLC",
+      "summary": "The first data center ever granted FAST-41 coverage, putting its federal environmental review on a published, coordinated schedule with the Army Corps as lead agency. Covers two additional buildings at an existing four-building Henrico County campus.",
+      "scope": [
+        "water"
+      ],
+      "status": "enacted",
+      "status_detail": "Announced 2026-04-02. Environmental review and permitting scheduled to complete 2027-06-11; construction anticipated to begin by January 2028. In-state for this tracker, and the concrete first instance of EO 14318's FAST-41 expansion reaching a specific campus.",
+      "source_url": "https://www.permitting.gov/newsroom/press-releases/first-data-center-project-gains-permitting-councils-fast-41-coverage",
+      "last_verified": "2026-07-25",
+      "verified": true,
+      "confidence": "high",
+      "implements": [
+        "US EO 14318"
+      ],
+      "general_principles": [
+        {
+          "tag": "Permitting acceleration",
+          "note": "The mechanism is schedule coordination and deadline pressure on the reviewing agencies."
+        },
+        {
+          "tag": "Transparency",
+          "note": "Cuts the other way from the rest of the order: FAST-41 requires a public permitting timetable, so this project's federal review is more visible than an ordinary Corps permit, not less."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-04-02",
+          "milestone": "FAST-41 coverage granted",
+          "detail": "First data center project ever covered; Army Corps is lead agency"
+        },
+        {
+          "date": "2027-06-11",
+          "milestone": "Target completion of review",
+          "detail": "Published target date on the Permitting Dashboard"
+        }
+      ],
+      "recent_news": [
+        {
+          "date": "2026-04-02",
+          "title": "First Data Center Project Gains Permitting Council's FAST-41 Coverage",
+          "source": "Federal Permitting Improvement Steering Council",
+          "url": "https://www.permitting.gov/newsroom/press-releases/first-data-center-project-gains-permitting-councils-fast-41-coverage",
+          "takeaway": "Names QTS Richmond Technology Park DC5 as the first covered data center."
+        }
+      ],
+      "public_sentiment": "Local attention has focused on the campus's scale in Henrico County rather than on the federal designation itself."
+    },
+    {
+      "bill_id": "MI SB 1046-1050",
+      "instrument_type": "bill",
+      "jurisdiction": "Michigan",
+      "level": "state",
+      "title": "Data center water permitting, NDA ban and community benefits package",
+      "sponsor": "Michigan Senate (5-bill package)",
+      "summary": "SB 1046 would require a permit for water users at or above 550,000 gallons per day, cap consumptive use at 2 MGD, mandate at least three pre-application public hearings, require annual reporting from 2027 and allow permit revocation for reporting failures. SB 1049 would bar non-disclosure agreements where tax incentives were received. SB 1050 would require community benefit agreements covering water.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "introduced",
+      "status_detail": "Introduced July 2026. Distinct from the tracked MI SB 762 and MI SB 1018-1020 — this package is the first to pair a hard consumptive-use cap with an NDA ban and a community-benefit mandate. Re-verify individual bill numbers against the Michigan Legislature bill lookup before treating any single number as settled.",
+      "source_url": "https://www.multistate.us/insider/2026/7/15/michigan-data-center-legislation-targets-energy-use-and-community-benefits",
+      "last_verified": "2026-07-25",
+      "verified": false,
+      "confidence": "medium",
+      "general_principles": [
+        {
+          "tag": "Permit oversight",
+          "note": "A withdrawal permit at 550k gal/day with revocation as the enforcement lever."
+        },
+        {
+          "tag": "Conservation",
+          "note": "The 2 MGD consumptive cap is a hard ceiling, not a reporting requirement."
+        },
+        {
+          "tag": "NDA prohibition",
+          "note": "Ties the NDA ban to receipt of tax incentives rather than banning them outright."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "Annual reporting from 2027, enforceable by permit revocation."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-07-15",
+          "milestone": "Package reported introduced",
+          "detail": "Five bills covering water permitting, NDAs and community benefits"
+        }
+      ],
+      "recent_news": [
+        {
+          "date": "2026-07-15",
+          "title": "Michigan Data Center Legislation Targets Energy Use and Community Benefits",
+          "source": "MultiState",
+          "url": "https://www.multistate.us/insider/2026/7/15/michigan-data-center-legislation-targets-energy-use-and-community-benefits",
+          "takeaway": "Summarizes the package's water-permitting, NDA and CBA provisions."
+        }
+      ],
+      "public_sentiment": "Michigan's Great Lakes context makes consumptive-use caps unusually salient; the NDA provision responds directly to secrecy complaints around recent siting fights.",
+      "monitor": {
+        "kind": "url-watch",
+        "key": "https://legislature.mi.gov/Bills/Bill?ObjectName=2026-SB-1046",
+        "note": "Michigan legislature bill page for SB 1046, the water-permitting bill in the package. Bill numbers unverified; confirm against the lookup when status moves."
+      }
+    },
+    {
+      "bill_id": "WV HB 4832",
+      "instrument_type": "bill",
+      "jurisdiction": "West Virginia",
+      "level": "state",
+      "title": "High-impact data center water use reporting and withdrawal limits",
+      "sponsor": "Del. Hansen and eight co-sponsors",
+      "summary": "Would have designated data centers high-volume water users, required them to submit water quantity and quality impact analyses to DEP, mandated public notice and hearings before approval, and authorized DEP to prohibit or limit withdrawals where adverse impacts to a state water resource would occur.",
+      "scope": [
+        "water"
+      ],
+      "status": "failed",
+      "status_detail": "Introduced 2026-01-26 and referred to Energy and Public Works; did not advance before sine die. The contrast entry in this dataset: West Virginia enacted a data-center framework in the same session while these water protections were separately voted down as floor amendments to HB 2014. UNVERIFIED: the precise procedural death is inferred from session-end reporting — re-verify against the WV Legislature bill-status page.",
+      "source_url": "https://www.wvlegislature.gov/Bill_Text_HTML/2026_SESSIONS/RS/bills/hb4832%20intr.pdf",
+      "last_verified": "2026-07-25",
+      "verified": false,
+      "confidence": "medium",
+      "general_principles": [
+        {
+          "tag": "Permit oversight",
+          "note": "Would have given DEP authority to refuse withdrawals on adverse-impact findings."
+        },
+        {
+          "tag": "Preemptive review",
+          "note": "Impact analysis and public hearings required before approval, not after."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "Would have required disclosure of withdrawal volumes and expected regulated pollutants."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-01-26",
+          "milestone": "Introduced",
+          "detail": "Referred to the Committee on Energy and Public Works"
+        },
+        {
+          "date": "2026-02-18",
+          "milestone": "Water protections rejected separately",
+          "detail": "WV House passed its data-center rules bill without local-control or water provisions"
+        },
+        {
+          "date": "2026-03-14",
+          "milestone": "Session adjourned sine die",
+          "detail": "Bill did not advance"
+        }
+      ],
+      "recent_news": [
+        {
+          "date": "2026-02-18",
+          "title": "WV House passes new data center development rules without local control, water protection provisions",
+          "source": "West Virginia Watch",
+          "url": "https://westvirginiawatch.com/2026/02/18/wv-house-passes-new-data-center-development-rules-without-local-control-water-protection-provisions/",
+          "takeaway": "Documents water protections being affirmatively stripped from the enacted framework rather than simply omitted."
+        }
+      ],
+      "public_sentiment": "Conservation groups treat the session as the clearest example of a state choosing data-center recruitment over water safeguards explicitly on the record."
+    },
+    {
+      "bill_id": "TX PUC Energy and Water Use Survey (data centers)",
+      "instrument_type": "commission-docket",
+      "jurisdiction": "Texas",
+      "level": "state",
+      "title": "PUCT / TWDB energy and water use survey for data centers and crypto mining",
+      "sponsor": "Public Utility Commission of Texas with the Texas Water Development Board",
+      "summary": "A survey directed by the Legislature in the 2025 budget, collecting electricity and water use from data centers and virtual-currency mining facilities. The only water-specific utility-commission action found nationally — the marquee data-center rate dockets elsewhere (PUCO 24-508-EL-ATA, the Georgia PSC large-load tariff, Dominion's SCC proceedings) are energy-only and carry no water provisions.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "introduced",
+      "status_detail": "Open and voluntary, with response rates the Legislature has called inadequate: about a third of surveyed data centers responded in 2024 and 17% in 2025; the most recent round drew 28 companies covering 92 facilities. PUCT reopened the survey 2026-07-01 with responses due 2026-07-10. The Texas Water Development Board's own water-consumption surveys have been mandatory since 2023. Watch for a mandatory PUCT/ERCOT registration requirement replacing the voluntary survey.",
+      "source_url": "https://www.puc.texas.gov/industry/water/utilities/energy-and-water-use-survey/faq/",
+      "last_verified": "2026-07-25",
+      "verified": true,
+      "confidence": "high",
+      "general_principles": [
+        {
+          "tag": "Disclosure",
+          "note": "Asks for facility-level water use directly from operators rather than through utilities."
+        },
+        {
+          "tag": "Transparency",
+          "note": "The instructive failure in this dataset: a disclosure mechanism with no compulsion produced a 17% response rate."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2025-06-01",
+          "milestone": "Directed by the Legislature",
+          "detail": "2025 budget directs PUCT and TWDB to collect data-center energy and water use"
+        },
+        {
+          "date": "2026-06-23",
+          "milestone": "Low response rate reported",
+          "detail": "28 companies covering 92 facilities responded; lawmakers demand answers"
+        },
+        {
+          "date": "2026-07-01",
+          "milestone": "Survey reopened",
+          "detail": "Responses due 2026-07-10"
+        }
+      ],
+      "recent_news": [
+        {
+          "date": "2026-06-23",
+          "title": "Most data centers ignore Texas surveys about their water use",
+          "source": "The Texas Tribune",
+          "url": "https://www.texastribune.org/2026/06/23/texas-data-centers-puc-water-survey/",
+          "takeaway": "Documents the response rates and the legislative reaction."
+        },
+        {
+          "date": "2026-06-26",
+          "title": "Texas asked data centers to report water use. Most didn't respond",
+          "source": "KUT",
+          "url": "https://www.kut.org/energy-environment/2026-06-26/texas-data-center-water-use-survey-legislature",
+          "takeaway": "Confirms the voluntary design and the reopening of the survey window."
+        }
+      ],
+      "public_sentiment": "Cited on both sides of the mandatory-reporting debate: as proof that voluntary disclosure does not work, and by industry as evidence the questions are burdensome.",
+      "monitor": {
+        "kind": "url-watch",
+        "key": "https://www.puc.texas.gov/industry/water/utilities/energy-and-water-use-survey/faq/",
+        "note": "Watch for the voluntary survey becoming a mandatory registration."
+      }
+    },
+    {
+      "bill_id": "Prince George's County MD CB-2026 data center moratorium",
+      "instrument_type": "local-ordinance",
+      "jurisdiction": "Prince George's County, Maryland",
+      "level": "local",
+      "title": "Two-year moratorium on hyperscale data center development",
+      "sponsor": "Prince George's County Council",
+      "summary": "A two-year pause on hyperscale data-center development — the longest in Maryland — adopted with unanswered questions about the facilities' effect on county water among the stated reasons.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Adopted 2026-07-07. Part of a Maryland cluster: Montgomery, Frederick and Baltimore counties have also paused data-center development.",
+      "source_url": "https://marylandmatters.org/2026/07/08/prince-georges-county-extends-pause-on-hyperscale-data-center-development/",
+      "last_verified": "2026-07-25",
+      "verified": true,
+      "confidence": "high",
+      "general_principles": [
+        {
+          "tag": "Moratorium",
+          "note": "Two years, the longest local pause in Maryland."
+        },
+        {
+          "tag": "Preemptive review",
+          "note": "Explicitly framed as buying time to answer water and infrastructure questions."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-07-07",
+          "milestone": "Adopted",
+          "detail": "Council votes a two-year moratorium on hyperscale data centers"
+        }
+      ],
+      "recent_news": [
+        {
+          "date": "2026-07-08",
+          "title": "Prince George's County extends pause on hyperscale data centers",
+          "source": "Maryland Matters",
+          "url": "https://marylandmatters.org/2026/07/08/prince-georges-county-extends-pause-on-hyperscale-data-center-development/",
+          "takeaway": "Council member Blegay cites unresolved questions about county water among the reasons."
+        }
+      ],
+      "public_sentiment": "Organized resident opposition preceded the vote, with protests at the council as it considered the measure."
+    },
+    {
+      "bill_id": "Washington County MD data center moratorium",
+      "instrument_type": "local-ordinance",
+      "jurisdiction": "Washington County, Maryland",
+      "level": "local",
+      "title": "One-year moratorium on data center development",
+      "sponsor": "Washington County Board of Commissioners",
+      "summary": "A one-year pause on data-center development in western Maryland, with farm wells and drought conditions among the stated rationales.",
+      "scope": [
+        "water"
+      ],
+      "status": "enacted",
+      "status_detail": "Approved 2026-07-01.",
+      "source_url": "https://thedailyrecord.com/2026/07/01/washington-county-approves-yearlong-data-center-moratorium/",
+      "last_verified": "2026-07-25",
+      "verified": true,
+      "confidence": "medium",
+      "general_principles": [
+        {
+          "tag": "Moratorium",
+          "note": "One-year pause pending study."
+        },
+        {
+          "tag": "Conservation",
+          "note": "Agricultural well drawdown and drought are the water rationale, not discharge."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-07-01",
+          "milestone": "Approved",
+          "detail": "Yearlong moratorium adopted"
+        }
+      ],
+      "recent_news": [
+        {
+          "date": "2026-07-01",
+          "title": "Western MD county approves data center moratorium",
+          "source": "Maryland Daily Record",
+          "url": "https://thedailyrecord.com/2026/07/01/washington-county-approves-yearlong-data-center-moratorium/",
+          "takeaway": "Confirms the one-year term and adoption date."
+        }
+      ],
+      "public_sentiment": "Rural and agricultural water users have been the most visible constituency, a different coalition from the suburban ratepayer opposition elsewhere in Maryland."
+    },
+    {
+      "bill_id": "Santa Fe County NM data center moratorium",
+      "instrument_type": "local-ordinance",
+      "jurisdiction": "Santa Fe County, New Mexico",
+      "level": "local",
+      "title": "18-month moratorium on data center development",
+      "sponsor": "Santa Fe County Board of County Commissioners",
+      "summary": "An 18-month pause adopted unanimously, extended from the 12 months originally proposed, with the regulatory threshold lowered from 100 MW to 1 MW — by far the lowest trigger of any tracked moratorium.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Adopted 2026-07-02. The 1 MW threshold means it reaches essentially any data center, not just hyperscale ones — a materially different instrument from the 20-50 MW state thresholds.",
+      "source_url": "https://www.santafecountynm.gov/news/detail/santa-fe-county-approves-18-month-moratorium-on-data-centers",
+      "last_verified": "2026-07-25",
+      "verified": true,
+      "confidence": "high",
+      "general_principles": [
+        {
+          "tag": "Moratorium",
+          "note": "18 months at a 1 MW threshold — the broadest local pause tracked."
+        },
+        {
+          "tag": "Preemptive review",
+          "note": "Adopted before any project application rather than in response to one."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-07-02",
+          "milestone": "Adopted unanimously",
+          "detail": "Term extended to 18 months and threshold lowered to 1 MW during deliberation"
+        }
+      ],
+      "recent_news": [
+        {
+          "date": "2026-07-02",
+          "title": "Santa Fe County approves 18-month moratorium on data centers",
+          "source": "Santa Fe County",
+          "url": "https://www.santafecountynm.gov/news/detail/santa-fe-county-approves-18-month-moratorium-on-data-centers",
+          "takeaway": "Confirms the unanimous vote, the 18-month term and the 1 MW threshold."
+        }
+      ],
+      "public_sentiment": "Arid-region water scarcity and acequia water rights shape the debate here in a way they do not in the eastern moratoria."
+    },
+    {
+      "bill_id": "York County SC data center moratorium",
+      "instrument_type": "local-ordinance",
+      "jurisdiction": "York County, South Carolina",
+      "level": "local",
+      "title": "Nine-month moratorium on data center development",
+      "sponsor": "York County Council",
+      "summary": "A nine-month pause in unincorporated York County directing staff to examine groundwater, noise, utility rates, energy infrastructure, waste heat and impacts on neighbouring properties, and to recommend whether independent experts should be retained.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Passed third reading and took effect 2026-07-13, expiring April 2027. Applies only to unincorporated areas and does not halt already-permitted construction at the QTS project near Lake Wylie, though it blocks new unpermitted structures there. Part of a wider South Carolina county wave.",
+      "source_url": "https://www.wrhi.com/2026/07/york-county-council-approves-nine-month-data-center-moratorium-214184",
+      "last_verified": "2026-07-25",
+      "verified": true,
+      "confidence": "high",
+      "general_principles": [
+        {
+          "tag": "Moratorium",
+          "note": "Nine months, unincorporated areas only."
+        },
+        {
+          "tag": "Preemptive review",
+          "note": "Names groundwater and waste heat as specific study subjects, not general 'impacts'."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-06-17",
+          "milestone": "First reading",
+          "detail": "Council takes up a nine-month moratorium"
+        },
+        {
+          "date": "2026-07-13",
+          "milestone": "Adopted on third reading",
+          "detail": "Effective immediately; expires April 2027"
+        }
+      ],
+      "recent_news": [
+        {
+          "date": "2026-07-13",
+          "title": "York County Council approves nine month data center moratorium",
+          "source": "WRHI",
+          "url": "https://www.wrhi.com/2026/07/york-county-council-approves-nine-month-data-center-moratorium-214184",
+          "takeaway": "Confirms adoption, the study scope including groundwater and waste heat, and the carve-out for permitted QTS work."
+        },
+        {
+          "date": "2026-06-26",
+          "title": "SC counties enacting data center moratoriums",
+          "source": "SC Daily Gazette",
+          "url": "https://scdailygazette.com/2026/06/26/sc-counties-enacting-data-center-moratoriums/",
+          "takeaway": "Places York County in a wider South Carolina county-level wave."
+        }
+      ],
+      "public_sentiment": "Scrutiny intensified around the existing QTS construction, which the moratorium deliberately does not stop — a limit opponents have noted."
     }
   ]
 }

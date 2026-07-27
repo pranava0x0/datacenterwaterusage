@@ -9,8 +9,6 @@ Run with: streamlit run dashboard.py
 from __future__ import annotations
 
 import html
-import json
-import os
 import re
 from datetime import datetime
 from pathlib import Path
@@ -28,53 +26,79 @@ from utils.device import (
 )
 from utils.equivalents import annual_gallons_to_households
 
+# The curated-reference layer lives in `refdata/` (extracted 2026-07-25) so the
+# Streamlit app, build_site.py, the migration scripts and the tests share one
+# definition of the data, its taxonomies and its cross-reference graph. Names
+# are re-exported here, so `dashboard.load_legislation` and
+# `dashboard.CWA_CASE_TYPE_LABELS` still resolve for existing callers.
+from refdata.loaders import (  # noqa: F401
+    COMPANY_WATER_CLAIMS_PATH,
+    CWA_INVESTIGATIONS_PATH,
+    DC_WATER_CONFLICTS_PATH,
+    LEGISLATION_PATH,
+    WATER_AUTHORITIES_PATH,
+    WATER_NEWS_PATH,
+    WATER_SOLUTIONS_PATH,
+    file_signature as _file_signature,
+    load_company_water_claims,
+    load_cwa_investigations,
+    load_dc_water_conflicts,
+    load_legislation,
+    load_water_authorities,
+    load_water_news,
+    load_water_solutions,
+)
+from refdata.registry import (  # noqa: F401
+    Ref,
+    bill_anchor as _bill_anchor,
+    build_registry,
+    case_caption as _cwa_case_caption,
+    resolve as resolve_ref,
+)
+from refdata.taxonomies import (  # noqa: F401
+    AUTHORITY_KIND_LABELS,
+    CLAIM_TYPE_LABELS,
+    COLOR_SEQUENCE,
+    COLORS,
+    CWA_CASE_TYPE_LABELS,
+    CWA_CATEGORY_LABELS,
+    CWA_CATEGORY_ORDER,
+    CWA_STATUS_COLORS,
+    CWA_STATUS_LABELS,
+    DELIVERED_STATUS_COLORS,
+    INSTRUMENT_TYPE_COLORS,
+    INSTRUMENT_TYPE_LABELS,
+    ISSUE_TYPE_DESCRIPTIONS,
+    ISSUE_TYPE_LABELS,
+    LEGISLATION_LEVEL_LABELS,
+    LEGISLATION_PRINCIPLE_DESCRIPTIONS,
+    LEGISLATION_SCOPE_LABELS,
+    LEGISLATION_STATUS_BADGE_COLORS,
+    LEGISLATION_STATUS_LABELS,
+    LEGISLATION_STATUS_ORDER,
+    NEWS_TAG_COLORS,
+    NEWS_TAG_LABELS,
+    OUTCOME_TYPE_LABELS,
+    SOLUTION_ACTOR_LABELS,
+    SOLUTION_STATUS_COLORS,
+    SOLUTION_STATUS_LABELS,
+    WATER_STATUTE_COLORS,
+    WATER_STATUTE_ORDER,
+)
+
 # --- Config ---
 
 BASE_DIR = Path(__file__).parent
 CSV_PATH = BASE_DIR / "data" / "output" / "results.csv"
 JSON_PATH = BASE_DIR / "data" / "output" / "results.json"
-LEGISLATION_PATH = BASE_DIR / "data" / "reference" / "legislation.json"
-COMPANY_WATER_CLAIMS_PATH = BASE_DIR / "data" / "reference" / "company_water_claims.json"
-CWA_INVESTIGATIONS_PATH = BASE_DIR / "data" / "reference" / "cwa_investigations.json"
-WATER_AUTHORITIES_PATH = BASE_DIR / "data" / "reference" / "water_authorities.json"
-DC_WATER_CONFLICTS_PATH = BASE_DIR / "data" / "reference" / "dc_water_conflicts.json"
-WATER_NEWS_PATH = BASE_DIR / "data" / "reference" / "water_news.json"
-WATER_SOLUTIONS_PATH = BASE_DIR / "data" / "reference" / "water_solutions.json"
-
-COLORS = {
-    "primary": "#08519c",
-    "secondary": "#3182bd",
-    "tertiary": "#6baed6",
-    "light": "#bdd7e7",
-    "bg": "#eff3ff",
-    "danger": "#c41e3a",
-    "warning": "#d4a017",
-    "success": "#2e8b57",
-    "text": "#1a1a2e",
-}
-
-COLOR_SEQUENCE = ["#08519c", "#3182bd", "#6baed6", "#9ecae1", "#c6dbef"]
 
 
 # --- Data Loading ---
-
-
-def _file_signature(path) -> tuple:
-    """A cheap change-detector for a file: ``(mtime_ns, size)``.
-
-    Passed into the cached loaders below so ``st.cache_data`` re-reads a file
-    only when it actually changes, rather than expiring on a fixed clock. The
-    reference JSON and the results CSV change only when a scraper or an edit
-    runs, so a fixed ``ttl`` just forced needless re-parsing every few minutes
-    during an active session (and on every stlite/WASM cold interaction).
-    Returns ``(0, 0)`` for a missing file so a later create still busts the
-    cache. Kept module-level and Streamlit-free so it's unit-testable.
-    """
-    try:
-        s = os.stat(path)
-        return (s.st_mtime_ns, s.st_size)
-    except OSError:
-        return (0, 0)
+#
+# The seven curated-reference loaders live in refdata.loaders (imported above).
+# Only the results.csv loader stays here: it is the scraper pipeline's output,
+# it returns a DataFrame, and it is the one loader Streamlit's cache still
+# serves better than a plain memo (the parse is ~100× the cost of a JSON read).
 
 
 @st.cache_data
@@ -146,145 +170,6 @@ def _classify_source(portal: str) -> str:
         return "General Permit Tracker"
     return "Other"
 
-
-@st.cache_data
-def _load_legislation_cached(path_str: str, signature: tuple) -> dict:
-    p = Path(path_str)
-    if not p.exists():
-        return {"last_updated": None, "bills": []}
-    with open(p, encoding="utf-8") as f:
-        payload = json.load(f)
-    if isinstance(payload, list):
-        return {"last_updated": None, "bills": payload}
-    payload.setdefault("bills", [])
-    return payload
-
-
-def load_legislation(path: Path = LEGISLATION_PATH) -> dict:
-    """Load the data center water/energy legislation dataset.
-
-    Returns a payload dict of the form {"last_updated": str, "bills": [...]}.
-    Tolerates a missing file (returns an empty payload) or a bare list.
-    Cached because Streamlit reruns the whole script on every interaction;
-    the enriched legislation.json is ~57 KB and parses on every rerun otherwise.
-    The cache busts on file change (mtime/size) rather than a fixed TTL.
-    """
-    return _load_legislation_cached(str(path), _file_signature(path))
-
-
-@st.cache_data
-def _load_company_water_claims_cached(path_str: str, signature: tuple) -> dict:
-    p = Path(path_str)
-    if not p.exists():
-        return {"last_updated": None, "companies": {}, "claims": []}
-    with open(p, encoding="utf-8") as f:
-        payload = json.load(f)
-    payload.setdefault("claims", [])
-    payload.setdefault("companies", {})
-    return payload
-
-
-def load_company_water_claims(path: Path = COMPANY_WATER_CLAIMS_PATH) -> dict:
-    """Load the company water-claims dataset (mirrored from datacentercommunitybenefits).
-
-    Returns a payload dict {"last_updated", "companies", "claims", ...}.
-    Tolerates a missing file by returning an empty payload. Cache busts on
-    file change (mtime/size) rather than a fixed TTL.
-    """
-    return _load_company_water_claims_cached(str(path), _file_signature(path))
-
-
-@st.cache_data
-def _load_cwa_investigations_cached(path_str: str, signature: tuple) -> dict:
-    p = Path(path_str)
-    if not p.exists():
-        return {"last_updated": None, "cases": []}
-    with open(p, encoding="utf-8") as f:
-        payload = json.load(f)
-    payload.setdefault("cases", [])
-    return payload
-
-
-def load_cwa_investigations(path: Path = CWA_INVESTIGATIONS_PATH) -> dict:
-    """Load historic Clean Water Act enforcement / precedent dataset.
-
-    Returns {"last_updated": str, "cases": [...], "note": Optional[str]}.
-    Tolerates a missing file by returning an empty payload. Cache busts on
-    file change (mtime/size) rather than a fixed TTL.
-    """
-    return _load_cwa_investigations_cached(str(path), _file_signature(path))
-
-
-@st.cache_data
-def _load_water_authorities_cached(path_str: str, signature: tuple) -> dict:
-    p = Path(path_str)
-    if not p.exists():
-        return {"last_updated": None, "statutes": {}, "readings": []}
-    with open(p, encoding="utf-8") as f:
-        payload = json.load(f)
-    payload.setdefault("statutes", {})
-    payload.setdefault("readings", [])
-    return payload
-
-
-def load_water_authorities(path: Path = WATER_AUTHORITIES_PATH) -> dict:
-    """Load the statutory water-authority readings registry.
-
-    Returns {"last_updated", "statutes": {code: meta}, "readings": [...]}.
-    Each reading is one specific statutory hook (e.g. CWA §404, SDWA §1431)
-    with its data-center applicability and example case_ids. Tolerates a
-    missing file; cache busts on file change.
-    """
-    return _load_water_authorities_cached(str(path), _file_signature(path))
-
-
-@st.cache_data
-def _load_dc_water_conflicts_cached(path_str: str, signature: tuple) -> dict:
-    p = Path(path_str)
-    if not p.exists():
-        return {"last_updated": None, "sites": []}
-    with open(p, encoding="utf-8") as f:
-        payload = json.load(f)
-    payload.setdefault("sites", [])
-    return payload
-
-
-def load_dc_water_conflicts(path: Path = DC_WATER_CONFLICTS_PATH) -> dict:
-    """Load the roster of data-center sites with documented water conflicts.
-
-    Returns {"last_updated", "sites": [...]}; each site maps its fact pattern
-    to applicable statutory readings and analogous historical cases.
-    Tolerates a missing file; cache busts on file change.
-    """
-    return _load_dc_water_conflicts_cached(str(path), _file_signature(path))
-
-
-@st.cache_data
-def _load_water_news_cached(path_str: str, signature: tuple) -> dict:
-    p = Path(path_str)
-    if not p.exists():
-        return {"last_updated": None, "items": []}
-    with open(p, encoding="utf-8") as f:
-        return json.load(f)
-
-
-def load_water_news(path: Path = WATER_NEWS_PATH) -> dict:
-    """Load curated data center water news items."""
-    return _load_water_news_cached(str(path), _file_signature(path))
-
-
-@st.cache_data
-def _load_water_solutions_cached(path_str: str, signature: tuple) -> dict:
-    p = Path(path_str)
-    if not p.exists():
-        return {"last_updated": None, "categories": []}
-    with open(p, encoding="utf-8") as f:
-        return json.load(f)
-
-
-def load_water_solutions(path: Path = WATER_SOLUTIONS_PATH) -> dict:
-    """Load data center water solutions by category."""
-    return _load_water_solutions_cached(str(path), _file_signature(path))
 
 
 # --- Page Config ---
@@ -1270,15 +1155,6 @@ def render_timeline():
 
 # --- National Legislation Tracker ---
 
-LEGISLATION_STATUS_ORDER = {"enacted": 0, "introduced": 1, "failed": 2, "unknown": 3}
-LEGISLATION_STATUS_LABELS = {
-    "enacted": "Enacted",
-    "introduced": "Introduced",
-    "failed": "Failed / Vetoed",
-    "unknown": "Unknown",
-}
-
-
 def _legislation_status_summary(bills: list[dict]) -> str:
     """Build a '2 Enacted · 10 Introduced · ...' summary string."""
     counts: dict[str, int] = {}
@@ -1316,43 +1192,6 @@ def _legislation_rows(bills: list[dict]) -> list[dict]:
             }
         )
     return rows
-
-
-LEGISLATION_STATUS_BADGE_COLORS = {
-    "enacted": COLORS["success"],
-    "introduced": COLORS["primary"],
-    "failed": COLORS["danger"],
-    "unknown": COLORS["secondary"],
-}
-
-LEGISLATION_LEVEL_LABELS = {
-    "federal": "Federal",
-    "state": "State",
-    "local": "Local",
-}
-LEGISLATION_SCOPE_LABELS = {
-    "water": "Water",
-    "energy": "Energy",
-}
-
-# Canonical principle taxonomy — every general_principles tag in the dataset
-# must be one of these (a test enforces it, same pattern as the CWA
-# case_type vocabulary). The one-liners power the cross-bill summary panel.
-LEGISLATION_PRINCIPLE_DESCRIPTIONS = {
-    "Transparency": "Make data-center water/energy use publicly visible instead of proprietary.",
-    "Disclosure": "Require operators or utilities to file specific consumption reports.",
-    "Cost allocation": "Make data centers pay the infrastructure and rate costs they cause.",
-    "Permit oversight": "Give regulators or localities approval leverage over siting and use.",
-    "Conservation": "Mandate or incentivize lower water/energy consumption outright.",
-    "Federal coordination": "Standardize metrics and oversight across states at the federal level.",
-    "Preemptive review": "Force evaluation of impacts before construction, not after.",
-    "Anti-corporate-welfare": "Condition or repeal subsidies and tax exemptions.",
-    "Best-practice guidance": "Codify model standards and guidance rather than hard mandates.",
-    "NDA prohibition": "Ban the non-disclosure agreements that hide water deals from the public.",
-    "Closed-loop cooling": "Require sealed cooling systems with minimal net water draw.",
-    "Strict liability": "Attach direct, non-waivable liability for violations or harms.",
-    "Moratorium": "Pause new data-center development until safeguards exist.",
-}
 
 
 def _bill_anchor(bill_id: str) -> str:
@@ -1607,6 +1446,18 @@ def _build_bill_card_html(bill: dict) -> str:
     # principle tags at a glance (mirrors the CWA cards' cwa-class-row).
     level = (bill.get("level") or "").lower()
     class_bits = []
+    # Instrument type leads the row: whether a record is a bill, an executive
+    # order or an agency rule changes how a reader should weigh it far more
+    # than its jurisdiction does. Only non-bills get a chip — bills are the
+    # overwhelming default and a chip on all 50 would be noise.
+    instrument_type = bill.get("instrument_type", "bill")
+    if instrument_type != "bill" and instrument_type in INSTRUMENT_TYPE_LABELS:
+        class_bits.append(
+            f'<span class="instrument-pill" style="color:'
+            f'{INSTRUMENT_TYPE_COLORS[instrument_type]};border-color:'
+            f'{INSTRUMENT_TYPE_COLORS[instrument_type]}">'
+            f'{esc(INSTRUMENT_TYPE_LABELS[instrument_type])}</span>'
+        )
     jurisdiction = esc(bill.get("jurisdiction", ""))
     if jurisdiction:
         class_bits.append(f'<span class="cwa-type-pill">{jurisdiction}</span>')
@@ -1874,24 +1725,6 @@ def _build_legislation_themes_html(bills: list[dict]) -> str:
 
 # --- Water News Tab ---
 
-NEWS_TAG_LABELS = {
-    "regulation": "Regulation",
-    "enforcement": "Enforcement",
-    "solutions": "Solutions",
-    "research": "Research",
-    "data": "Data & Reports",
-    "policy": "Policy",
-}
-NEWS_TAG_COLORS = {
-    "regulation": "#08519c",
-    "enforcement": "#c41e3a",
-    "solutions": "#2e8b57",
-    "research": "#6b3fa0",
-    "data": "#1a7a8a",
-    "policy": "#d4a017",
-}
-
-
 def _cross_ref_link_map() -> list[tuple[str, str]]:
     """(display text, in-page anchor) pairs for linkifying cross-references.
 
@@ -1951,6 +1784,11 @@ def _linkify_refs(text: str) -> str:
     """HTML-escape ``text`` and turn known bill/site/case references into
     in-page anchor links (single pass, so already-linked text is never
     re-matched). The static site's anchor handler switches to the owning tab.
+
+    This is the *legacy* fallback for prose that names a record without
+    declaring its id. It guesses by substring, so it silently misses a renamed
+    record and can match the wrong one on an overlap — prefer
+    ``cross_ref_targets`` (see :func:`_crossref_html`) on new entries.
     """
     escaped = html.escape(text)
     by_display, pattern = _cross_ref_matcher()
@@ -1962,6 +1800,57 @@ def _linkify_refs(text: str) -> str:
     )
 
 
+def _crossref_html(entry: dict, css_class: str, style: str = "") -> str:
+    """Render an entry's '→ …' cross-reference line.
+
+    Two paths, deliberately:
+
+    * ``cross_ref_targets: [id, ...]`` — the explicit path. Ids resolve through
+      the registry, so a link is either correct or a test failure; there is no
+      third outcome. The note prose is linkified **only** against the declared
+      targets, and any target whose label doesn't appear in the prose is
+      appended, so the line always renders exactly one link per target.
+    * ``cross_ref_tab`` + ``cross_ref_note`` alone — the legacy prose path,
+      kept so the pre-2026-07 entries keep working while they migrate.
+
+    An id that resolves to nothing is dropped from the render rather than
+    emitting a dead anchor; ``tests/test_refdata.py`` fails the build for it.
+    """
+    note = entry.get("cross_ref_note", "")
+    target_ids = entry.get("cross_ref_targets") or []
+    # The Streamlit app renders these cards as raw HTML without the static
+    # site's stylesheet, so callers whose class isn't styled there pass the
+    # equivalent inline declarations.
+    attrs = f'class="{css_class}"' + (f' style="{style}"' if style else "")
+
+    if not target_ids:
+        if entry.get("cross_ref_tab") and note:
+            return f"<div {attrs}>→ {_linkify_refs(note)}</div>"
+        return ""
+
+    refs = [r for r in (resolve_ref(t) for t in target_ids) if r is not None]
+    if not refs:
+        return ""
+
+    body = html.escape(note)
+    linked, trailing = set(), []
+    # Longest label first: 'VA HB 496 / SB 553' must win over any shorter
+    # reference it contains.
+    for ref in sorted(refs, key=lambda r: -len(r.label)):
+        needle = html.escape(ref.label)
+        anchor = f'<a href="#{html.escape(ref.anchor)}">{needle}</a>'
+        if needle and needle in body and ref.id not in linked:
+            body = body.replace(needle, anchor, 1)
+            linked.add(ref.id)
+        else:
+            trailing.append((ref, anchor))
+
+    if trailing:
+        links = " · ".join(a for _, a in trailing)
+        body = f"{body} — {links}" if body else links
+    return f"<div {attrs}>→ {body}</div>"
+
+
 def _build_news_item_html(item: dict) -> str:
     """Build one news card for the News tab (distinct from _build_news_html for bill cards)."""
     esc = html.escape
@@ -1971,8 +1860,6 @@ def _build_news_item_html(item: dict) -> str:
     summary = esc(item.get("summary", ""))
     url = item.get("source_url") or ""
     tags = item.get("tags", [])
-    cross_tab = item.get("cross_ref_tab")
-    cross_note = item.get("cross_ref_note", "")
 
     _title_style = "font-weight:700;font-size:1rem;display:block;margin-bottom:0.3rem;"
     headline = (
@@ -1989,16 +1876,15 @@ def _build_news_item_html(item: dict) -> str:
         f'{esc(NEWS_TAG_LABELS.get(t, t))}</span>'
         for t in tags
     )
-    cross_html = (
-        f'<div class="news-crossref" style="color:#08519c;font-size:0.82rem;margin-top:0.3rem;">'
-        f'→ {_linkify_refs(cross_note)}</div>'
-        if cross_tab and cross_note else ""
+    cross_html = _crossref_html(
+        item, "news-crossref", "color:#08519c;font-size:0.82rem;margin-top:0.3rem;"
     )
     tags_str = ",".join(tags)
     # meta is already html-escaped (outlet + date_str were individually escaped above);
     # do not wrap in esc() again or &#x27; becomes &amp;#x27; and renders as literal text.
     return (
-        f'<div class="news-card" data-tags="{esc(tags_str)}" style="'
+        f'<div class="news-card" id="news-{esc(item.get("id", ""))}" '
+        f'data-tags="{esc(tags_str)}" style="'
         f'border:1px solid #d6e4f0;border-radius:0.5rem;padding:0.9rem 1.1rem;'
         f'margin-bottom:0.75rem;background:#fff;'
         f'box-shadow:0 1px 2px rgba(15,23,42,.04);">'
@@ -2054,17 +1940,6 @@ def render_water_news():
 
 # --- Water Solutions Tab ---
 
-SOLUTION_STATUS_LABELS = {"deployed": "Deployed", "pilot": "Pilot / In Progress", "proposed": "Proposed"}
-SOLUTION_STATUS_COLORS = {
-    "deployed": ("#2e8b57", "#eaf7ef", "#b7e4c7"),
-    "pilot": ("#9a6700", "#fff7e6", "#f3d99b"),
-    "proposed": ("#08519c", "#eef6ff", "#bcd9f5"),
-}
-SOLUTION_ACTOR_LABELS = {
-    "state": "State", "federal": "Federal", "utility": "Utility", "industry": "Industry",
-}
-
-
 def _build_solution_card_html(sol: dict) -> str:
     esc = html.escape
     title = esc(sol.get("title", ""))
@@ -2074,8 +1949,6 @@ def _build_solution_card_html(sol: dict) -> str:
     description = esc(sol.get("description", ""))
     example = sol.get("example", "")
     url = sol.get("source_url") or ""
-    cross_tab = sol.get("cross_ref_tab")
-    cross_note = sol.get("cross_ref_note", "")
 
     status_label = SOLUTION_STATUS_LABELS.get(status, status.title())
     color, bg, border = SOLUTION_STATUS_COLORS.get(status, ("#555", "#f5f5f5", "#ccc"))
@@ -2093,10 +1966,7 @@ def _build_solution_card_html(sol: dict) -> str:
     # case ids become in-page anchors that switch tabs on the static site)
     # and rendered INSIDE the example/quote box so the reference travels with
     # the quoted text instead of dangling below the card.
-    cross_html = (
-        f'<div class="solution-crossref">→ {_linkify_refs(cross_note)}</div>'
-        if cross_tab and cross_note else ""
-    )
+    cross_html = _crossref_html(sol, "solution-crossref")
     if example:
         example_html = (
             f'<div class="solution-example">{_linkify_refs(example)}'
@@ -2106,7 +1976,7 @@ def _build_solution_card_html(sol: dict) -> str:
     else:
         example_html = ""
     return (
-        f'<div class="solution-card">'
+        f'<div class="solution-card" id="solution-{esc(sol.get("id", ""))}">'
         f'{badge}'
         f'<div class="solution-title">{title}</div>'
         f'<div class="solution-actor">{esc(actor_label)}: {actor}{source_link}</div>'
@@ -2187,63 +2057,6 @@ def render_water_solutions():
 
 
 # --- Clean Water Act Investigations Tracker ---
-
-CWA_CATEGORY_ORDER = {
-    "datacenter": 0,
-    "adjacent": 1,
-    "industrial": 2,
-    "precedent": 3,
-}
-CWA_CATEGORY_LABELS = {
-    "datacenter": "Data Center",
-    "adjacent": "Data-Center Adjacent",
-    "industrial": "Industrial Water",
-    "precedent": "Landmark Precedent",
-}
-
-# Project-type ("what kind of water issue is this?") taxonomy — the primary
-# filter axis. Every case carries exactly one case_type from this dict; a
-# schema test enforces it so a typo in the JSON can't silently drop a case
-# from the filters.
-CWA_CASE_TYPE_LABELS = {
-    "construction-stormwater": "Construction stormwater",
-    "wetlands-streams": "Wetlands & streams (§404/§401)",
-    "cooling-water": "Cooling water & thermal (§316)",
-    "industrial-discharge": "Industrial discharge (§402)",
-    "pretreatment": "Sewer pretreatment (§307)",
-    "potw-sewer": "Treatment plants & sewers (POTW)",
-    "groundwater": "Groundwater & aquifers",
-    "spills-contamination": "Spills, PFAS & contamination",
-    "water-supply": "Water supply & drinking water",
-    "legal-doctrine": "Citizen suits & court doctrine",
-}
-
-# Did the Clean Water Act actually get used in this case? ("not-applied" also
-# covers cases that ran under a different federal water authority — the
-# statute pills derived from `authorities` say which one.)
-CWA_STATUS_LABELS = {
-    "applied": "CWA applied",
-    "pending": "CWA potential",
-    "not-applied": "No CWA action",
-}
-
-# Display order and pill colors for the federal water statutes covered by the
-# authorities registry (data/reference/water_authorities.json). A case's
-# statute pills are DERIVED from its `authorities` reading_ids — each reading
-# belongs to exactly one statute — so the mapping can't drift per-case.
-WATER_STATUTE_ORDER = ["CWA", "SDWA", "TSCA", "RCRA", "RHA"]
-WATER_STATUTE_COLORS = {
-    "CWA": "#08519c",
-    "SDWA": "#2e8b57",
-    "TSCA": "#7c3aed",
-    "RCRA": "#b45309",
-    "RHA": "#475569",
-}
-CWA_STATUS_COLORS = {
-    "applied": COLORS["success"],
-    "pending": "#b45309",  # amber — between applied and not-applied
-    "not-applied": "#6b7280",  # neutral gray — explicitly not a failure state
-}
 
 # Forward-looking, merit-scored menu of Clean Water Act theories that could
 # realistically attach to a data center. Scoring (1–5, 5 = strongest) is on
@@ -2377,6 +2190,104 @@ CWA_APPLICATION_THEORIES = [
 ]
 
 
+# Sibling to CWA_APPLICATION_THEORIES: the same merit-only scoring applied to
+# the non-CWA doctrine families. The CWA table was the whole panel until the
+# 2026-07 registry expansion, which quietly made it a minority view — most
+# tracked conflicts are about GETTING water, and the Clean Water Act has very
+# little to say about that. Scored on the same three axes: Impact (harm
+# averted), Viability (legal strength today), Tractability (can this tracker
+# source the evidence).
+DOCTRINE_APPLICATION_THEORIES = [
+    {
+        "rank": 1,
+        "theory": "State environmental review — long-term supply not demonstrated",
+        "hook": "State review statutes (CEQA-style); see sepa-supply-adequacy",
+        "impact": 5, "viability": 5, "tractability": 5,
+        "why": "Needs no hydrologic proof — only that the approval document analysed "
+               "phase one and deferred build-out, which campus approvals routinely do. "
+               "The record is public by definition, and the remedy is the one opponents "
+               "actually want: approval vacated before construction, not damages after.",
+        "analog": "Vineyard v. Rancho Cordova (Cal. 2007); MCEA v. Pine Island (Minn. 2026)",
+    },
+    {
+        "rank": 2,
+        "theory": "High-capacity well permit — agency failed to weigh off-site impact",
+        "hook": "State withdrawal permitting; see well-cumulative-impact",
+        "impact": 5, "viability": 4, "tractability": 4,
+        "why": "Operates before the water is pumped rather than after the harm. The "
+               "catch is the trigger: the duty attaches only once concrete hydrologic "
+               "evidence is put in front of the agency, so it rewards exactly the "
+               "monitoring data this tracker collects.",
+        "analog": "Lake Beulah Mgmt. Dist. v. DNR (Wis. 2011)",
+    },
+    {
+        "rank": 3,
+        "theory": "Public trust — groundwater pumping depleting a connected stream",
+        "hook": "State public trust doctrine; see ptd-groundwater-nexus",
+        "impact": 5, "viability": 4, "tractability": 3,
+        "why": "Reaches ordinary campus-well hydrology, which is otherwise regulated as "
+               "groundwater and never as the surface diversion it functionally is. Puts "
+               "the duty on the county issuing the permit — the level these fights are "
+               "already being fought at. Needs a demonstrated aquifer-stream connection.",
+        "analog": "ELF v. SWRCB (Cal. App. 2018); Nat'l Audubon (Cal. 1983)",
+    },
+    {
+        "rank": 4,
+        "theory": "Consumer protection — published water claims are misleading",
+        "hook": "State deceptive-trade-practices law; see sl-greenwashing-udap",
+        "impact": 4, "viability": 4, "tractability": 5,
+        "why": "The most tractable theory in either table: the evidence is FOIA'd "
+               "utility billing records, not expert hydrology. Gets more available every "
+               "time a disclosure law adds reporting. Impact is reputational and "
+               "corrective rather than a limit on withdrawal.",
+        "analog": "Wangusi v. AWS (Va. Cir. Ct. 2026)",
+    },
+    {
+        "rank": 5,
+        "theory": "Utility declines to serve a large new load",
+        "hook": "Municipal service & shortage law; see util-shortage-moratorium",
+        "impact": 4, "viability": 5, "tractability": 4,
+        "why": "The only entry here that runs FOR the defending institution. A utility "
+               "facing genuine supply constraint may refuse, reviewable only for fraud "
+               "or caprice — and a capacity admission already on the record is the "
+               "rational basis. Depends entirely on the utility choosing to say no.",
+        "analog": "Swanson v. Marin MWD (Cal. App. 1976); Bessemer AL (2025-26)",
+    },
+    {
+        "rank": 6,
+        "theory": "Common-law negligence — subsidence or well interference",
+        "hook": "State common law; see cl-negligent-subsidence",
+        "impact": 4, "viability": 3, "tractability": 3,
+        "why": "The opening in rule-of-capture states: liability attaches to the manner "
+               "of withdrawal, not the fact of it. Strongest where drawdown produces "
+               "measurable subsidence. Needs an injured neighbour as plaintiff — a "
+               "coalition will hit the standing bar.",
+        "analog": "Friendswood Dev. v. Smith-Southwest (Tex. 1978)",
+    },
+    {
+        "rank": 7,
+        "theory": "Interstate apportionment of a shared aquifer",
+        "hook": "SCOTUS original jurisdiction; see eqap-interstate-aquifer",
+        "impact": 5, "viability": 3, "tractability": 2,
+        "why": "Highest ceiling, hardest to reach. Settled law since 2021 and directly "
+               "on point for the Memphis Sand, but it needs a state willing to sue and "
+               "clear-and-convincing proof of injury — which is why utility-level "
+               "reporting laws are the precondition rather than a side issue.",
+        "analog": "Mississippi v. Tennessee (2021)",
+    },
+    {
+        "rank": 8,
+        "theory": "Inter-basin transfer junior-priority challenge",
+        "hook": "Area-of-origin statutes; see xfer-area-of-origin",
+        "impact": 3, "viability": 4, "tractability": 4,
+        "why": "Underused and statutory rather than litigated: water piped out of basin "
+               "is junior to every right granted there first, so it is cut first in "
+               "drought. Applies only where supply actually crosses a basin line.",
+        "analog": "Tex. Water Code §11.085",
+    },
+]
+
+
 def _theory_score_cell(value: int) -> str:
     """Render one Impact/Viability/Tractability score cell, clamped to 1–5."""
     v = max(1, min(5, int(value)))
@@ -2434,10 +2345,20 @@ def render_cwa_application_theories():
     this project can source the evidence.
     """
     with st.expander(
-        "Prioritized CWA-application theories — what could attach to a data center"
+        "Prioritized application theories — what could attach to a data center"
     ):
         st.markdown(
             _build_cwa_theories_html(CWA_APPLICATION_THEORIES),
+            unsafe_allow_html=True,
+        )
+        st.markdown("##### Beyond the Clean Water Act — state and doctrine theories")
+        st.caption(
+            "Most tracked conflicts are about *getting* water, which the Clean "
+            "Water Act barely addresses. Same merit-only scoring, applied to the "
+            "non-CWA families in the Part 1 toolkit."
+        )
+        st.markdown(
+            _build_cwa_theories_html(DOCTRINE_APPLICATION_THEORIES),
             unsafe_allow_html=True,
         )
         st.caption(
@@ -2786,18 +2707,17 @@ def render_cwa_tracker():
     sites = conflicts_payload.get("sites", [])
     n_readings = len(authorities_payload.get("readings", []))
 
-    # Four sub-tabs instead of stacked expanders: Part 2 (the historical
-    # record most users want) no longer sits behind Part 1's content in the
-    # scroll order — each part is one click away. Mirrors the static site's
-    # .subtab/.subtabpanel pair (build_site.py).
+    # Sub-tabs instead of stacked expanders: Part 2 (the historical record
+    # most users want) no longer sits behind Part 1's content in the scroll
+    # order — each part is one click away. Mirrors the static site's
+    # .subtab/.subtabpanel pair (build_site.py). Conflict sites moved to the
+    # Issues & Claims tab (Spec A3), leaving this a purely legal record.
     st.markdown("---")
     tab_labels = [
         f"Part 1 · Toolkit ({n_readings})",
         f"Part 2 · Historical Record ({len(historical)})",
         f"Part 3 · Active/Potential Exposure ({len(potential)})",
     ]
-    if sites:
-        tab_labels.append(f"Part 4 · DC Water Conflicts ({len(sites)})")
     part_tabs = st.tabs(tab_labels)
 
     with part_tabs[0]:
@@ -2929,27 +2849,6 @@ def render_cwa_tracker():
             unsafe_allow_html=True,
         )
 
-    if sites:
-        with part_tabs[3]:
-            st.markdown(
-                f"**{len(sites)} named sites** with documented water problems or "
-                "community pushback — supply strain, dried wells, discharge "
-                "fights, secrecy, moratoriums. Each card maps the fact pattern to "
-                "the statutory readings from Part 1 that could reach it, citing "
-                "the historical cases that show each reading in use. Readings "
-                "overlap by design."
-            )
-            st.markdown(
-                "".join(
-                    _build_conflict_site_html(s, readings_by_id, all_ids)
-                    for s in sites
-                ),
-                unsafe_allow_html=True,
-            )
-            conflicts_updated = conflicts_payload.get("last_updated")
-            if conflicts_updated:
-                st.caption(f"Site roster last updated {conflicts_updated}.")
-
     last_updated = payload.get("last_updated") or "unknown"
     st.caption(
         f"Dataset last updated {last_updated}. "
@@ -2958,17 +2857,6 @@ def render_cwa_tracker():
     )
 
 
-def _cwa_case_caption(case_id: str) -> str:
-    """Human-readable caption derived from a case_id, for analog cross-links.
-
-    'County-of-Maui-v-Hawaii-Wildlife-Fund-2020' → 'County of Maui v Hawaii
-    Wildlife Fund (2020)'. Derived rather than curated so analog links never
-    go stale when a case's respondent text is edited.
-    """
-    m = re.match(r"^(.*?)-(\d{4}(?:-\d{4})?)$", case_id)
-    name, year = (m.group(1), m.group(2)) if m else (case_id, "")
-    caption = name.replace("-", " ")
-    return f"{caption} ({year})" if year else caption
 
 
 def _readings_by_id(payload: dict | None = None) -> dict:
@@ -3172,8 +3060,247 @@ def _build_authorities_html(payload: dict, case_ids: set[str] | None = None) -> 
     return "".join(blocks)
 
 
+def _site_outcome_profile(site: dict, cases_by_id: dict) -> list[tuple[str, int]]:
+    """Outcome types across every case a site points at, commonest first.
+
+    Derived at render rather than stored, so it can never drift from the
+    ``outcome_type`` values it summarizes — the same rule the statute pills
+    follow. Counts each case once even where several readings cite it, so a
+    heavily cross-referenced precedent does not dominate the profile.
+    """
+    seen: set[str] = set()
+    for mapping in site.get("applicable_readings", []):
+        # Negative mappings say a doctrine does NOT reach the site; their
+        # historical cases are counter-examples, not the site's likely path.
+        if mapping.get("reaches") is False:
+            continue
+        seen.update(mapping.get("analogous_cases", []) or [])
+    seen.update(site.get("related_case_ids", []) or [])
+
+    counts: dict[str, int] = {}
+    for case_id in seen:
+        case = cases_by_id.get(case_id)
+        if not case:
+            continue
+        for otype in case.get("outcome_type", []):
+            counts[otype] = counts.get(otype, 0) + 1
+    return sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
+
+
+def _build_site_outcome_note_html(site: dict, cases_by_id: dict) -> str:
+    """'What has happened in comparable matters' line for a conflict-site card.
+
+    Reports the historical record's shape without predicting this site's
+    outcome — the distinction the copy rule in the plan turns on.
+    """
+    profile = _site_outcome_profile(site, cases_by_id)
+    if not profile:
+        return ""
+    top = profile[:3]
+    parts = [
+        f"{OUTCOME_TYPE_LABELS.get(otype, otype).lower()} ({n})" for otype, n in top
+    ]
+    listed = ", ".join(parts[:-1]) + (f" and {parts[-1]}" if len(parts) > 1 else parts[-1])
+    total = sum(n for _, n in profile)
+    return (
+        '<div class="conflict-outcome-note">'
+        f"<strong>How comparable matters resolved:</strong> across the cases this "
+        f"site maps to, the recorded outcomes were most often {html.escape(listed)}"
+        f" — {total} outcome tags in total. Historical pattern only; it does not "
+        "predict what happens here."
+        "</div>"
+    )
+
+
+# Operator strings in the conflict registry are free text ("Amazon Web
+# Services", "Meta (campus built by Goat Systems LLC)", "QTS and Compass
+# (rezoning applicants)"), so the join to company_slug needs aliases the
+# display names do not supply.
+_COMPANY_ALIASES = {
+    "amazon": ("amazon", "aws"),
+    "meta": ("meta", "facebook"),
+    "google": ("google", "alphabet"),
+    "microsoft": ("microsoft",),
+    "xai": ("xai", "colossus"),
+    "qts": ("qts",),
+    "compass": ("compass",),
+    "oracle": ("oracle",),
+    "openai": ("openai",),
+    "crusoe": ("crusoe",),
+    "coreweave": ("coreweave",),
+    "nebius": ("nebius",),
+    "switch": ("switch",),
+    "edgeconnex": ("edgeconnex",),
+    "vantage": ("vantage",),
+    "wonder-valley": ("wonder valley",),
+    "anthropic": ("anthropic",),
+}
+
+
+def _site_company_slugs(site: dict) -> list[str]:
+    """Company slugs named in a site's free-text operator field."""
+    operator = str(site.get("operator", "")).lower()
+    return [
+        slug
+        for slug, aliases in _COMPANY_ALIASES.items()
+        if any(alias in operator for alias in aliases)
+    ]
+
+
+def _build_says_vs_does_html(site: dict, claims: list[dict], companies: dict) -> str:
+    """The operator's own water claims, shown on the conflict-site card.
+
+    The sharpest thing this dataset can do is put the two next to each other:
+    a company's water-positive pledge alongside the dried wells its campus is
+    accused of causing. Both halves already existed; nothing joined them,
+    because the claims lived in another tab entirely.
+
+    Company-level pledges are included as well as site-specific promises — a
+    global commitment is exactly what a local failure tests.
+    """
+    slugs = _site_company_slugs(site)
+    if not slugs:
+        return ""
+    site_id = site.get("site_id")
+    matched = [
+        c
+        for c in claims
+        if c.get("company_slug") in slugs
+        and (
+            site_id in (c.get("related_site_ids") or [])
+            or c.get("claim_type") in ("water-positive-pledge", "efficiency-wue")
+        )
+    ]
+    if not matched:
+        return ""
+
+    rows = []
+    for claim in matched[:3]:
+        status = (claim.get("delivered") or {}).get("status", "")
+        badge = (
+            f'<span class="svd-status svd-{html.escape(status)}">'
+            f"{html.escape(status.title())}</span>"
+            if status
+            else ""
+        )
+        company = companies.get(claim.get("company_slug", ""), claim.get("company_slug", ""))
+        rows.append(
+            f'<li><span class="svd-company">{html.escape(company)}</span> '
+            f"&ldquo;{html.escape(claim.get('statement', '')[:180])}&rdquo; {badge}</li>"
+        )
+    return (
+        '<div class="says-vs-does">'
+        '<div class="bill-section-label">What the operator says about water</div>'
+        f'<ul class="svd-list">{"".join(rows)}</ul></div>'
+    )
+
+
+def _issue_type_summary_html(sites: list[dict]) -> str:
+    """Count-by-issue-type strip. Answers 'what kinds of problem are these?'
+    before the reader opens a single card."""
+    counts: dict[str, int] = {}
+    for site in sites:
+        for tag in site.get("issue_types", []):
+            counts[tag] = counts.get(tag, 0) + 1
+    if not counts:
+        return ""
+    # Filter to known tags ONCE, before both the chips and the headline. The
+    # chips used to guard while the headline below did an unguarded lookup on
+    # the same data, so an unknown tag raised KeyError mid-render.
+    ordered = sorted(
+        ((t, n) for t, n in counts.items() if t in ISSUE_TYPE_LABELS),
+        key=lambda kv: (-kv[1], kv[0]),
+    )
+    if not ordered:
+        return ""
+    chips = "".join(
+        f'<span class="issue-pill" title="{html.escape(ISSUE_TYPE_DESCRIPTIONS[t])}">'
+        f"{html.escape(ISSUE_TYPE_LABELS[t])} <strong>{n}</strong></span>"
+        for t, n in ordered
+    )
+    top = ordered[0]
+    return (
+        '<div class="issue-summary">'
+        f"<p class=\"count-line\"><strong>{len(sites)} tracked sites</strong> across "
+        f"{len(ordered)} kinds of water problem &mdash; most commonly "
+        f"{html.escape(ISSUE_TYPE_LABELS[top[0]].lower())} ({top[1]} sites).</p>"
+        f'<div class="cwa-class-row">{chips}</div></div>'
+    )
+
+
+def _build_site_doctrine_matrix_html(sites: list[dict], readings_by_id: dict) -> str:
+    """Site x authority-family matrix — which doctrines are in play where.
+
+    The precedent engine's product face: one glance answers "what kind of law
+    is this fight actually about?" across the whole roster, which no amount of
+    reading individual cards gives you. Cells count mapped readings; a cell
+    marked with a dash is a doctrine explicitly recorded as NOT reaching that
+    site, which is information rather than absence.
+    """
+    if not sites:
+        return ""
+
+    grid: dict[str, dict[str, int]] = {}
+    negatives: dict[str, set[str]] = {}
+    for site in sites:
+        row: dict[str, int] = {}
+        neg: set[str] = set()
+        for mapping in site.get("applicable_readings", []):
+            reading = readings_by_id.get(mapping.get("reading_id"))
+            if not reading:
+                continue
+            family = reading["statute"]
+            if mapping.get("reaches") is False:
+                neg.add(family)
+            else:
+                row[family] = row.get(family, 0) + 1
+        grid[site["site_id"]] = row
+        negatives[site["site_id"]] = neg
+
+    families = _ordered_statutes(
+        {f for row in grid.values() for f in row} | {f for n in negatives.values() for f in n}
+    )
+    if not families:
+        return ""
+
+    head = "".join(
+        f'<th title="{html.escape(load_water_authorities()["statutes"].get(f, {}).get("name", f))}">'
+        f"{html.escape(f)}</th>"
+        for f in families
+    )
+    rows = []
+    for site in sites:
+        sid = site["site_id"]
+        cells = []
+        for family in families:
+            count = grid[sid].get(family, 0)
+            if count:
+                cells.append(f'<td class="dm-hit">{count}</td>')
+            elif family in negatives[sid]:
+                cells.append('<td class="dm-neg" title="recorded as NOT reaching this site">&ndash;</td>')
+            else:
+                cells.append('<td class="dm-none"></td>')
+        rows.append(
+            f'<tr><th class="dm-site"><a href="#site-{html.escape(sid)}">'
+            f'{html.escape(site.get("site", sid))}</a></th>{"".join(cells)}</tr>'
+        )
+
+    return (
+        '<div class="doctrine-matrix"><div class="table-wrap">'
+        '<table class="data-table"><thead><tr><th>Site</th>'
+        f"{head}</tr></thead><tbody>{''.join(rows)}</tbody></table></div>"
+        '<p class="src-note">Cells count the legal readings mapped to each site. '
+        "&ndash; marks a doctrine explicitly recorded as <em>not</em> reaching that "
+        "site. Family codes are the accordions in Part 1.</p></div>"
+    )
+
+
 def _build_conflict_site_html(
-    site: dict, readings_by_id: dict, case_ids: set[str] | None = None
+    site: dict,
+    readings_by_id: dict,
+    case_ids: set[str] | None = None,
+    cases_by_id: dict | None = None,
+    claims_ctx: tuple[list[dict], dict] | None = None,
 ) -> str:
     """One data-center conflict-site card: fact pattern → readings → cases."""
     esc = html.escape
@@ -3197,6 +3324,15 @@ def _build_conflict_site_html(
         }
     )
     class_bits.extend(_statute_pill_html(s) for s in statutes)
+    # Issue types answer "what kind of water problem is this?" — the question
+    # the prose summaries could only answer by being read. Outline chips per
+    # DESIGN.md §8: filled pills stay reserved for status.
+    for tag in site.get("issue_types", []):
+        if tag in ISSUE_TYPE_LABELS:
+            class_bits.append(
+                f'<span class="issue-pill" title="{esc(ISSUE_TYPE_DESCRIPTIONS[tag])}">'
+                f'{esc(ISSUE_TYPE_LABELS[tag])}</span>'
+            )
     if site.get("status_2026"):
         class_bits.append(
             f'<span class="cwa-instrument">{esc(site["status_2026"])}</span>'
@@ -3216,31 +3352,56 @@ def _build_conflict_site_html(
         )
     readings = site.get("applicable_readings", [])
     if readings:
-        items = []
-        for ar in readings:
+
+        def _reading_item(ar: dict, negative: bool) -> str:
             reading = readings_by_id.get(ar.get("reading_id"))
             label = (
                 _reading_link_html(reading)
                 if reading
                 else esc(ar.get("reading_id", ""))
             )
-            analog_html = ""
             analogs = ar.get("analogous_cases", [])
-            if analogs:
-                analog_html = (
-                    '<div class="cwa-analogs">Historical cases: '
-                    f'{_case_links_html(analogs, case_ids)}</div>'
-                )
-            items.append(
+            analog_html = (
+                '<div class="cwa-analogs">Historical cases: '
+                f'{_case_links_html(analogs, case_ids)}</div>'
+                if analogs
+                else ""
+            )
+            body_class = "cwa-pathway cwa-pathway-negative" if negative else "cwa-pathway"
+            return (
                 f'<div class="conflict-reading"><strong>{label}</strong>'
-                f'<div class="cwa-pathway">{esc(ar.get("how", ""))}'
+                f'<div class="{body_class}">{esc(ar.get("how", ""))}'
                 f"{analog_html}</div></div>"
             )
-        sections.append(
-            '<div class="bill-section-label">'
-            "Which statutory readings could apply</div>"
-            f'{"".join(items)}'
-        )
+
+        # Split positive from negative mappings. A doctrine that does NOT reach
+        # a site is genuinely useful — it stops an advocacy claim before it is
+        # made — but it must never be mistaken for one that does, so the two
+        # get separate headings and separate treatment.
+        applies = [ar for ar in readings if ar.get("reaches") is not False]
+        does_not = [ar for ar in readings if ar.get("reaches") is False]
+        if applies:
+            sections.append(
+                '<div class="bill-section-label">'
+                "Which legal readings could apply</div>"
+                f'{"".join(_reading_item(ar, False) for ar in applies)}'
+            )
+        if does_not:
+            sections.append(
+                '<div class="bill-section-label">'
+                "Doctrines that do NOT reach this site</div>"
+                f'{"".join(_reading_item(ar, True) for ar in does_not)}'
+            )
+    if claims_ctx:
+        says = _build_says_vs_does_html(site, claims_ctx[0], claims_ctx[1])
+        if says:
+            sections.append(says)
+
+    if cases_by_id:
+        note = _build_site_outcome_note_html(site, cases_by_id)
+        if note:
+            sections.append(note)
+
     detail_sections = []
     related = site.get("related_case_ids", [])
     if related:
@@ -3260,7 +3421,10 @@ def _build_conflict_site_html(
         )
     anchor = esc(site.get("site_id", ""))
     return (
-        f'<div class="bill-card" id="site-{anchor}">'
+        f'<div class="bill-card dc-site" id="site-{anchor}"'
+        # The static site filters on this attribute; the Streamlit app filters
+        # in Python before calling this builder. Same data, one source.
+        f' data-issues="{esc(" ".join(site.get("issue_types", [])))}">'
         f'{head}{class_row}{"".join(sections)}</div>'
     )
 
@@ -3418,12 +3582,49 @@ def _build_cwa_case_html(
 
 # --- Company Water Claims ---
 
-DELIVERED_STATUS_COLORS = {
-    "delivered": "success",
-    "partial": "warning",
-    "contested": "warning",
-    "shortfall": "danger",
-}
+def render_issues_and_claims():
+    """Issues & Claims tab — the problems, and what the operators say about them.
+
+    Spec A3. Previously this was two disconnected halves: conflict sites as
+    Part 4 of the legal-record tab, operator claims as a collapsed disclosure
+    at the bottom of Legislation. A reader wanting "what is the problem here
+    and what does the company say?" had to visit two tabs and join by hand.
+    """
+    st.subheader("Issues & Claims")
+
+    conflicts_payload = load_dc_water_conflicts()
+    sites = conflicts_payload.get("sites", [])
+    authorities_payload = load_water_authorities()
+    readings_by_id = _readings_by_id(authorities_payload)
+    cases = load_cwa_investigations().get("cases", [])
+    all_ids = {c.get("case_id") for c in cases}
+    cases_by_id = {c["case_id"]: c for c in cases}
+    claims_payload = load_company_water_claims()
+    claims_ctx = (claims_payload.get("claims", []), claims_payload.get("companies", {}))
+
+    if sites:
+        st.markdown(_issue_type_summary_html(sites), unsafe_allow_html=True)
+        st.markdown(f"#### Sites with reported water issues or pushback ({len(sites)})")
+        st.markdown("##### Which doctrines are in play where")
+        st.markdown(
+            _build_site_doctrine_matrix_html(sites, readings_by_id),
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            "".join(
+                _build_conflict_site_html(
+                    s, readings_by_id, all_ids, cases_by_id, claims_ctx
+                )
+                for s in sites
+            ),
+            unsafe_allow_html=True,
+        )
+        conflicts_updated = conflicts_payload.get("last_updated")
+        if conflicts_updated:
+            st.caption(f"Site roster last updated {conflicts_updated}.")
+
+    st.markdown("---")
+    render_company_water_claims()
 
 
 def render_company_water_claims():
@@ -3770,13 +3971,24 @@ def main():
             "via public regulatory data."
         )
 
-    tab_legislation, tab_cwa, tab_news, tab_solutions, tab_sources = st.tabs(
-        ["Legislation", "Water Cases", "News", "Solutions", "Sources"]
+    (
+        tab_legislation,
+        tab_cwa,
+        tab_issues,
+        tab_news,
+        tab_solutions,
+        tab_sources,
+    ) = st.tabs(
+        ["Legislation", "Water Cases", "Issues & Claims", "News", "Solutions", "Sources"]
     )
 
     # --- CWA Cases tab ---
     with tab_cwa:
         render_cwa_tracker()
+
+    # --- Issues & Claims tab ---
+    with tab_issues:
+        render_issues_and_claims()
 
     # --- News tab ---
     with tab_news:
@@ -3804,13 +4016,6 @@ def main():
         ):
             render_timeline()
 
-        st.markdown("---")
-        if st.toggle(
-            "Show Company Water Claims (29 verbatim operator quotes)",
-            value=False,
-            key="lazy_claims",
-        ):
-            render_company_water_claims()
 
     # --- Sources tab ---
     with tab_sources:

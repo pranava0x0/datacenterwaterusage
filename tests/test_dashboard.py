@@ -20,6 +20,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import pytest
 
 from dashboard import (
+    DELIVERED_STATUS_COLORS as _DELIVERED_STATUS_COLORS,
     _extract_flow_mgd,
     _file_signature,
     _classify_source,
@@ -1157,7 +1158,11 @@ class TestMasleyComparisons:
 # --- Tests for Company Water Claims panel (mirrored from datacentercommunitybenefits) ---
 
 
-VALID_DELIVERED_STATUS = {"delivered", "partial", "contested", "shortfall"}
+# Derived, not duplicated: the renderer colours a claim by looking this value
+# up, so a status the map does not know renders unstyled. Hardcoding the set
+# here meant adding "litigated" to the taxonomy failed a test that had no
+# opinion about it.
+VALID_DELIVERED_STATUS = set(_DELIVERED_STATUS_COLORS)
 
 
 class TestCompanyWaterClaims:
@@ -1493,7 +1498,9 @@ class TestDcWaterConflictsSchema:
         for s in self._sites():
             out = dash._build_conflict_site_html(s, rbi, case_ids)
             assert f'id="site-{s["site_id"]}"' in out
-            assert "Which statutory readings could apply" in out
+            # Renamed from "statutory readings" when the registry grew beyond
+            # federal statutes — a public-trust reopener is not statutory.
+            assert "Which legal readings could apply" in out
             first = s["applicable_readings"][0]["reading_id"]
             assert f'href="#reading-{first}"' in out
 
@@ -1550,3 +1557,49 @@ class TestLegislationThemeGrid:
             expected.append(n)
         assert rendered == expected
         assert all(n > 0 for n in rendered), rendered
+
+
+class TestDoctrineApplicationTheories:
+    """The theories panel stopped being CWA-only (plan Spec C3 front end)."""
+
+    def _theories(self):
+        import dashboard as dash
+
+        return dash.DOCTRINE_APPLICATION_THEORIES
+
+    def test_ranks_are_dense_and_unique(self):
+        ranks = sorted(t["rank"] for t in self._theories())
+        assert ranks == list(range(1, len(ranks) + 1))
+
+    def test_same_shape_as_the_cwa_table(self):
+        """Both tables go through one builder, so a missing key renders a
+        broken row rather than failing loudly."""
+        required = set(CWA_APPLICATION_THEORIES[0])
+        for t in self._theories():
+            assert required <= set(t), (t["theory"], required - set(t))
+
+    def test_scores_are_in_range(self):
+        for t in self._theories():
+            for axis in ("impact", "viability", "tractability"):
+                assert 1 <= t[axis] <= 5, (t["theory"], axis)
+
+    def test_each_theory_names_a_registry_reading_or_statute(self):
+        """A scored theory with no hook back into the toolkit is an opinion."""
+        import dashboard as dash
+
+        reading_ids = {r["reading_id"] for r in dash.load_water_authorities()["readings"]}
+        for t in self._theories():
+            hook = t["hook"]
+            assert any(rid in hook for rid in reading_ids) or "§" in hook, t["theory"]
+
+    def test_covers_the_supply_side_families(self):
+        """The gap this table exists to close: the CWA has little to say about
+        getting water, which is what most tracked conflicts are about."""
+        hooks = " ".join(t["hook"] for t in self._theories())
+        for reading in (
+            "sepa-supply-adequacy",
+            "well-cumulative-impact",
+            "ptd-groundwater-nexus",
+            "eqap-interstate-aquifer",
+        ):
+            assert reading in hooks, reading

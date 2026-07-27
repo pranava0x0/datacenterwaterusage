@@ -113,6 +113,73 @@ Python-based scraping and data extraction pipeline that finds documents related 
 - **Dashboard (deployed)**: a **pre-rendered static site**. `build_site.py` imports `dashboard`'s pure `_build_*_html` builders + data constants and emits a single self-contained `pages/index.html` (vanilla-JS tabs/filters/collapsibles, Chart.js for the 2 quantitative charts, CSS-grid heatmap). This replaced the old stlite/Pyodide WASM deploy in June 2026 — first paint went from ~25–40 s to ~35 ms. Edit a card builder or the data and both the Streamlit app and the static site change together; regenerate with `python build_site.py` — which also emits **`pages/llms.txt`**, an LLM-friendly markdown mirror (llmstxt.org convention: project summary, key numbers, the cross-bill principles summary, one-liners for every bill and CWA case with sources). It is linked from the page (`<link rel="alternate">` + footer) and test-enforced to contain every bill_id/case_id, so it can never drift from the page.
 - **Testing**: pytest + pytest-asyncio (507 tests)
 
+### Curated-data layer (`refdata/`, added 2026-07-25)
+
+The seven curated datasets are loaded, typed and cross-checked in one **pure**
+package — no `streamlit` import anywhere in it, enforced by test — so
+`dashboard.py`, `build_site.py`, `scripts/annotate_*.py` and the tests all
+share one definition:
+
+- `loaders.py` — the seven loaders. `functools.lru_cache(maxsize=2)` keyed on
+  `(path, mtime_ns, size)`; same cache-busting as the old `@st.cache_data`,
+  bounded so a long-running app doesn't retain every refresh. **Payloads are
+  shared and must be treated read-only.**
+- `taxonomies.py` — every closed taxonomy plus the palette. **A new value ships
+  in the SAME commit as the records that use it** — a value with no records
+  renders a filter chip matching nothing (caught in a build diff), and tests
+  enforce membership in both directions.
+- `registry.py` — one `id → Ref(kind, tab, anchor, label)` index over all
+  datasets. This is what makes moving a section between tabs a change to
+  `KIND_TABS` instead of a find-and-replace across three JSON files.
+- `integrity.py` — walks every cross-reference edge; one test asserts the whole
+  graph resolves and points at the right *kind* of record.
+
+**Anchors:** `bill-<slug>`, `cwa-<case_id>`, `reading-<id>`, `site-<id>`,
+`claim-<id>`, `news-<id>`, `solution-<id>`. A build test asserts every internal
+`href="#x"` has a matching `id="x"` — registry-level integrity does not prove
+the renderer emitted the anchor.
+
+### Status monitors (`scrapers/monitors/`, added 2026-07-26)
+
+`python3 -m scrapers.monitors.run [--dry-run] [--only ID]` — see `REFRESH.md`.
+Runs weekly unattended via `.github/workflows/monitors.yml` (Mondays 07:23 UTC,
+`workflow_dispatch` for a manual run). The fingerprint cache round-trips through
+the actions cache — **not** an artifact, which cannot read a prior run's state —
+and the candidate queue is uploaded as `monitor-hits` for triage. The workflow
+has `contents: read` only; it proposes, it never commits.
+
+- **Monitors propose; humans dispose.** Nothing here writes to a curated
+  dataset; changes land in `data/output/monitor_hits.json` for adjudication. A
+  test fails if `base_monitor.py` acquires a write call.
+- **The watch list is derived** from records carrying a `monitor` block — no
+  second list to drift.
+- `legiscan` keys are a numeric LegiScan id or `"<STATE> <BILLNUM>"` (resolved
+  via `getSearch`, matched exactly). `getBill` takes the *numeric* id only —
+  passing a bill number returns an error payload, which is why the response
+  `status` is validated rather than fingerprinted.
+- Needs `LEGISCAN_API_KEY` in the environment; never committed.
+
+### Sources that block automated clients (verified 2026-07-27)
+
+Check before pointing a scraper or monitor at one:
+
+| Source | Behaviour | Use instead |
+|---|---|---|
+| Justia | **403 to every automated request**, including valid URLs — a 403 tells you nothing about whether the page exists | WebSearch; never pattern-construct a citation URL and assume it resolves |
+| CourtListener | serves a bot challenge; WebFetch reads blank | WebSearch |
+| congress.gov, nysenate.gov | 403 | LegiScan API |
+| deq.virginia.gov | 403 (WAF, see errors.md 2026-02-24) | Virginia Regulatory Town Hall |
+| legislature.mi.gov, permitting.gov, federalregister.gov | 200 | direct |
+
+### UAT note: the preview pane and `file://`
+
+`pages/index.html` opened over `file://` renders as a **static snapshot**:
+screenshots come back blank and geometry is unmeasurable (`clientWidth` reports
+0, so any "horizontal overflow" reading there is an artifact). DOM state and
+interaction *are* live — `javascript_tool` is the reliable verification channel.
+Verify layout containment structurally (e.g. the element sits in
+`.table-wrap{overflow-x:auto}`) rather than by measuring.
+
 ### Key Directories
 - `scrapers/` — one module per government portal, organized by state
 - `extractors/` — PDF text extraction, keyword matching, entity extraction

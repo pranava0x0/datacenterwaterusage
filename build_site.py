@@ -88,7 +88,8 @@ def build_legislation_tab() -> str:
         f'<div class="leg-bill" data-status="{esc(b.get("status",""))}" '
         f'data-level="{esc(b.get("level",""))}" '
         f'data-scope="{esc(" ".join(b.get("scope", [])))}" '
-        f'data-principles="{esc(" ".join(sorted({_principle_slug(p.get("tag","")) for p in b.get("general_principles", [])})))}">'
+        f'data-principles="{esc(" ".join(sorted({_principle_slug(p.get("tag","")) for p in b.get("general_principles", [])})))}" '
+        f'data-instrument="{esc(b.get("instrument_type", "bill"))}">'
         f'{dash._build_bill_card_html(b)}</div>'
         for b in sorted_bills
     )
@@ -118,6 +119,17 @@ def build_legislation_tab() -> str:
         f'value="{k}" checked> {esc(v)}</label>'
         for k, v in dash.LEGISLATION_SCOPE_LABELS.items()
     )
+    instrument_counts: dict[str, int] = {}
+    for b in bills:
+        itype = b.get("instrument_type", "bill")
+        instrument_counts[itype] = instrument_counts.get(itype, 0) + 1
+    instrument_boxes = "".join(
+        f'<label class="chip-check"><input type="checkbox" class="leg-instrument" '
+        f'value="{k}" checked> {esc(dash.INSTRUMENT_TYPE_LABELS[k])} '
+        f'({instrument_counts[k]})</label>'
+        for k in dash.INSTRUMENT_TYPE_LABELS
+        if k in instrument_counts
+    )
     status_labels_json = json.dumps(dash.LEGISLATION_STATUS_LABELS)
     status_order_json = json.dumps(dash.LEGISLATION_STATUS_ORDER)
 
@@ -142,6 +154,10 @@ def build_legislation_tab() -> str:
     <span class="filter-label">Level:</span>{level_boxes}
     <span class="filter-label">Scope:</span>{scope_boxes}
   </div>
+  <div class="cwa-filters">
+    <span class="filter-label">Instrument:</span>
+    <div class="cwa-types">{instrument_boxes}</div>
+  </div>
   <p class="count-line" id="leg-count"></p>
   <div id="leg-bills">{cards}</div>
   <p class="src-note">Dataset last updated {esc(last_updated)}. Verification status for
@@ -157,11 +173,6 @@ def build_legislation_tab() -> str:
 <details class="lazy">
   <summary>Show Policy &amp; Disclosure Timeline</summary>
   {build_timeline()}
-</details>
-
-<details class="lazy">
-  <summary>Show Company Water Claims (29 verbatim operator quotes)</summary>
-  {build_company_claims()}
 </details>
 """
 
@@ -212,7 +223,7 @@ def build_company_claims() -> str:
     )
 
     parts = [
-        '<section class="panel"><h3>Company Water Claims</h3>',
+        '<section class="panel">',
         intro,
         f'<p class="count-line"><strong>{len(claims)} claims</strong> · '
         f'{company_count} companies · {delivered_count} delivered-vs-promised '
@@ -224,6 +235,10 @@ def build_company_claims() -> str:
         "partial": ("Partial", "partial"),
         "contested": ("Contested", "partial"),
         "shortfall": ("Shortfall", "shortfall"),
+        # A claim whose truth is before a court or regulator. Rendered in the
+        # shortfall (danger) treatment because the exposure is real, with copy
+        # that says the claim is being TESTED — the tracker does not adjudicate.
+        "litigated": ("Contested in court", "shortfall"),
     }
     for claim in claims:
         slug = claim.get("company_slug", "unknown")
@@ -248,6 +263,30 @@ def build_company_claims() -> str:
             cap.append(f'Project: <code>{esc(str(project_id))}</code>')
         caption = f'<div class="claim-meta">{" · ".join(cap)}</div>' if cap else ""
 
+        # Classification and lifecycle row: what kind of promise this is, which
+        # tracked sites it is about, and whether it is under legal challenge.
+        chips = []
+        ctype = claim.get("claim_type")
+        if ctype in dash.CLAIM_TYPE_LABELS:
+            chips.append(
+                f'<span class="claim-type-pill">{esc(dash.CLAIM_TYPE_LABELS[ctype])}</span>'
+            )
+        for case_id in claim.get("challenged_in", []):
+            ref = dash.resolve_ref(case_id)
+            if ref:
+                chips.append(
+                    f'<a class="claim-challenge-pill" href="#{esc(ref.anchor)}">'
+                    f'&#9878; Challenged in court</a>'
+                )
+        for site_id in claim.get("related_site_ids", []):
+            ref = dash.resolve_ref(site_id)
+            if ref:
+                chips.append(
+                    f'<a class="claim-site-link" href="#{esc(ref.anchor)}">'
+                    f'&rarr; {esc(ref.label)}</a>'
+                )
+        chip_row = f'<div class="claim-chips">{"".join(chips)}</div>' if chips else ""
+
         box = ""
         delivered = claim.get("delivered")
         if delivered:
@@ -271,8 +310,9 @@ def build_company_claims() -> str:
             )
 
         parts.append(
-            f'<div class="claim-card"><p class="claim-quote">“{statement}”</p>'
-            f'{caption}{box}</div>'
+            f'<div class="claim-card" id="claim-{esc(claim.get("id", ""))}">'
+            f'<p class="claim-quote">“{statement}”</p>'
+            f'{caption}{chip_row}{box}</div>'
         )
 
     parts.append(
@@ -291,13 +331,110 @@ def build_company_claims() -> str:
 # --------------------------------------------------------------------------
 
 
+def build_issues_claims_tab() -> str:
+    """The Issues & Claims tab: what the problems are, and what operators say.
+
+    Spec A3. This story used to be split across three places — conflict sites
+    were Part 4 of a legal-record tab, operator claims were a collapsed
+    disclosure at the bottom of Legislation, and nothing joined them. A reader
+    asking "what is the problem here, and what does the company say about it?"
+    had to know to look in two tabs and then do the join themselves.
+
+    Section order answers that question in one pass: what kinds of problem
+    exist → where → what the operator promised → which promises are contested.
+    """
+    conflicts_payload = dash.load_dc_water_conflicts()
+    conflict_sites = conflicts_payload.get("sites", [])
+    conflicts_updated = conflicts_payload.get("last_updated") or "unknown"
+
+    authorities_payload = dash.load_water_authorities()
+    readings_by_id = dash._readings_by_id(authorities_payload)
+    cases = dash.load_cwa_investigations().get("cases", [])
+    all_ids = {c.get("case_id") for c in cases}
+    cases_by_id = {c["case_id"]: c for c in cases}
+
+    claims_payload = dash.load_company_water_claims()
+    claims = claims_payload.get("claims", [])
+    companies = claims_payload.get("companies", {})
+    claims_ctx = (claims, companies)
+
+    summary_strip = dash._issue_type_summary_html(conflict_sites)
+    doctrine_matrix = dash._build_site_doctrine_matrix_html(conflict_sites, readings_by_id)
+    site_cards = "".join(
+        dash._build_conflict_site_html(s, readings_by_id, all_ids, cases_by_id, claims_ctx)
+        for s in conflict_sites
+    )
+
+    issue_counts: dict[str, int] = {}
+    for s in conflict_sites:
+        for t in s.get("issue_types", []):
+            issue_counts[t] = issue_counts.get(t, 0) + 1
+    issue_boxes = "".join(
+        f'<label class="chip-check" title="{esc(dash.ISSUE_TYPE_DESCRIPTIONS[k])}">'
+        f'<input type="checkbox" class="dc-issue" value="{esc(k)}" checked> '
+        f'{esc(dash.ISSUE_TYPE_LABELS[k])} ({issue_counts[k]})</label>'
+        # Unknown tags are skipped rather than raising: a schema test blocks
+        # them from landing, but a render must not be the thing that fails.
+        for k in sorted(issue_counts, key=lambda k: (-issue_counts[k], k))
+        if k in dash.ISSUE_TYPE_LABELS
+    )
+
+    # Claims whose truth is now before a court or regulator. Small on purpose:
+    # one entry today, and the callout exists so a second is impossible to miss.
+    challenged = [c for c in claims if c.get("challenged_in")]
+    challenge_rows = "".join(
+        f'<li><strong>{esc(companies.get(c.get("company_slug", ""), ""))}</strong> — '
+        f'&ldquo;{esc(c.get("statement", "")[:150])}&rdquo; '
+        + " ".join(
+            f'<a href="#{esc(ref.anchor)}">{esc(ref.label)}</a>'
+            for ref in (dash.resolve_ref(cid) for cid in c["challenged_in"])
+            if ref
+        )
+        + "</li>"
+        for c in challenged
+    )
+    challenge_block = (
+        '<div class="context-card"><h4>Claims currently under legal challenge</h4>'
+        f"<ul>{challenge_rows}</ul>"
+        "<p class=\"source-note\">Listed because the claim is being tested in a "
+        "forum, not because it has been found false.</p></div>"
+        if challenged
+        else ""
+    )
+
+    return f"""
+<section class="panel">
+  <h2>Issues &amp; Claims — What Goes Wrong, and What Operators Say</h2>
+  <p class="lead">Every tracked data-center site with a documented water problem or
+  community pushback, classified by the kind of problem it is and mapped to the legal
+  readings that could reach it — shown alongside the operating company's own public
+  water claims, so the promise and the record sit on the same card.</p>
+
+  {summary_strip}
+
+  <h3>Sites with reported water issues or pushback ({len(conflict_sites)})</h3>
+  <h4 class="solution-cat-header">Which doctrines are in play where</h4>
+  {doctrine_matrix}
+  <div class="cwa-filters">
+    <span class="filter-label">Issue type:</span>
+    <div class="cwa-types">{issue_boxes}</div>
+  </div>
+  <p class="count-line" id="conflict-count"></p>
+  <div id="dc-conflicts">{site_cards}</div>
+  <p class="src-note">Site roster last updated {esc(conflicts_updated)}.</p>
+
+  <h3>Operator water claims ({len(claims)})</h3>
+  {challenge_block}
+  {build_company_claims()}
+</section>
+"""
+
+
 def build_cwa_tab() -> str:
     payload = dash.load_cwa_investigations()
     cases = payload.get("cases", [])
     authorities_payload = dash.load_water_authorities()
     readings_by_id = dash._readings_by_id(authorities_payload)
-    conflicts_payload = dash.load_dc_water_conflicts()
-    conflict_sites = conflicts_payload.get("sites", [])
     historical = [c for c in cases if c.get("display_section", "historical") == "historical"]
     potential = [c for c in cases if c.get("display_section") == "potential"]
     stats = dash._cwa_datacenter_insights(historical)
@@ -343,6 +480,7 @@ def build_cwa_tab() -> str:
 </details>"""
 
     theories = dash._build_cwa_theories_html(dash.CWA_APPLICATION_THEORIES)
+    doctrine_theories = dash._build_cwa_theories_html(dash.DOCTRINE_APPLICATION_THEORIES)
     explainer = md(dash._cwa_statute_explainer_md())
 
     # Section 1: historical cases — filter checkboxes (project type + category).
@@ -373,6 +511,7 @@ def build_cwa_tab() -> str:
     # Sort like the app: category order, then year descending; wrap each card in
     # a div carrying machine-readable category + type + end-year for filtering.
     all_ids = {c.get("case_id") for c in cases}
+    cases_by_id = {c["case_id"]: c for c in cases}
     sorted_hist = sorted(
         historical,
         key=lambda c: (
@@ -407,13 +546,6 @@ def build_cwa_tab() -> str:
     toolkit = dash._build_authorities_html(authorities_payload, all_ids)
     n_readings = len(authorities_payload.get("readings", []))
 
-    # Part 4: DC sites with documented water conflicts.
-    site_cards = "".join(
-        dash._build_conflict_site_html(s, readings_by_id, all_ids)
-        for s in conflict_sites
-    )
-    conflicts_updated = conflicts_payload.get("last_updated") or "unknown"
-
     cat_labels_json = json.dumps(dash.CWA_CATEGORY_LABELS)
     cat_order_json = json.dumps(dash.CWA_CATEGORY_ORDER)
 
@@ -431,6 +563,11 @@ def build_cwa_tab() -> str:
   <details class="lazy">
     <summary>Prioritized CWA-application theories — what could attach to a data center</summary>
     <section class="panel">{theories}
+    <h4 class="solution-cat-header">Beyond the Clean Water Act — state and doctrine theories</h4>
+    <p>Most tracked conflicts are about <em>getting</em> water, which the Clean Water Act
+    barely addresses. Same merit-only scoring, applied to the non-CWA families in the
+    Part&nbsp;1 toolkit.</p>
+    {doctrine_theories}
     <p class="src-note">Full write-up with primary-source citations:
     docs/cwa-enforcement-and-data-centers.md</p></section>
   </details>
@@ -443,7 +580,6 @@ def build_cwa_tab() -> str:
     <button class="subtab" role="tab" data-subtab="cwa-p1" aria-selected="false">Part 1 · Toolkit ({n_readings})</button>
     <button class="subtab" role="tab" data-subtab="cwa-p2" aria-selected="true">Part 2 · Historical Record ({len(historical)})</button>
     <button class="subtab" role="tab" data-subtab="cwa-p3" aria-selected="false">Part 3 · Active/Potential Exposure ({len(potential)})</button>
-    <button class="subtab" role="tab" data-subtab="cwa-p4" aria-selected="false">Part 4 · DC Water Conflicts ({len(conflict_sites)})</button>
   </div>
 
   <div class="subtabpanel" id="panel-cwa-p1" hidden>
@@ -490,16 +626,6 @@ def build_cwa_tab() -> str:
     <div id="cwa-potential">{pot_cards}</div>
   </div>
 
-  <div class="subtabpanel" id="panel-cwa-p4" hidden>
-    <h3>Part 4 — Data-Center Sites with Reported Water Issues or Pushback ({len(conflict_sites)})</h3>
-    <p><strong>{len(conflict_sites)} named sites</strong> with documented water problems or
-    community pushback — supply strain, dried wells, discharge fights, secrecy,
-    moratoriums. Each card maps the fact pattern to the statutory readings from Part 1
-    that could reach it, citing the historical cases that show each reading in use.
-    Readings overlap by design.</p>
-    <div id="dc-conflicts">{site_cards}</div>
-    <p class="src-note">Site roster last updated {esc(conflicts_updated)}.</p>
-  </div>
 
   <p class="src-note">Dataset last updated {esc(last_updated)}.
   Total: {len(cases)} entries ({len(historical)} historical enforcement,
@@ -1154,6 +1280,11 @@ details.lazy .panel{margin:0}
 .claim-company{margin:1rem 0 .3rem;color:var(--blue)}
 .claim-card{border:1px solid #e2e8f0;border-radius:.5rem;background:#fff;padding:.8rem 1rem;margin:.5rem 0}
 .claim-quote{font-style:italic;margin:0 0 .4rem}
+.claim-chips{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin:.3rem 0 .45rem}
+.claim-type-pill{background:transparent;border:1px solid #6b7280;color:#4b5563;border-radius:999px;padding:.05rem .55rem;font-size:.72rem;font-weight:600}
+.claim-challenge-pill{background:#fdeaec;border:1px solid #c41e3a;color:#c41e3a;border-radius:999px;padding:.05rem .55rem;font-size:.72rem;font-weight:700;text-decoration:none}
+.claim-site-link{font-size:.78rem;color:#08519c;text-decoration:none}
+.claim-site-link:hover{text-decoration:underline}
 .claim-meta{color:#666;font-size:.8rem}
 .claim-status{margin-top:.6rem;padding:.6rem .8rem;border-radius:.35rem;font-size:.9rem}
 .claim-status-summary{margin-top:.3rem}
@@ -1281,14 +1412,16 @@ subtabs.forEach(t => t.addEventListener('click', () => activateSubtab(t.dataset.
 // low-end mobile as the dataset grows.
 const legCount = document.getElementById('leg-count');
 const legBills = [...document.querySelectorAll('.leg-bill')];
-const legChecks = [...document.querySelectorAll('.leg-status, .leg-level, .leg-scope, .leg-principle')];
+const legChecks = [...document.querySelectorAll('.leg-status, .leg-level, .leg-scope, .leg-principle, .leg-instrument')];
 function applyLegFilter(){
-  const statuses = new Set(), levels = new Set(), scopes = new Set(), prins = new Set();
+  const statuses = new Set(), levels = new Set(), scopes = new Set(),
+        prins = new Set(), instruments = new Set();
   legChecks.forEach(c => {
     if (!c.checked) return;
     if (c.classList.contains('leg-status')) statuses.add(c.value);
     else if (c.classList.contains('leg-level')) levels.add(c.value);
     else if (c.classList.contains('leg-scope')) scopes.add(c.value);
+    else if (c.classList.contains('leg-instrument')) instruments.add(c.value);
     else prins.add(c.value);
   });
   const counts = {};
@@ -1297,18 +1430,48 @@ function applyLegFilter(){
     const sc = (el.dataset.scope || '').split(' ').filter(Boolean);
     const pr = (el.dataset.principles || '').split(' ').filter(Boolean);
     const ok = statuses.has(el.dataset.status) && levels.has(el.dataset.level) &&
-      sc.some(s => scopes.has(s)) && pr.some(p => prins.has(p));
+      sc.some(s => scopes.has(s)) && pr.some(p => prins.has(p)) &&
+      instruments.has(el.dataset.instrument || 'bill');
     el.hidden = !ok;
     if (ok){ shown++; counts[el.dataset.status] = (counts[el.dataset.status]||0)+1; }
   });
   const lOrder = window.LEG_STATUS_ORDER || {}, lLabels = window.LEG_STATUS_LABELS || {};
   const lSummary = Object.keys(counts).sort((a,b)=>(lOrder[a]??9)-(lOrder[b]??9))
     .map(k => counts[k] + ' ' + (lLabels[k]||k)).join(' · ');
-  legCount.innerHTML = '<strong>Showing ' + shown + ' of ' + window.LEG_TOTAL +
-    ' bills</strong>' + (lSummary ? ' — ' + lSummary : '');
+  // "instruments", not "bills": 15 of these are executive orders, agency
+  // rules, commission dockets and local ordinances.
+  const legStrong = document.createElement('strong');
+  legStrong.textContent = 'Showing ' + shown + ' of ' + window.LEG_TOTAL + ' instruments';
+  legCount.replaceChildren(legStrong);
+  if (lSummary) legCount.append(' — ' + lSummary);
 }
 legChecks.forEach(c => c.addEventListener('change', applyLegFilter));
 if (legCount) applyLegFilter();
+
+// --- Part 4 conflict-site filtering by issue type ---
+const conflictCount = document.getElementById('conflict-count');
+const dcSites = [...document.querySelectorAll('.dc-site')];
+const issueChecks = [...document.querySelectorAll('.dc-issue')];
+function applyIssueFilter(){
+  const picked = new Set(issueChecks.filter(c => c.checked).map(c => c.value));
+  let shown = 0;
+  dcSites.forEach(el => {
+    // A site carries 1-3 tags and matches if ANY is picked — the tags are
+    // facets of one conflict, not alternatives, so requiring all of them
+    // would hide a site the moment you narrowed to one of its own problems.
+    const tags = (el.dataset.issues || '').split(' ').filter(Boolean);
+    const ok = tags.some(t => picked.has(t));
+    el.hidden = !ok;
+    if (ok) shown++;
+  });
+  if (conflictCount){
+    const strong = document.createElement('strong');
+    strong.textContent = 'Showing ' + shown + ' of ' + dcSites.length + ' sites';
+    conflictCount.replaceChildren(strong);
+  }
+}
+issueChecks.forEach(c => c.addEventListener('change', applyIssueFilter));
+if (conflictCount) applyIssueFilter();
 
 // --- CWA filtering ---
 const cwaCount = document.getElementById('cwa-count');
@@ -1373,11 +1536,18 @@ document.addEventListener('click', e => {
   // block) can't be scrolled to in all browsers — open the ancestors first.
   let det = target.closest('details');
   while (det) { det.open = true; det = det.parentElement && det.parentElement.closest('details'); }
-  const wrap = target.closest('.leg-bill, .cwa-case');
+  const wrap = target.closest('.leg-bill, .cwa-case, .dc-site');
   if (wrap && wrap.hidden) {
     if (wrap.classList.contains('leg-bill')) {
       legChecks.forEach(c => { c.checked = true; });
       applyLegFilter();
+    } else if (wrap.classList.contains('dc-site')) {
+      // Conflict cards are .bill-card.dc-site, so they fell through to the
+      // CWA branch and were never unhidden — the handler scrolled to a hidden
+      // element. Every doctrine-matrix row links here, and the matrix sits
+      // directly above the filter that hides them.
+      issueChecks.forEach(c => { c.checked = true; });
+      applyIssueFilter();
     } else {
       cwaCatChecks.forEach(c => { c.checked = true; });
       cwaTypeChecks.forEach(c => { c.checked = true; });
@@ -1564,6 +1734,7 @@ def build_llms_txt() -> str:
 def build_html() -> str:
     legislation = build_legislation_tab()
     cwa = build_cwa_tab()
+    issues = build_issues_claims_tab()
     news = build_news_tab()
     solutions = build_solutions_tab()
     sources_html = build_sources_tab()
@@ -1590,6 +1761,7 @@ def build_html() -> str:
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" data-tab="legislation" aria-selected="true">Legislation</button>
     <button class="tab" role="tab" data-tab="cwa" aria-selected="false">Water Cases</button>
+    <button class="tab" role="tab" data-tab="issues" aria-selected="false">Issues &amp; Claims</button>
     <button class="tab" role="tab" data-tab="news" aria-selected="false">News</button>
     <button class="tab" role="tab" data-tab="solutions" aria-selected="false">Solutions</button>
     <button class="tab" role="tab" data-tab="sources" aria-selected="false">Sources</button>
@@ -1597,6 +1769,7 @@ def build_html() -> str:
 
   <div class="tabpanel" id="panel-legislation" role="tabpanel">{legislation}</div>
   <div class="tabpanel" id="panel-cwa" role="tabpanel" hidden>{cwa}</div>
+  <div class="tabpanel" id="panel-issues" role="tabpanel" hidden>{issues}</div>
   <div class="tabpanel" id="panel-news" role="tabpanel" hidden>{news}</div>
   <div class="tabpanel" id="panel-solutions" role="tabpanel" hidden>{solutions}</div>
   <div class="tabpanel" id="panel-sources" role="tabpanel" hidden>{sources_html}</div>

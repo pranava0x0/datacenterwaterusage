@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-07-06",
+  "last_updated": "2026-07-26",
   "note": "Clean Water Act enforcement actions and landmark precedent cases relevant to data center water use and cooling discharge. Four categories: 'datacenter' = direct CWA actions against named hyperscale operators or their contractors, including state permit enforcement and §404 permit applications with significant wetland/stream impacts (e.g. Amazon Boardman nitrate settlement, Google §404 applications in VA and AR); 'adjacent' = water-relevant actions at data-center sites where the binding or active enforcement sits OUTSIDE the CWA — a Clean Air Act suit, a local well-permitting action, a §404 citizen suit over data-center power infrastructure, or a permitted-but-paused voluntary water commitment; 'industrial' = enforcement against large industrial water users that are the closest practical analogs (cooling water §316(a)/(b), pretreatment, sewer-system consent decrees, PFAS, CAFO discharges); 'precedent' = Supreme Court and federal appellate rulings that set the legal scope of the CWA, including Loper Bright (2024) ending Chevron deference and Lewis v. US (5th Cir. 2023) applying Sackett. Comprehensive coverage for 2020-present, with foundational earlier cases retained as benchmarks (Smithfield 1997, Tyson 2003, Brayton Point 2003-2007). Direct hyperscaler enforcement remains thin because operators usually sit behind contractor-permittee structures and discharge to municipal sewers — the industrial cases show what enforcement looks like once that shield slips. The Amazon Boardman 2026 $20.5M nitrate settlement is the first eight-figure direct-hyperscaler water settlement. The Port of Morrow OR DEQ enforcement ($727K, 2024) is the largest state-level penalty at a WWTP explicitly identified as receiving data center wastewater. Google's concurrent §404 applications in VA (Project Raspberry, Project Loch) and AR (Port of Little Rock, 16.8 ac wetlands) mark a new wave of federal permitting scrutiny on data center construction in sensitive watersheds. July 2, 2026 expansion: the dataset now spans federal water authorities beyond the CWA — 10 historical SDWA / TSCA / RCRA / Rivers-and-Harbors-Act cases and rulemakings (DuPont Washington Works PFOA, 3M TSCA 8(e), Flint and Trinity American SDWA 1431, Alisal receivership, Edwards sole-source-aquifer designation, the 1999 UIC Class V rule, Interfaith v. Honeywell RCRA 7002, US v. Republic Steel RHA 10/13, and the TSCA 8(a)(7) PFAS reporting rule) — and every case carries an 'authorities' list of reading_ids from data/reference/water_authorities.json mapping it to the statutory readings it used or could trigger (overlap intentional).",
   "cases": [
     {
@@ -39,6 +39,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-construction-stormwater"
+      ],
+      "outcome_type": [
+        "monetary-penalty"
       ]
     },
     {
@@ -80,6 +83,9 @@
       "authorities": [
         "sdwa-1431-emergency",
         "sdwa-source-water-protection"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -114,6 +120,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty"
       ]
     },
     {
@@ -143,6 +152,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty"
       ]
     },
     {
@@ -173,6 +185,10 @@
       "authorities": [
         "cwa-316-cooling",
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "permit-issued",
+        "permit-conditioned"
       ]
     },
     {
@@ -202,6 +218,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-307-pretreatment"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree"
       ]
     },
     {
@@ -236,6 +256,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-307-pretreatment"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree"
       ]
     },
     {
@@ -261,6 +285,10 @@
       "authorities": [
         "cwa-316-cooling",
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree"
       ]
     },
     {
@@ -295,6 +323,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-404-dredge-fill"
+      ],
+      "outcome_type": [
+        "jurisdiction-narrowed"
       ]
     },
     {
@@ -329,6 +360,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-maui-groundwater"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed"
       ]
     },
     {
@@ -363,6 +397,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-316-cooling"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed"
       ]
     },
     {
@@ -397,6 +434,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-404-dredge-fill"
+      ],
+      "outcome_type": [
+        "jurisdiction-narrowed"
       ]
     },
     {
@@ -426,6 +466,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-construction-stormwater"
+      ],
+      "outcome_type": [
+        "consent-decree"
       ]
     },
     {
@@ -467,6 +510,10 @@
         "cwa-402-construction-stormwater",
         "cwa-505-citizen-suit",
         "cwa-404-dredge-fill"
+      ],
+      "outcome_type": [
+        "injunction-stop-work",
+        "pending-undecided"
       ]
     },
     {
@@ -506,6 +553,11 @@
       "display_section": "historical",
       "authorities": [
         "sdwa-source-water-protection"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "compliance-order",
+        "pending-undecided"
       ]
     },
     {
@@ -546,6 +598,9 @@
       "display_section": "potential",
       "authorities": [
         "cwa-402-construction-stormwater"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -581,6 +636,11 @@
       "authorities": [
         "cwa-316-cooling",
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree",
+        "permit-conditioned"
       ]
     },
     {
@@ -610,6 +670,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-311-spills"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree"
       ]
     },
     {
@@ -640,6 +704,11 @@
       "authorities": [
         "cwa-402-npdes",
         "tsca-8a7-pfas-reporting"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "permit-conditioned",
+        "compliance-order"
       ]
     },
     {
@@ -674,6 +743,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree"
       ]
     },
     {
@@ -708,6 +781,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-311-spills"
+      ],
+      "outcome_type": [
+        "consent-decree"
       ]
     },
     {
@@ -742,6 +818,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree"
       ]
     },
     {
@@ -776,6 +856,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree"
       ]
     },
     {
@@ -810,6 +894,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "consent-decree"
       ]
     },
     {
@@ -844,6 +931,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree"
       ]
     },
     {
@@ -869,6 +960,9 @@
       "authorities": [
         "cwa-307-pretreatment",
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "consent-decree"
       ]
     },
     {
@@ -903,6 +997,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty"
       ]
     },
     {
@@ -942,6 +1039,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-construction-stormwater"
+      ],
+      "outcome_type": [
+        "consent-decree"
       ]
     },
     {
@@ -981,6 +1081,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty"
       ]
     },
     {
@@ -1015,6 +1118,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty"
       ]
     },
     {
@@ -1054,6 +1160,12 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree",
+        "permit-issued",
+        "permit-conditioned"
       ]
     },
     {
@@ -1078,6 +1190,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "consent-decree"
       ]
     },
     {
@@ -1117,6 +1232,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-307-pretreatment"
+      ],
+      "outcome_type": [
+        "consent-decree"
       ]
     },
     {
@@ -1146,6 +1264,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty"
       ]
     },
     {
@@ -1180,6 +1301,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "permit-conditioned"
       ]
     },
     {
@@ -1214,6 +1338,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-maui-groundwater"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed"
       ]
     },
     {
@@ -1248,6 +1375,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-401-certification"
+      ],
+      "outcome_type": [
+        "permit-denied",
+        "jurisdiction-affirmed"
       ]
     },
     {
@@ -1294,6 +1425,9 @@
       "authorities": [
         "sdwa-1431-emergency",
         "rcra-7002-7003-endangerment"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -1342,7 +1476,11 @@
       ],
       "display_section": "potential",
       "authorities": [
-        "sdwa-pws-compliance"
+        "sdwa-pws-compliance",
+        "gwmgmt-az-ama"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -1383,6 +1521,9 @@
       "authorities": [
         "cwa-402-construction-stormwater",
         "cwa-311-spills"
+      ],
+      "outcome_type": [
+        "monetary-penalty"
       ]
     },
     {
@@ -1423,6 +1564,9 @@
       "authorities": [
         "cwa-402-npdes",
         "cwa-505-citizen-suit"
+      ],
+      "outcome_type": [
+        "consent-decree"
       ]
     },
     {
@@ -1462,6 +1606,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "consent-decree",
+        "pending-undecided"
       ]
     },
     {
@@ -1501,6 +1649,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "consent-decree",
+        "pending-undecided"
       ]
     },
     {
@@ -1540,6 +1692,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree"
       ]
     },
     {
@@ -1585,6 +1741,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "compliance-order",
+        "pending-undecided"
       ]
     },
     {
@@ -1630,6 +1790,9 @@
       "authorities": [
         "sdwa-pws-compliance",
         "tsca-8e-substantial-risk"
+      ],
+      "outcome_type": [
+        "consent-decree"
       ]
     },
     {
@@ -1672,7 +1835,10 @@
         "SF-EPA-end-result-2025"
       ],
       "display_section": "historical",
-      "authorities": []
+      "authorities": [],
+      "outcome_type": [
+        "jurisdiction-narrowed"
+      ]
     },
     {
       "case_id": "Lewis-v-United-States-5th-Cir-2023",
@@ -1711,6 +1877,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-404-dredge-fill"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed"
       ]
     },
     {
@@ -1757,6 +1926,9 @@
         "cwa-402-npdes",
         "cwa-307-pretreatment",
         "sdwa-source-water-protection"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -1792,6 +1964,9 @@
       "authorities": [
         "cwa-404-dredge-fill",
         "cwa-401-certification"
+      ],
+      "outcome_type": [
+        "monetary-penalty"
       ]
     },
     {
@@ -1831,6 +2006,9 @@
       "display_section": "potential",
       "authorities": [
         "sdwa-source-water-protection"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -1870,6 +2048,10 @@
       "display_section": "potential",
       "authorities": [
         "sdwa-source-water-protection"
+      ],
+      "outcome_type": [
+        "consent-decree",
+        "settled-nonmonetary"
       ]
     },
     {
@@ -1910,7 +2092,11 @@
       "display_section": "potential",
       "authorities": [
         "sdwa-source-water-protection",
-        "sdwa-1424e-sole-source-aquifer"
+        "sdwa-1424e-sole-source-aquifer",
+        "xfer-area-of-origin"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -1944,6 +2130,9 @@
       "display_section": "potential",
       "authorities": [
         "sdwa-pws-compliance"
+      ],
+      "outcome_type": [
+        "settled-nonmonetary"
       ]
     },
     {
@@ -1978,6 +2167,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-505-citizen-suit"
+      ],
+      "outcome_type": [
+        "dismissed-no-liability"
       ]
     },
     {
@@ -2012,6 +2204,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-505-citizen-suit"
+      ],
+      "outcome_type": [
+        "dismissed-no-liability"
       ]
     },
     {
@@ -2046,6 +2241,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "consent-decree"
       ]
     },
     {
@@ -2081,6 +2279,9 @@
       "authorities": [
         "cwa-402-npdes",
         "cwa-307-pretreatment"
+      ],
+      "outcome_type": [
+        "monetary-penalty"
       ]
     },
     {
@@ -2115,6 +2316,9 @@
       "display_section": "potential",
       "authorities": [
         "cwa-404-dredge-fill"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -2144,6 +2348,9 @@
       "display_section": "potential",
       "authorities": [
         "cwa-404-dredge-fill"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -2178,6 +2385,9 @@
       "display_section": "potential",
       "authorities": [
         "cwa-404-dredge-fill"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -2213,6 +2423,9 @@
       "authorities": [
         "cwa-316-cooling",
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -2243,6 +2456,9 @@
       "authorities": [
         "cwa-404-dredge-fill",
         "cwa-505-citizen-suit"
+      ],
+      "outcome_type": [
+        "injunction-stop-work"
       ]
     },
     {
@@ -2287,6 +2503,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -2324,6 +2543,10 @@
         "cwa-402-npdes",
         "cwa-303-wqs",
         "rha-10-structures"
+      ],
+      "outcome_type": [
+        "permit-issued",
+        "pending-undecided"
       ]
     },
     {
@@ -2369,6 +2592,10 @@
       "display_section": "historical",
       "authorities": [
         "cwa-404-dredge-fill"
+      ],
+      "outcome_type": [
+        "permit-issued",
+        "permit-conditioned"
       ]
     },
     {
@@ -2410,6 +2637,9 @@
       "authorities": [
         "cwa-404-dredge-fill",
         "cwa-401-certification"
+      ],
+      "outcome_type": [
+        "permit-issued"
       ]
     },
     {
@@ -2450,6 +2680,9 @@
       "authorities": [
         "sdwa-1431-emergency",
         "sdwa-source-water-protection"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -2489,6 +2722,9 @@
       "display_section": "historical",
       "authorities": [
         "sdwa-pws-compliance"
+      ],
+      "outcome_type": [
+        "settled-nonmonetary"
       ]
     },
     {
@@ -2523,6 +2759,9 @@
       "display_section": "historical",
       "authorities": [
         "sdwa-source-water-protection"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -2562,6 +2801,9 @@
       "display_section": "historical",
       "authorities": [
         "sdwa-source-water-protection"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -2601,6 +2843,9 @@
       "display_section": "historical",
       "authorities": [
         "sdwa-pws-compliance"
+      ],
+      "outcome_type": [
+        "permit-denied"
       ]
     },
     {
@@ -2640,6 +2885,9 @@
       "display_section": "historical",
       "authorities": [
         "sdwa-pws-compliance"
+      ],
+      "outcome_type": [
+        "permit-denied"
       ]
     },
     {
@@ -2674,6 +2922,9 @@
       "display_section": "historical",
       "authorities": [
         "cwa-404-dredge-fill"
+      ],
+      "outcome_type": [
+        "permit-issued"
       ]
     },
     {
@@ -2709,6 +2960,9 @@
       "authorities": [
         "cwa-404-dredge-fill",
         "cwa-401-certification"
+      ],
+      "outcome_type": [
+        "permit-issued"
       ]
     },
     {
@@ -2750,6 +3004,9 @@
       "authorities": [
         "cwa-316-cooling",
         "cwa-402-npdes"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -2785,6 +3042,9 @@
       "display_section": "historical",
       "authorities": [
         "sdwa-pws-compliance"
+      ],
+      "outcome_type": [
+        "permit-conditioned"
       ]
     },
     {
@@ -2824,6 +3084,9 @@
       "display_section": "historical",
       "authorities": [
         "sdwa-pws-compliance"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -2864,6 +3127,10 @@
         "tsca-8e-substantial-risk",
         "sdwa-1431-emergency",
         "rcra-7002-7003-endangerment"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "compliance-order"
       ]
     },
     {
@@ -2898,6 +3165,9 @@
       "display_section": "historical",
       "authorities": [
         "tsca-8e-substantial-risk"
+      ],
+      "outcome_type": [
+        "monetary-penalty"
       ]
     },
     {
@@ -2933,6 +3203,9 @@
       "authorities": [
         "sdwa-1431-emergency",
         "sdwa-pws-compliance"
+      ],
+      "outcome_type": [
+        "compliance-order"
       ]
     },
     {
@@ -2967,6 +3240,10 @@
       "display_section": "historical",
       "authorities": [
         "sdwa-pws-compliance"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "compliance-order"
       ]
     },
     {
@@ -3002,6 +3279,9 @@
       "authorities": [
         "sdwa-1431-emergency",
         "cwa-402-maui-groundwater"
+      ],
+      "outcome_type": [
+        "compliance-order"
       ]
     },
     {
@@ -3036,6 +3316,9 @@
       "display_section": "historical",
       "authorities": [
         "sdwa-1424e-sole-source-aquifer"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed"
       ]
     },
     {
@@ -3070,6 +3353,9 @@
       "authorities": [
         "sdwa-uic-classv",
         "cwa-402-maui-groundwater"
+      ],
+      "outcome_type": [
+        "compliance-order"
       ]
     },
     {
@@ -3104,6 +3390,9 @@
       "display_section": "historical",
       "authorities": [
         "rcra-7002-7003-endangerment"
+      ],
+      "outcome_type": [
+        "compliance-order"
       ]
     },
     {
@@ -3137,6 +3426,9 @@
       "display_section": "historical",
       "authorities": [
         "rha-10-structures"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed"
       ]
     },
     {
@@ -3170,6 +3462,9 @@
       "display_section": "historical",
       "authorities": [
         "tsca-8a7-pfas-reporting"
+      ],
+      "outcome_type": [
+        "pending-undecided"
       ]
     },
     {
@@ -3211,7 +3506,10 @@
         "Amazon-NewCarlisle-IN-wetlands-2025",
         "Google-FortWayneIN-isolated-wetland-permit-2025"
       ],
-      "display_section": "potential"
+      "display_section": "potential",
+      "outcome_type": [
+        "pending-undecided"
+      ]
     },
     {
       "case_id": "MCEA-PineIsland-MN-ProjectSkyway-2026",
@@ -3244,7 +3542,8 @@
       "cwa_instrument": "No CWA instrument — state MEPA/AUAR review challenge + MGDPA records claim",
       "authorities": [
         "sdwa-source-water-protection",
-        "cwa-402-maui-groundwater"
+        "cwa-402-maui-groundwater",
+        "sepa-review-injunction"
       ],
       "cwa_pathway": "If the campus's water draw is later shown to reach connected surface waters via shallow aquifer discharge, Maui's 'functional equivalent' theory could convert this into a federal CWA groundwater case; absent that, SDWA source-water-protection mapping is the likelier federal hook.",
       "analogous_cases": [
@@ -3252,7 +3551,10 @@
         "Meta-NewtonCountyGA-well-failures-2018-2025",
         "Sailfish-HoodCountyTX-ComancheCircle-aquifer-moratorium-2025-2026"
       ],
-      "display_section": "potential"
+      "display_section": "potential",
+      "outcome_type": [
+        "pending-undecided"
+      ]
     },
     {
       "case_id": "Chemours-MultiState-PFAS-TSCA-CWA-RCRA-2026",
@@ -3287,6 +3589,10 @@
         "tsca-8e-substantial-risk",
         "cwa-402-npdes",
         "rcra-7002-7003-endangerment"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree"
       ]
     },
     {
@@ -3326,6 +3632,10 @@
         "US-v-Alisal-Water-Corp-2005",
         "Bessemer-AL-Hyperscale-WaterSupply-2025",
         "Meta-RichlandParish-LA-WaterSupply-2025"
+      ],
+      "outcome_type": [
+        "monetary-penalty",
+        "consent-decree"
       ]
     },
     {
@@ -3356,6 +3666,656 @@
         "Flint-MI-SDWA-1431-2016",
         "US-v-Alisal-Water-Corp-2005",
         "QTS-Fayette-GA-unbilled-water-2026"
+      ],
+      "outcome_type": [
+        "compliance-order"
+      ]
+    },
+    {
+      "case_id": "Mississippi-v-Tennessee-2021",
+      "analogous_cases": [
+        "xAI-Colossus-Memphis-TN-2026",
+        "CorpusChristi-SintonTX-EvangelineAquifer-wells-2026"
+      ],
+      "category": "precedent",
+      "respondent": "Mississippi v. Tennessee, 595 U.S. 15 (2021) (No. 143, Original)",
+      "year": "2021",
+      "cwa_section": "Not a Clean Water Act case — U.S. Const. art. III, §2 original jurisdiction; equitable apportionment",
+      "violation_summary": "Mississippi sued Tennessee directly in the Supreme Court, alleging that Memphis's municipal well field had forcibly drawn roughly 252 billion gallons of groundwater out from beneath Mississippi's sovereign territory by altering flow within the Middle Claiborne (Memphis Sand) Aquifer. Mississippi framed this as a taking of water it owned outright and sought damages, expressly declining to seek an equitable apportionment.",
+      "outcome": "Unanimous. Chief Justice Roberts, writing for the Court on a question of first impression, held that groundwater in an interstate aquifer is subject to equitable apportionment just as an interstate river is. Because Mississippi had sued on an ownership theory rather than seeking an apportionment, its complaint was dismissed — and the Court declined to grant leave to amend.",
+      "takeaway": "The single most directly applicable precedent to a US data-center water fight. The aquifer it governs is the same Memphis Sand that xAI's Colossus campus draws on, so the legal question of who may complain about heavy pumping there is already answered: the remedy is an interstate apportionment suit, brought by a state, not a damages claim for stolen water. The practical obstacle is evidentiary — an apportioning court needs clear and convincing proof of real injury, which requires exactly the aggregate withdrawal data that data-center water reporting laws produce.",
+      "sources": [
+        {
+          "title": "Mississippi v. Tennessee — case file and opinion",
+          "url": "https://www.scotusblog.com/cases/case-files/mississippi-v-tennessee",
+          "type": "court ruling"
+        },
+        {
+          "title": "U.S. Supreme Court Holds that Groundwater in Interstate Aquifer Is Not Owned by States but Is Equitably Apportioned Among Them",
+          "url": "https://www.argentco.com/post/mississippi-v-tennessee-u-s-supreme-court-holds-that-groundwater-in-interstate-aquifer-is-not-owned-by-states-but-is-equitably-apportioned-among-them/",
+          "type": "law review"
+        },
+        {
+          "title": "Science and the Supreme Court — Mississippi v. Tennessee",
+          "url": "https://www.fjc.gov/content/376807/water-and-law-sidebar-science-and-supreme-court-mississippi-v-tennessee",
+          "type": "agency"
+        }
+      ],
+      "case_type": "groundwater",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "SCOTUS original jurisdiction — equitable apportionment extended to groundwater",
+      "cwa_pathway": "No federal water statute was involved. The pathway to a data-center fact pattern runs through a *state* suing another state over a shared aquifer that a large industrial user is drawing down — which requires a state willing to sue and aggregate withdrawal data adequate to prove injury.",
+      "display_section": "historical",
+      "authorities": [
+        "eqap-interstate-aquifer"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed",
+        "dismissed-no-liability"
+      ]
+    },
+    {
+      "case_id": "Sporhase-v-Nebraska-1982",
+      "analogous_cases": [
+        "Google-Berkeley-SC-Middendorf-aquifer-2019",
+        "Rowan-ProjectCinco-Medina-TX-2025"
+      ],
+      "category": "precedent",
+      "respondent": "Sporhase v. Nebraska ex rel. Douglas, 458 U.S. 941 (1982)",
+      "year": "1982",
+      "cwa_section": "Not a Clean Water Act case — dormant Commerce Clause (U.S. Const. art. I, §8, cl. 3)",
+      "violation_summary": "Nebraska required a permit to move groundwater from a Nebraska well for use in an adjoining state, and would grant one only if that state offered reciprocal rights to Nebraska. Landowners with property straddling the Nebraska-Colorado line challenged the restriction.",
+      "outcome": "The Court held that groundwater is an article of interstate commerce and struck down the reciprocity condition. The condition was an explicit barrier to interstate commerce and was not narrowly tailored to the conservation purpose Nebraska claimed for it, so it failed the strict scrutiny applied to facially discriminatory legislation.",
+      "takeaway": "The constitutional ceiling on state water protectionism, and a live constraint on how the bills in this dataset can be written. A state may limit large withdrawals; it may not condition water on the user or the water staying inside its borders. For data centers this matters because campuses cluster near state lines and draw on shared basins — legislation aimed at keeping water away from a neighbouring state's data center is far more vulnerable than a volume-based cap that applies to everyone.",
+      "sources": [
+        {
+          "title": "Sporhase v. Nebraska ex rel. Douglas, 458 U.S. 941 (1982) — full opinion",
+          "url": "https://caselaw.findlaw.com/court/us-supreme-court/458/941.html",
+          "type": "court ruling"
+        },
+        {
+          "title": "The Dormant Commerce Clause and Water Export (Klein) — Harvard Environmental Law Review",
+          "url": "https://journals.law.harvard.edu/elr/2011/04/01/the-dormant-commerce-clause-and-water-export-toward-a-new-analytical-paradigm",
+          "type": "law review"
+        }
+      ],
+      "case_type": "groundwater",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "SCOTUS ruling — groundwater is an article of interstate commerce",
+      "cwa_pathway": "Applies defensively rather than offensively: it is the doctrine under which a data-center operator, or an out-of-state buyer, challenges a state water law that discriminates by destination.",
+      "display_section": "historical",
+      "authorities": [
+        "eqap-commerce-clause"
+      ],
+      "outcome_type": [
+        "jurisdiction-narrowed"
+      ]
+    },
+    {
+      "case_id": "National-Audubon-v-Superior-Court-1983",
+      "analogous_cases": [
+        "ProjectBlue-Tucson-AMES-2026",
+        "Bessemer-AL-Hyperscale-WaterSupply-2025"
+      ],
+      "category": "precedent",
+      "respondent": "National Audubon Society v. Superior Court, 33 Cal. 3d 419 (1983) (the Mono Lake case)",
+      "year": "1983",
+      "cwa_section": "Not a Clean Water Act case — California public trust doctrine",
+      "violation_summary": "Los Angeles held appropriative rights, granted decades earlier, to divert the streams feeding Mono Lake. The diversions dropped the lake's level severely and damaged its ecosystem. Audubon argued the state could not treat those rights as settled.",
+      "outcome": "The California Supreme Court held that the public trust doctrine limits appropriative water rights: the state has a continuing duty of supervision over navigable waters, previously granted rights remain subject to reconsideration, and the state must consider trust uses and avoid or minimize harm to them where feasible.",
+      "takeaway": "The foundational reopener. Its relevance to data centers is structural: campuses are almost always supplied through an existing municipal or appropriative entitlement rather than a new permit, and the usual assumption is that a settled right is beyond challenge. Audubon says otherwise — the allocation stays reviewable if the resulting draw harms a trust resource, which makes the utility's existing right, not the campus's absent permit, the point of legal leverage.",
+      "sources": [
+        {
+          "title": "National Audubon Society v. Superior Court, 33 Cal. 3d 419 (1983) — full opinion",
+          "url": "https://law.justia.com/cases/california/supreme-court/3d/33/419.html",
+          "type": "court ruling"
+        },
+        {
+          "title": "The Public Trust Doctrine, Private Water Allocation, and Mono Lake: The Historic Saga of National Audubon Society v. Superior Court",
+          "url": "https://ir.law.fsu.edu/articles/610/",
+          "type": "law review"
+        }
+      ],
+      "case_type": "legal-doctrine",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "California Supreme Court — public trust limits appropriative rights",
+      "cwa_pathway": "Reaches a data center through the *supplier*: a challenge to the utility's or district's existing entitlement on the ground that serving the new load harms a trust resource, rather than a challenge to the campus itself.",
+      "display_section": "historical",
+      "authorities": [
+        "ptd-reopener"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed"
+      ]
+    },
+    {
+      "case_id": "ELF-v-SWRCB-2018",
+      "analogous_cases": [
+        "Meta-NewtonCountyGA-well-failures-2018-2025",
+        "County-of-Maui-v-Hawaii-Wildlife-Fund-2020"
+      ],
+      "category": "precedent",
+      "respondent": "Environmental Law Foundation v. State Water Resources Control Board, 26 Cal. App. 5th 844 (2018)",
+      "year": "2018",
+      "cwa_section": "Not a Clean Water Act case — California public trust doctrine; Sustainable Groundwater Management Act",
+      "violation_summary": "Siskiyou County issued well permits for groundwater extraction that reduced flows in the Scott River, a navigable waterway. The county and the state board argued the public trust had never applied to groundwater, and that in any event the 2014 Sustainable Groundwater Management Act had displaced it.",
+      "outcome": "The Third District Court of Appeal rejected both arguments unanimously. The public trust doctrine applies to groundwater extraction that adversely affects navigable waterways, and SGMA did not occupy the field or abolish it. The county has a duty to consider the trust when permitting such wells, and the state board has authority and a duty to act.",
+      "takeaway": "The reading that reaches the ordinary data-center hydrology. Campus wells are usually regulated, if at all, as groundwater — not as a diversion from the stream they actually deplete. ELF closes that gap wherever drawdown is connected to surface flow, and it puts the duty on the *county* issuing the well permit, which is the level of government most data-center siting fights are already being fought at. It also establishes that satisfying a state groundwater statute is a floor, not a defence.",
+      "sources": [
+        {
+          "title": "Environmental Law Foundation v. State Water Resources Control Bd. (2018) — full opinion",
+          "url": "https://law.justia.com/cases/california/court-of-appeal/2018/c083239.html",
+          "type": "court ruling"
+        },
+        {
+          "title": "California Court Finds Public Trust Doctrine Applies to State Groundwater Resources",
+          "url": "https://legal-planet.org/2018/08/29/california-court-finds-public-trust-doctrine-applies-to-state-groundwater-resources/",
+          "type": "law review"
+        },
+        {
+          "title": "California Court Holds Public Trust Doctrine Applies to Groundwater Impacts on Surface Streams",
+          "url": "https://www.dwt.com/blogs/energy--environmental-law-blog/2018/09/california-court-holds-public-trust-doctrine-appli",
+          "type": "law review"
+        }
+      ],
+      "case_type": "groundwater",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "Cal. Court of Appeal — public trust reaches groundwater pumping",
+      "cwa_pathway": "A challenge to the county well permit behind a data-center campus, on the ground that drawdown depletes a connected navigable stream. Requires hydrologic evidence of the groundwater-to-surface-water connection.",
+      "display_section": "historical",
+      "authorities": [
+        "ptd-groundwater-nexus",
+        "gwmgmt-sgma"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed"
+      ]
+    },
+    {
+      "case_id": "Waiahole-Ditch-2000",
+      "analogous_cases": [
+        "MCEA-PineIsland-MN-ProjectSkyway-2026",
+        "Charlotte-NC-drought-datacenter-moratorium-2026"
+      ],
+      "category": "precedent",
+      "respondent": "In re Water Use Permit Applications (Waiāhole Ditch), 94 Haw. 97, 9 P.3d 409 (2000)",
+      "year": "2000",
+      "cwa_section": "Not a Clean Water Act case — Hawai'i constitutional public trust and State Water Code",
+      "violation_summary": "A contested-case proceeding over how to reallocate water from the Waiāhole Ditch after the plantation agriculture it was built for wound down, with competing claims from new commercial users and from windward stream restoration.",
+      "outcome": "The Hawai'i Supreme Court set out the state's public trust framework: the trust establishes a presumption in favour of its purposes; the burden falls on those seeking or approving water for private gain to justify the use and account for its impacts; and the trust incorporates a precautionary principle under which unresolved science weighs toward protecting the resource rather than toward permitting the use.",
+      "takeaway": "The strongest formulation of the trust in American water law, and the direct answer to the evidentiary problem that recurs throughout this dataset. Data center opponents routinely cannot prove harm because consumption figures are confidential and hydrologic effects are contested. Under Waiāhole the applicant carries the burden and uncertainty favours the resource. The caveat is jurisdictional: this rests on Hawai'i's unusually explicit constitutional water provisions, so it marks the doctrine's ceiling rather than a standard other states would apply.",
+      "sources": [
+        {
+          "title": "In re Water Use Permit Applications (Waiāhole Ditch) — Hawai'i Supreme Court opinion",
+          "url": "http://oaoa.hawaii.gov/jud/21309op.htm",
+          "type": "court ruling"
+        },
+        {
+          "title": "In re: The Water Use Permit Applications (2000) — full text",
+          "url": "https://caselaw.findlaw.com/hi-supreme-court/1387163.html",
+          "type": "court ruling"
+        }
+      ],
+      "case_type": "legal-doctrine",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "Hawai'i Supreme Court — trust presumption, burden shift and precautionary principle",
+      "cwa_pathway": "Persuasive rather than binding outside Hawai'i. Its use is as the argued standard in a state whose own trust doctrine is unsettled: that the data-center applicant, not the objecting public, must justify the draw.",
+      "display_section": "historical",
+      "authorities": [
+        "ptd-precautionary"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed"
+      ]
+    },
+    {
+      "case_id": "Edwards-Aquifer-Authority-v-Day-2012",
+      "analogous_cases": [
+        "Sailfish-HoodCountyTX-ComancheCircle-aquifer-moratorium-2025-2026",
+        "CorpusChristi-SintonTX-EvangelineAquifer-wells-2026"
+      ],
+      "category": "precedent",
+      "respondent": "Edwards Aquifer Authority v. Day, 369 S.W.3d 814 (Tex. 2012)",
+      "year": "2012",
+      "cwa_section": "Not a Clean Water Act case — Texas groundwater ownership; state and federal takings clauses",
+      "violation_summary": "The Edwards Aquifer Authority capped Day's pumping permit far below his request, allocating on the basis of historical beneficial use. Day argued the restriction took a property interest he already owned in the groundwater beneath his land.",
+      "outcome": "The Texas Supreme Court held unanimously that a landowner has a constitutionally protected interest in the groundwater in place beneath the surface — ownership does not wait for capture — and that a regulatory restriction on pumping can therefore support a takings claim requiring compensation.",
+      "takeaway": "The doctrine that constrains how far a state can regulate data-center pumping in ownership-in-place jurisdictions, and it points both ways. An operator that bought land can assert a property interest against a withdrawal cap imposed afterwards; a neighbour whose water is drawn out from under them holds the same kind of interest against a regulator that permitted the campus. It also explains an otherwise puzzling pattern in this dataset — why Texas fights run through conservation-district permits and local politics rather than through outright prohibition, since prohibition carries a compensation bill.",
+      "sources": [
+        {
+          "title": "Edwards Aquifer Authority v. Day and McDaniel — decision summary and history",
+          "url": "https://en.wikipedia.org/wiki/Edwards_Aquifer_Authority_v._Day_and_McDaniel",
+          "type": "law review"
+        },
+        {
+          "title": "Changes to Texas Groundwater Rights — Edwards Aquifer Authority v. Day",
+          "url": "https://www.dykema.com/news-insights/changes-to-texas-groundwater-rights-edwards-aquifer-authority-v-day.html",
+          "type": "law review"
+        },
+        {
+          "title": "Liquid Assets: Groundwater in Texas (Torres) — Yale Law Journal",
+          "url": "https://yalelawjournal.org/pdf/1118_kt9z6o78.pdf",
+          "type": "law review"
+        }
+      ],
+      "case_type": "groundwater",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "Tex. Supreme Court — groundwater owned in place; regulation may be a taking",
+      "cwa_pathway": "Two routes to a data-center fact pattern: as the operator's defence against a new withdrawal cap, and as an injured neighbour's theory against the district that permitted the drawdown.",
+      "display_section": "historical",
+      "authorities": [
+        "gw-ownership-takings"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed"
+      ]
+    },
+    {
+      "case_id": "Lake-Beulah-v-DNR-2011",
+      "category": "precedent",
+      "respondent": "Lake Beulah Management District v. Wisconsin Department of Natural Resources, 2011 WI 54",
+      "year": "2011",
+      "cwa_section": "Not a Clean Water Act case — Wisconsin high-capacity well permitting and the public trust doctrine",
+      "violation_summary": "The DNR issued the Village of East Troy a high-capacity well permit near Lake Beulah. The lake district argued the agency had to evaluate the well's effect on the lake before permitting it, and that it had failed to do so — an eight-year dispute over how far the agency's review obligation runs.",
+      "outcome": "The Wisconsin Supreme Court held that the DNR has both the authority and a general duty, grounded in the public trust doctrine and the permitting statutes, to consider whether a proposed high-capacity well may harm waters of the state — but that the duty is triggered only when the agency is presented with sufficient concrete, scientific evidence of potential harm. On this record it had not been, so the permit stood.",
+      "takeaway": "The most directly usable doctrine here for anyone contesting a data-center well, because it operates before the water is pumped rather than after the harm. It also states the price of admission plainly: objections must arrive as hydrologic evidence, not as concern. That is the bind these conflicts keep hitting — the evidence needed to trigger the duty depends on consumption and drawdown data the operator and the utility hold. Wisconsin makes this concrete for the tracker, since Microsoft's Mount Pleasant campus sits in the same permitting system.",
+      "analogous_cases": [
+        "Microsoft-CaledoniaWI-rezoning-withdrawal-2025",
+        "MilwaukeeRiverkeeper-RacineWI-water-records-suit-2025"
+      ],
+      "sources": [
+        {
+          "title": "Lake Beulah Management District v. DNR, 2011 WI 54 — Wisconsin Supreme Court opinion",
+          "url": "https://www.wicourts.gov/sc/opinion/DisplayDocument.pdf?content=pdf&seqNo=67354",
+          "type": "court ruling"
+        },
+        {
+          "title": "Wisconsin Supreme Court Upholds Village of East Troy's High Capacity Well Permit; Finds WDNR Has a General Duty to Consider Impact to Waters of the State",
+          "url": "https://www.natlawreview.com/article/wisconsin-supreme-court-upholds-village-east-troy-s-high-capacity-well-permit-finds-wdnr-has",
+          "type": "law review"
+        }
+      ],
+      "case_type": "groundwater",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "Wis. Supreme Court — agency duty to consider well impacts on waters of the state",
+      "cwa_pathway": "Reaches a data center at the well-permit stage: a challenge to the state agency for issuing without evaluating impact, which succeeds only if objectors put concrete hydrologic evidence in front of the agency first.",
+      "display_section": "historical",
+      "authorities": [
+        "well-cumulative-impact"
+      ],
+      "outcome_type": [
+        "permit-issued",
+        "jurisdiction-affirmed"
+      ]
+    },
+    {
+      "case_id": "Friendswood-v-Smith-Southwest-1978",
+      "category": "precedent",
+      "respondent": "Friendswood Development Co. v. Smith-Southwest Industries, Inc., 576 S.W.2d 21 (Tex. 1978)",
+      "year": "1978",
+      "cwa_section": "Not a Clean Water Act case — Texas rule of capture; negligence and subsidence",
+      "violation_summary": "Friendswood drilled wells between 1964 and 1971 and pumped large volumes of groundwater for sale to industrial users, despite engineering reports predicting land subsidence. Neighbours alleged the wells were negligently spaced too closely and too near the property boundary, and that excessive production caused subsidence and flooding on their land.",
+      "outcome": "The Texas Supreme Court held the ordinary duty not to use property so as to injure others does not apply to groundwater withdrawal, which remains an absolute right outside the reasonable-use rule — but announced a prospective exception: for wells drilled or produced after the decision, negligent, willfully wasteful or malicious withdrawal that proximately causes subsidence damage to another's land creates liability. The defendants, having relied on the prior rule, were not liable.",
+      "takeaway": "The crack in the rule of capture, and the reason a neighbour's strongest claim against a data center in a capture state is about *how* it pumps rather than *that* it pumps. Well spacing, proximity to boundaries and rates chosen against engineering advice are all in scope. It matters most in coastal and alluvial settings where drawdown produces measurable subsidence — which is exactly the Gulf-coast hydrology of the Texas sites tracked here.",
+      "analogous_cases": [
+        "CorpusChristi-SintonTX-EvangelineAquifer-wells-2026",
+        "Sailfish-HoodCountyTX-ComancheCircle-aquifer-moratorium-2025-2026"
+      ],
+      "sources": [
+        {
+          "title": "Friendswood Devel. Co. v. Smith-Southwest Indus., Inc. (Tex. 1978) — full opinion",
+          "url": "https://law.justia.com/cases/texas/supreme-court/1978/b-6682-0.html",
+          "type": "court ruling"
+        },
+        {
+          "title": "Friendswood Development Co. v. Smith-Southwest Industries, Inc., 576 S.W.2d 21 — opinion text",
+          "url": "https://www.courtlistener.com/opinion/2363223/friendswood-devel-co-v-smith-southwest-indus-inc/",
+          "type": "court ruling"
+        },
+        {
+          "title": "Smith-Southwest Industries v. Friendswood Development Co. — Environmental Law Reporter case record",
+          "url": "https://www.elr.info/sites/default/files/litigation/9.20452.htm",
+          "type": "law review"
+        }
+      ],
+      "case_type": "groundwater",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "Tex. Supreme Court — negligence exception to the rule of capture for subsidence",
+      "cwa_pathway": "A private tort claim by an adjoining landowner against the data center or its water supplier, pleading negligent well siting, spacing or pumping rate rather than the fact of withdrawal.",
+      "display_section": "historical",
+      "authorities": [
+        "cl-negligent-subsidence"
+      ],
+      "outcome_type": [
+        "dismissed-no-liability"
+      ]
+    },
+    {
+      "case_id": "MCWC-v-Nestle-Waters-2007",
+      "category": "precedent",
+      "respondent": "Michigan Citizens for Water Conservation v. Nestlé Waters North America Inc., 479 Mich. 280, 737 N.W.2d 447 (2007)",
+      "year": "2007",
+      "cwa_section": "Not a Clean Water Act case — standing under the Michigan Environmental Protection Act",
+      "violation_summary": "A citizens' group challenged Nestlé's groundwater extraction at Sanctuary Springs in Mecosta County, arguing the pumping harmed the Dead Stream, Osprey Lake and surrounding wetlands, and relying on MEPA's provision allowing 'any person' to sue.",
+      "outcome": "The Michigan Supreme Court reversed the Court of Appeals' holding that the group had standing over Osprey Lake and three wetlands. It held the group could sue under MEPA only for concrete, particularized injuries in fact suffered by its own members — extraction affecting members' recreational, aesthetic, economic or property interests — and not for harm to the environment in general, notwithstanding the statute's 'any person' language.",
+      "takeaway": "The procedural reason so much data-center opposition in this dataset runs through zoning votes, moratoriums and records requests rather than litigation: a watershed coalition can lose before the merits are reached. It also identifies the right plaintiff. A household whose own well failed has the particularized injury a coalition lacks, which is why the Newton County fact pattern is a stronger case than a general-harm campaign against a larger withdrawal. Michigan matters directly here — its 2026 data-center bills would create the withdrawal permits such a suit would contest.",
+      "analogous_cases": [
+        "Meta-NewtonCountyGA-well-failures-2018-2025",
+        "MCEA-PineIsland-MN-ProjectSkyway-2026"
+      ],
+      "sources": [
+        {
+          "title": "Michigan Citizens for Water Conservation v. Nestlé Waters North America Inc. (2007) — Michigan Supreme Court opinion",
+          "url": "https://law.justia.com/cases/michigan/supreme-court/2007/20070725-s130802-168-nestle130802-op.html",
+          "type": "court ruling"
+        },
+        {
+          "title": "Michigan Citizens for Water Conservation v. Bollman (2007) — full text",
+          "url": "https://caselaw.findlaw.com/court/mi-supreme-court/1363710.html",
+          "type": "court ruling"
+        },
+        {
+          "title": "Court Limits Standing to Prevent Bottled Water Plant from Draining Wetlands",
+          "url": "https://www.michiganlcv.org/case/court-limits-standing-prevent-bottled-water-plant-draining-wetlands/",
+          "type": "advocacy"
+        }
+      ],
+      "case_type": "legal-doctrine",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "Mich. Supreme Court — MEPA standing requires particularized injury",
+      "cwa_pathway": "Governs who may bring a state environmental claim against a data-center withdrawal at all. The pathway is defensive: it is the doctrine an operator invokes to dismiss an opposition group before the merits.",
+      "display_section": "historical",
+      "authorities": [
+        "cl-citizen-standing-limit"
+      ],
+      "outcome_type": [
+        "dismissed-no-liability"
+      ]
+    },
+    {
+      "case_id": "Swanson-v-Marin-MWD-1976",
+      "category": "precedent",
+      "respondent": "Swanson v. Marin Municipal Water District, 56 Cal. App. 3d 512 (1976)",
+      "year": "1976",
+      "cwa_section": "Not a Clean Water Act case — California municipal water service and connection moratoria",
+      "violation_summary": "The district adopted a moratorium on new water connections after finding projected consumption would exceed its safe yield. Swanson, who had approvals to build a home, was refused a pipeline extension and sued; the trial court found the moratorium unsupported by an immediate shortage and unauthorized by statute.",
+      "outcome": "The Court of Appeal reversed. A prospective water user has no absolute right to service and is not constitutionally entitled to be treated the same as established users. Facing a genuine imbalance between supply and demand, the district had a rational basis for the moratorium and had not acted fraudulently, arbitrarily or capriciously.",
+      "takeaway": "Read in reverse, this is the utility's shield in a data-center fight — and it inverts how these disputes are usually framed. The assumption running through the tracked conflicts is that a utility is under pressure to serve a large new load; Swanson says a utility facing real supply constraint may refuse, and that the would-be customer has no entitlement to be served. Bessemer is the sharp case: the authority conceded on the record that it could not serve 2 MGD without significant upgrades, which is precisely the rational basis a refusal would stand on.",
+      "analogous_cases": [
+        "Bessemer-AL-Hyperscale-WaterSupply-2025",
+        "Charlotte-NC-drought-datacenter-moratorium-2026"
+      ],
+      "sources": [
+        {
+          "title": "Swanson v. Marin Mun. Water Dist., 56 Cal. App. 3d 512 (1976) — full opinion",
+          "url": "https://law.justia.com/cases/california/court-of-appeal/3d/56/512.html",
+          "type": "court ruling"
+        },
+        {
+          "title": "Time to Dust Off California Water Law On Development Moratoria",
+          "url": "https://www.swlaw.com/blogs/environmental-and-natural-resources/2014/10/01/time-to-dust-off-california-water-law-on-development-moratoria/",
+          "type": "law review"
+        }
+      ],
+      "case_type": "water-supply",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "Cal. Court of Appeal — no right to new service; moratorium upheld on rational basis",
+      "cwa_pathway": "Two uses: as the legal basis for a utility or municipality declining to serve a data-center load, and as the standard a developer must meet to overturn such a refusal — fraud, arbitrariness or caprice, not mere disagreement about capacity.",
+      "display_section": "historical",
+      "authorities": [
+        "util-shortage-moratorium"
+      ],
+      "outcome_type": [
+        "dismissed-no-liability"
+      ]
+    },
+    {
+      "case_id": "Aransas-Project-v-Shaw-2014",
+      "category": "precedent",
+      "respondent": "The Aransas Project v. Shaw, 775 F.3d 641 (5th Cir. 2014)",
+      "year": "2014",
+      "cwa_section": "Not a Clean Water Act case — Endangered Species Act §9 take, 16 U.S.C. §1538",
+      "violation_summary": "After 23 endangered whooping cranes died in the winter of 2008-09, an environmental group sued the Texas Commission on Environmental Quality, arguing that its administration of water-withdrawal permits on the Guadalupe and San Antonio rivers reduced freshwater inflows to the birds' estuary and caused an unlawful take. The district court agreed and enjoined TCEQ from issuing new withdrawal permits.",
+      "outcome": "The Fifth Circuit reversed. The district court had misapplied proximate cause: a state agency's licensing of private upstream withdrawals was not a foreseeable cause of downstream crane deaths given the multiple natural, independent and interrelated forces acting on the habitat. The court added that even had proximate cause been shown, the injunction was an abuse of discretion.",
+      "takeaway": "Carried here as a *negative* precedent, because a registry that only collects theories that work will mislead. The Endangered Species Act is the intuitive federal hook when a data center's draw dries a river reach, and in the Fifth Circuit this is binding law that the hook will usually miss when the defendant is the permitting agency. A viable §9 claim has to target the withdrawer directly with a far shorter causal chain. It bears directly on the Texas Gulf-coast sites tracked here, which sit in the same hydrology and the same circuit.",
+      "analogous_cases": [
+        "CorpusChristi-SintonTX-EvangelineAquifer-wells-2026",
+        "Meta-RichlandParish-LA-WaterSupply-2025"
+      ],
+      "sources": [
+        {
+          "title": "The Aransas Project v. Shaw, 775 F.3d 641 (5th Cir. 2014) — opinion",
+          "url": "https://www.ca5.uscourts.gov/opinions%5Cpub%5C13/13-40317-CV0.pdf",
+          "type": "court ruling"
+        },
+        {
+          "title": "Aransas Project v. Guadalupe-Blanco River Authority (2014) — full text",
+          "url": "https://caselaw.findlaw.com/court/us-5th-circuit/1688805.html",
+          "type": "court ruling"
+        },
+        {
+          "title": "Litigating the 'butterfly effect': Proximate Cause, Imminent Harm and Endangered Whooping Cranes",
+          "url": "https://acoel.org/litigating-the-butterfly-effect-proximate-cause-imminent-harm-and-endangered-whooping-cranes/",
+          "type": "law review"
+        }
+      ],
+      "case_type": "legal-doctrine",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "5th Cir. — state water permitting too remote to proximately cause an ESA take",
+      "cwa_pathway": "Marks where an ESA theory fails rather than where it works: suing the permitting agency for downstream species harm is foreclosed in this circuit. A claim would have to run against the withdrawing facility itself.",
+      "display_section": "historical",
+      "authorities": [
+        "esa-proximate-cause-limit"
+      ],
+      "outcome_type": [
+        "dismissed-no-liability"
+      ]
+    },
+    {
+      "case_id": "Winters-v-United-States-1908",
+      "category": "precedent",
+      "respondent": "Winters v. United States, 207 U.S. 564 (1908)",
+      "year": "1908",
+      "cwa_section": "Not a Clean Water Act case — implied federal reservation of water rights",
+      "violation_summary": "Settlers upstream of the Fort Belknap Reservation in Montana built dams, ditches and canals diverting the Milk River for irrigation, cutting off the flow reaching the reservation. The United States sued on the tribes' behalf to enjoin the diversions.",
+      "outcome": "The Supreme Court held that the 1888 agreement establishing the reservation impliedly reserved enough Milk River water to serve its purposes, and that Montana's admission to the Union the following year did not disturb that reservation. The reserved right dates from the creation of the reservation, making it senior to the settlers' later state-law claims.",
+      "takeaway": "The oldest doctrine in this registry and, in the arid West, often the most consequential — because it operates on priority rather than on conduct. A data center never has to do anything wrong for this to matter: quantifying a senior reserved right shrinks the pool the state had been allocating, and junior users are cut in order of seniority. A campus whose supply contract rests on a junior state-law right in a basin serving a reservation holds something worth less than its face value, and that is a due-diligence question rather than a litigation risk.",
+      "analogous_cases": [
+        "ProjectBlue-Tucson-AMES-2026",
+        "Mississippi-v-Tennessee-2021"
+      ],
+      "sources": [
+        {
+          "title": "Winters v. United States, 207 U.S. 564 (1908) — full opinion",
+          "url": "https://supreme.justia.com/cases/federal/us/207/564/",
+          "type": "court ruling"
+        },
+        {
+          "title": "Indian Reserved Water Rights Under the Winters Doctrine: An Overview (Congressional Research Service)",
+          "url": "https://www.everycrsreport.com/reports/RL32198.html",
+          "type": "law review"
+        },
+        {
+          "title": "The Winters Doctrine: The Foundation of Tribal Water Rights",
+          "url": "https://itcaonline.com/programs/tribal-leaders-water-policy-council/the-winters-doctrine-the-foundation-of-tribal-water-rights/",
+          "type": "advocacy"
+        }
+      ],
+      "case_type": "legal-doctrine",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "SCOTUS — water impliedly reserved with the reservation, senior to later state rights",
+      "cwa_pathway": "Reaches a data center indirectly and structurally: not as a claim against the operator, but as a senior right that reduces what the state can allocate to it, in any basin serving a federal reservation.",
+      "display_section": "historical",
+      "authorities": [
+        "tribal-winters"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed"
+      ]
+    },
+    {
+      "case_id": "Agua-Caliente-v-CVWD-2017",
+      "category": "precedent",
+      "respondent": "Agua Caliente Band of Cahuilla Indians v. Coachella Valley Water District, 849 F.3d 1262 (9th Cir. 2017)",
+      "year": "2017",
+      "cwa_section": "Not a Clean Water Act case — federal reserved water rights extended to groundwater",
+      "violation_summary": "The Agua Caliente Band sued two water districts in California's arid Coachella Valley, seeking a declaration that its reserved rights extend to the groundwater beneath the reservation. The districts argued the Winters doctrine covers surface water only, and that the tribe had never historically pumped.",
+      "outcome": "The Ninth Circuit affirmed for the tribe. The Winters doctrine does not distinguish surface water from groundwater; the United States impliedly reserved appurtenant water sources including groundwater when it created the reservation in an arid region. Historical non-use does not defeat the right, and state water rights are preempted where they conflict. The Supreme Court denied certiorari.",
+      "takeaway": "Removes the assumption that groundwater is the unencumbered fallback. A project told a basin's surface water is spoken for will look to wells; in the Ninth Circuit, a senior federal reserved right follows it there. That matters directly for the Southwest data-center corridor, where the surface supply is over-allocated, groundwater is the growth path, and reservations overlie or adjoin many of the aquifers involved. The exposure runs through the supply contract rather than through any conduct by the operator.",
+      "analogous_cases": [
+        "ProjectBlue-Tucson-AMES-2026",
+        "Winters-v-United-States-1908"
+      ],
+      "sources": [
+        {
+          "title": "Agua Caliente Band of Cahuilla Indians v. Coachella Valley Water District, No. 15-55896 (9th Cir. 2017)",
+          "url": "https://law.justia.com/cases/federal/appellate-courts/ca9/15-55896/15-55896-2017-03-07.html",
+          "type": "court ruling"
+        },
+        {
+          "title": "Agua Caliente Band of Cahuilla Indians v. Coachella Valley Water District — Indian Law Bulletin",
+          "url": "https://www.narf.org/nill/bulletins/federal/documents/agua_caliente_v_coachella_water.html",
+          "type": "court ruling"
+        },
+        {
+          "title": "A Tribe's Successful Fight for Federally Reserved Water Rights (American Indian Law Review)",
+          "url": "https://digitalcommons.law.ou.edu/ailr/vol43/iss1/6/",
+          "type": "law review"
+        }
+      ],
+      "case_type": "groundwater",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "9th Cir. — reserved rights extend to groundwater; state law preempted",
+      "cwa_pathway": "Applies where a campus's groundwater supply sits in a basin with an overlying or adjoining reservation. The claim runs between the tribe and the water district, but the resulting quantification determines what is left for the district's industrial customers.",
+      "display_section": "historical",
+      "authorities": [
+        "tribal-groundwater"
+      ],
+      "outcome_type": [
+        "jurisdiction-affirmed"
+      ]
+    },
+    {
+      "case_id": "Vineyard-v-Rancho-Cordova-2007",
+      "category": "precedent",
+      "respondent": "Vineyard Area Citizens for Responsible Growth, Inc. v. City of Rancho Cordova, 40 Cal. 4th 412 (2007)",
+      "year": "2007",
+      "cwa_section": "Not a Clean Water Act case — California Environmental Quality Act; long-term water supply analysis",
+      "violation_summary": "Residents challenged the environmental impact report for a 6,000-acre community plan and its first development phase, arguing it failed to identify and evaluate where the water for the full build-out would come from.",
+      "outcome": "The California Supreme Court held the EIR's near-term supply analysis adequate but its long-term analysis both procedurally and factually deficient: it improperly purported to tier from a future regional planning document, leaned on a mitigation measure that would curtail development if water failed to materialize without analysing that curtailment's own impacts, and left unexplained discrepancies between its supply estimates and the regional water plan's. The approval was set aside. The decision drove CEQA Guidelines amendments requiring analysis of supply over a project's full life.",
+      "takeaway": "The most transferable procedural attack on a data-center approval anywhere with a state environmental review statute, because it needs no proof of hydrologic harm — only that the document assumed water it could not demonstrate. Campus approvals routinely analyse the first phase and defer the rest to a future regional plan, which is exactly the defect named here. It also produces the remedy opponents usually want: the approval is vacated and redone before construction, rather than damages long afterward.",
+      "analogous_cases": [
+        "MCEA-PineIsland-MN-ProjectSkyway-2026",
+        "ProjectBlue-Tucson-AMES-2026"
+      ],
+      "sources": [
+        {
+          "title": "Vineyard Area Citizens for Responsible Growth, Inc. v. City of Rancho Cordova (2007) S132972",
+          "url": "https://caselaw.findlaw.com/summary/opinion/ca-supreme-court/2007/02/01/147286.html",
+          "type": "court ruling"
+        },
+        {
+          "title": "Supreme Court Sets Aside Land Use Plan EIR For Failure To Adequately Assess Long-Term Water Supplies",
+          "url": "https://kmtg.com/news/legal-alerts/supreme-court-sets-aside-land-use-plan-eir-for-failure-to-adequately-assess-long-term-water-supplies/",
+          "type": "law review"
+        },
+        {
+          "title": "Vineyard Area Citizens for Responsible Growth v. City of Rancho Cordova — case summary",
+          "url": "https://www.rmmenvirolaw.com/vineyard-area-citizens-for-responsible-growth-v-city-of-rancho-cordova/",
+          "type": "law review"
+        }
+      ],
+      "case_type": "water-supply",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "Cal. Supreme Court — EIR must show a realistic long-term water supply",
+      "cwa_pathway": "A challenge to the environmental document behind a data-center approval on the ground that it analysed only near-term supply and deferred the rest. Requires a state environmental review statute with a supply-analysis requirement, not a federal hook.",
+      "display_section": "historical",
+      "authorities": [
+        "sepa-supply-adequacy"
+      ],
+      "outcome_type": [
+        "permit-denied"
+      ]
+    },
+    {
+      "case_id": "Wangusi-v-Amazon-Web-Services-VA-2026",
+      "category": "datacenter",
+      "respondent": "Amazon Web Services, Inc. and Virginia Connects (Circuit Court of Arlington County, Virginia)",
+      "year": "2026",
+      "cwa_section": "Not a Clean Water Act case — Virginia consumer-protection / deceptive-trade-practices law",
+      "violation_summary": "Dr. Nathan Wangusi, AWS's water sustainability program manager for nearly three years until September 2024, sued the company and the data-center industry group Virginia Connects, alleging its published Northern Virginia water claims were materially misleading. Using water billing and consumption records obtained by FOIA from local utilities for 2023-2026, the complaint targets AWS's statements that it had 'dropped water use by 42 percent year-over-year' and that its Northern Virginia data centers operate 'ninety-seven percent of the year by pulling outside air and not using any water' — the utility records, it alleges, show withdrawals in every month including winter. Virginia Connects is alleged to have run a public advertising campaign carrying the same claims on the day AWS published the 42 percent figure.",
+      "outcome": "PENDING — filed mid-July 2026; no ruling. AWS denies wrongdoing and says its reported water data has been independently assured by a third party.",
+      "takeaway": "The first case in this record where an operator's own water claims, rather than any discharge or withdrawal, are the alleged violation — and it arrives by a route the tracker's federal-statute framing could not see. Two features make it a template rather than a one-off: the plaintiff is an insider who ran the program he is now contradicting, and the evidence is FOIA'd utility billing records, which any resident of a jurisdiction with public utility records can obtain. That is a far lower evidentiary bar than the hydrologic proof nearly every other reading in this registry requires, and it points at the disclosure laws this tracker follows: the more utilities are required to report data-center deliveries, the more checkable every published water claim becomes.",
+      "analogous_cases": [
+        "QTS-Fayette-GA-unbilled-water-2026",
+        "Google-Berkeley-SC-Middendorf-aquifer-2019"
+      ],
+      "related_claim_ids": [
+        "aws-water-positive-2030"
+      ],
+      "sources": [
+        {
+          "title": "AWS sustainability claims don't hold water, lawsuit alleges",
+          "url": "https://www.theregister.com/on-prem/2026/07/15/aws-sustainability-claims-dont-hold-water-lawsuit-alleges/5269723",
+          "type": "news"
+        },
+        {
+          "title": "AWS faces lawsuit over alleged misleading water sustainability claims",
+          "url": "https://www.computing.co.uk/news/2026/aws-lawsuit-misleading-water-sustainability-claims",
+          "type": "news"
+        }
+      ],
+      "case_type": "greenwashing-litigation",
+      "cwa_applied": "not-applied",
+      "cwa_instrument": "State consumer-protection suit over published water claims",
+      "cwa_pathway": "No federal water statute is implicated. The pathway runs through state deceptive-trade-practices law: published sustainability figures are commercial statements, and utility billing records obtained by FOIA are the evidence used to test them.",
+      "display_section": "potential",
+      "authorities": [
+        "sl-greenwashing-udap"
+      ],
+      "outcome_type": [
+        "pending-undecided"
+      ]
+    },
+    {
+      "case_id": "Meta-Cheyenne-WY-reclaimed-contamination-2026",
+      "category": "datacenter",
+      "respondent": "Goat Systems LLC (the entity building Meta's Cheyenne campus) — Cheyenne Board of Public Utilities, Wyoming",
+      "year": "2026",
+      "cwa_section": "CWA §307(b) pretreatment / 40 CFR Part 403 (municipal pretreatment program)",
+      "violation_summary": "In February 2026 Cheyenne's Board of Public Utilities detected the rare metal-resistant bacterium Cupriavidus gilardii in the city's reclaimed-water system and traced it to wastewater from construction and commissioning of Meta's 715,000 sq ft data center — a closed-loop cooling 'fill-and-flush' discharge by Goat Systems LLC, the entity Meta uses to build the campus. The discharge interfered with two water reclamation plants; BOPU's published timeline puts 801,475 gallons of affected wastewater into the system.",
+      "outcome": "BOPU classified the discharge as significant noncompliance with federal pretreatment regulations, suspended the reclaimed-water irrigation program, permanently terminated the discharge privileges, and adopted a policy barring wastewater discharges from data centers using closed-loop cooling and fill-and-flush systems. Follow-up testing found no remaining Cupriavidus gilardii and the reclaimed system is back in operation under continued routine sampling.",
+      "takeaway": "The first data-center contamination of a municipal reclaimed-water system in this record, and it inverts the usual framing. Reclaimed water is the industry's headline answer to consumption criticism and appears throughout this tracker's Solutions dataset — here the reuse system itself was the casualty, and the harm came from commissioning rather than operation, a phase almost nothing regulates specifically. It also confirms where the operational hook actually sits: not on the data center's own permit, but on the receiving utility's pretreatment authority, which is exactly the framing the CWA insights panel has argued. Note the defendant is the build entity, not Meta itself — corporate structure matters for who is on the hook.",
+      "analogous_cases": [
+        "Amazon-Boardman-OR-nitrate-2026",
+        "QuantumLoophole-FrederickMD-boring-discharges-2022-2024"
+      ],
+      "sources": [
+        {
+          "title": "Cheyenne BOPU traces rare bacteria discharge to Meta data center contractor",
+          "url": "https://www.wyomingnews.com/news/local_news/cheyenne-bopu-traces-rare-bacteria-discharge-to-meta-data-center-contractor/article_1c538467-06ec-427d-9a6f-33797cd3c6ce.html",
+          "type": "news"
+        },
+        {
+          "title": "Cheyenne BOPU releases wastewater contamination timeline; over 800K gallons affected",
+          "url": "https://capcity.news/community/city/2026/07/20/cheyenne-bopu-releases-wastewater-contamination-timeline-over-800k-gallons-affected/",
+          "type": "news"
+        },
+        {
+          "title": "Cheyenne Won't Take Data Center Wastewater After Meta Contractor Contaminated System",
+          "url": "https://cowboystatedaily.com/2026/07/02/cheyenne-wont-take-data-center-wastewater-after-meta-company-contaminated-system/",
+          "type": "news"
+        }
+      ],
+      "case_type": "pretreatment",
+      "cwa_applied": "applied",
+      "cwa_instrument": "Municipal pretreatment program — significant noncompliance; discharge privileges terminated",
+      "display_section": "historical",
+      "authorities": [
+        "cwa-307-pretreatment"
+      ],
+      "outcome_type": [
+        "compliance-order"
       ]
     }
   ]

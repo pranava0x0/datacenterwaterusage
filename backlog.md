@@ -76,6 +76,13 @@ Last reviewed: 2026-05-28 (External Tracker Survey added — see section below t
 
 ## High Priority
 
+### Execute the 2026-07-25 implementation plan: Issues & Claims / Policy Instruments / Precedent Engine (NEW — planned, research-verified)
+
+Full plan with product specs, ontology, phasing: **`docs/plan-2026-07-25-issues-policy-precedent.md`**. Built from a direct research pass + 3 verified agent sweeps (see AGENTS.md eval log 2026-07-25). Twelve specs across 4 groups; phases P0→P5 are independently shippable. Highest-signal contents: the untracked federal executive layer (EO 14318, NY EO 62, first FAST-41 data center), the AWS whistleblower greenwashing suit + claim-lifecycle schema (`challenged_in`), a 14-value issue-type taxonomy, 12 new legal-authority families with 20 verified anchor cases (Mississippi v. Tennessee → xAI Memphis; Lake Beulah + Racine diversion → Microsoft Mount Pleasant; Swanson → Bessemer), and a status-monitor pipeline. Time-sensitive statuses already verified: AWS Lake Anna VPDES **final** (eff. ~2026-08-01); VA HB 496 first aggregate report due **2026-10-01**; Montgomery Co MD moratorium vote **2026-07-28**.
+
+**Sample prompt (P0):**
+> Execute Phase P0 of docs/plan-2026-07-25-issues-policy-precedent.md: extract the `refdata/` package (loaders, registry, taxonomies, integrity) from dashboard.py with zero behavior change, add `cross_ref_targets` support to news+solutions rendering via the registry, and add the edge-integrity test suite. Run the full test suite and `python3 build_site.py` before/after to prove byte-stable output, then commit.
+
 ### Data Tab Redesign — 4-Section Data Access Map (highest priority, 2026-06-25)
 
 The Data tab needs a full redesign. The current flow-chart view is preserved behind a developer toggle (`dev_flow_data`) until the new layout ships. The new design frames **data access opacity itself** as the story, not just the data we have.
@@ -653,3 +660,32 @@ These are large data-center water stories with no formal CWA enforcement action 
 - **Priority**: medium
 - **What**: `docs/cwa-outcome-taxonomy.md` (added 2026-07-05) reads all 76 historical `cwa_investigations.json` cases and groups their free-text `outcome` field into a closed 12-type taxonomy (Monetary penalty, Injunctive relief/mandated upgrade, Criminal prosecution, Structural remedy, Permit granted w/ conditions, Permit denied/vacated/withdrawn, Referral to escalated enforcement, Dismissed/mooted/cert denied, No formal action, Landmark ruling, Pending/ongoing, Mass tort settlement) — the same pattern as the existing `case_type` and `general_principles` taxonomies in `dashboard.py`. Not yet wired into any code or data field; this is the map only. Two follow-on steps: (1) add an `outcome_type` field (list, since consent decrees often mix penalty + injunctive relief) to each case in `cwa_investigations.json`, test-enforced against the taxonomy same as `case_type`/principle tags; (2) for each site in `data/reference/dc_water_conflicts.json` (Water Cases Part 4), use the closest-matching historical case(s) already listed in its `applicable_readings`/`related_case_ids` to infer and display a "likely outcome pattern" — e.g. a site resembling Amazon-Boardman-OR-nitrate-2026 suggests a monetary-settlement trajectory, one resembling Meta-NewtonCountyGA-well-failures-2018-2025 suggests "no formal action likely" rather than assuming enforcement is coming.
 - **Sample prompt**: "Read docs/cwa-outcome-taxonomy.md's 12-type taxonomy. Add an `outcome_type` (array) field to every case in data/reference/cwa_investigations.json using that taxonomy — most historical cases take 1-2 types (e.g. Monetary penalty + Injunctive relief), precedent cases take Landmark ruling, potential-section cases take Pending or No formal action. Add a schema test (mirror TestLegislationTracker's principle-tag test) enforcing outcome_type values are taxonomy members and every historical case has at least one. Then, for each site in data/reference/dc_water_conflicts.json, add an `analogous_outcome_note` field: one sentence naming the closest-matching historical case(s) by outcome type and what that implies for the site. Render the taxonomy definitions plus the note in `_build_conflict_site_html` (Part 4 cards)."
+
+
+## Supply a LEGISCAN_API_KEY and do one live monitor run
+- **Priority**: high
+- **What**: Two watches (`US S. 4213`, `NY S10642 / A11560`) use the `legiscan`
+  kind because congress.gov and nysenate.gov both 403 automated clients. The
+  bill-number strings (`US SB4213`, `NY S10642`) are **not verified against the
+  live API** — no key was available when they were written. A wrong string now
+  fails loudly (`getSearch` matches exactly and raises `no bill numbered X`)
+  rather than silently never firing, so one keyed run settles it.
+- **Sample prompt**: "Export LEGISCAN_API_KEY, run `python3 -m scrapers.monitors.run --only 'US S. 4213'` then the NY watch, and correct the `monitor.key` strings in legislation.json if getSearch reports no match."
+
+## Retire or regenerate the stale annotate_issue_types.py migration
+- **Priority**: low
+- **What**: `scripts/annotate_issue_types.py` covers 18 sites; the dataset now has
+  19 (Meta Cheyenne). It fails closed — aborts before writing — so it is harmless,
+  but re-running it is a dead end. Decide whether one-off migrations should be
+  archived read-only once applied, or kept re-runnable against current data. The
+  same question applies to every `scripts/add_*_2026_07.py`.
+- **Sample prompt**: "Decide a convention for applied one-off migration scripts in scripts/ — archive vs keep-current — and apply it, starting with annotate_issue_types.py which is now stale by one site."
+
+## Add LEGISCAN_API_KEY to repo secrets
+- **Priority**: medium
+- **What**: The weekly `Status monitors` workflow runs without it — the two
+  LegiScan watches simply report as failed, loudly, which is the intended
+  degraded mode rather than a silent skip. Adding the secret activates them.
+  Pairs with the live-verification item above: the first keyed run is also what
+  confirms the bill-number strings.
+- **Sample prompt**: "Add LEGISCAN_API_KEY to the repo secrets and trigger the Status monitors workflow manually to confirm both LegiScan watches resolve."
