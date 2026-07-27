@@ -23,6 +23,11 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 QUEUE_PATH = BASE_DIR / "data" / "output" / "monitor_hits.json"
 FINGERPRINT_PATH = BASE_DIR / "data" / "state" / "monitor_fingerprints.json"
+# Snapshots are whole normalized pages, kept only to diff the next run against.
+# They are an order of magnitude larger than the fingerprints and of no use to
+# a reader, so they live in their own gitignored file while the fingerprints
+# and the queue are committed.
+SNAPSHOT_PATH = BASE_DIR / "data" / "state" / "monitor_snapshots.json"
 
 
 def _atomic_write(path: Path, text: str) -> None:
@@ -54,8 +59,13 @@ def load_fingerprints(path: Path | None = None) -> dict[str, str]:
 
 
 def load_snapshots(path: Path | None = None) -> dict[str, str]:
-    """Last normalized body per record id, for diffing. Empty on first run."""
-    path = path or FINGERPRINT_PATH
+    """Last normalized body per record id, for diffing. Empty on first run.
+
+    Losing these degrades gracefully: the next run still detects the change via
+    the fingerprint, it just cannot show an excerpt. That is why they are safe
+    to keep out of git while the fingerprints are not.
+    """
+    path = path or SNAPSHOT_PATH
     if not path.exists():
         return {}
     try:
@@ -70,16 +80,21 @@ def save_fingerprints(
     last_run: str,
     path: Path | None = None,
     snapshots: dict[str, str] | None = None,
+    snapshot_path: Path | None = None,
 ) -> None:
     path = path or FINGERPRINT_PATH
     path.parent.mkdir(parents=True, exist_ok=True)
+    _atomic_write(
+        (snapshot_path or SNAPSHOT_PATH),
+        json.dumps({"last_run": last_run, "snapshots": snapshots or {}}, indent=2, sort_keys=True)
+        + "\n",
+    )
     _atomic_write(
         path,
         json.dumps(
             {
                 "last_run": last_run,
                 "fingerprints": fingerprints,
-                "snapshots": snapshots or {},
             },
             indent=2,
             sort_keys=True,

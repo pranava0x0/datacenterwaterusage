@@ -260,12 +260,17 @@ class TestQueue:
             [dict(base, summary="fetch failed: 500")], "t3", path
         ) == 0
 
-    def test_snapshots_roundtrip(self, tmp_path):
-        path = tmp_path / "fp.json"
-        assert monitor_queue.load_snapshots(path) == {}
-        monitor_queue.save_fingerprints({"r": "1"}, "t", path, snapshots={"r": "body"})
-        assert monitor_queue.load_snapshots(path) == {"r": "body"}
-        assert monitor_queue.load_fingerprints(path) == {"r": "1"}
+    def test_snapshots_live_in_their_own_file(self, tmp_path):
+        """Snapshots are whole pages — an order of magnitude larger than the
+        fingerprints and useless to a reader. They stay out of git; losing them
+        only costs the excerpt, since the fingerprint still detects the change."""
+        fp, snap = tmp_path / "fp.json", tmp_path / "snap.json"
+        monitor_queue.save_fingerprints(
+            {"r": "1"}, "t", fp, snapshots={"r": "body"}, snapshot_path=snap
+        )
+        assert monitor_queue.load_fingerprints(fp) == {"r": "1"}
+        assert monitor_queue.load_snapshots(snap) == {"r": "body"}
+        assert "body" not in fp.read_text(), "committed file must not carry page text"
 
     def test_triaged_entries_are_never_dropped(self, tmp_path):
         """Append-only per CLAUDE.md §3: 'we looked and it was nothing' is a
@@ -329,13 +334,17 @@ class TestPathsAreRedirectable:
         assert (tmp_path / "q.json").exists()
         assert (tmp_path / "fp.json").exists()
 
-    def test_real_paths_are_gitignored(self):
-        """Both are runtime artifacts of an ops sweep, not curated data."""
+    def test_state_files_are_tracked_not_ignored(self):
+        """Reversed deliberately. I first gitignored these as "ops artifacts,
+        not curated data", then spent six review rounds building cache and
+        artifact machinery to stop losing them. The queue is an append-only
+        audit trail; git is the durable append-only store this project already
+        uses for exactly that."""
         import pathlib
 
         ignore = (pathlib.Path(monitor_queue.BASE_DIR) / ".gitignore").read_text()
-        assert "monitor_hits.json" in ignore
-        assert "monitor_fingerprints.json" in ignore
+        assert "monitor_hits.json" not in ignore
+        assert "monitor_fingerprints.json" not in ignore
 
 
 class TestNoAutomaticWrites:
@@ -552,118 +561,6 @@ class TestLegiScanIdResolution:
                 assert w.key.strip().isdigit() or len(w.key.split()) == 2, w.record_id
 
 
-class TestScheduledSweepWorkflow:
-    """The weekly routine. Two of these pin bugs Codex found in the first
-    draft, both of which would have made the sweep quietly useless."""
-
-    @staticmethod
-    def _wf():
-        import pathlib
-
-        import yaml
-
-        return yaml.safe_load(
-            (pathlib.Path(monitor_queue.BASE_DIR) / ".github/workflows/monitors.yml")
-            .read_text()
-        )
-
-    def test_state_and_queue_both_persist_between_runs(self):
-        """Caching only the fingerprints loses untriaged candidates: the prior
-        run advanced the fingerprint, so an unchanged page emits nothing, the
-        fresh checkout has no queue, and the newest artifact silently omits a
-        hit nobody actioned."""
-        steps = self._wf()["jobs"]["sweep"]["steps"]
-        cache = next(s for s in steps if "cache@" in s.get("uses", ""))
-        paths = cache["with"]["path"].split()
-        assert any("monitor_fingerprints.json" in p for p in paths)
-        assert any("monitor_hits.json" in p for p in paths), "queue must survive too"
-        assert cache["with"].get("restore-keys"), "no restore-key = never inherits"
-
-    def test_cache_miss_falls_back_to_the_last_artifact(self):
-        """The actions cache is a cache: GitHub evicts entries unused for 7
-        days and under repo pressure. One skipped week would drop the queue and
-        a curator would download a fresh artifact silently missing every
-        untriaged hit. Artifacts are retained 90 days, so a miss must recover."""
-        steps = self._wf()["jobs"]["sweep"]["steps"]
-        cache = next(s for s in steps if "cache@" in s.get("uses", ""))
-        assert cache.get("id"), "cache step needs an id to branch on cache-hit"
-        # Select by name, not by "first step conditioned on cache-hit" — the
-        # legacy-cache restore is also conditioned on it and has no `run`.
-        recovery = next(
-            (s for s in steps if "Recover" in s.get("name", "") and "run" in s), None
-        )
-        assert recovery is not None, "no cache-miss recovery step"
-        # BOTH files. Restoring the queue alone makes the next sweep treat every
-        # page as a first observation, so a real change is logged as "baselined"
-        # and the summary reads "nothing to triage" — a silent miss that looks
-        # like a quiet week. Half-recovered state is worse than none.
-        assert "monitor-state" in recovery["run"], "must recover the full state artifact"
-        body = recovery["run"]
-        # Must FAIL on partial recovery, not warn. Continuing would baseline a
-        # page that changed, and the upload steps would then overwrite the good
-        # cache/artifact with that empty state — a recoverable blip turned into
-        # permanent loss. A cold start (no prior artifact) is a legitimate
-        # exit 0, so both paths must exist.
-        assert body.count("exit 1") >= 2, "partial recovery must fail the step"
-        assert "exit 0" in body, "a genuine cold start must not fail"
-        assert "::error::" in body, "failures should surface as annotations"
-        published = [
-            st for st in steps
-            if "upload-artifact" in st.get("uses", "")
-            and st["with"]["name"] == "monitor-state"
-        ]
-        assert published, "nothing publishes the recovery artifact"
-        paths = published[0]["with"]["path"].split()
-        assert any("monitor_hits.json" in p for p in paths)
-        assert any("monitor_fingerprints.json" in p for p in paths), (
-            "recovery artifact must carry the fingerprints too"
-        )
-
-    def test_uses_cache_not_artifacts_for_cross_run_state(self):
-        """download-artifact cannot read a PRIOR run's output without its
-        run-id, so an artifact round-trip would re-baseline every week and
-        report change never."""
-        steps = self._wf()["jobs"]["sweep"]["steps"]
-        assert not any("download-artifact" in s.get("uses", "") for s in steps)
-
-    def test_least_privilege_and_pinned_actions(self):
-        """Assert the PROPERTY (no write scope), not an exact dict — the first
-        version hardcoded {"contents": "read"} and broke the moment a
-        legitimate read-only scope was added."""
-        wf = self._wf()
-        assert wf["permissions"], "must declare an explicit top-level block"
-        for scope, level in wf["permissions"].items():
-            assert level == "read", f"{scope}: {level} — this job writes nothing"
-        for step in wf["jobs"]["sweep"]["steps"]:
-            uses = step.get("uses")
-            if uses:
-                assert len(uses.split("@")[1]) == 40, f"{uses} is not SHA-pinned"
-
-    def test_never_commits_to_a_dataset(self):
-        """Monitors propose; humans dispose.
-
-        Scans the PARSED run blocks, not the raw file: a first version grepped
-        the text and tripped on a comment reading "never needs contents:
-        write" — a keyword check defeated by its own negation, which is the
-        same failure this repo already fixed in the outcome classifier.
-        """
-        wf = self._wf()
-        assert wf["permissions"].get("contents") != "write"
-        # Ban MUTATION, not tooling: the queue-recovery step legitimately reads
-        # a prior artifact via `gh run download` / `gh api ... --jq`. Banning
-        # `gh api` outright was the same over-broad-literal mistake as pinning
-        # the permissions dict.
-        mutations = (
-            "git commit", "git push", "gh pr create", "gh pr merge",
-            "gh release", "--method POST", "--method PUT", "--method PATCH",
-            "--method DELETE",
-        )
-        for step in wf["jobs"]["sweep"]["steps"]:
-            body = step.get("run", "")
-            for forbidden in mutations:
-                assert forbidden not in body, f"{forbidden} in step {step.get('name')}"
-
-
 class TestStepSummary:
     """Codex: once the queue persists across runs, anything summarizing the
     FILE re-reports the first change it ever saw as current, every week."""
@@ -768,47 +665,6 @@ class TestSurfaceAwareClaimLinks:
             assert "claim-type-pill" in out
 
 
-class TestLegacyStateMigration:
-    """Codex round 8. Renaming the cache prefix and artifact orphans whatever
-    the already-merged version of this workflow accumulated: the new prefix
-    can't match, the new artifact doesn't exist, and 'cold start' silently
-    discards real fingerprints and untriaged hits."""
-
-    @staticmethod
-    def _steps():
-        import pathlib
-
-        import yaml
-
-        return yaml.safe_load(
-            (pathlib.Path(monitor_queue.BASE_DIR) / ".github/workflows/monitors.yml")
-            .read_text()
-        )["jobs"]["sweep"]["steps"]
-
-    def test_legacy_cache_prefix_is_still_tried(self):
-        steps = self._steps()
-        legacy = [
-            s for s in steps
-            if "cache" in s.get("uses", "")
-            and "monitor-fingerprints-" in str(s.get("with", {}))
-        ]
-        assert legacy, "the pre-rename cache prefix is no longer attempted"
-
-    def test_legacy_artifact_name_is_still_tried(self):
-        recovery = next(s for s in self._steps() if "Recover" in s.get("name", ""))
-        assert "monitor-hits" in recovery["run"], "pre-rename artifact not attempted"
-        assert "monitor-state" in recovery["run"]
-
-    def test_legacy_restore_runs_before_recovery(self):
-        """Ordering is load-bearing: recovery judges completeness from what is
-        on disk, so a legacy cache restored afterwards would arrive too late
-        and the step would fail on state it actually had."""
-        names = [s.get("name", "") for s in self._steps()]
-        legacy = next(i for i, n in enumerate(names) if "legacy" in n.lower())
-        recovery = next(i for i, n in enumerate(names) if "Recover" in n)
-        assert legacy < recovery, names
-
-
 class TestNoDeadAffordances:
     """Codex round 9: removing the href but keeping .claim-site-link left the
     text link-blue and underlined on hover — still advertising a click that
@@ -840,3 +696,85 @@ class TestNoDeadAffordances:
         ).read_text()
         assert "a.claim-site-link {" in css
         assert "a.claim-site-link:hover" in css
+
+
+class TestScheduledSweepWorkflow:
+    """The weekly routine.
+
+    State lives in git rather than the actions cache. The cache design needed
+    five steps and ~56 lines of shell to avoid losing one small JSON file, and
+    six consecutive review rounds found defects in it. These tests pin the
+    properties that made the replacement worth making.
+    """
+
+    @staticmethod
+    def _wf():
+        import pathlib
+
+        import yaml
+
+        return yaml.safe_load(
+            (pathlib.Path(monitor_queue.BASE_DIR) / ".github/workflows/monitors.yml")
+            .read_text()
+        )
+
+    def test_state_is_committed_not_cached(self):
+        """Git is durable and append-only; the actions cache is neither."""
+        wf = self._wf()
+        steps = wf["jobs"]["sweep"]["steps"]
+        assert not any("cache@" in s.get("uses", "") for s in steps), "state is in git now"
+        assert not any("artifact" in s.get("uses", "") for s in steps)
+        commit = next(s for s in steps if "Commit" in s.get("name", ""))
+        for path in ("monitor_hits.json", "monitor_fingerprints.json"):
+            assert path in commit["run"], path
+
+    def test_only_ops_state_can_be_committed(self):
+        """Monitors propose; humans dispose. The sweep must be incapable of
+        committing a curated dataset even if some future change writes one."""
+        commit = next(
+            s for s in self._wf()["jobs"]["sweep"]["steps"] if "Commit" in s.get("name", "")
+        )
+        body = commit["run"]
+        assert "data/reference" not in body
+        # No blanket adds — every staged path is named explicitly.
+        for blanket in ("git add .", "git add -A\n", "git add --all", "git commit -a"):
+            assert blanket not in body, blanket
+
+    def test_missing_state_file_does_not_abort_the_commit(self):
+        """`git add` on a missing path fails under `set -e`, and a sweep with
+        nothing to queue writes no queue."""
+        commit = next(
+            s for s in self._wf()["jobs"]["sweep"]["steps"] if "Commit" in s.get("name", "")
+        )
+        assert '[ -f "$f" ]' in commit["run"]
+
+    def test_push_rebases_first(self):
+        """Concurrency prevents overlapping sweeps, not a human committing a
+        triage edit while one runs."""
+        commit = next(
+            s for s in self._wf()["jobs"]["sweep"]["steps"] if "Commit" in s.get("name", "")
+        )
+        body = commit["run"]
+        assert "--rebase" in body
+        assert body.index("--rebase") < body.index("git push")
+
+    def test_write_scope_is_the_only_permission(self):
+        """Assert the property, not an exact dict — an earlier version pinned
+        `{"contents": "read"}` and broke on a legitimate read-only addition."""
+        perms = self._wf()["permissions"]
+        assert perms == {"contents": "write"} or set(perms) <= {"contents", "actions"}
+        assert perms.get("contents") == "write", "committing state needs write"
+
+    def test_actions_are_sha_pinned(self):
+        for step in self._wf()["jobs"]["sweep"]["steps"]:
+            uses = step.get("uses")
+            if uses:
+                assert len(uses.split("@")[1]) == 40, f"{uses} is not SHA-pinned"
+
+    def test_run_py_owns_the_summary(self):
+        """No step may re-derive the summary from the append-only queue file,
+        which carries every prior run's history."""
+        for step in self._wf()["jobs"]["sweep"]["steps"]:
+            body = step.get("run", "")
+            assert "GITHUB_STEP_SUMMARY" not in body, step.get("name")
+            assert "json.loads" not in body, step.get("name")

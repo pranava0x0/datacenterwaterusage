@@ -230,15 +230,20 @@ def build_company_claims() -> str:
         'assessments</p>',
     ]
     rendered: list[str] = []
+    # Labels come from the shared taxonomy; only the CSS treatment is local.
+    # This map previously duplicated the labels, so DELIVERED_STATUS_LABELS was
+    # "shared" in name only and the two surfaces could drift on a rename —
+    # the exact failure the constant was introduced to prevent.
+    status_css = {
+        "delivered": "delivered",
+        "partial": "partial",
+        "contested": "partial",
+        "litigated": "shortfall",
+        "shortfall": "shortfall",
+    }
     status_map = {
-        "delivered": ("Delivered", "delivered"),
-        "partial": ("Partial", "partial"),
-        "contested": ("Contested", "partial"),
-        "shortfall": ("Shortfall", "shortfall"),
-        # A claim whose truth is before a court or regulator. Rendered in the
-        # shortfall (danger) treatment because the exposure is real, with copy
-        # that says the claim is being TESTED — the tracker does not adjudicate.
-        "litigated": ("Contested in court", "shortfall"),
+        k: (dash.DELIVERED_STATUS_LABELS[k], status_css.get(k, "info"))
+        for k in dash.DELIVERED_STATUS_LABELS
     }
     for claim in claims:
         slug = claim.get("company_slug", "unknown")

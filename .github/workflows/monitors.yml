@@ -5,12 +5,22 @@ name: Status monitors
 # eventual NY veto) gets detected rather than rediscovered by a human
 # re-running research months later.
 #
-# Monitors PROPOSE; humans dispose. This workflow never edits a curated
-# dataset — it appends to a candidate queue and uploads it for triage.
-# See REFRESH.md step 1.
+# Monitors PROPOSE; humans dispose. This workflow commits ops state only — the
+# candidate queue and the fingerprint cache. It never edits a curated dataset
+# under data/reference/, which a test enforces. See REFRESH.md step 1.
 #
-# No untrusted event data is interpolated anywhere below: the only expressions
-# are `secrets.*` and static config, so there is no workflow-injection surface.
+# STATE LIVES IN GIT, ON PURPOSE. An earlier version kept it in the actions
+# cache with artifact fallbacks, a legacy-migration path and a completeness
+# guard: five steps and ~56 lines of shell whose only job was not losing a
+# small JSON file. Six consecutive review rounds found defects in it — cache
+# eviction, half-restored state, a rename that orphaned everything, and a
+# `cache-hit` condition that is false on every run because the key embeds
+# run_id. Git is already durable append-only storage, and CLAUDE.md section 3
+# already makes append-only the project's data model. Committing the file
+# deletes the whole failure class instead of guarding each instance of it.
+#
+# No untrusted event data is interpolated below: the only expressions are
+# `secrets.*` and static config, so there is no workflow-injection surface.
 on:
   schedule:
     # 07:23 UTC Mondays. Off the hour and off :00/:30 so this doesn't pile onto
@@ -18,16 +28,14 @@ on:
     - cron: "23 7 * * 1"
   workflow_dispatch: {}
 
-# Least privilege: reads the repo, writes nothing back. State travels via the
-# actions cache and artifacts, so this job never needs contents: write.
+# contents: write is required to commit the queue, and is the only permission
+# granted. The cache-plus-artifacts alternative needed `actions: read` anyway
+# and cost the reliability documented above.
 permissions:
-  contents: read
-  # Needed only to download a prior run's monitor-hits artifact when the
-  # actions cache has been evicted. Still no write scope anywhere.
-  actions: read
+  contents: write
 
 concurrency:
-  # A slow sweep must not overlap the next week's run and double-append.
+  # A slow sweep must not overlap the next week's run and race the commit.
   group: monitors
   cancel-in-progress: false
 
@@ -49,133 +57,11 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # Ops state that must survive between weekly runs. It's gitignored
-      # (not curated data), so it round-trips through the actions cache —
-      # which, unlike artifacts, is designed for cross-run state and needs no
-      # prior run-id. The restore-key inherits the most recent cache; the
-      # run-id key saves an updated one.
-      #
-      # BOTH files, not just the fingerprints. Restoring the cache alone would
-      # lose untriaged candidates: the prior run already advanced the
-      # fingerprint, so an unchanged page emits nothing the next week, the
-      # fresh checkout starts with no queue, and the newest artifact silently
-      # omits a hit nobody has actioned yet — which then expires with the old
-      # artifact. The queue is append-only precisely so pending work survives.
-      - name: Restore monitor state from the last sweep
-        id: state
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
-        with:
-          path: |
-            data/state/monitor_fingerprints.json
-            data/output/monitor_hits.json
-          key: monitor-state-${{ github.run_id }}
-          restore-keys: monitor-state-
-
-      # cache-hit is only true for an exact primary-key match, and the primary
-      # key embeds github.run_id — so it is false on EVERY run, including
-      # healthy ones that inherited state via restore-keys. Branching on it
-      # made the fallbacks fire weekly. Ask the filesystem instead.
-      - name: Did the cache actually restore usable state?
-        id: restored
-        run: |
-          if [ -s data/state/monitor_fingerprints.json ]; then
-            echo "complete=true" >> "$GITHUB_OUTPUT"
-            echo "State restored from cache; skipping recovery."
-          else
-            echo "complete=false" >> "$GITHUB_OUTPUT"
-            echo "No fingerprints on disk; recovery will run."
-          fi
-
-      # One-time migration path. The version of this workflow on main keys its
-      # cache `monitor-fingerprints-` and publishes only `monitor-hits`, so
-      # after this rename neither the new cache nor the new artifact exists and
-      # the recovery below would call it a cold start and discard real state.
-      # Safe to delete once a run has published `monitor-state`.
-      - name: Restore legacy fingerprint cache
-        if: steps.restored.outputs.complete != 'true'
-        uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
-        with:
-          path: data/state/monitor_fingerprints.json
-          key: monitor-fingerprints-
-          restore-keys: monitor-fingerprints-
-
-      # The actions cache is a CACHE, not storage: GitHub evicts entries unused
-      # for 7 days and under repo cache pressure. One skipped week would drop
-      # the queue, the next run would re-baseline everything, and a curator
-      # following REFRESH.md would download a fresh artifact silently missing
-      # every untriaged hit. Artifacts are retained 90 days, so on a cache miss
-      # fall back to the last run that published one.
-      # The actions cache is a CACHE, not storage: GitHub evicts entries unused
-      # for 7 days and under repo cache pressure. On a miss, rebuild from the
-      # last published artifact (90-day retention).
-      #
-      # This step FAILS rather than continuing on a partial recovery. A warning
-      # is not enough: the sweep would baseline a page that had actually
-      # changed, and the upload steps at the end would then overwrite the good
-      # cache and artifact with that empty state — turning a recoverable blip
-      # into permanent loss of a real status change. Better a red run somebody
-      # investigates than a green one that quietly discarded the finding.
-      #
-      # A genuine first run (no prior artifact at all) is not a failure: there
-      # is nothing to recover and baselining is the correct behaviour.
-      - name: Recover monitor state if the cache missed
-        if: steps.restored.outputs.complete != 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          mkdir -p data/output data/state
-          find_run() {  # $1 = artifact name
-            gh run list --workflow monitors.yml --status success \
-              --limit 20 --json databaseId --jq '.[].databaseId' \
-              | while read -r id; do
-                  if gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id/artifacts" \
-                       --jq '.artifacts[].name' 2>/dev/null | grep -qx "$1"; then
-                    echo "$id"; break
-                  fi
-                done
-          }
-
-          run_id=$(find_run monitor-state)
-          artifact=monitor-state
-          if [ -z "${run_id:-}" ]; then
-            # Legacy name, published by the pre-rename workflow.
-            run_id=$(find_run monitor-hits)
-            artifact=monitor-hits
-          fi
-
-          if [ -z "${run_id:-}" ]; then
-            echo "No prior monitor-state or monitor-hits artifact — genuine cold start."
-            exit 0
-          fi
-
-          echo "Recovering from run $run_id (artifact: $artifact)"
-          dest=data
-          [ "$artifact" = "monitor-hits" ] && dest=data/output
-          if ! gh run download "$run_id" --name "$artifact" --dir "$dest"; then
-            echo "::error::Recovery download failed for run $run_id. Refusing to" \
-                 "sweep: baselining now would overwrite the recoverable queue" \
-                 "and fingerprints with empty state."
-            exit 1
-          fi
-
-          # Completeness is judged on what is on disk after EVERY fallback —
-          # the legacy cache step above may already have supplied the
-          # fingerprints that a monitor-hits artifact does not carry.
-          missing=""
-          [ -s data/output/monitor_hits.json ] || missing="$missing data/output/monitor_hits.json"
-          [ -s data/state/monitor_fingerprints.json ] || missing="$missing data/state/monitor_fingerprints.json"
-          if [ -n "$missing" ]; then
-            echo "::error::Recovery incomplete — missing:$missing. Refusing to" \
-                 "sweep: a changed page would be recorded as a first observation" \
-                 "and the good state overwritten."
-            exit 1
-          fi
-          echo "Recovered both state files."
-
+      # The checkout already carries both state files, so there is nothing to
+      # restore and nothing that can be half-restored.
       - name: Sweep
         env:
-          # Absent key => the two LegiScan watches report as FAILED rather than
+          # Absent key => the LegiScan watches report as FAILED rather than
           # skipping quietly. Intentional: a watch that stopped running must not
           # be indistinguishable from a watch reporting no change.
           LEGISCAN_API_KEY: ${{ secrets.LEGISCAN_API_KEY }}
@@ -183,28 +69,24 @@ jobs:
         # candidates — the queue on disk is append-only history.
         run: python3 -m scrapers.monitors.run
 
-      # A convenience copy for humans — the cache above is what actually
-      # carries pending candidates forward between runs. 90 days is well past
-      # any sensible triage lag.
-      - name: Upload candidate queue for triage
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: monitor-hits
-          path: data/output/monitor_hits.json
-          if-no-files-found: ignore
-          retention-days: 90
-
-      # Durable copy of BOTH state files, used only to rebuild after a cache
-      # eviction. Restoring the queue without the fingerprints would make the
-      # next sweep treat every page as a first observation, so a real change
-      # would be logged as "baselined" and the summary would read "nothing to
-      # triage" — a silent miss dressed as a quiet week.
-      - name: Upload full monitor state for recovery
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: monitor-state
-          path: |
-            data/output/monitor_hits.json
-            data/state/monitor_fingerprints.json
-          if-no-files-found: ignore
-          retention-days: 90
+      - name: Commit updated monitor state
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Explicit paths: the sweep must never be able to commit a curated
+          # dataset, even if some future change writes to one by mistake.
+          # Add only files that exist: `git add` on a missing path aborts
+          # under `set -e`, and a sweep with nothing to queue writes no queue.
+          for f in data/output/monitor_hits.json data/state/monitor_fingerprints.json; do
+            [ -f "$f" ] && git add "$f"
+          done
+          if git diff --cached --quiet; then
+            echo "No state change this run."
+            exit 0
+          fi
+          git commit -m "monitors: weekly sweep state [skip ci]"
+          # Rebase before pushing: a human may have committed a triage edit
+          # while this ran. Concurrency prevents overlapping sweeps, not humans.
+          git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
