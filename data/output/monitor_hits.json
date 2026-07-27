@@ -1,0 +1,90 @@
+{
+  "last_run": "2026-07-27T05:31:40Z",
+  "note": "Monitor candidates awaiting human adjudication. Monitors propose; a curator decides what reaches a dataset. Append-only — triaged entries stay for the audit trail.",
+  "candidates": [
+    {
+      "record_id": "US S. 4213",
+      "dataset": "legislation",
+      "kind": "legiscan",
+      "key": "US SB4213",
+      "previous_fingerprint": null,
+      "fingerprint": "",
+      "summary": "fetch failed: MissingCredential: LEGISCAN_API_KEY is not set — this watch did not run. Export the key or switch the record's monitor kind to url-watch.",
+      "detected_at": "2026-07-27T05:31:40Z",
+      "note": "Federal transparency bill — watch for committee action or floor movement. NB: the LegiScan bill-number string is not verified against the live API (no key available here). If it is wrong the watch fails LOUDLY on the first keyed run — getSearch matches the bill number exactly — rather than silently never firing.",
+      "excerpt": ""
+    },
+    {
+      "record_id": "OH EPA OHD000001 (draft general permit)",
+      "dataset": "legislation",
+      "kind": "url-watch",
+      "key": "https://ohioepa.commentinput.com/?id=csDN8pRrg",
+      "previous_fingerprint": null,
+      "fingerprint": "769f4a903d7b6426",
+      "summary": "first observation — baseline recorded, no change implied",
+      "detected_at": "2026-07-27T05:31:40Z",
+      "note": "Ohio EPA's public-comment portal for the draft permit — the page that changes when the comment period closes or the permit is finalized. (The agency's own permits index 404s; found by the first live sweep.)",
+      "excerpt": ""
+    },
+    {
+      "record_id": "NY S10642 / A11560",
+      "dataset": "legislation",
+      "kind": "legiscan",
+      "key": "NY S10642",
+      "previous_fingerprint": null,
+      "fingerprint": "",
+      "summary": "fetch failed: MissingCredential: LEGISCAN_API_KEY is not set — this watch did not run. Export the key or switch the record's monitor kind to url-watch.",
+      "detected_at": "2026-07-27T05:31:40Z",
+      "note": "Never signed or vetoed — superseded by EO 62. Watch for an eventual veto. NB: the LegiScan bill-number string is not verified against the live API (no key available here). If it is wrong the watch fails LOUDLY on the first keyed run — getSearch matches the bill number exactly — rather than silently never firing.",
+      "excerpt": ""
+    },
+    {
+      "record_id": "NY EO 62",
+      "dataset": "legislation",
+      "kind": "url-watch",
+      "key": "https://www.governor.ny.gov/executive-orders",
+      "previous_fingerprint": null,
+      "fingerprint": "31c108d1007ad206",
+      "summary": "first observation — baseline recorded, no change implied",
+      "detected_at": "2026-07-27T05:31:40Z",
+      "note": "One-year moratorium; watch for extension, expiry, or the DEC withdrawal rulemaking.",
+      "excerpt": ""
+    },
+    {
+      "record_id": "VA DEQ waterworks data-center reporting regulations",
+      "dataset": "legislation",
+      "kind": "url-watch",
+      "key": "https://townhall.virginia.gov/L/ViewBoard.cfm?BoardID=125",
+      "previous_fingerprint": null,
+      "fingerprint": "b58986d48b31c23d",
+      "summary": "first observation — baseline recorded, no change implied",
+      "detected_at": "2026-07-27T05:31:40Z",
+      "note": "Virginia Regulatory Town Hall board page for the State Water Control Board — tracks regulatory stages. deq.virginia.gov itself is WAF-blocked for automated clients (errors.md, 2026-02-24), so watch the Town Hall instead. First aggregate report due 2026-10-01.",
+      "excerpt": ""
+    },
+    {
+      "record_id": "MI SB 1046-1050",
+      "dataset": "legislation",
+      "kind": "url-watch",
+      "key": "https://legislature.mi.gov/Bills/Bill?ObjectName=2026-SB-1046",
+      "previous_fingerprint": null,
+      "fingerprint": "12aa55e2d9349a9b",
+      "summary": "first observation — baseline recorded, no change implied",
+      "detected_at": "2026-07-27T05:31:40Z",
+      "note": "Michigan legislature bill page for SB 1046, the water-permitting bill in the package. Bill numbers unverified; confirm against the lookup when status moves.",
+      "excerpt": ""
+    },
+    {
+      "record_id": "TX PUC Energy and Water Use Survey (data centers)",
+      "dataset": "legislation",
+      "kind": "url-watch",
+      "key": "https://www.puc.texas.gov/industry/water/utilities/energy-and-water-use-survey/faq/",
+      "previous_fingerprint": null,
+      "fingerprint": "108e65ddf1a3c445",
+      "summary": "first observation — baseline recorded, no change implied",
+      "detected_at": "2026-07-27T05:31:40Z",
+      "note": "Watch for the voluntary survey becoming a mandatory registration.",
+      "excerpt": ""
+    }
+  ]
+}

@@ -67,7 +67,7 @@ def main(argv: list[str] | None = None) -> int:
 
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     previous = monitor_queue.load_fingerprints()
-    snapshots = monitor_queue.load_snapshots()
+    snapshots = monitor_queue.load_snapshots()  # defaults to SNAPSHOT_PATH
     run = MonitorRun(
         fetch=make_fetcher(_polite_get()),
         previous=previous,

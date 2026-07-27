@@ -264,10 +264,9 @@ class TestQueue:
         """Snapshots are whole pages — an order of magnitude larger than the
         fingerprints and useless to a reader. They stay out of git; losing them
         only costs the excerpt, since the fingerprint still detects the change."""
-        fp, snap = tmp_path / "fp.json", tmp_path / "snap.json"
-        monitor_queue.save_fingerprints(
-            {"r": "1"}, "t", fp, snapshots={"r": "body"}, snapshot_path=snap
-        )
+        fp = tmp_path / "fp.json"
+        monitor_queue.save_fingerprints({"r": "1"}, "t", fp, snapshots={"r": "body"})
+        snap = monitor_queue.snapshot_path_for(fp)
         assert monitor_queue.load_fingerprints(fp) == {"r": "1"}
         assert monitor_queue.load_snapshots(snap) == {"r": "body"}
         assert "body" not in fp.read_text(), "committed file must not carry page text"
@@ -790,7 +789,7 @@ class TestSnapshotsPersist:
         import pathlib
 
         ignore = (pathlib.Path(monitor_queue.BASE_DIR) / ".gitignore").read_text()
-        assert "monitor_snapshots.json" not in ignore
+        assert "monitor_fingerprints_snapshots.json" not in ignore
 
     def test_workflow_commits_all_three_state_files(self):
         import pathlib
@@ -805,7 +804,7 @@ class TestSnapshotsPersist:
             s for s in wf["jobs"]["sweep"]["steps"] if "Commit" in s.get("name", "")
         )
         for f in ("monitor_hits.json", "monitor_fingerprints.json",
-                  "monitor_snapshots.json"):
+                  "monitor_fingerprints_snapshots.json"):
             assert f in commit["run"], f
 
     def test_snapshots_are_capped(self, tmp_path):
@@ -839,3 +838,86 @@ class TestDocsMatchTheWorkflow:
                 "REFRESH.md still points curators at the removed monitor-hits artifact"
             )
         assert "data/output/monitor_hits.json" in refresh
+
+
+class TestRedirectionIsAtomic:
+    """Codex round 12, and a REPEAT of the class this module already fixed:
+    a test redirecting one state path while another silently wrote to the
+    repository. Running the suite destroyed 22KB of real snapshots, replacing
+    them with a 60-byte test payload."""
+
+    def test_redirecting_fingerprints_also_redirects_snapshots(self, tmp_path):
+        real_before = (
+            monitor_queue.SNAPSHOT_PATH.read_bytes()
+            if monitor_queue.SNAPSHOT_PATH.exists()
+            else None
+        )
+        fp = tmp_path / "fp.json"
+        monitor_queue.save_fingerprints({"r": "1"}, "t", fp, snapshots={"r": "body"})
+
+        assert monitor_queue.snapshot_path_for(fp).exists()
+        real_after = (
+            monitor_queue.SNAPSHOT_PATH.read_bytes()
+            if monitor_queue.SNAPSHOT_PATH.exists()
+            else None
+        )
+        assert real_after == real_before, "redirected write touched repository state"
+
+    def test_omitting_snapshots_leaves_the_file_alone(self, tmp_path):
+        """`None` = not managing snapshots; `{}` = legitimately clearing them.
+        Conflating them let a caller that never mentioned snapshots wipe them."""
+        fp = tmp_path / "fp.json"
+        snap = monitor_queue.snapshot_path_for(fp)
+        monitor_queue.save_fingerprints({"r": "1"}, "t", fp, snapshots={"r": "keep"})
+        monitor_queue.save_fingerprints({"r": "2"}, "t", fp)  # no snapshots kwarg
+        assert monitor_queue.load_snapshots(snap) == {"r": "keep"}
+
+    def test_default_paths_stay_paired(self):
+        assert monitor_queue.snapshot_path_for(monitor_queue.FINGERPRINT_PATH) == (
+            monitor_queue.SNAPSHOT_PATH
+        )
+
+
+class TestSuiteDoesNotDirtyTheCheckout:
+    """The class of bug this module has now shipped TWICE: a test redirecting
+    one state path while another silently wrote to the repository. First as
+    default arguments bound at import, then as a special case in the path
+    derivation that read the module global a test had just patched.
+
+    This asserts the invariant directly rather than any particular mechanism,
+    so a third variation cannot slip through.
+    """
+
+    def test_no_state_write_escapes_a_redirect(self, tmp_path):
+        import itertools
+
+        real = [
+            monitor_queue.QUEUE_PATH,
+            monitor_queue.FINGERPRINT_PATH,
+            monitor_queue.SNAPSHOT_PATH,
+        ]
+        before = {p: (p.read_bytes() if p.exists() else None) for p in real}
+
+        # Every shape a caller might use, none of which names SNAPSHOT_PATH.
+        fp = tmp_path / "fp.json"
+        for snaps in ({"r": "body"}, {}, None):
+            monitor_queue.save_fingerprints({"r": "1"}, "t", fp, snapshots=snaps)
+        monitor_queue.append_candidates(
+            [{"record_id": "r", "fingerprint": "1"}], "t", tmp_path / "q.json"
+        )
+
+        after = {p: (p.read_bytes() if p.exists() else None) for p in real}
+        changed = [p.name for p in real if before[p] != after[p]]
+        assert not changed, f"redirected calls wrote to repository state: {changed}"
+
+    def test_derivation_has_no_special_case_for_the_default(self):
+        """A branch on `== FINGERPRINT_PATH` reads the module global, which a
+        monkeypatching test has already replaced — so the special case fires
+        exactly when redirection was requested."""
+        import inspect
+
+        src = inspect.getsource(monitor_queue.snapshot_path_for)
+        assert "== FINGERPRINT_PATH" not in src
+        assert "SNAPSHOT_PATH" not in src.split('"""')[-1], (
+            "derivation must not reference the module-level default"
+        )

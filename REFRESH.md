@@ -68,7 +68,7 @@ For each entry in `monitor_hits.json`, open the `key` URL and decide:
 
 The queue is never edited or pruned — it is committed, so the history is in
 `git log`. `data/state/monitor_fingerprints.json` and
-`monitor_snapshots.json` advance automatically alongside it; a *failed* fetch
+`monitor_fingerprints_snapshots.json` advance automatically alongside it; a *failed* fetch
 deliberately does not advance the fingerprint, so the failure re-reports next
 run.
 
