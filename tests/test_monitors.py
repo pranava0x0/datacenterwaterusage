@@ -914,10 +914,16 @@ class TestSuiteDoesNotDirtyTheCheckout:
         """A branch on `== FINGERPRINT_PATH` reads the module global, which a
         monkeypatching test has already replaced — so the special case fires
         exactly when redirection was requested."""
+        import ast
         import inspect
+        import textwrap
 
-        src = inspect.getsource(monitor_queue.snapshot_path_for)
-        assert "== FINGERPRINT_PATH" not in src
-        assert "SNAPSHOT_PATH" not in src.split('"""')[-1], (
-            "derivation must not reference the module-level default"
-        )
+        tree = ast.parse(textwrap.dedent(inspect.getsource(monitor_queue.snapshot_path_for)))
+        # Compare the parsed body, not the source text — comments in this very
+        # function discuss both names, and a substring check would trip on the
+        # explanation of the bug (the over-broad-match habit again).
+        names = {
+            n.id for n in ast.walk(tree) if isinstance(n, ast.Name)
+        }
+        assert "FINGERPRINT_PATH" not in names, "derivation branches on the default"
+        assert "SNAPSHOT_PATH" not in names, "derivation returns the default"
