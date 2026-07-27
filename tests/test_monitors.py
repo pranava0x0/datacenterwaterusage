@@ -591,7 +591,22 @@ class TestScheduledSweepWorkflow:
             (s for s in steps if "cache-hit" in str(s.get("if", ""))), None
         )
         assert recovery is not None, "no cache-miss recovery step"
-        assert "monitor-hits" in recovery["run"]
+        # BOTH files. Restoring the queue alone makes the next sweep treat every
+        # page as a first observation, so a real change is logged as "baselined"
+        # and the summary reads "nothing to triage" — a silent miss that looks
+        # like a quiet week. Half-recovered state is worse than none.
+        assert "monitor-state" in recovery["run"], "must recover the full state artifact"
+        published = [
+            st for st in steps
+            if "upload-artifact" in st.get("uses", "")
+            and st["with"]["name"] == "monitor-state"
+        ]
+        assert published, "nothing publishes the recovery artifact"
+        paths = published[0]["with"]["path"].split()
+        assert any("monitor_hits.json" in p for p in paths)
+        assert any("monitor_fingerprints.json" in p for p in paths), (
+            "recovery artifact must carry the fingerprints too"
+        )
 
     def test_uses_cache_not_artifacts_for_cross_run_state(self):
         """download-artifact cannot read a PRIOR run's output without its
@@ -676,11 +691,17 @@ class TestStepSummary:
         # candidates (a raw grep here would repeat the contents:-write mistake).
         import yaml
 
+        # The intent is "no step DERIVES the summary from the queue file", not
+        # "no step may mention the path" — the recovery step legitimately
+        # ls-checks it. Three versions of this assertion have now been too
+        # broad; assert the mechanism instead.
         wf = yaml.safe_load(raw)
         for step in wf["jobs"]["sweep"]["steps"]:
             body = step.get("run", "")
-            assert "monitor_hits.json" not in body, step.get("name")
-            assert "GITHUB_STEP_SUMMARY" not in body, step.get("name")
+            assert "GITHUB_STEP_SUMMARY" not in body, (
+                f"{step.get('name')} writes the summary; run.py owns it"
+            )
+            assert "json.loads" not in body, f"{step.get('name')} parses the queue"
 
 
 class TestSharedClaimStyles:

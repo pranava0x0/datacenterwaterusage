@@ -88,15 +88,19 @@ jobs:
             --limit 20 --json databaseId --jq '.[].databaseId' \
             | while read -r id; do
                 if gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id/artifacts" \
-                     --jq '.artifacts[].name' 2>/dev/null | grep -qx monitor-hits; then
+                     --jq '.artifacts[].name' 2>/dev/null | grep -qx monitor-state; then
                   echo "$id"; break
                 fi
               done)
           if [ -n "${run_id:-}" ]; then
-            echo "Recovering queue from run $run_id"
-            gh run download "$run_id" --name monitor-hits --dir data/output || true
+            echo "Recovering monitor state from run $run_id"
+            # Both files, restored to their real locations. The artifact is
+            # rooted at data/ (least common ancestor of output/ and state/).
+            gh run download "$run_id" --name monitor-state --dir data || true
+            ls -la data/output/monitor_hits.json data/state/monitor_fingerprints.json 2>/dev/null \
+              || echo "WARNING: recovery incomplete — this sweep will re-baseline."
           else
-            echo "No prior monitor-hits artifact found — starting a fresh queue."
+            echo "No prior monitor-state artifact found — starting fresh."
           fi
 
       - name: Sweep
@@ -117,5 +121,20 @@ jobs:
         with:
           name: monitor-hits
           path: data/output/monitor_hits.json
+          if-no-files-found: ignore
+          retention-days: 90
+
+      # Durable copy of BOTH state files, used only to rebuild after a cache
+      # eviction. Restoring the queue without the fingerprints would make the
+      # next sweep treat every page as a first observation, so a real change
+      # would be logged as "baselined" and the summary would read "nothing to
+      # triage" — a silent miss dressed as a quiet week.
+      - name: Upload full monitor state for recovery
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: monitor-state
+          path: |
+            data/output/monitor_hits.json
+            data/state/monitor_fingerprints.json
           if-no-files-found: ignore
           retention-days: 90
