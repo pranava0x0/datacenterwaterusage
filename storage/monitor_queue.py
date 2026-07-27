@@ -23,11 +23,20 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 QUEUE_PATH = BASE_DIR / "data" / "output" / "monitor_hits.json"
 FINGERPRINT_PATH = BASE_DIR / "data" / "state" / "monitor_fingerprints.json"
-# Snapshots are whole normalized pages, kept only to diff the next run against.
-# They are an order of magnitude larger than the fingerprints and of no use to
-# a reader, so they live in their own gitignored file while the fingerprints
-# and the queue are committed.
+# Snapshots are normalized page text, kept to diff the next run against. They
+# live in their own file because they are much larger than the fingerprints and
+# churn on every content change — but they ARE committed. An earlier version
+# gitignored them on the reasoning that losing them only costs the excerpt;
+# that assumed occasional loss, and on a fresh CI runner they are lost every
+# single run, so the excerpt would never appear at all. Each is capped so one
+# verbose page cannot bloat the repo.
 SNAPSHOT_PATH = BASE_DIR / "data" / "state" / "monitor_snapshots.json"
+
+# Per-record cap on stored page text. Enough to locate a change anywhere in a
+# status page, bounded so a single verbose watch cannot bloat the repository
+# week after week. A truncated snapshot still diffs correctly; at worst the
+# excerpt is missing for a change past the cap.
+MAX_SNAPSHOT_CHARS = 20_000
 
 
 def _atomic_write(path: Path, text: str) -> None:
@@ -84,9 +93,12 @@ def save_fingerprints(
 ) -> None:
     path = path or FINGERPRINT_PATH
     path.parent.mkdir(parents=True, exist_ok=True)
+    capped = {
+        k: v[:MAX_SNAPSHOT_CHARS] for k, v in (snapshots or {}).items()
+    }
     _atomic_write(
         (snapshot_path or SNAPSHOT_PATH),
-        json.dumps({"last_run": last_run, "snapshots": snapshots or {}}, indent=2, sort_keys=True)
+        json.dumps({"last_run": last_run, "snapshots": capped}, indent=2, sort_keys=True)
         + "\n",
     )
     _atomic_write(

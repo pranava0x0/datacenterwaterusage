@@ -15,9 +15,6 @@ data/downloads/
 
 # SQLite state database
 data/state/*.db
-# Page snapshots are only used to compute the next diff and would bloat
-# history; the fingerprints and the queue beside them ARE committed.
-data/state/monitor_snapshots.json
 
 # IDE
 .vscode/

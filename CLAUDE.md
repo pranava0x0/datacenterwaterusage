@@ -143,10 +143,13 @@ the renderer emitted the anchor.
 
 `python3 -m scrapers.monitors.run [--dry-run] [--only ID]` — see `REFRESH.md`.
 Runs weekly unattended via `.github/workflows/monitors.yml` (Mondays 07:23 UTC,
-`workflow_dispatch` for a manual run). The fingerprint cache round-trips through
-the actions cache — **not** an artifact, which cannot read a prior run's state —
-and the candidate queue is uploaded as `monitor-hits` for triage. The workflow
-has `contents: read` only; it proposes, it never commits.
+`workflow_dispatch` for a manual run). **State lives in git**: the workflow
+commits the candidate queue, the fingerprints and the page snapshots. An earlier
+version kept them in the actions cache with artifact fallbacks and a recovery
+path — five steps of shell that produced defects in six consecutive review
+rounds. Git is already this project's durable append-only store (§3), so the
+workflow just commits. It has `contents: write` scoped to those three files and
+refuses blanket `git add`, so it can never touch `data/reference/`.
 
 - **Monitors propose; humans dispose.** Nothing here writes to a curated
   dataset; changes land in `data/output/monitor_hits.json` for adjudication. A

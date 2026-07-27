@@ -6,7 +6,7 @@ name: Status monitors
 # re-running research months later.
 #
 # Monitors PROPOSE; humans dispose. This workflow commits ops state only — the
-# candidate queue and the fingerprint cache. It never edits a curated dataset
+# candidate queue, the fingerprints and the page snapshots they diff against. It never edits a curated dataset
 # under data/reference/, which a test enforces. See REFRESH.md step 1.
 #
 # STATE LIVES IN GIT, ON PURPOSE. An earlier version kept it in the actions
@@ -78,7 +78,9 @@ jobs:
           # dataset, even if some future change writes to one by mistake.
           # Add only files that exist: `git add` on a missing path aborts
           # under `set -e`, and a sweep with nothing to queue writes no queue.
-          for f in data/output/monitor_hits.json data/state/monitor_fingerprints.json; do
+          for f in data/output/monitor_hits.json \
+                   data/state/monitor_fingerprints.json \
+                   data/state/monitor_snapshots.json; do
             [ -f "$f" ] && git add "$f"
           done
           if git diff --cached --quiet; then

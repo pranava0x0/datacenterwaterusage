@@ -778,3 +778,64 @@ class TestScheduledSweepWorkflow:
             body = step.get("run", "")
             assert "GITHUB_STEP_SUMMARY" not in body, step.get("name")
             assert "json.loads" not in body, step.get("name")
+
+
+class TestSnapshotsPersist:
+    """Codex round 11. I gitignored snapshots reasoning that losing them "only
+    costs the excerpt" — but that assumed EXCEPTIONAL loss. Every CI run starts
+    on a fresh runner, so an ignored file is lost every single time and the
+    excerpt would never appear at all."""
+
+    def test_snapshots_are_committed(self):
+        import pathlib
+
+        ignore = (pathlib.Path(monitor_queue.BASE_DIR) / ".gitignore").read_text()
+        assert "monitor_snapshots.json" not in ignore
+
+    def test_workflow_commits_all_three_state_files(self):
+        import pathlib
+
+        import yaml
+
+        wf = yaml.safe_load(
+            (pathlib.Path(monitor_queue.BASE_DIR) / ".github/workflows/monitors.yml")
+            .read_text()
+        )
+        commit = next(
+            s for s in wf["jobs"]["sweep"]["steps"] if "Commit" in s.get("name", "")
+        )
+        for f in ("monitor_hits.json", "monitor_fingerprints.json",
+                  "monitor_snapshots.json"):
+            assert f in commit["run"], f
+
+    def test_snapshots_are_capped(self, tmp_path):
+        """Committed weekly, so one verbose page must not bloat the repo."""
+        fp, snap = tmp_path / "fp.json", tmp_path / "snap.json"
+        monitor_queue.save_fingerprints(
+            {"r": "1"}, "t", fp,
+            snapshots={"r": "x" * (monitor_queue.MAX_SNAPSHOT_CHARS + 5000)},
+            snapshot_path=snap,
+        )
+        stored = monitor_queue.load_snapshots(snap)["r"]
+        assert len(stored) == monitor_queue.MAX_SNAPSHOT_CHARS
+
+
+class TestDocsMatchTheWorkflow:
+    def test_refresh_does_not_reference_a_removed_artifact(self):
+        """REFRESH.md is the canonical instruction; it told curators to
+        download a `monitor-hits` artifact that the git-backed workflow no
+        longer produces."""
+        import pathlib
+
+        base = pathlib.Path(monitor_queue.BASE_DIR)
+        refresh = (base / "REFRESH.md").read_text()
+        wf = (base / ".github/workflows/monitors.yml").read_text()
+        if "upload-artifact" not in wf:
+            # Scoped to the MONITOR artifact by name. A bare "artifact" match
+            # also hits the unrelated pages/ build artifacts — the sixth
+            # over-broad assertion in this PR, and the same mistake each time:
+            # matching an incidental word instead of the specific thing.
+            assert "monitor-hits" not in refresh, (
+                "REFRESH.md still points curators at the removed monitor-hits artifact"
+            )
+        assert "data/output/monitor_hits.json" in refresh
