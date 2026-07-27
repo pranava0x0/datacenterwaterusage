@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-07-26",
+  "last_updated": "2026-07-27",
   "note": "State + federal data center water/energy legislation, plus selected regulatory actions and major local zoning decisions. Verified entries had their status confirmed against a primary source (state legislature page, Congress.gov / GovInfo, official sponsor press release) on the listed last_verified date; unverified entries should be re-checked before being relied upon. July 5, 2026 addition: FL SB 484 — enacted (signed May 7, 2026, effective July 1, 2026), ratepayer cost-allocation protections, a 100,000 gal/day reclaimed-water cooling requirement, and preserved local zoning authority; resolves the 'Florida hyperscale data-center regulatory framework' backlog candidate with a confirmed bill number. June 27, 2026 additions: IA HF 2690 (water + energy reporting and a separate data-center electric tariff; introduced) and CT SB 245 (would have repealed Connecticut's data-center tax incentives and added clean-energy/sustainability conditions; failed — died on the Senate calendar). Each bill is enriched with recent_news (up to 3 dated items with source URLs), public_sentiment (a paragraph naming supporters/opponents), general_principles (tagged policy concepts), and a procedural timeline. These fields are best-effort as of last_updated and should be re-verified before being cited. Scope expanded 2026-05-28 to include regulatory rulemakings (OH EPA OHD000001) and major local ordinances (Loudoun ZOAM) that function as de facto data-center policy.",
   "bills": [
     {
@@ -1003,9 +1003,9 @@
         "energy"
       ],
       "status": "introduced",
-      "status_detail": "Introduced March 25, 2026 and referred to committee. Confirmed as S. 4213 in the 119th Congress; do not confuse with S. 4214 (AI Data Center Moratorium Act, introduced the same day).",
+      "status_detail": "Introduced March 25, 2026 and referred to committee. Confirmed as S. 4213 in the 119th Congress; do not confuse with S. 4214 (AI Data Center Moratorium Act, introduced the same day). (Merged 2026-07-27: the dataset separately carried this same act as a 'number TBD' stub from the press release; the duplicate was folded in here.)",
       "source_url": "https://www.congress.gov/bill/119th-congress/senate-bill/4213",
-      "last_verified": "2026-06-22",
+      "last_verified": "2026-07-27",
       "verified": true,
       "confidence": "high",
       "recent_news": [
@@ -1029,6 +1029,13 @@
           "source": "Office of Sen. Dick Durbin",
           "url": "https://www.durbin.senate.gov/newsroom/press-releases/as-utility-costs-rise-durbin-introduces-new-legislation-to-bring-transparency-to-energy-and-water-consumption-by-data-centers",
           "takeaway": "Original release: 5-year pre-construction projections, state-level reporting, EPA/DOE/USDA aggregated regional reports, and per-day fines for noncompliance."
+        },
+        {
+          "date": "2026-03-25",
+          "title": "As utility bills rise, Durbin presses data centers on water and energy use",
+          "source": "Office of Sen. Dick Durbin",
+          "url": "https://www.durbin.senate.gov/newsroom/press-releases/as-utility-costs-rise-durbin-introduces-new-legislation-to-bring-transparency-to-energy-and-water-consumption-by-data-centers",
+          "takeaway": "The sponsor's announcement of the bill, carried over from a duplicate record entered before the S. number was confirmed."
         }
       ],
       "public_sentiment": "Coverage aligns the bill with positions taken by Sierra Club Illinois, the Illinois Clean Jobs Coalition, and environmental advocates pushing parallel state-level transparency (Illinois POWER Act). The Data Center Coalition has opposed similar prescriptive transparency provisions in state legislation. Unlike the initial framing, S. 4213 drew bipartisan cosponsors, with reporting naming Sens. Josh Hawley (R-MO), Elizabeth Warren (D-MA), Richard Blumenthal (D-CT), Chris Van Hollen (D-MD), and Tom Cotton (R-AR).",
@@ -1057,7 +1064,12 @@
           "detail": "Sen. Dick Durbin (D-IL) introduced S. 4213; referred to committee."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "monitor": {
+        "kind": "legiscan",
+        "key": "US S. 4213",
+        "note": "Federal transparency bill — watch for committee action or floor movement. A Federal Register keyword search cannot see Senate status."
+      }
     },
     {
       "bill_id": "TX SB 6",
@@ -3031,72 +3043,6 @@
         }
       ],
       "instrument_type": "bill"
-    },
-    {
-      "bill_id": "US S. — Data Center Water and Energy Transparency Act (Durbin; number TBD)",
-      "jurisdiction": "Federal (US)",
-      "level": "federal",
-      "title": "Data Center Water and Energy Transparency Act",
-      "sponsor": "Sen. Dick Durbin (D-IL)",
-      "summary": "Would require data-center operators to report actual energy and water consumption (plus five-year pre-construction estimates) to their states; states would aggregate/anonymize data for EPA, DOE, and USDA, who would issue joint regional reports and could fine non-compliance.",
-      "scope": [
-        "water",
-        "energy"
-      ],
-      "status": "introduced",
-      "status_detail": "Introduced ~2026-03-25 per Senator's press release. Canonical S. bill number not confirmed against Congress.gov; do not confuse with S. 4214 (AI Data Center Moratorium Act, introduced the same day).",
-      "source_url": "https://www.durbin.senate.gov/newsroom/press-releases/as-utility-costs-rise-durbin-introduces-new-legislation-to-bring-transparency-to-energy-and-water-consumption-by-data-centers",
-      "last_verified": "2026-05-25",
-      "verified": false,
-      "confidence": "low",
-      "recent_news": [
-        {
-          "date": "2026-03-26",
-          "title": "Data center boom raises water, power questions",
-          "source": "Western Water",
-          "url": "https://www.western-water.com/2026/03/26/data-center-boom-raises-water-power-questions/",
-          "takeaway": "Day-after coverage notes the bill responds to ~4,000 active and ~3,000 planned U.S. data centers and a 100-MW facility's water use roughly equaling 2,600 households."
-        },
-        {
-          "date": "2026-03-25",
-          "title": "As Utility Costs Rise, Durbin Introduces New Legislation To Bring Transparency To Energy & Water Consumption By Data Centers",
-          "source": "Office of Sen. Dick Durbin",
-          "url": "https://www.durbin.senate.gov/newsroom/press-releases/as-utility-costs-rise-durbin-introduces-new-legislation-to-bring-transparency-to-energy-and-water-consumption-by-data-centers",
-          "takeaway": "Original release: 5-year pre-construction projections, state-level reporting, EPA/DOE/USDA aggregated regional reports, and per-day fines for noncompliance."
-        }
-      ],
-      "public_sentiment": "Coverage is thin and no formal endorsements have been published in available reporting. The bill aligns with positions taken by Sierra Club Illinois, the Illinois Clean Jobs Coalition, and environmental advocates pushing parallel state-level transparency (Illinois POWER Act). No direct Data Center Coalition or NetChoice response to this specific federal bill has surfaced, though DCC has opposed similar prescriptive transparency provisions in Illinois state legislation. Durbin introduced it solo with no Senate cosponsors at launch.",
-      "general_principles": [
-        {
-          "tag": "Transparency",
-          "note": "Mandates actual + 5-year projected energy and water consumption disclosure for new and existing facilities."
-        },
-        {
-          "tag": "Preemptive review",
-          "note": "Requires pre-construction estimates so local governments can evaluate before approving facilities."
-        },
-        {
-          "tag": "Federal coordination",
-          "note": "States aggregate and anonymize data for EPA, DOE, and USDA joint regional reports."
-        },
-        {
-          "tag": "Cost allocation",
-          "note": "Frames disclosure as a response to data center demand driving up consumer utility costs."
-        }
-      ],
-      "timeline": [
-        {
-          "date": "2026-03-25",
-          "milestone": "Introduced",
-          "detail": "Sen. Dick Durbin (D-IL) introduced solo; Senate bill number not yet confirmed in public Congress.gov listings as of late May 2026."
-        }
-      ],
-      "instrument_type": "bill",
-      "monitor": {
-        "kind": "federal-register",
-        "key": "data center water transparency",
-        "note": "Bill number still unassigned in the record; watch for introduction."
-      }
     },
     {
       "bill_id": "CO SB26-102",

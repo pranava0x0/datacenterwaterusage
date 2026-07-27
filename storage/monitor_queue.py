@@ -25,6 +25,14 @@ QUEUE_PATH = BASE_DIR / "data" / "output" / "monitor_hits.json"
 FINGERPRINT_PATH = BASE_DIR / "data" / "state" / "monitor_fingerprints.json"
 
 
+def _atomic_write(path: Path, text: str) -> None:
+    """Write via a temp file + rename, so an interrupted run leaves either the
+    old file or the new one — never a half-written queue."""
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(text, encoding="utf-8")
+    tmp.replace(path)
+
+
 def load_fingerprints(path: Path | None = None) -> dict[str, str]:
     """Last-seen fingerprint per record id; empty on first run.
 
@@ -65,7 +73,8 @@ def save_fingerprints(
 ) -> None:
     path = path or FINGERPRINT_PATH
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
+    _atomic_write(
+        path,
         json.dumps(
             {
                 "last_run": last_run,
@@ -76,7 +85,6 @@ def save_fingerprints(
             sort_keys=True,
         )
         + "\n",
-        encoding="utf-8",
     )
 
 
@@ -100,6 +108,17 @@ def append_candidates(
             payload = json.loads(path.read_text(encoding="utf-8"))
             existing = payload.get("candidates", [])
         except json.JSONDecodeError:
+            # Treating a truncated file as empty and then writing over it
+            # destroys the whole audit trail — the opposite of append-only
+            # (CLAUDE.md §3). Quarantine it and start a fresh queue, so the
+            # damaged bytes survive for recovery and the operator is told.
+            quarantine = path.with_suffix(path.suffix + ".corrupt")
+            path.replace(quarantine)
+            print(
+                f"WARNING: {path.name} was unreadable; moved to "
+                f"{quarantine.name} and started a new queue. Recover any "
+                "untriaged candidates from it by hand."
+            )
             existing = []
 
     def key(c: dict) -> tuple:
@@ -116,7 +135,8 @@ def append_candidates(
         return 0
 
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
+    _atomic_write(
+        path,
         json.dumps(
             {
                 "last_run": last_run,
@@ -131,6 +151,5 @@ def append_candidates(
             ensure_ascii=False,
         )
         + "\n",
-        encoding="utf-8",
     )
     return len(fresh)

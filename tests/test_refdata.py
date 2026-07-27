@@ -286,6 +286,36 @@ class TestPolicyInstrumentSchema:
         }
         assert "Permitting acceleration" in tags
 
+    def test_no_duplicate_instruments(self):
+        """Found by Codex during PR review. The dataset carried the Durbin
+        transparency act twice — once as a 'number TBD' stub from the press
+        release, once as the confirmed S. 4213 — so the tracker double-counted
+        a federal bill. Same title + sponsor + jurisdiction is one instrument."""
+        seen: dict[tuple, str] = {}
+        for entry in self._bills():
+            key = (
+                entry.get("title", "").strip().lower(),
+                entry.get("sponsor", "").strip().lower(),
+                entry.get("jurisdiction", "").strip().lower(),
+            )
+            if not any(key):
+                continue
+            assert key not in seen, (
+                f"{entry['bill_id']} duplicates {seen[key]} "
+                f"(same title, sponsor and jurisdiction)"
+            )
+            seen[key] = entry["bill_id"]
+
+    def test_monitored_bills_use_a_status_aware_kind(self):
+        """A Federal Register keyword search cannot observe Senate status. A
+        bill with a known number should be watched via a legislative source."""
+        for entry in self._bills():
+            monitor = entry.get("monitor")
+            if monitor and monitor["kind"] == "federal-register":
+                assert not entry["bill_id"].startswith(("US S. ", "US HR ")), (
+                    f"{entry['bill_id']} has a bill number — watch it via legiscan"
+                )
+
     def test_unverified_entries_explain_what_to_recheck(self):
         """Fail-closed curation: an entry that isn't fully sourced must say so
         in prose a curator can act on, not just carry a false flag."""

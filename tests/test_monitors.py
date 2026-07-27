@@ -292,12 +292,27 @@ class TestQueue:
         path.write_text("{not json")
         assert monitor_queue.load_fingerprints(path) == {}
 
-    def test_corrupt_queue_does_not_lose_the_new_candidate(self, tmp_path):
+    def test_corrupt_queue_is_quarantined_not_overwritten(self, tmp_path, capsys):
+        """Found by Codex. Treating a truncated queue as empty and then writing
+        over it destroys the entire append-only audit trail. My original test
+        asserted only that the NEW candidate survived — never that the prior
+        ones did, which is precisely what was being lost."""
         path = tmp_path / "hits.json"
-        path.write_text("{truncated")
+        path.write_text('{"candidates": [{"record_id": "old", "fingerprint": "9"}]')  # truncated
         assert monitor_queue.append_candidates(
             [{"record_id": "r", "fingerprint": "1"}], "t", path
         ) == 1
+        quarantine = path.with_suffix(path.suffix + ".corrupt")
+        assert quarantine.exists(), "damaged bytes must survive for recovery"
+        assert "old" in quarantine.read_text()
+        assert "unreadable" in capsys.readouterr().out
+
+    def test_writes_are_atomic(self, tmp_path):
+        """An interrupted write is what produces the corrupt file above."""
+        path = tmp_path / "hits.json"
+        monitor_queue.append_candidates([{"record_id": "r", "fingerprint": "1"}], "t", path)
+        assert not list(tmp_path.glob("*.tmp")), "temp file left behind"
+        assert json.loads(path.read_text())["candidates"]
 
 
 class TestPathsAreRedirectable:
