@@ -71,6 +71,19 @@ jobs:
           key: monitor-state-${{ github.run_id }}
           restore-keys: monitor-state-
 
+      # One-time migration path. The version of this workflow on main keys its
+      # cache `monitor-fingerprints-` and publishes only `monitor-hits`, so
+      # after this rename neither the new cache nor the new artifact exists and
+      # the recovery below would call it a cold start and discard real state.
+      # Safe to delete once a run has published `monitor-state`.
+      - name: Restore legacy fingerprint cache
+        if: steps.state.outputs.cache-hit != 'true'
+        uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        with:
+          path: data/state/monitor_fingerprints.json
+          key: monitor-fingerprints-
+          restore-keys: monitor-fingerprints-
+
       # The actions cache is a CACHE, not storage: GitHub evicts entries unused
       # for 7 days and under repo cache pressure. One skipped week would drop
       # the queue, the next run would re-baseline everything, and a curator
@@ -97,28 +110,43 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p data/output data/state
-          run_id=$(gh run list --workflow monitors.yml --status success \
-            --limit 20 --json databaseId --jq '.[].databaseId' \
-            | while read -r id; do
-                if gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id/artifacts" \
-                     --jq '.artifacts[].name' 2>/dev/null | grep -qx monitor-state; then
-                  echo "$id"; break
-                fi
-              done)
+          find_run() {  # $1 = artifact name
+            gh run list --workflow monitors.yml --status success \
+              --limit 20 --json databaseId --jq '.[].databaseId' \
+              | while read -r id; do
+                  if gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id/artifacts" \
+                       --jq '.artifacts[].name' 2>/dev/null | grep -qx "$1"; then
+                    echo "$id"; break
+                  fi
+                done
+          }
+
+          run_id=$(find_run monitor-state)
+          artifact=monitor-state
+          if [ -z "${run_id:-}" ]; then
+            # Legacy name, published by the pre-rename workflow.
+            run_id=$(find_run monitor-hits)
+            artifact=monitor-hits
+          fi
 
           if [ -z "${run_id:-}" ]; then
-            echo "No prior monitor-state artifact — genuine cold start, baselining."
+            echo "No prior monitor-state or monitor-hits artifact — genuine cold start."
             exit 0
           fi
 
-          echo "Recovering monitor state from run $run_id"
-          if ! gh run download "$run_id" --name monitor-state --dir data; then
+          echo "Recovering from run $run_id (artifact: $artifact)"
+          dest=data
+          [ "$artifact" = "monitor-hits" ] && dest=data/output
+          if ! gh run download "$run_id" --name "$artifact" --dir "$dest"; then
             echo "::error::Recovery download failed for run $run_id. Refusing to" \
                  "sweep: baselining now would overwrite the recoverable queue" \
                  "and fingerprints with empty state."
             exit 1
           fi
 
+          # Completeness is judged on what is on disk after EVERY fallback —
+          # the legacy cache step above may already have supplied the
+          # fingerprints that a monitor-hits artifact does not carry.
           missing=""
           [ -s data/output/monitor_hits.json ] || missing="$missing data/output/monitor_hits.json"
           [ -s data/state/monitor_fingerprints.json ] || missing="$missing data/state/monitor_fingerprints.json"

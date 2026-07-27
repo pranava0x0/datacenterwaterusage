@@ -587,8 +587,10 @@ class TestScheduledSweepWorkflow:
         steps = self._wf()["jobs"]["sweep"]["steps"]
         cache = next(s for s in steps if "cache@" in s.get("uses", ""))
         assert cache.get("id"), "cache step needs an id to branch on cache-hit"
+        # Select by name, not by "first step conditioned on cache-hit" — the
+        # legacy-cache restore is also conditioned on it and has no `run`.
         recovery = next(
-            (s for s in steps if "cache-hit" in str(s.get("if", ""))), None
+            (s for s in steps if "Recover" in s.get("name", "") and "run" in s), None
         )
         assert recovery is not None, "no cache-miss recovery step"
         # BOTH files. Restoring the queue alone makes the next sweep treat every
@@ -764,3 +766,44 @@ class TestSurfaceAwareClaimLinks:
         for linked in (True, False):
             out = dash._build_claim_lifecycle_html(claim, link_anchors=linked)
             assert "claim-type-pill" in out
+
+
+class TestLegacyStateMigration:
+    """Codex round 8. Renaming the cache prefix and artifact orphans whatever
+    the already-merged version of this workflow accumulated: the new prefix
+    can't match, the new artifact doesn't exist, and 'cold start' silently
+    discards real fingerprints and untriaged hits."""
+
+    @staticmethod
+    def _steps():
+        import pathlib
+
+        import yaml
+
+        return yaml.safe_load(
+            (pathlib.Path(monitor_queue.BASE_DIR) / ".github/workflows/monitors.yml")
+            .read_text()
+        )["jobs"]["sweep"]["steps"]
+
+    def test_legacy_cache_prefix_is_still_tried(self):
+        steps = self._steps()
+        legacy = [
+            s for s in steps
+            if "cache" in s.get("uses", "")
+            and "monitor-fingerprints-" in str(s.get("with", {}))
+        ]
+        assert legacy, "the pre-rename cache prefix is no longer attempted"
+
+    def test_legacy_artifact_name_is_still_tried(self):
+        recovery = next(s for s in self._steps() if "Recover" in s.get("name", ""))
+        assert "monitor-hits" in recovery["run"], "pre-rename artifact not attempted"
+        assert "monitor-state" in recovery["run"]
+
+    def test_legacy_restore_runs_before_recovery(self):
+        """Ordering is load-bearing: recovery judges completeness from what is
+        on disk, so a legacy cache restored afterwards would arrive too late
+        and the step would fail on state it actually had."""
+        names = [s.get("name", "") for s in self._steps()]
+        legacy = next(i for i, n in enumerate(names) if "legacy" in n.lower())
+        recovery = next(i for i, n in enumerate(names) if "Recover" in n)
+        assert legacy < recovery, names
