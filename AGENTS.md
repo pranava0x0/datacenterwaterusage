@@ -272,6 +272,44 @@ the ~3-4× waste patterns. Score each run on:
 
 ### Agent-use evaluation log
 
+**2026-07-27 — one code-reviewer agent over a 12k-line PR. Verdict: justified,
+and the cheapest defect-per-token of any agent run logged here.**
+
+- *Agent — review the Python diff of PR #20:* 170k subagent tokens, 48 tool
+  uses, ~8 min. Returned **8 defects, every one reproduced with an executable
+  repro rather than inferred from reading** — including a critical API-key leak
+  and a quadratic-regex stall it measured at three input sizes. ~21k tokens per
+  verified defect. All 8 were real; zero false positives.
+- **Why it beat doing it inline:** I had just written the code, and the two
+  worst findings were bugs my own tests actively masked (a corrupt-queue test
+  asserting the wrong half; an excerpt test whose 20-char fixture made the
+  broken and correct implementations indistinguishable). Self-review re-reads
+  the same assumptions. The agent ran the code instead.
+- **Scoping that made it cheap:** the prompt excluded JSON data and generated
+  `pages/*.html`, named the specific hazards to look for (streamlit purity,
+  cache invalidation, ReDoS, secret-in-URL, escaping under `unsafe_allow_html`),
+  and demanded `file:line` + a fix. Reviewing the full 12k-line diff
+  undifferentiated would have cost far more and surfaced style noise.
+
+**Free external review is complementary, not redundant — run both.** Codex
+reviewed the same PR across two rounds: 5 findings, **3 overlapping my agent's
+and 2 unique**, including the session's worst bug (LegiScan `getBill` takes a
+numeric id, so with no response-status validation the watch hashed an error
+payload into a *stable* fingerprint and could never have fired). The agent
+missed it; Codex missed the key leak. Different blind spots, and Codex costs
+nothing — **always `@codex review` before merging, and re-request after
+pushing fixes.**
+
+**Where reviewers concentrate is itself a signal.** 15 defects across three
+rounds: **11 in `scrapers/monitors/`**, the only genuinely new subsystem, and
+~0 in the much larger data-and-refactor surface. When a subsystem's
+characteristic failure is one where broken and working look identical from
+outside, most of its tests should exist to tell those two states apart.
+
+**No research agents this session** (implementation, not discovery) —
+consistent with the 2026-07-25 finding: delegate discovery, confirm inline.
+Direct WebSearch verified ~20 URLs and caught 3 errors the plan carried.
+
 **2026-07-25 — plan implementation (P0–P4 partial). Zero agents spawned;
 verification done with ~10 direct WebSearch calls. Verdict: correct call for
 this shape of work — log it as the counter-example to reflexive delegation.**

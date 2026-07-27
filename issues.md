@@ -184,3 +184,104 @@ _None._ SEC-001 (the home-directory PII leak) is now **fully resolved and verifi
 - **Status**: resolved
 - **Description**: Eager 14-row horizontal-scroll dataframe was bulky on mobile.
 - **Fix**: Resolved by UAT-007 — the vertical card layout is more compact per bill, eliminates the horizontal scroll, and scans naturally. Verified at 375×812: no horizontal scroll (`document.body.scrollWidth === window.innerWidth`).
+
+
+## 2026-07-25 → 07-27 — plan implementation (PR #20), three review rounds
+
+15 defects across a self-review, an agent code review, and two Codex rounds.
+11 of 15 were in `scrapers/monitors/` — the only genuinely new subsystem.
+All resolved on the branch unless noted.
+
+### [SEC-002] LegiScan API key written to the candidate queue and stdout
+- **Severity**: critical · **Root cause**: code bug · **Status**: resolved (a193ad2)
+- httpx puts the request URL in its exception message; `MonitorRun` formatted
+  fetch errors verbatim into a `Candidate`, which is printed and written to
+  `monitor_hits.json`. Any 4xx from LegiScan burned the key into logs on disk.
+- **Fix**: redact at the throw site (the only place that knows a secret is in
+  scope). Regression test serializes `Candidate.as_dict()` and greps for the key.
+
+### [BUG-101] Monitor queue silently discarded real changes
+- **Severity**: high · **Root cause**: code bug · **Status**: resolved (a193ad2)
+- Dedupe keyed on `(record_id, fingerprint)`. A page going A→B→A collided with
+  its own baseline, so the revert was dropped while the run still advanced the
+  stored fingerprint — permanently unreportable. Separately, all failures share
+  an empty fingerprint, so a 500 then a 404 deduped into one row: a dying watch
+  going quiet.
+- **Fix**: key on the transition `(record_id, previous, current)`; failures also
+  key on summary.
+
+### [BUG-102] Corrupt queue destroyed the append-only audit trail
+- **Severity**: high · **Root cause**: code bug **+ test bug** · **Status**: resolved (3f4847d)
+- `except JSONDecodeError: existing = []` followed by a write erased every prior
+  candidate. Found by Codex.
+- **The test was complicit**: it asserted only that the *new* candidate survived,
+  never the prior ones — it tested around the bug.
+- **Fix**: quarantine to `.corrupt` + atomic writes (temp/rename). Test now
+  asserts the prior candidate is recoverable.
+
+### [BUG-103] LegiScan watches could never have fired
+- **Severity**: high (P1) · **Root cause**: code bug · **Status**: resolved (435e841)
+- `getBill` takes LegiScan's internal *numeric* id; passing `"NY S10642"` returns
+  an error payload. Nothing validated response status, so the error body
+  canonicalized to a **stable all-null fingerprint** — the watch would report
+  "no change" indefinitely while looking healthy. Found by Codex.
+- **Fix**: validate `status`; resolve bill numbers via `getSearch` with exact
+  bill-number matching; reject malformed keys in `invalid_watches()`.
+
+### [BUG-104] Change excerpt was the top of the page, never the diff
+- **Severity**: medium · **Root cause**: code bug **+ test bug** · **Status**: resolved (a193ad2)
+- `first_difference("", body)` was called with an empty `old`, returning
+  `body[0:240]` — unchanged boilerplate shown to a curator *as* the change.
+- **The test passed only because its fixture was 20 characters**, so the head of
+  the page was the diff. Positive confidence in the broken behaviour.
+- **Fix**: persist normalized snapshots alongside fingerprints. Test rewritten
+  with a boilerplate prefix so head ≠ diff, and asserts the boring part is absent.
+
+### [BUG-105] `normalize()` quadratic on malformed HTML
+- **Severity**: medium · **Root cause**: code bug · **Status**: resolved (a193ad2)
+- A lazy `<script\b.*?</script>` under DOTALL rescans to end-of-string at every
+  unterminated opener: 40k of them took ~56 s, on arbitrary third-party input.
+- **First fix didn't work** — a 512 KB size cap, when the repro was 320 KB.
+  Replaced the block strippers with a linear `str.find` scan: 56 s → 0.001 s.
+
+### [BUG-106] Dangling anchors for three record kinds
+- **Severity**: medium · **Root cause**: code bug · **Status**: resolved (a193ad2)
+- The registry advertised `solution-*`/`claim-*`/`news-*` anchors that no builder
+  emitted; `#solution-wue-reporting` was already shipping dead. Data-level
+  integrity proved the id resolved *in the registry*, never that the page had it.
+- **Fix**: ids on those cards, plus a build test that every internal `href="#x"`
+  has a matching `id="x"` — which immediately found the third (news) kind.
+
+### [BUG-107] Deep links to conflict sites broke under the issue filter
+- **Severity**: medium · **Root cause**: code bug · **Status**: resolved (a193ad2)
+- The anchor handler reset filters for `.leg-bill`/`.cwa-case`; conflict cards are
+  `.bill-card.dc-site` and stayed hidden. Affected all 35 site links, including
+  every doctrine-matrix row — which sits directly above the filter that hides them.
+
+### [BUG-108] Module constants as default args were unpatchable
+- **Severity**: medium · **Root cause**: code bug · **Status**: resolved (a193ad2)
+- `path: Path = QUEUE_PATH` binds at import, so `monkeypatch.setattr` did nothing
+  and **a test wrote to the real `data/state/` file**.
+- **Fix**: `path: Path | None = None`, resolved at call time; both paths gitignored.
+
+### [DATA-001] Duplicate federal bill — the tracker double-counted
+- **Severity**: high · **Root cause**: data bug (pre-existing) · **Status**: resolved (3f4847d)
+- `US S. — ...(Durbin; number TBD)` and `US S. 4213` are the **same act** (same
+  title, sponsor, 2026-03-25 date). The stub came from a press release before the
+  number was confirmed and was never retired. Found by Codex chasing a monitor
+  config issue; surfaced by the monitor work, not caused by it.
+- **Fix**: merged per CLAUDE.md §3 (keep newer/verified); press-release source
+  preserved as `recent_news`. Guard: no two instruments may share
+  title+sponsor+jurisdiction. **66 instruments, not 67.**
+
+### [DATA-002] CA AB 93 wrong veto year, no source
+- **Severity**: low · **Root cause**: data bug (pre-existing) · **Status**: resolved (2d4fd38)
+- Recorded as vetoed October 2024; actually 2025-10-11, and it was the only entry
+  in the dataset with no `source_url` at all. Found by a new schema test.
+
+### [TEST-001] Brittle card-count assertion; hardcoded status set
+- **Severity**: low · **Root cause**: test bug · **Status**: resolved
+- `html.count('class="bill-card"')` silently dropped 18 cards when a second class
+  was added (a bare prefix match then over-counted to 1203 — now a boundary regex).
+- `VALID_DELIVERED_STATUS` duplicated the taxonomy as a literal and failed on a
+  value it had no opinion about; now derived from `DELIVERED_STATUS_COLORS`.
