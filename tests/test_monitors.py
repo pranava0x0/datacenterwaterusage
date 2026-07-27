@@ -18,6 +18,7 @@ import pytest
 
 from scrapers.monitors.base_monitor import (
     MONITOR_KINDS,
+    Candidate,
     MonitorRun,
     Watch,
     first_difference,
@@ -259,12 +260,16 @@ class TestQueue:
             [dict(base, summary="fetch failed: 500")], "t3", path
         ) == 0
 
-    def test_snapshots_roundtrip(self, tmp_path):
-        path = tmp_path / "fp.json"
-        assert monitor_queue.load_snapshots(path) == {}
-        monitor_queue.save_fingerprints({"r": "1"}, "t", path, snapshots={"r": "body"})
-        assert monitor_queue.load_snapshots(path) == {"r": "body"}
-        assert monitor_queue.load_fingerprints(path) == {"r": "1"}
+    def test_snapshots_live_in_their_own_file(self, tmp_path):
+        """Snapshots are whole pages — an order of magnitude larger than the
+        fingerprints and useless to a reader. They stay out of git; losing them
+        only costs the excerpt, since the fingerprint still detects the change."""
+        fp = tmp_path / "fp.json"
+        monitor_queue.save_fingerprints({"r": "1"}, "t", fp, snapshots={"r": "body"})
+        snap = monitor_queue.snapshot_path_for(fp)
+        assert monitor_queue.load_fingerprints(fp) == {"r": "1"}
+        assert monitor_queue.load_snapshots(snap) == {"r": "body"}
+        assert "body" not in fp.read_text(), "committed file must not carry page text"
 
     def test_triaged_entries_are_never_dropped(self, tmp_path):
         """Append-only per CLAUDE.md §3: 'we looked and it was nothing' is a
@@ -328,13 +333,17 @@ class TestPathsAreRedirectable:
         assert (tmp_path / "q.json").exists()
         assert (tmp_path / "fp.json").exists()
 
-    def test_real_paths_are_gitignored(self):
-        """Both are runtime artifacts of an ops sweep, not curated data."""
+    def test_state_files_are_tracked_not_ignored(self):
+        """Reversed deliberately. I first gitignored these as "ops artifacts,
+        not curated data", then spent six review rounds building cache and
+        artifact machinery to stop losing them. The queue is an append-only
+        audit trail; git is the durable append-only store this project already
+        uses for exactly that."""
         import pathlib
 
         ignore = (pathlib.Path(monitor_queue.BASE_DIR) / ".gitignore").read_text()
-        assert "monitor_hits.json" in ignore
-        assert "monitor_fingerprints.json" in ignore
+        assert "monitor_hits.json" not in ignore
+        assert "monitor_fingerprints.json" not in ignore
 
 
 class TestNoAutomaticWrites:
@@ -549,3 +558,372 @@ class TestLegiScanIdResolution:
         for w in iter_watches():
             if w.kind == "legiscan":
                 assert w.key.strip().isdigit() or len(w.key.split()) == 2, w.record_id
+
+
+class TestStepSummary:
+    """Codex: once the queue persists across runs, anything summarizing the
+    FILE re-reports the first change it ever saw as current, every week."""
+
+    def test_summary_reports_only_this_runs_candidates(self):
+        from scrapers.monitors.run import build_step_summary
+
+        c = Candidate(
+            record_id="rec-now", dataset="legislation", kind="url-watch",
+            key="k", previous_fingerprint="a", fingerprint="b",
+            summary="watched page changed since last run", detected_at="t2",
+            note="Ohio permit finalization",
+        )
+        out = build_step_summary([c], [], [], total_queued=1)
+        assert "rec-now" in out
+        assert "**1 changed**" in out
+        # It is handed candidates, never the queue file, so history cannot leak.
+        import inspect
+        import scrapers.monitors.run as runner
+        assert "monitor_hits" not in inspect.getsource(runner.build_step_summary)
+
+    def test_quiet_run_says_so(self):
+        from scrapers.monitors.run import build_step_summary
+
+        assert "nothing to triage" in build_step_summary([], [], [], 0)
+
+    def test_workflow_does_not_reparse_the_queue(self):
+        import pathlib
+
+        raw = (
+            pathlib.Path(monitor_queue.BASE_DIR) / ".github/workflows/monitors.yml"
+        ).read_text()
+        assert "monitor_hits.json" in raw, "artifact upload should still reference it"
+        # ...but no step may re-derive the summary by READING that file. Check
+        # the parsed run blocks, not prose — the comments legitimately discuss
+        # candidates (a raw grep here would repeat the contents:-write mistake).
+        import yaml
+
+        # The intent is "no step DERIVES the summary from the queue file", not
+        # "no step may mention the path" — the recovery step legitimately
+        # ls-checks it. Three versions of this assertion have now been too
+        # broad; assert the mechanism instead.
+        wf = yaml.safe_load(raw)
+        for step in wf["jobs"]["sweep"]["steps"]:
+            body = step.get("run", "")
+            assert "GITHUB_STEP_SUMMARY" not in body, (
+                f"{step.get('name')} writes the summary; run.py owns it"
+            )
+            assert "json.loads" not in body, f"{step.get('name')} parses the queue"
+
+
+class TestSharedClaimStyles:
+    def test_lifecycle_classes_are_in_the_shared_stylesheet(self):
+        """Sharing the markup without the styles is only half a shared
+        component: Streamlit injects assets/components.css and would otherwise
+        render the chips as bare text."""
+        import pathlib
+
+        css = (
+            pathlib.Path(monitor_queue.BASE_DIR) / "assets" / "components.css"
+        ).read_text()
+        for cls in (".claim-chips", ".claim-type-pill", ".claim-challenge-pill",
+                    ".claim-site-link"):
+            assert cls in css, cls
+
+
+class TestSurfaceAwareClaimLinks:
+    """Codex round 5: only the static site has the JS that activates a
+    fragment's owning tab. In Streamlit an `#cwa-…` href rewrites the hash and
+    leaves the reader where they were — worse than plain text, because it
+    looks clickable."""
+
+    @staticmethod
+    def _claim():
+        from refdata.loaders import load_company_water_claims
+
+        return next(
+            c for c in load_company_water_claims()["claims"] if c.get("challenged_in")
+        )
+
+    def test_static_surface_keeps_the_hyperlinks(self):
+        import dashboard as dash
+
+        out = dash._build_claim_lifecycle_html(self._claim())
+        assert 'href="#cwa-' in out
+
+    def test_streamlit_surface_emits_no_fragment_hrefs(self):
+        import dashboard as dash
+
+        out = dash._build_claim_lifecycle_html(self._claim(), link_anchors=False)
+        assert 'href="#' not in out
+        # Same information, still reachable by hand.
+        assert "Challenged in court" in out
+        assert "Water Cases" in out
+
+    def test_both_surfaces_carry_the_same_claim_type(self):
+        import dashboard as dash
+
+        claim = self._claim()
+        for linked in (True, False):
+            out = dash._build_claim_lifecycle_html(claim, link_anchors=linked)
+            assert "claim-type-pill" in out
+
+
+class TestNoDeadAffordances:
+    """Codex round 9: removing the href but keeping .claim-site-link left the
+    text link-blue and underlined on hover — still advertising a click that
+    does nothing, which is exactly what link_anchors=False exists to remove."""
+
+    @staticmethod
+    def _claim():
+        from refdata.loaders import load_company_water_claims
+
+        return next(
+            c for c in load_company_water_claims()["claims"]
+            if c.get("challenged_in") or c.get("related_site_ids")
+        )
+
+    def test_unlinked_surface_uses_non_link_classes(self):
+        import dashboard as dash
+
+        out = dash._build_claim_lifecycle_html(self._claim(), link_anchors=False)
+        assert "claim-site-link" not in out
+        assert "claim-challenge-pill" not in out
+
+    def test_link_styling_is_scoped_to_real_anchors(self):
+        """Even if a hrefless span ever reuses the class, the CSS must not
+        make it look clickable."""
+        import pathlib
+
+        css = (
+            pathlib.Path(monitor_queue.BASE_DIR) / "assets" / "components.css"
+        ).read_text()
+        assert "a.claim-site-link {" in css
+        assert "a.claim-site-link:hover" in css
+
+
+class TestScheduledSweepWorkflow:
+    """The weekly routine.
+
+    State lives in git rather than the actions cache. The cache design needed
+    five steps and ~56 lines of shell to avoid losing one small JSON file, and
+    six consecutive review rounds found defects in it. These tests pin the
+    properties that made the replacement worth making.
+    """
+
+    @staticmethod
+    def _wf():
+        import pathlib
+
+        import yaml
+
+        return yaml.safe_load(
+            (pathlib.Path(monitor_queue.BASE_DIR) / ".github/workflows/monitors.yml")
+            .read_text()
+        )
+
+    def test_state_is_committed_not_cached(self):
+        """Git is durable and append-only; the actions cache is neither."""
+        wf = self._wf()
+        steps = wf["jobs"]["sweep"]["steps"]
+        assert not any("cache@" in s.get("uses", "") for s in steps), "state is in git now"
+        assert not any("artifact" in s.get("uses", "") for s in steps)
+        commit = next(s for s in steps if "Commit" in s.get("name", ""))
+        for path in ("monitor_hits.json", "monitor_fingerprints.json"):
+            assert path in commit["run"], path
+
+    def test_only_ops_state_can_be_committed(self):
+        """Monitors propose; humans dispose. The sweep must be incapable of
+        committing a curated dataset even if some future change writes one."""
+        commit = next(
+            s for s in self._wf()["jobs"]["sweep"]["steps"] if "Commit" in s.get("name", "")
+        )
+        body = commit["run"]
+        assert "data/reference" not in body
+        # No blanket adds — every staged path is named explicitly.
+        for blanket in ("git add .", "git add -A\n", "git add --all", "git commit -a"):
+            assert blanket not in body, blanket
+
+    def test_missing_state_file_does_not_abort_the_commit(self):
+        """`git add` on a missing path fails under `set -e`, and a sweep with
+        nothing to queue writes no queue."""
+        commit = next(
+            s for s in self._wf()["jobs"]["sweep"]["steps"] if "Commit" in s.get("name", "")
+        )
+        assert '[ -f "$f" ]' in commit["run"]
+
+    def test_push_rebases_first(self):
+        """Concurrency prevents overlapping sweeps, not a human committing a
+        triage edit while one runs."""
+        commit = next(
+            s for s in self._wf()["jobs"]["sweep"]["steps"] if "Commit" in s.get("name", "")
+        )
+        body = commit["run"]
+        assert "--rebase" in body
+        assert body.index("--rebase") < body.index("git push")
+
+    def test_write_scope_is_the_only_permission(self):
+        """Assert the property, not an exact dict — an earlier version pinned
+        `{"contents": "read"}` and broke on a legitimate read-only addition."""
+        perms = self._wf()["permissions"]
+        assert perms == {"contents": "write"} or set(perms) <= {"contents", "actions"}
+        assert perms.get("contents") == "write", "committing state needs write"
+
+    def test_actions_are_sha_pinned(self):
+        for step in self._wf()["jobs"]["sweep"]["steps"]:
+            uses = step.get("uses")
+            if uses:
+                assert len(uses.split("@")[1]) == 40, f"{uses} is not SHA-pinned"
+
+    def test_run_py_owns_the_summary(self):
+        """No step may re-derive the summary from the append-only queue file,
+        which carries every prior run's history."""
+        for step in self._wf()["jobs"]["sweep"]["steps"]:
+            body = step.get("run", "")
+            assert "GITHUB_STEP_SUMMARY" not in body, step.get("name")
+            assert "json.loads" not in body, step.get("name")
+
+
+class TestSnapshotsPersist:
+    """Codex round 11. I gitignored snapshots reasoning that losing them "only
+    costs the excerpt" — but that assumed EXCEPTIONAL loss. Every CI run starts
+    on a fresh runner, so an ignored file is lost every single time and the
+    excerpt would never appear at all."""
+
+    def test_snapshots_are_committed(self):
+        import pathlib
+
+        ignore = (pathlib.Path(monitor_queue.BASE_DIR) / ".gitignore").read_text()
+        assert "monitor_fingerprints_snapshots.json" not in ignore
+
+    def test_workflow_commits_all_three_state_files(self):
+        import pathlib
+
+        import yaml
+
+        wf = yaml.safe_load(
+            (pathlib.Path(monitor_queue.BASE_DIR) / ".github/workflows/monitors.yml")
+            .read_text()
+        )
+        commit = next(
+            s for s in wf["jobs"]["sweep"]["steps"] if "Commit" in s.get("name", "")
+        )
+        for f in ("monitor_hits.json", "monitor_fingerprints.json",
+                  "monitor_fingerprints_snapshots.json"):
+            assert f in commit["run"], f
+
+    def test_snapshots_are_capped(self, tmp_path):
+        """Committed weekly, so one verbose page must not bloat the repo."""
+        fp, snap = tmp_path / "fp.json", tmp_path / "snap.json"
+        monitor_queue.save_fingerprints(
+            {"r": "1"}, "t", fp,
+            snapshots={"r": "x" * (monitor_queue.MAX_SNAPSHOT_CHARS + 5000)},
+            snapshot_path=snap,
+        )
+        stored = monitor_queue.load_snapshots(snap)["r"]
+        assert len(stored) == monitor_queue.MAX_SNAPSHOT_CHARS
+
+
+class TestDocsMatchTheWorkflow:
+    def test_refresh_does_not_reference_a_removed_artifact(self):
+        """REFRESH.md is the canonical instruction; it told curators to
+        download a `monitor-hits` artifact that the git-backed workflow no
+        longer produces."""
+        import pathlib
+
+        base = pathlib.Path(monitor_queue.BASE_DIR)
+        refresh = (base / "REFRESH.md").read_text()
+        wf = (base / ".github/workflows/monitors.yml").read_text()
+        if "upload-artifact" not in wf:
+            # Scoped to the MONITOR artifact by name. A bare "artifact" match
+            # also hits the unrelated pages/ build artifacts — the sixth
+            # over-broad assertion in this PR, and the same mistake each time:
+            # matching an incidental word instead of the specific thing.
+            assert "monitor-hits" not in refresh, (
+                "REFRESH.md still points curators at the removed monitor-hits artifact"
+            )
+        assert "data/output/monitor_hits.json" in refresh
+
+
+class TestRedirectionIsAtomic:
+    """Codex round 12, and a REPEAT of the class this module already fixed:
+    a test redirecting one state path while another silently wrote to the
+    repository. Running the suite destroyed 22KB of real snapshots, replacing
+    them with a 60-byte test payload."""
+
+    def test_redirecting_fingerprints_also_redirects_snapshots(self, tmp_path):
+        real_before = (
+            monitor_queue.SNAPSHOT_PATH.read_bytes()
+            if monitor_queue.SNAPSHOT_PATH.exists()
+            else None
+        )
+        fp = tmp_path / "fp.json"
+        monitor_queue.save_fingerprints({"r": "1"}, "t", fp, snapshots={"r": "body"})
+
+        assert monitor_queue.snapshot_path_for(fp).exists()
+        real_after = (
+            monitor_queue.SNAPSHOT_PATH.read_bytes()
+            if monitor_queue.SNAPSHOT_PATH.exists()
+            else None
+        )
+        assert real_after == real_before, "redirected write touched repository state"
+
+    def test_omitting_snapshots_leaves_the_file_alone(self, tmp_path):
+        """`None` = not managing snapshots; `{}` = legitimately clearing them.
+        Conflating them let a caller that never mentioned snapshots wipe them."""
+        fp = tmp_path / "fp.json"
+        snap = monitor_queue.snapshot_path_for(fp)
+        monitor_queue.save_fingerprints({"r": "1"}, "t", fp, snapshots={"r": "keep"})
+        monitor_queue.save_fingerprints({"r": "2"}, "t", fp)  # no snapshots kwarg
+        assert monitor_queue.load_snapshots(snap) == {"r": "keep"}
+
+    def test_default_paths_stay_paired(self):
+        assert monitor_queue.snapshot_path_for(monitor_queue.FINGERPRINT_PATH) == (
+            monitor_queue.SNAPSHOT_PATH
+        )
+
+
+class TestSuiteDoesNotDirtyTheCheckout:
+    """The class of bug this module has now shipped TWICE: a test redirecting
+    one state path while another silently wrote to the repository. First as
+    default arguments bound at import, then as a special case in the path
+    derivation that read the module global a test had just patched.
+
+    This asserts the invariant directly rather than any particular mechanism,
+    so a third variation cannot slip through.
+    """
+
+    def test_no_state_write_escapes_a_redirect(self, tmp_path):
+        import itertools
+
+        real = [
+            monitor_queue.QUEUE_PATH,
+            monitor_queue.FINGERPRINT_PATH,
+            monitor_queue.SNAPSHOT_PATH,
+        ]
+        before = {p: (p.read_bytes() if p.exists() else None) for p in real}
+
+        # Every shape a caller might use, none of which names SNAPSHOT_PATH.
+        fp = tmp_path / "fp.json"
+        for snaps in ({"r": "body"}, {}, None):
+            monitor_queue.save_fingerprints({"r": "1"}, "t", fp, snapshots=snaps)
+        monitor_queue.append_candidates(
+            [{"record_id": "r", "fingerprint": "1"}], "t", tmp_path / "q.json"
+        )
+
+        after = {p: (p.read_bytes() if p.exists() else None) for p in real}
+        changed = [p.name for p in real if before[p] != after[p]]
+        assert not changed, f"redirected calls wrote to repository state: {changed}"
+
+    def test_derivation_has_no_special_case_for_the_default(self):
+        """A branch on `== FINGERPRINT_PATH` reads the module global, which a
+        monkeypatching test has already replaced — so the special case fires
+        exactly when redirection was requested."""
+        import ast
+        import inspect
+        import textwrap
+
+        tree = ast.parse(textwrap.dedent(inspect.getsource(monitor_queue.snapshot_path_for)))
+        # Compare the parsed body, not the source text — comments in this very
+        # function discuss both names, and a substring check would trip on the
+        # explanation of the bug (the over-broad-match habit again).
+        names = {
+            n.id for n in ast.walk(tree) if isinstance(n, ast.Name)
+        }
+        assert "FINGERPRINT_PATH" not in names, "derivation branches on the default"
+        assert "SNAPSHOT_PATH" not in names, "derivation returns the default"

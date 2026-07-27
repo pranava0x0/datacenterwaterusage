@@ -48,5 +48,6 @@ streamlit-js-eval==1.0.0
 markdown==3.9
 
 # Testing
+pyyaml==6.0.3
 pytest==8.4.2
 pytest-asyncio==1.2.0

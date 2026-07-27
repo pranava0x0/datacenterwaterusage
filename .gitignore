@@ -15,8 +15,6 @@ data/downloads/
 
 # SQLite state database
 data/state/*.db
-data/state/monitor_fingerprints.json
-data/output/monitor_hits.json
 
 # IDE
 .vscode/

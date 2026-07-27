@@ -14,6 +14,7 @@ sequential rather than parallel, since these are government pages.
 from __future__ import annotations
 
 import argparse
+import os
 import random
 import sys
 import time
@@ -66,7 +67,7 @@ def main(argv: list[str] | None = None) -> int:
 
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     previous = monitor_queue.load_fingerprints()
-    snapshots = monitor_queue.load_snapshots()
+    snapshots = monitor_queue.load_snapshots()  # defaults to SNAPSHOT_PATH
     run = MonitorRun(
         fetch=make_fetcher(_polite_get()),
         previous=previous,
@@ -104,7 +105,40 @@ def main(argv: list[str] | None = None) -> int:
     print(f"\nqueued {added} new candidate(s) -> {monitor_queue.QUEUE_PATH}")
     if changed:
         print("Review them, then update the curated JSON by hand — monitors propose.")
+
+    _write_step_summary(changed, baselines, failures, total_queued=added)
     return 0
+
+
+def build_step_summary(changed, baselines, failures, total_queued: int) -> str:
+    """Markdown summary of THIS sweep.
+
+    Lives here rather than in the workflow because this function holds exactly
+    the candidates this run produced. The queue on disk is append-only and
+    restored from cache, so anything reading that file would re-report the
+    first change it ever saw as current, every week, forever.
+    """
+    lines = ["### Monitor sweep", ""]
+    lines.append(
+        f"- **{len(changed)} changed**, {len(baselines)} baselined, "
+        f"{len(failures)} failed ({total_queued} newly queued)"
+    )
+    for c in changed:
+        lines.append(f"  - **{c.record_id}** — {c.note or c.summary}")
+    for c in failures:
+        lines.append(f"  - :x: {c.record_id} — {c.summary}")
+    if not changed and not failures:
+        lines.append("  - nothing to triage this run")
+    lines += ["", "Monitors propose; a curator decides. See REFRESH.md step 2."]
+    return "\n".join(lines) + "\n"
+
+
+def _write_step_summary(changed, baselines, failures, total_queued: int) -> None:
+    target = os.environ.get("GITHUB_STEP_SUMMARY")
+    if not target:
+        return
+    with open(target, "a", encoding="utf-8") as fh:
+        fh.write(build_step_summary(changed, baselines, failures, total_queued))
 
 
 if __name__ == "__main__":

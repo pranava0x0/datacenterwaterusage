@@ -26,9 +26,15 @@ watched page, and appends anything that changed to
 `data/output/monitor_hits.json`. Rate-limited 2–5 s, sequential.
 
 **This also runs weekly on its own** (`.github/workflows/monitors.yml`, Mondays
-07:23 UTC). Grab the `monitor-hits` artifact from the latest run instead of
-sweeping locally, and read the run summary for the one-line verdict. Run it by
-hand only when you want a sweep right now.
+07:23 UTC) and **commits its results**, so usually you just pull:
+
+```bash
+git pull && cat data/output/monitor_hits.json
+```
+
+The sweep's run summary on the Actions page gives the one-line verdict for that
+week; the committed queue is the full append-only history. Run the command
+above by hand only when you want a sweep right now.
 
 Read the queue before doing any research — it tells you what actually moved,
 so you re-verify the two things that changed instead of the sixty that didn't.
@@ -60,9 +66,11 @@ For each entry in `monitor_hits.json`, open the `key` URL and decide:
   append-only on purpose, so "we looked and it was nothing" is on the record.
 - **Page moved** → update `monitor.key`.
 
-The queue is never edited or pruned. The fingerprint cache
-(`data/state/monitor_fingerprints.json`) advances automatically; a *failed*
-fetch deliberately does not advance it, so the failure re-reports next run.
+The queue is never edited or pruned — it is committed, so the history is in
+`git log`. `data/state/monitor_fingerprints.json` and
+`monitor_fingerprints_snapshots.json` advance automatically alongside it; a *failed* fetch
+deliberately does not advance the fingerprint, so the failure re-reports next
+run.
 
 ## 3. Verify sources before entering anything
 

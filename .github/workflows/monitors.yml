@@ -5,12 +5,22 @@ name: Status monitors
 # eventual NY veto) gets detected rather than rediscovered by a human
 # re-running research months later.
 #
-# Monitors PROPOSE; humans dispose. This workflow never edits a curated
-# dataset — it appends to a candidate queue and uploads it for triage.
-# See REFRESH.md step 1.
+# Monitors PROPOSE; humans dispose. This workflow commits ops state only — the
+# candidate queue, the fingerprints and the page snapshots they diff against. It never edits a curated dataset
+# under data/reference/, which a test enforces. See REFRESH.md step 1.
 #
-# No untrusted event data is interpolated anywhere below: the only expressions
-# are `secrets.*` and static config, so there is no workflow-injection surface.
+# STATE LIVES IN GIT, ON PURPOSE. An earlier version kept it in the actions
+# cache with artifact fallbacks, a legacy-migration path and a completeness
+# guard: five steps and ~56 lines of shell whose only job was not losing a
+# small JSON file. Six consecutive review rounds found defects in it — cache
+# eviction, half-restored state, a rename that orphaned everything, and a
+# `cache-hit` condition that is false on every run because the key embeds
+# run_id. Git is already durable append-only storage, and CLAUDE.md section 3
+# already makes append-only the project's data model. Committing the file
+# deletes the whole failure class instead of guarding each instance of it.
+#
+# No untrusted event data is interpolated below: the only expressions are
+# `secrets.*` and static config, so there is no workflow-injection surface.
 on:
   schedule:
     # 07:23 UTC Mondays. Off the hour and off :00/:30 so this doesn't pile onto
@@ -18,13 +28,14 @@ on:
     - cron: "23 7 * * 1"
   workflow_dispatch: {}
 
-# Least privilege: reads the repo, writes nothing back. State travels via the
-# actions cache and artifacts, so this job never needs contents: write.
+# contents: write is required to commit the queue, and is the only permission
+# granted. The cache-plus-artifacts alternative needed `actions: read` anyway
+# and cost the reliability documented above.
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  # A slow sweep must not overlap the next week's run and double-append.
+  # A slow sweep must not overlap the next week's run and race the commit.
   group: monitors
   cancel-in-progress: false
 
@@ -46,56 +57,38 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # The fingerprint cache is what makes a sweep report CHANGES rather than
-      # re-baselining everything every week. It's gitignored (ops state, not
-      # curated data), so it round-trips through the actions cache — which,
-      # unlike artifacts, is designed for cross-run state and needs no prior
-      # run-id. The restore-key lets each run inherit the most recent cache and
-      # save an updated one under a fresh key.
-      - name: Restore fingerprints from the last sweep
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
-        with:
-          path: data/state/monitor_fingerprints.json
-          key: monitor-fingerprints-${{ github.run_id }}
-          restore-keys: monitor-fingerprints-
-
+      # The checkout already carries both state files, so there is nothing to
+      # restore and nothing that can be half-restored.
       - name: Sweep
         env:
-          # Absent key => the two LegiScan watches report as FAILED rather than
+          # Absent key => the LegiScan watches report as FAILED rather than
           # skipping quietly. Intentional: a watch that stopped running must not
           # be indistinguishable from a watch reporting no change.
           LEGISCAN_API_KEY: ${{ secrets.LEGISCAN_API_KEY }}
+        # Writes its own $GITHUB_STEP_SUMMARY covering only this run's
+        # candidates — the queue on disk is append-only history.
         run: python3 -m scrapers.monitors.run
 
-      # The queue is the human work product. 90 days is well past any sensible
-      # triage lag, and it is append-only within a run.
-      - name: Upload candidate queue for triage
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: monitor-hits
-          path: data/output/monitor_hits.json
-          if-no-files-found: ignore
-          retention-days: 90
-
-      - name: Summarize
-        if: always()
+      - name: Commit updated monitor state
         run: |
-          echo "### Monitor sweep" >> "$GITHUB_STEP_SUMMARY"
-          if [ -f data/output/monitor_hits.json ]; then
-            python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
-          import json
-          from pathlib import Path
-          rows = json.loads(Path("data/output/monitor_hits.json").read_text())["candidates"]
-          changed = [c for c in rows if c.get("previous_fingerprint") and c.get("fingerprint")]
-          failed = [c for c in rows if not c.get("fingerprint")]
-          print(f"- {len(changed)} changed, {len(failed)} failed, {len(rows)} total queued")
-          for c in changed:
-              print(f"  - **{c['record_id']}** — {c.get('note') or c['summary']}")
-          for c in failed:
-              print(f"  - x {c['record_id']} — {c['summary']}")
-          print()
-          print("Download the `monitor-hits` artifact to triage. Monitors propose; a curator decides.")
-          PY
-          else
-            echo "- no candidate queue written" >> "$GITHUB_STEP_SUMMARY"
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Explicit paths: the sweep must never be able to commit a curated
+          # dataset, even if some future change writes to one by mistake.
+          # Add only files that exist: `git add` on a missing path aborts
+          # under `set -e`, and a sweep with nothing to queue writes no queue.
+          for f in data/output/monitor_hits.json \
+                   data/state/monitor_fingerprints.json \
+                   data/state/monitor_fingerprints_snapshots.json; do
+            [ -f "$f" ] && git add "$f"
+          done
+          if git diff --cached --quiet; then
+            echo "No state change this run."
+            exit 0
           fi
+          git commit -m "monitors: weekly sweep state [skip ci]"
+          # Rebase before pushing: a human may have committed a triage edit
+          # while this ran. Concurrency prevents overlapping sweeps, not humans.
+          git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

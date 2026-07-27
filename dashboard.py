@@ -66,6 +66,7 @@ from refdata.taxonomies import (  # noqa: F401
     CWA_STATUS_COLORS,
     CWA_STATUS_LABELS,
     DELIVERED_STATUS_COLORS,
+    DELIVERED_STATUS_LABELS,
     INSTRUMENT_TYPE_COLORS,
     INSTRUMENT_TYPE_LABELS,
     ISSUE_TYPE_DESCRIPTIONS,
@@ -3670,6 +3671,60 @@ def render_company_water_claims():
     )
 
 
+def _build_claim_lifecycle_html(
+    claim: dict, companies: dict | None = None, *, link_anchors: bool = True
+) -> str:
+    """Claim-type chip, court-challenge badge and site cross-links.
+
+    Shared by the static site and the Streamlit card. This lived inline in
+    build_site.py, so the Streamlit app rendered the pre-lifecycle card: no
+    claim type, no "challenged in court" badge, no site links. Two surfaces
+    disagreeing about the same record is precisely what the shared-builder rule
+    in CLAUDE.md exists to prevent, and it had already drifted.
+
+    ``link_anchors=False`` renders the same information without hyperlinks.
+    Only the static site has the JS that activates a fragment's owning tab; in
+    Streamlit an ``#cwa-…`` href just rewrites the hash and leaves the reader
+    on Issues & Claims with nothing visibly happening — worse than plain text,
+    because it looks clickable. The badge instead names where the record lives.
+    """
+    esc = html.escape
+    chips = []
+    ctype = claim.get("claim_type")
+    if ctype in CLAIM_TYPE_LABELS:
+        chips.append(
+            f'<span class="claim-type-pill">{esc(CLAIM_TYPE_LABELS[ctype])}</span>'
+        )
+    for case_id in claim.get("challenged_in", []) or []:
+        ref = resolve_ref(case_id)
+        if not ref:
+            continue
+        if link_anchors:
+            chips.append(
+                f'<a class="claim-challenge-pill" href="#{esc(ref.anchor)}">'
+                "&#9878; Challenged in court</a>"
+            )
+        else:
+            chips.append(
+                '<span class="claim-challenge-ref">&#9878; Challenged in court '
+                f"&middot; see Water Cases: {esc(ref.label)}</span>"
+            )
+    for site_id in claim.get("related_site_ids", []) or []:
+        ref = resolve_ref(site_id)
+        if not ref:
+            continue
+        if link_anchors:
+            chips.append(
+                f'<a class="claim-site-link" href="#{esc(ref.anchor)}">'
+                f"&rarr; {esc(ref.label)}</a>"
+            )
+        else:
+            chips.append(
+                f'<span class="claim-site-ref">&rarr; {esc(ref.label)}</span>'
+            )
+    return f'<div class="claim-chips">{"".join(chips)}</div>' if chips else ""
+
+
 def _render_water_claim_card(claim: dict):
     """Render one claim as a bordered card with native Streamlit components.
 
@@ -3701,15 +3756,17 @@ def _render_water_claim_card(claim: dict):
         if caption_parts:
             st.caption(" · ".join(caption_parts))
 
+        # Streamlit has no cross-tab fragment handler; see the builder docstring.
+        lifecycle = _build_claim_lifecycle_html(claim, link_anchors=False)
+        if lifecycle:
+            st.markdown(lifecycle, unsafe_allow_html=True)
+
         delivered = claim.get("delivered")
         if delivered:
             status = str(delivered.get("status", "")).lower()
-            status_label = {
-                "delivered": "Delivered",
-                "partial": "Partial",
-                "contested": "Contested",
-                "shortfall": "Shortfall",
-            }.get(status, status.title() or "Unknown")
+            status_label = DELIVERED_STATUS_LABELS.get(
+                status, status.title() or "Unknown"
+            )
             d_summary = delivered.get("summary", "")
             d_url = delivered.get("source_url", "")
             d_title = delivered.get("source_title", "assessment")
@@ -3718,6 +3775,7 @@ def _render_water_claim_card(claim: dict):
                 "delivered": st.success,
                 "partial": st.warning,
                 "contested": st.warning,
+                "litigated": st.error,
                 "shortfall": st.error,
             }.get(status, st.info)
             box_fn(

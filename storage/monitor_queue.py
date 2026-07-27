@@ -23,6 +23,39 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 QUEUE_PATH = BASE_DIR / "data" / "output" / "monitor_hits.json"
 FINGERPRINT_PATH = BASE_DIR / "data" / "state" / "monitor_fingerprints.json"
+# Snapshots are normalized page text, kept to diff the next run against. They
+# live in their own file because they are much larger than the fingerprints and
+# churn on every content change — but they ARE committed. An earlier version
+# gitignored them on the reasoning that losing them only costs the excerpt;
+# that assumed occasional loss, and on a fresh CI runner they are lost every
+# single run, so the excerpt would never appear at all. Each is capped so one
+# verbose page cannot bloat the repo.
+SNAPSHOT_PATH = BASE_DIR / "data" / "state" / "monitor_fingerprints_snapshots.json"
+
+# Per-record cap on stored page text. Enough to locate a change anywhere in a
+# status page, bounded so a single verbose watch cannot bloat the repository
+# week after week. A truncated snapshot still diffs correctly; at worst the
+# excerpt is missing for a change past the cap.
+MAX_SNAPSHOT_CHARS = 20_000
+
+
+def snapshot_path_for(fingerprint_path: Path) -> Path:
+    """The snapshot file that belongs beside a given fingerprint file.
+
+    Derived rather than passed separately so redirection is ATOMIC: a caller
+    that points the fingerprints at a temp file cannot accidentally leave the
+    snapshots writing to the repository. That exact leak — a test redirecting
+    one path and clobbering real state through the other — is the bug this
+    module already fixed once, when the paths were default arguments bound at
+    import. Making `snapshot_path` an independent parameter reintroduced it in
+    a new shape.
+    """
+    # PURE derivation, with no special case for the default. The first version
+    # returned SNAPSHOT_PATH when the argument equalled FINGERPRINT_PATH — but
+    # that reads the module global, so a test monkeypatching FINGERPRINT_PATH
+    # satisfied the comparison and got the REAL snapshot file back. The special
+    # case defeated the very redirection it was meant to support.
+    return fingerprint_path.with_name(fingerprint_path.stem + "_snapshots.json")
 
 
 def _atomic_write(path: Path, text: str) -> None:
@@ -54,8 +87,13 @@ def load_fingerprints(path: Path | None = None) -> dict[str, str]:
 
 
 def load_snapshots(path: Path | None = None) -> dict[str, str]:
-    """Last normalized body per record id, for diffing. Empty on first run."""
-    path = path or FINGERPRINT_PATH
+    """Last normalized body per record id, for diffing. Empty on first run.
+
+    Losing these degrades gracefully: the next run still detects the change via
+    the fingerprint, it just cannot show an excerpt. That is why they are safe
+    to keep out of git while the fingerprints are not.
+    """
+    path = path or SNAPSHOT_PATH
     if not path.exists():
         return {}
     try:
@@ -70,16 +108,31 @@ def save_fingerprints(
     last_run: str,
     path: Path | None = None,
     snapshots: dict[str, str] | None = None,
+    snapshot_path: Path | None = None,
 ) -> None:
     path = path or FINGERPRINT_PATH
     path.parent.mkdir(parents=True, exist_ok=True)
+
+    # `None` means "not managing snapshots" and leaves the file alone; `{}`
+    # means "no snapshots this run" and legitimately clears it. Conflating the
+    # two let a caller that never mentioned snapshots wipe them.
+    if snapshots is not None:
+        target = snapshot_path or snapshot_path_for(path)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        capped = {k: v[:MAX_SNAPSHOT_CHARS] for k, v in snapshots.items()}
+        _atomic_write(
+            target,
+            json.dumps(
+                {"last_run": last_run, "snapshots": capped}, indent=2, sort_keys=True
+            )
+            + "\n",
+        )
     _atomic_write(
         path,
         json.dumps(
             {
                 "last_run": last_run,
                 "fingerprints": fingerprints,
-                "snapshots": snapshots or {},
             },
             indent=2,
             sort_keys=True,
