@@ -3706,7 +3706,7 @@ def _build_claim_lifecycle_html(
             )
         else:
             chips.append(
-                '<span class="claim-challenge-pill">&#9878; Challenged in court '
+                '<span class="claim-challenge-ref">&#9878; Challenged in court '
                 f"&middot; see Water Cases: {esc(ref.label)}</span>"
             )
     for site_id in claim.get("related_site_ids", []) or []:
@@ -3720,7 +3720,7 @@ def _build_claim_lifecycle_html(
             )
         else:
             chips.append(
-                f'<span class="claim-site-link">&rarr; {esc(ref.label)}</span>'
+                f'<span class="claim-site-ref">&rarr; {esc(ref.label)}</span>'
             )
     return f'<div class="claim-chips">{"".join(chips)}</div>' if chips else ""
 

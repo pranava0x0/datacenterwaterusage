@@ -71,13 +71,28 @@ jobs:
           key: monitor-state-${{ github.run_id }}
           restore-keys: monitor-state-
 
+      # cache-hit is only true for an exact primary-key match, and the primary
+      # key embeds github.run_id — so it is false on EVERY run, including
+      # healthy ones that inherited state via restore-keys. Branching on it
+      # made the fallbacks fire weekly. Ask the filesystem instead.
+      - name: Did the cache actually restore usable state?
+        id: restored
+        run: |
+          if [ -s data/state/monitor_fingerprints.json ]; then
+            echo "complete=true" >> "$GITHUB_OUTPUT"
+            echo "State restored from cache; skipping recovery."
+          else
+            echo "complete=false" >> "$GITHUB_OUTPUT"
+            echo "No fingerprints on disk; recovery will run."
+          fi
+
       # One-time migration path. The version of this workflow on main keys its
       # cache `monitor-fingerprints-` and publishes only `monitor-hits`, so
       # after this rename neither the new cache nor the new artifact exists and
       # the recovery below would call it a cold start and discard real state.
       # Safe to delete once a run has published `monitor-state`.
       - name: Restore legacy fingerprint cache
-        if: steps.state.outputs.cache-hit != 'true'
+        if: steps.restored.outputs.complete != 'true'
         uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
         with:
           path: data/state/monitor_fingerprints.json
@@ -104,7 +119,7 @@ jobs:
       # A genuine first run (no prior artifact at all) is not a failure: there
       # is nothing to recover and baselining is the correct behaviour.
       - name: Recover monitor state if the cache missed
-        if: steps.state.outputs.cache-hit != 'true'
+        if: steps.restored.outputs.complete != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

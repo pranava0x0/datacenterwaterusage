@@ -807,3 +807,36 @@ class TestLegacyStateMigration:
         legacy = next(i for i, n in enumerate(names) if "legacy" in n.lower())
         recovery = next(i for i, n in enumerate(names) if "Recover" in n)
         assert legacy < recovery, names
+
+
+class TestNoDeadAffordances:
+    """Codex round 9: removing the href but keeping .claim-site-link left the
+    text link-blue and underlined on hover — still advertising a click that
+    does nothing, which is exactly what link_anchors=False exists to remove."""
+
+    @staticmethod
+    def _claim():
+        from refdata.loaders import load_company_water_claims
+
+        return next(
+            c for c in load_company_water_claims()["claims"]
+            if c.get("challenged_in") or c.get("related_site_ids")
+        )
+
+    def test_unlinked_surface_uses_non_link_classes(self):
+        import dashboard as dash
+
+        out = dash._build_claim_lifecycle_html(self._claim(), link_anchors=False)
+        assert "claim-site-link" not in out
+        assert "claim-challenge-pill" not in out
+
+    def test_link_styling_is_scoped_to_real_anchors(self):
+        """Even if a hrefless span ever reuses the class, the CSS must not
+        make it look clickable."""
+        import pathlib
+
+        css = (
+            pathlib.Path(monitor_queue.BASE_DIR) / "assets" / "components.css"
+        ).read_text()
+        assert "a.claim-site-link {" in css
+        assert "a.claim-site-link:hover" in css
