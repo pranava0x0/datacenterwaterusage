@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-07-25",
+  "last_updated": "2026-07-26",
   "note": "State + federal data center water/energy legislation, plus selected regulatory actions and major local zoning decisions. Verified entries had their status confirmed against a primary source (state legislature page, Congress.gov / GovInfo, official sponsor press release) on the listed last_verified date; unverified entries should be re-checked before being relied upon. July 5, 2026 addition: FL SB 484 — enacted (signed May 7, 2026, effective July 1, 2026), ratepayer cost-allocation protections, a 100,000 gal/day reclaimed-water cooling requirement, and preserved local zoning authority; resolves the 'Florida hyperscale data-center regulatory framework' backlog candidate with a confirmed bill number. June 27, 2026 additions: IA HF 2690 (water + energy reporting and a separate data-center electric tariff; introduced) and CT SB 245 (would have repealed Connecticut's data-center tax incentives and added clean-energy/sustainability conditions; failed — died on the Senate calendar). Each bill is enriched with recent_news (up to 3 dated items with source URLs), public_sentiment (a paragraph naming supporters/opponents), general_principles (tagged policy concepts), and a procedural timeline. These fields are best-effort as of last_updated and should be re-verified before being cited. Scope expanded 2026-05-28 to include regulatory rulemakings (OH EPA OHD000001) and major local ordinances (Loudoun ZOAM) that function as de facto data-center policy.",
   "bills": [
     {
@@ -2029,7 +2029,12 @@
           "milestone": "Final permit decision expected (approximate; Q3 2026)"
         }
       ],
-      "instrument_type": "agency-rule"
+      "instrument_type": "agency-rule",
+      "monitor": {
+        "kind": "url-watch",
+        "key": "https://epa.ohio.gov/divisions-and-offices/surface-water/permitting/general-permits",
+        "note": "Draft general permit still not finalized; finalization makes data centers direct DMR filers."
+      }
     },
     {
       "bill_id": "Loudoun County ZOAM 2025",
@@ -2655,7 +2660,12 @@
           "milestone": "Awaiting governor's action"
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "monitor": {
+        "kind": "legiscan",
+        "key": "NY S10642",
+        "note": "Never signed or vetoed — superseded by EO 62. Watch for an eventual veto."
+      }
     },
     {
       "bill_id": "UT EO 2026-03",
@@ -3081,7 +3091,12 @@
           "detail": "Sen. Dick Durbin (D-IL) introduced solo; Senate bill number not yet confirmed in public Congress.gov listings as of late May 2026."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "monitor": {
+        "kind": "federal-register",
+        "key": "data center water transparency",
+        "note": "Bill number still unassigned in the record; watch for introduction."
+      }
     },
     {
       "bill_id": "CO SB26-102",
@@ -3702,7 +3717,12 @@
           "takeaway": "Sets the 50 MW threshold and orders the DEC water-withdrawal rulemaking assessment within 12 months."
         }
       ],
-      "public_sentiment": "Advocates who pushed S10642 read the 50 MW threshold and one-year clock as a dilution of the bill they passed; industry treats the executive route as the more workable outcome because it expires without further action."
+      "public_sentiment": "Advocates who pushed S10642 read the 50 MW threshold and one-year clock as a dilution of the bill they passed; industry treats the executive route as the more workable outcome because it expires without further action.",
+      "monitor": {
+        "kind": "url-watch",
+        "key": "https://www.governor.ny.gov/executive-orders",
+        "note": "One-year moratorium; watch for extension, expiry, or the DEC withdrawal rulemaking."
+      }
     },
     {
       "bill_id": "NY DPS Data Center Impact Report (EO 62)",
@@ -3801,7 +3821,12 @@
           "takeaway": "Sets the reporting categories and the October 2026 / January 2027 effective dates, and confirms facility-level data stays shielded."
         }
       ],
-      "public_sentiment": "Transparency advocates call the aggregate-only publication the compromise that keeps the data too coarse to hold any single campus accountable."
+      "public_sentiment": "Transparency advocates call the aggregate-only publication the compromise that keeps the data too coarse to hold any single campus accountable.",
+      "monitor": {
+        "kind": "url-watch",
+        "key": "https://www.deq.virginia.gov/water/water-quantity",
+        "note": "First aggregate report due 2026-10-01 — unlocks the Tier-1 scraper build."
+      }
     },
     {
       "bill_id": "QTS Richmond Technology Park DC5 (FAST-41)",
@@ -3908,7 +3933,12 @@
           "takeaway": "Summarizes the package's water-permitting, NDA and CBA provisions."
         }
       ],
-      "public_sentiment": "Michigan's Great Lakes context makes consumptive-use caps unusually salient; the NDA provision responds directly to secrecy complaints around recent siting fights."
+      "public_sentiment": "Michigan's Great Lakes context makes consumptive-use caps unusually salient; the NDA provision responds directly to secrecy complaints around recent siting fights.",
+      "monitor": {
+        "kind": "legiscan",
+        "key": "MI SB 1046",
+        "note": "Bill numbers unverified; confirm against the legislature lookup when status moves."
+      }
     },
     {
       "bill_id": "WV HB 4832",
@@ -4030,7 +4060,12 @@
           "takeaway": "Confirms the voluntary design and the reopening of the survey window."
         }
       ],
-      "public_sentiment": "Cited on both sides of the mandatory-reporting debate: as proof that voluntary disclosure does not work, and by industry as evidence the questions are burdensome."
+      "public_sentiment": "Cited on both sides of the mandatory-reporting debate: as proof that voluntary disclosure does not work, and by industry as evidence the questions are burdensome.",
+      "monitor": {
+        "kind": "url-watch",
+        "key": "https://www.puc.texas.gov/industry/water/utilities/energy-and-water-use-survey/faq/",
+        "note": "Watch for the voluntary survey becoming a mandatory registration."
+      }
     },
     {
       "bill_id": "Prince George's County MD CB-2026 data center moratorium",
