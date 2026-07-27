@@ -115,7 +115,9 @@ class TestRegistry:
 
     def test_every_kind_has_a_tab(self):
         for ref in registry.build_registry().values():
-            assert ref.tab in {"legislation", "cwa", "news", "solutions", "sources"}
+            assert ref.tab in {
+                "legislation", "cwa", "issues", "news", "solutions", "sources"
+            }
 
     def test_resolve_unknown_id(self):
         assert registry.resolve("not-a-real-id-2026") is None

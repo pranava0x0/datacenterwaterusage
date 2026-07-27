@@ -174,11 +174,6 @@ def build_legislation_tab() -> str:
   <summary>Show Policy &amp; Disclosure Timeline</summary>
   {build_timeline()}
 </details>
-
-<details class="lazy">
-  <summary>Show Company Water Claims (29 verbatim operator quotes)</summary>
-  {build_company_claims()}
-</details>
 """
 
 
@@ -228,7 +223,7 @@ def build_company_claims() -> str:
     )
 
     parts = [
-        '<section class="panel"><h3>Company Water Claims</h3>',
+        '<section class="panel">',
         intro,
         f'<p class="count-line"><strong>{len(claims)} claims</strong> · '
         f'{company_count} companies · {delivered_count} delivered-vs-promised '
@@ -335,13 +330,107 @@ def build_company_claims() -> str:
 # --------------------------------------------------------------------------
 
 
+def build_issues_claims_tab() -> str:
+    """The Issues & Claims tab: what the problems are, and what operators say.
+
+    Spec A3. This story used to be split across three places — conflict sites
+    were Part 4 of a legal-record tab, operator claims were a collapsed
+    disclosure at the bottom of Legislation, and nothing joined them. A reader
+    asking "what is the problem here, and what does the company say about it?"
+    had to know to look in two tabs and then do the join themselves.
+
+    Section order answers that question in one pass: what kinds of problem
+    exist → where → what the operator promised → which promises are contested.
+    """
+    conflicts_payload = dash.load_dc_water_conflicts()
+    conflict_sites = conflicts_payload.get("sites", [])
+    conflicts_updated = conflicts_payload.get("last_updated") or "unknown"
+
+    authorities_payload = dash.load_water_authorities()
+    readings_by_id = dash._readings_by_id(authorities_payload)
+    cases = dash.load_cwa_investigations().get("cases", [])
+    all_ids = {c.get("case_id") for c in cases}
+    cases_by_id = {c["case_id"]: c for c in cases}
+
+    claims_payload = dash.load_company_water_claims()
+    claims = claims_payload.get("claims", [])
+    companies = claims_payload.get("companies", {})
+    claims_ctx = (claims, companies)
+
+    summary_strip = dash._issue_type_summary_html(conflict_sites)
+    doctrine_matrix = dash._build_site_doctrine_matrix_html(conflict_sites, readings_by_id)
+    site_cards = "".join(
+        dash._build_conflict_site_html(s, readings_by_id, all_ids, cases_by_id, claims_ctx)
+        for s in conflict_sites
+    )
+
+    issue_counts: dict[str, int] = {}
+    for s in conflict_sites:
+        for t in s.get("issue_types", []):
+            issue_counts[t] = issue_counts.get(t, 0) + 1
+    issue_boxes = "".join(
+        f'<label class="chip-check" title="{esc(dash.ISSUE_TYPE_DESCRIPTIONS[k])}">'
+        f'<input type="checkbox" class="dc-issue" value="{k}" checked> '
+        f'{esc(dash.ISSUE_TYPE_LABELS[k])} ({issue_counts[k]})</label>'
+        for k in sorted(issue_counts, key=lambda k: (-issue_counts[k], k))
+    )
+
+    # Claims whose truth is now before a court or regulator. Small on purpose:
+    # one entry today, and the callout exists so a second is impossible to miss.
+    challenged = [c for c in claims if c.get("challenged_in")]
+    challenge_rows = "".join(
+        f'<li><strong>{esc(companies.get(c.get("company_slug", ""), ""))}</strong> — '
+        f'&ldquo;{esc(c.get("statement", "")[:150])}&rdquo; '
+        + " ".join(
+            f'<a href="#{esc(ref.anchor)}">{esc(ref.label)}</a>'
+            for ref in (dash.resolve_ref(cid) for cid in c["challenged_in"])
+            if ref
+        )
+        + "</li>"
+        for c in challenged
+    )
+    challenge_block = (
+        '<div class="context-card"><h4>Claims currently under legal challenge</h4>'
+        f"<ul>{challenge_rows}</ul>"
+        "<p class=\"source-note\">Listed because the claim is being tested in a "
+        "forum, not because it has been found false.</p></div>"
+        if challenged
+        else ""
+    )
+
+    return f"""
+<section class="panel">
+  <h2>Issues &amp; Claims — What Goes Wrong, and What Operators Say</h2>
+  <p class="lead">Every tracked data-center site with a documented water problem or
+  community pushback, classified by the kind of problem it is and mapped to the legal
+  readings that could reach it — shown alongside the operating company's own public
+  water claims, so the promise and the record sit on the same card.</p>
+
+  {summary_strip}
+
+  <h3>Sites with reported water issues or pushback ({len(conflict_sites)})</h3>
+  <h4 class="solution-cat-header">Which doctrines are in play where</h4>
+  {doctrine_matrix}
+  <div class="cwa-filters">
+    <span class="filter-label">Issue type:</span>
+    <div class="cwa-types">{issue_boxes}</div>
+  </div>
+  <p class="count-line" id="conflict-count"></p>
+  <div id="dc-conflicts">{site_cards}</div>
+  <p class="src-note">Site roster last updated {esc(conflicts_updated)}.</p>
+
+  <h3>Operator water claims ({len(claims)})</h3>
+  {challenge_block}
+  {build_company_claims()}
+</section>
+"""
+
+
 def build_cwa_tab() -> str:
     payload = dash.load_cwa_investigations()
     cases = payload.get("cases", [])
     authorities_payload = dash.load_water_authorities()
     readings_by_id = dash._readings_by_id(authorities_payload)
-    conflicts_payload = dash.load_dc_water_conflicts()
-    conflict_sites = conflicts_payload.get("sites", [])
     historical = [c for c in cases if c.get("display_section", "historical") == "historical"]
     potential = [c for c in cases if c.get("display_section") == "potential"]
     stats = dash._cwa_datacenter_insights(historical)
@@ -452,28 +541,6 @@ def build_cwa_tab() -> str:
     toolkit = dash._build_authorities_html(authorities_payload, all_ids)
     n_readings = len(authorities_payload.get("readings", []))
 
-    # Part 4: DC sites with documented water conflicts.
-    site_cards = "".join(
-        dash._build_conflict_site_html(s, readings_by_id, all_ids, cases_by_id)
-        for s in conflict_sites
-    )
-    conflicts_updated = conflicts_payload.get("last_updated") or "unknown"
-    doctrine_matrix = dash._build_site_doctrine_matrix_html(conflict_sites, readings_by_id)
-
-    # Issue-type filter for Part 4 — the question the prose summaries could
-    # only answer by being read: which of these are aquifer fights? Ordered by
-    # how many sites carry each tag, so the common problems lead.
-    issue_counts: dict[str, int] = {}
-    for s in conflict_sites:
-        for t in s.get("issue_types", []):
-            issue_counts[t] = issue_counts.get(t, 0) + 1
-    issue_boxes = "".join(
-        f'<label class="chip-check" title="{esc(dash.ISSUE_TYPE_DESCRIPTIONS[k])}">'
-        f'<input type="checkbox" class="dc-issue" value="{k}" checked> '
-        f'{esc(dash.ISSUE_TYPE_LABELS[k])} ({issue_counts[k]})</label>'
-        for k in sorted(issue_counts, key=lambda k: (-issue_counts[k], k))
-    )
-
     cat_labels_json = json.dumps(dash.CWA_CATEGORY_LABELS)
     cat_order_json = json.dumps(dash.CWA_CATEGORY_ORDER)
 
@@ -503,7 +570,6 @@ def build_cwa_tab() -> str:
     <button class="subtab" role="tab" data-subtab="cwa-p1" aria-selected="false">Part 1 · Toolkit ({n_readings})</button>
     <button class="subtab" role="tab" data-subtab="cwa-p2" aria-selected="true">Part 2 · Historical Record ({len(historical)})</button>
     <button class="subtab" role="tab" data-subtab="cwa-p3" aria-selected="false">Part 3 · Active/Potential Exposure ({len(potential)})</button>
-    <button class="subtab" role="tab" data-subtab="cwa-p4" aria-selected="false">Part 4 · DC Water Conflicts ({len(conflict_sites)})</button>
   </div>
 
   <div class="subtabpanel" id="panel-cwa-p1" hidden>
@@ -550,23 +616,6 @@ def build_cwa_tab() -> str:
     <div id="cwa-potential">{pot_cards}</div>
   </div>
 
-  <div class="subtabpanel" id="panel-cwa-p4" hidden>
-    <h3>Part 4 — Data-Center Sites with Reported Water Issues or Pushback ({len(conflict_sites)})</h3>
-    <p><strong>{len(conflict_sites)} named sites</strong> with documented water problems or
-    community pushback — supply strain, dried wells, discharge fights, secrecy,
-    moratoriums. Each card maps the fact pattern to the statutory readings from Part 1
-    that could reach it, citing the historical cases that show each reading in use.
-    Readings overlap by design.</p>
-    <h4 class="solution-cat-header">Which doctrines are in play where</h4>
-    {doctrine_matrix}
-    <div class="cwa-filters">
-      <span class="filter-label">Issue type:</span>
-      <div class="cwa-types">{issue_boxes}</div>
-    </div>
-    <p class="count-line" id="conflict-count"></p>
-    <div id="dc-conflicts">{site_cards}</div>
-    <p class="src-note">Site roster last updated {esc(conflicts_updated)}.</p>
-  </div>
 
   <p class="src-note">Dataset last updated {esc(last_updated)}.
   Total: {len(cases)} entries ({len(historical)} historical enforcement,
@@ -1668,6 +1717,7 @@ def build_llms_txt() -> str:
 def build_html() -> str:
     legislation = build_legislation_tab()
     cwa = build_cwa_tab()
+    issues = build_issues_claims_tab()
     news = build_news_tab()
     solutions = build_solutions_tab()
     sources_html = build_sources_tab()
@@ -1694,6 +1744,7 @@ def build_html() -> str:
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" data-tab="legislation" aria-selected="true">Legislation</button>
     <button class="tab" role="tab" data-tab="cwa" aria-selected="false">Water Cases</button>
+    <button class="tab" role="tab" data-tab="issues" aria-selected="false">Issues &amp; Claims</button>
     <button class="tab" role="tab" data-tab="news" aria-selected="false">News</button>
     <button class="tab" role="tab" data-tab="solutions" aria-selected="false">Solutions</button>
     <button class="tab" role="tab" data-tab="sources" aria-selected="false">Sources</button>
@@ -1701,6 +1752,7 @@ def build_html() -> str:
 
   <div class="tabpanel" id="panel-legislation" role="tabpanel">{legislation}</div>
   <div class="tabpanel" id="panel-cwa" role="tabpanel" hidden>{cwa}</div>
+  <div class="tabpanel" id="panel-issues" role="tabpanel" hidden>{issues}</div>
   <div class="tabpanel" id="panel-news" role="tabpanel" hidden>{news}</div>
   <div class="tabpanel" id="panel-solutions" role="tabpanel" hidden>{solutions}</div>
   <div class="tabpanel" id="panel-sources" role="tabpanel" hidden>{sources_html}</div>

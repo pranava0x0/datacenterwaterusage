@@ -308,3 +308,42 @@ class TestInstrumentFilter:
         model B1 introduced."""
         html = _html()
         assert "' instruments'" in html or " instruments'" in html
+
+
+class TestIssuesAndClaimsTab:
+    """Spec A3 — one surface for 'what is the problem, and what do they say?'"""
+
+    def test_tab_exists_with_both_halves(self):
+        html = _html()
+        assert 'data-tab="issues"' in html
+        assert 'id="panel-issues"' in html
+        panel = html[html.index('id="panel-issues"'):html.index('id="panel-news"')]
+        sites = dashboard.load_dc_water_conflicts().get("sites", [])
+        claims = dashboard.load_company_water_claims().get("claims", [])
+        assert panel.count("dc-site") == len(sites)
+        assert panel.count('class="claim-card"') == len(claims)
+
+    def test_old_homes_no_longer_carry_the_moved_content(self):
+        """A half-completed move leaves the content in two places, which is
+        worse than either home alone."""
+        html = _html()
+        leg = html[html.index('id="panel-legislation"'):html.index('id="panel-cwa"')]
+        cwa = html[html.index('id="panel-cwa"'):html.index('id="panel-issues"')]
+        assert 'class="claim-card"' not in leg
+        assert "dc-site" not in cwa
+        assert "cwa-p4" not in html
+
+    def test_says_vs_does_join_renders(self):
+        """The product's sharpest feature: an operator's own pledge shown on
+        the card describing what its campus is accused of."""
+        html = _html()
+        assert html.count('class="says-vs-does"') >= 8
+        newton = html[html.index('id="site-meta-newton-county-ga"'):]
+        newton = newton[: newton.index("</details>")]
+        assert "says-vs-does" in newton
+        assert "restoring more water than we consume" in newton
+
+    def test_issue_summary_strip_present(self):
+        html = _html()
+        assert 'class="issue-summary"' in html
+        assert "kinds of water problem" in html

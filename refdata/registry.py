@@ -55,10 +55,13 @@ class Ref(NamedTuple):
 # builders — every cross-link in every dataset follows automatically.
 KIND_TABS = {
     "instrument": "legislation",
-    "claim": "legislation",
+    # Sites and claims moved out of Water Cases and Legislation into their own
+    # tab (Spec A3). Because every cross-link resolves through here, the move
+    # was this dict plus the builders — no dataset changed.
+    "claim": "issues",
     "reading": "cwa",
     "case": "cwa",
-    "site": "cwa",
+    "site": "issues",
     "news": "news",
     "solution": "solutions",
 }

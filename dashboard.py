@@ -2598,18 +2598,17 @@ def render_cwa_tracker():
     sites = conflicts_payload.get("sites", [])
     n_readings = len(authorities_payload.get("readings", []))
 
-    # Four sub-tabs instead of stacked expanders: Part 2 (the historical
-    # record most users want) no longer sits behind Part 1's content in the
-    # scroll order — each part is one click away. Mirrors the static site's
-    # .subtab/.subtabpanel pair (build_site.py).
+    # Sub-tabs instead of stacked expanders: Part 2 (the historical record
+    # most users want) no longer sits behind Part 1's content in the scroll
+    # order — each part is one click away. Mirrors the static site's
+    # .subtab/.subtabpanel pair (build_site.py). Conflict sites moved to the
+    # Issues & Claims tab (Spec A3), leaving this a purely legal record.
     st.markdown("---")
     tab_labels = [
         f"Part 1 · Toolkit ({n_readings})",
         f"Part 2 · Historical Record ({len(historical)})",
         f"Part 3 · Active/Potential Exposure ({len(potential)})",
     ]
-    if sites:
-        tab_labels.append(f"Part 4 · DC Water Conflicts ({len(sites)})")
     part_tabs = st.tabs(tab_labels)
 
     with part_tabs[0]:
@@ -2740,34 +2739,6 @@ def render_cwa_tracker():
             ),
             unsafe_allow_html=True,
         )
-
-    if sites:
-        with part_tabs[3]:
-            st.markdown(
-                f"**{len(sites)} named sites** with documented water problems or "
-                "community pushback — supply strain, dried wells, discharge "
-                "fights, secrecy, moratoriums. Each card maps the fact pattern to "
-                "the statutory readings from Part 1 that could reach it, citing "
-                "the legal readings from Part 1 that could reach it, citing "
-                "the historical cases that show each reading in use. Readings "
-                "overlap by design."
-            )
-            st.markdown("#### Which doctrines are in play where")
-            st.markdown(
-                _build_site_doctrine_matrix_html(sites, readings_by_id),
-                unsafe_allow_html=True,
-            )
-            cases_by_id = {c["case_id"]: c for c in cases}
-            st.markdown(
-                "".join(
-                    _build_conflict_site_html(s, readings_by_id, all_ids, cases_by_id)
-                    for s in sites
-                ),
-                unsafe_allow_html=True,
-            )
-            conflicts_updated = conflicts_payload.get("last_updated")
-            if conflicts_updated:
-                st.caption(f"Site roster last updated {conflicts_updated}.")
 
     last_updated = payload.get("last_updated") or "unknown"
     st.caption(
@@ -3032,6 +3003,115 @@ def _build_site_outcome_note_html(site: dict, cases_by_id: dict) -> str:
     )
 
 
+# Operator strings in the conflict registry are free text ("Amazon Web
+# Services", "Meta (campus built by Goat Systems LLC)", "QTS and Compass
+# (rezoning applicants)"), so the join to company_slug needs aliases the
+# display names do not supply.
+_COMPANY_ALIASES = {
+    "amazon": ("amazon", "aws"),
+    "meta": ("meta", "facebook"),
+    "google": ("google", "alphabet"),
+    "microsoft": ("microsoft",),
+    "xai": ("xai", "colossus"),
+    "qts": ("qts",),
+    "compass": ("compass",),
+    "oracle": ("oracle",),
+    "openai": ("openai",),
+    "crusoe": ("crusoe",),
+    "coreweave": ("coreweave",),
+    "nebius": ("nebius",),
+    "switch": ("switch",),
+    "edgeconnex": ("edgeconnex",),
+    "vantage": ("vantage",),
+    "wonder-valley": ("wonder valley",),
+    "anthropic": ("anthropic",),
+}
+
+
+def _site_company_slugs(site: dict) -> list[str]:
+    """Company slugs named in a site's free-text operator field."""
+    operator = str(site.get("operator", "")).lower()
+    return [
+        slug
+        for slug, aliases in _COMPANY_ALIASES.items()
+        if any(alias in operator for alias in aliases)
+    ]
+
+
+def _build_says_vs_does_html(site: dict, claims: list[dict], companies: dict) -> str:
+    """The operator's own water claims, shown on the conflict-site card.
+
+    The sharpest thing this dataset can do is put the two next to each other:
+    a company's water-positive pledge alongside the dried wells its campus is
+    accused of causing. Both halves already existed; nothing joined them,
+    because the claims lived in another tab entirely.
+
+    Company-level pledges are included as well as site-specific promises — a
+    global commitment is exactly what a local failure tests.
+    """
+    slugs = _site_company_slugs(site)
+    if not slugs:
+        return ""
+    site_id = site.get("site_id")
+    matched = [
+        c
+        for c in claims
+        if c.get("company_slug") in slugs
+        and (
+            site_id in (c.get("related_site_ids") or [])
+            or c.get("claim_type") in ("water-positive-pledge", "efficiency-wue")
+        )
+    ]
+    if not matched:
+        return ""
+
+    rows = []
+    for claim in matched[:3]:
+        status = (claim.get("delivered") or {}).get("status", "")
+        badge = (
+            f'<span class="svd-status svd-{html.escape(status)}">'
+            f"{html.escape(status.title())}</span>"
+            if status
+            else ""
+        )
+        company = companies.get(claim.get("company_slug", ""), claim.get("company_slug", ""))
+        rows.append(
+            f'<li><span class="svd-company">{html.escape(company)}</span> '
+            f"&ldquo;{html.escape(claim.get('statement', '')[:180])}&rdquo; {badge}</li>"
+        )
+    return (
+        '<div class="says-vs-does">'
+        '<div class="bill-section-label">What the operator says about water</div>'
+        f'<ul class="svd-list">{"".join(rows)}</ul></div>'
+    )
+
+
+def _issue_type_summary_html(sites: list[dict]) -> str:
+    """Count-by-issue-type strip. Answers 'what kinds of problem are these?'
+    before the reader opens a single card."""
+    counts: dict[str, int] = {}
+    for site in sites:
+        for tag in site.get("issue_types", []):
+            counts[tag] = counts.get(tag, 0) + 1
+    if not counts:
+        return ""
+    ordered = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
+    chips = "".join(
+        f'<span class="issue-pill" title="{html.escape(ISSUE_TYPE_DESCRIPTIONS[t])}">'
+        f"{html.escape(ISSUE_TYPE_LABELS[t])} <strong>{n}</strong></span>"
+        for t, n in ordered
+        if t in ISSUE_TYPE_LABELS
+    )
+    top = ordered[0]
+    return (
+        '<div class="issue-summary">'
+        f"<p class=\"count-line\"><strong>{len(sites)} tracked sites</strong> across "
+        f"{len(counts)} kinds of water problem &mdash; most commonly "
+        f"{html.escape(ISSUE_TYPE_LABELS[top[0]].lower())} ({top[1]} sites).</p>"
+        f'<div class="cwa-class-row">{chips}</div></div>'
+    )
+
+
 def _build_site_doctrine_matrix_html(sites: list[dict], readings_by_id: dict) -> str:
     """Site x authority-family matrix — which doctrines are in play where.
 
@@ -3104,6 +3184,7 @@ def _build_conflict_site_html(
     readings_by_id: dict,
     case_ids: set[str] | None = None,
     cases_by_id: dict | None = None,
+    claims_ctx: tuple[list[dict], dict] | None = None,
 ) -> str:
     """One data-center conflict-site card: fact pattern → readings → cases."""
     esc = html.escape
@@ -3195,6 +3276,11 @@ def _build_conflict_site_html(
                 "Doctrines that do NOT reach this site</div>"
                 f'{"".join(_reading_item(ar, True) for ar in does_not)}'
             )
+    if claims_ctx:
+        says = _build_says_vs_does_html(site, claims_ctx[0], claims_ctx[1])
+        if says:
+            sections.append(says)
+
     if cases_by_id:
         note = _build_site_outcome_note_html(site, cases_by_id)
         if note:
@@ -3379,6 +3465,51 @@ def _build_cwa_case_html(
 
 
 # --- Company Water Claims ---
+
+def render_issues_and_claims():
+    """Issues & Claims tab — the problems, and what the operators say about them.
+
+    Spec A3. Previously this was two disconnected halves: conflict sites as
+    Part 4 of the legal-record tab, operator claims as a collapsed disclosure
+    at the bottom of Legislation. A reader wanting "what is the problem here
+    and what does the company say?" had to visit two tabs and join by hand.
+    """
+    st.subheader("Issues & Claims")
+
+    conflicts_payload = load_dc_water_conflicts()
+    sites = conflicts_payload.get("sites", [])
+    authorities_payload = load_water_authorities()
+    readings_by_id = _readings_by_id(authorities_payload)
+    cases = load_cwa_investigations().get("cases", [])
+    all_ids = {c.get("case_id") for c in cases}
+    cases_by_id = {c["case_id"]: c for c in cases}
+    claims_payload = load_company_water_claims()
+    claims_ctx = (claims_payload.get("claims", []), claims_payload.get("companies", {}))
+
+    if sites:
+        st.markdown(_issue_type_summary_html(sites), unsafe_allow_html=True)
+        st.markdown(f"#### Sites with reported water issues or pushback ({len(sites)})")
+        st.markdown("##### Which doctrines are in play where")
+        st.markdown(
+            _build_site_doctrine_matrix_html(sites, readings_by_id),
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            "".join(
+                _build_conflict_site_html(
+                    s, readings_by_id, all_ids, cases_by_id, claims_ctx
+                )
+                for s in sites
+            ),
+            unsafe_allow_html=True,
+        )
+        conflicts_updated = conflicts_payload.get("last_updated")
+        if conflicts_updated:
+            st.caption(f"Site roster last updated {conflicts_updated}.")
+
+    st.markdown("---")
+    render_company_water_claims()
+
 
 def render_company_water_claims():
     """Render the Company Water Claims panel — verbatim operator commitments."""
@@ -3724,13 +3855,24 @@ def main():
             "via public regulatory data."
         )
 
-    tab_legislation, tab_cwa, tab_news, tab_solutions, tab_sources = st.tabs(
-        ["Legislation", "Water Cases", "News", "Solutions", "Sources"]
+    (
+        tab_legislation,
+        tab_cwa,
+        tab_issues,
+        tab_news,
+        tab_solutions,
+        tab_sources,
+    ) = st.tabs(
+        ["Legislation", "Water Cases", "Issues & Claims", "News", "Solutions", "Sources"]
     )
 
     # --- CWA Cases tab ---
     with tab_cwa:
         render_cwa_tracker()
+
+    # --- Issues & Claims tab ---
+    with tab_issues:
+        render_issues_and_claims()
 
     # --- News tab ---
     with tab_news:
@@ -3758,13 +3900,6 @@ def main():
         ):
             render_timeline()
 
-        st.markdown("---")
-        if st.toggle(
-            "Show Company Water Claims (29 verbatim operator quotes)",
-            value=False,
-            key="lazy_claims",
-        ):
-            render_company_water_claims()
 
     # --- Sources tab ---
     with tab_sources:
