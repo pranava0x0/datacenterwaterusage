@@ -1,5 +1,5 @@
 {
-  "last_run": "2026-07-27T05:31:40Z",
+  "last_run": "2026-08-03T10:53:21Z",
   "note": "Monitor candidates awaiting human adjudication. Monitors propose; a curator decides what reaches a dataset. Append-only — triaged entries stay for the audit trail.",
   "candidates": [
     {
@@ -83,6 +83,30 @@
       "fingerprint": "108e65ddf1a3c445",
       "summary": "first observation — baseline recorded, no change implied",
       "detected_at": "2026-07-27T05:31:40Z",
+      "note": "Watch for the voluntary survey becoming a mandatory registration.",
+      "excerpt": ""
+    },
+    {
+      "record_id": "MI SB 1046-1050",
+      "dataset": "legislation",
+      "kind": "url-watch",
+      "key": "https://legislature.mi.gov/Bills/Bill?ObjectName=2026-SB-1046",
+      "previous_fingerprint": "12aa55e2d9349a9b",
+      "fingerprint": "54144c5eedc9a80e",
+      "summary": "watched page changed since last run",
+      "detected_at": "2026-08-03T10:53:21Z",
+      "note": "Michigan legislature bill page for SB 1046, the water-permitting bill in the package. Bill numbers unverified; confirm against the lookup when status moves.",
+      "excerpt": "ete Through PA 20 of 2026 Senate adjourned until Wednesday, August 12, 2026 Senate adjourned until 08/12/26 House adjourned until Tuesday, August 11, 2026 House adjourned until 08/11/26 Home Legislature Legislative Document Search Bills Res"
+    },
+    {
+      "record_id": "TX PUC Energy and Water Use Survey (data centers)",
+      "dataset": "legislation",
+      "kind": "url-watch",
+      "key": "https://www.puc.texas.gov/industry/water/utilities/energy-and-water-use-survey/faq/",
+      "previous_fingerprint": "108e65ddf1a3c445",
+      "fingerprint": "",
+      "summary": "fetch failed: ConnectError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1010)",
+      "detected_at": "2026-08-03T10:53:21Z",
       "note": "Watch for the voluntary survey becoming a mandatory registration.",
       "excerpt": ""
     }
