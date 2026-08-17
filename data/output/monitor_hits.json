@@ -1,5 +1,5 @@
 {
-  "last_run": "2026-08-10T08:54:39Z",
+  "last_run": "2026-08-17T08:05:02Z",
   "note": "Monitor candidates awaiting human adjudication. Monitors propose; a curator decides what reaches a dataset. Append-only — triaged entries stay for the audit trail.",
   "candidates": [
     {
@@ -121,6 +121,18 @@
       "detected_at": "2026-08-10T08:54:39Z",
       "note": "Michigan legislature bill page for SB 1046, the water-permitting bill in the package. Bill numbers unverified; confirm against the lookup when status moves.",
       "excerpt": ""
+    },
+    {
+      "record_id": "NY EO 62",
+      "dataset": "legislation",
+      "kind": "url-watch",
+      "key": "https://www.governor.ny.gov/executive-orders",
+      "previous_fingerprint": "31c108d1007ad206",
+      "fingerprint": "1c85aec3af7138cc",
+      "summary": "watched page changed since last run",
+      "detected_at": "2026-08-17T08:05:02Z",
+      "note": "One-year moratorium; watch for extension, expiry, or the DEC withdrawal rulemaking.",
+      "excerpt": "ms per page 10 25 50 100 Refine Search Clear Search Field 231 Executive Orders of 24 Executive Order No 62: Establishing a Temporary Moratorium on Data Centers in New York While the State Develops Higher Standards for Data Center Developmen"
     }
   ]
 }
