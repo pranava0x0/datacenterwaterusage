@@ -37,7 +37,7 @@
       "date": "2026-06",
       "water_related": true,
       "water_angle": "Residents cited energy and water consumption and environmental/public-health impacts.",
-      "summary": "The Imperial County Board of Supervisors voted 5-0 on June 16, 2026 to adopt an immediate 45-day urgency interim moratorium under California Government Code §65858, pausing approval and permitting of new and pending data center facilities in unincorporated areas; it may be renewed for up to 10 months and 15 days while a 19-member advisory committee develops zoning and building recommendations by January 2027. Residents cited energy and water consumption and environmental/public-health impacts. A developer (Sebastian Rucci) indicated intent to challenge the ordinance in court. Enacted.",
+      "summary": "The Imperial County Board of Supervisors voted 5-0 on June 16, 2026 to adopt an immediate 45-day urgency interim moratorium under California Government Code §65858, pausing approval and permitting of new and pending data center facilities in unincorporated areas; it may be renewed for up to 10 months and 15 days while a 19-member advisory committee develops zoning and building recommendations by January 2027. Residents cited energy and water consumption and environmental/public-health impacts. A developer (Sebastian Rucci) indicated intent to challenge the ordinance in court.",
       "source_url": "https://inewsource.org/2026/06/16/imperial-county-approves-data-center-moratorium/"
     },
     {
@@ -71,8 +71,8 @@
       "action_type": "moratorium",
       "status": "active",
       "date": "2026-06",
-      "water_related": false,
-      "water_angle": "",
+      "water_related": true,
+      "water_angle": "Commissioners cited the environmental footprint of data centers, particularly their electricity and water demands.",
       "summary": "Boulder County commissioners unanimously declared a moratorium of up to 6 months at their June 2, 2026 business meeting, pausing new land-use applications for both data centers and detention facilities in unincorporated Boulder County while staff draft Land Use Code amendments specific to each.",
       "source_url": "https://bouldercounty.gov/news/data-centers-and-detention-centers-commissioners-declare-moratorium/"
     },
@@ -265,7 +265,7 @@
       "date": "2026-07",
       "water_related": false,
       "water_angle": "",
-      "summary": "On July 6, 2026 the Taylor County (Florida) Commission declined to adopt a proposed data center moratorium — recommended by Commissioner Pam Feagle to run through December 31 — with the motion failing for lack of support after Commissioner Michael Newman said he lacked sufficient information to back the policy. Commissioners agreed to hold a data center workshop on August 25, 2026. Failed.",
+      "summary": "On July 6, 2026 the Taylor County (Florida) Commission declined to adopt a proposed data center moratorium — recommended by Commissioner Pam Feagle to run through December 31 — with the motion failing for lack of support after Commissioner Michael Newman said he lacked sufficient information to back the policy. Commissioners agreed to hold a data center workshop on August 25, 2026.",
       "source_url": "https://www.wctv.tv/2026/07/07/taylor-county-commission-votes-down-data-center-moratorium-residents-wonder-what-comes-next/"
     },
     {
@@ -361,7 +361,7 @@
       "date": "2026-07",
       "water_related": true,
       "water_angle": "The Linn County Board of Supervisors voted 2-1 on July 1, 2026 to enact an 18-month moratorium on new data center development in unincorporated Linn County — passed despite a data center ordinance the same board approved in February 2026 — to revise the ordinance around residents' concerns over water, power, and costs...",
-      "summary": "The Linn County Board of Supervisors voted 2-1 on July 1, 2026 to enact an 18-month moratorium on new data center development in unincorporated Linn County — passed despite a data center ordinance the same board approved in February 2026 — to revise the ordinance around residents' concerns over water, power, and costs and to provide transparency. Supervisors Meisheid and Running-Marquardt voted yes; Scheetz opposed, warning it could push projects toward less-regulated jurisdictions. Enacted.",
+      "summary": "The Linn County Board of Supervisors voted 2-1 on July 1, 2026 to enact an 18-month moratorium on new data center development in unincorporated Linn County — passed despite a data center ordinance the same board approved in February 2026 — to revise the ordinance around residents' concerns over water, power, and costs and to provide transparency. Supervisors Meisheid and Running-Marquardt voted yes; Scheetz opposed, warning it could push projects toward less-regulated jurisdictions.",
       "source_url": "https://www.kcrg.com/2026/07/01/despite-putting-ordinance-place-linn-county-passes-data-center-moratorium/"
     },
     {
@@ -397,7 +397,7 @@
       "date": "2026-06",
       "water_related": false,
       "water_angle": "",
-      "summary": "The Boone County Board of Commissioners unanimously enacted a one-year moratorium pausing the filing, processing, review, and acceptance of applications for new data center facilities in unincorporated areas, effective June 16, 2026 through June 15, 2027. Officials noted neither the 2009 Comprehensive Plan nor the 1998 Zoning Ordinance contemplated modern data center development and its impacts on land use, infrastructure, utilities, agriculture, and rural character. Enacted.",
+      "summary": "The Boone County Board of Commissioners unanimously enacted a one-year moratorium pausing the filing, processing, review, and acceptance of applications for new data center facilities in unincorporated areas, effective June 16, 2026 through June 15, 2027. Officials noted neither the 2009 Comprehensive Plan nor the 1998 Zoning Ordinance contemplated modern data center development and its impacts on land use, infrastructure, utilities, agriculture, and rural character.",
       "source_url": "https://boonecounty.in.gov/2026/06/15/19190/"
     },
     {
@@ -457,7 +457,7 @@
       "date": "2026-01",
       "water_related": true,
       "water_angle": "Officials cited power and water concerns raised by nearby communities (Andale, Colwich).",
-      "summary": "The Harvey County Commission unanimously enacted a moratorium on January 13, 2026 halting construction of data centers in unincorporated Harvey County through 2028, to give planning, zoning and environmental staff time to develop regulations; the commission may rescind or extend it at any time. Officials cited power and water concerns raised by nearby communities (Andale, Colwich). No data center application had been filed at the time. Enacted.",
+      "summary": "The Harvey County Commission unanimously enacted a moratorium on January 13, 2026 halting construction of data centers in unincorporated Harvey County through 2028, to give planning, zoning and environmental staff time to develop regulations; the commission may rescind or extend it at any time. Officials cited power and water concerns raised by nearby communities (Andale, Colwich). No data center application had been filed at the time.",
       "source_url": "https://www.kwch.com/2026/01/13/harvey-county-commission-places-moratorium-data-center-construction/"
     },
     {
@@ -541,7 +541,7 @@
       "date": "2026-07",
       "water_related": true,
       "water_angle": "Council members cited unanswered questions about water, health, environmental, and utility impacts.",
-      "summary": "The Prince George's County Council approved a resolution on July 7, 2026 establishing a moratorium of up to two years on new hyperscale data center development, barring the planning department from considering or approving applications until the Council enacts regulatory legislation (or adopts a zoning framework). Council members cited unanswered questions about water, health, environmental, and utility impacts. Council Member Tim Adams voted against and three members abstained. Enacted.",
+      "summary": "The Prince George's County Council approved a resolution on July 7, 2026 establishing a moratorium of up to two years on new hyperscale data center development, barring the planning department from considering or approving applications until the Council enacts regulatory legislation (or adopts a zoning framework). Council members cited unanswered questions about water, health, environmental, and utility impacts. Council Member Tim Adams voted against and three members abstained.",
       "source_url": "https://wtop.com/prince-georges-county/2026/07/prince-georges-co-extends-pause-on-hyperscale-data-center-development/"
     },
     {
@@ -553,7 +553,7 @@
       "date": "2026-06",
       "water_related": true,
       "water_angle": "The Washington County (Maryland) Board of County Commissioners voted 4-1 on June 30, 2026 to adopt a one-year moratorium on data center applications and development, to study impacts on utility infrastructure, water, noise, and environmental risks. Concerns cited: high energy consumption straining utilities, noise...",
-      "summary": "The Washington County (Maryland) Board of County Commissioners voted 4-1 on June 30, 2026 to adopt a one-year moratorium on data center applications and development, to study impacts on utility infrastructure, water, noise, and environmental risks. Commissioners Wagner, Leatherman, Cline, and Barr voted yes; Commissioner Neil Parrott opposed. Concerns cited: high energy consumption straining utilities, noise from cooling systems and backup generators, substantial water use, hazardous materials and e-waste, and rural/agricultural land-use compatibility. Enacted.",
+      "summary": "The Washington County (Maryland) Board of County Commissioners voted 4-1 on June 30, 2026 to adopt a one-year moratorium on data center applications and development, to study impacts on utility infrastructure, water, noise, and environmental risks. Commissioners Wagner, Leatherman, Cline, and Barr voted yes; Commissioner Neil Parrott opposed. Concerns cited: high energy consumption straining utilities, noise from cooling systems and backup generators, substantial water use, hazardous materials and e-waste, and rural/agricultural land-use compatibility.",
       "source_url": "https://thedailyrecord.com/2026/07/01/washington-county-approves-yearlong-data-center-moratorium/"
     },
     {
@@ -733,7 +733,7 @@
       "date": "2026-07",
       "water_related": true,
       "water_angle": "On July 13, 2026 the Lincoln County (Nebraska) Board of Commissioners voted 3-2 against a proposed data center moratorium after lengthy public debate over water and power. Opponents worried data centers would compete with agriculture for scarce water (including the proposed Perkins County Canal) and electricity; the...",
-      "summary": "On July 13, 2026 the Lincoln County (Nebraska) Board of Commissioners voted 3-2 against a proposed data center moratorium after lengthy public debate over water and power. Commissioners Hewgley, Bruns, and Woodruff voted against; Weems and Wuehler voted for. Opponents worried data centers would compete with agriculture for scarce water (including the proposed Perkins County Canal) and electricity; the Planning Commission continued drafting local regulations. Failed.",
+      "summary": "On July 13, 2026 the Lincoln County (Nebraska) Board of Commissioners voted 3-2 against a proposed data center moratorium after lengthy public debate over water and power. Commissioners Hewgley, Bruns, and Woodruff voted against; Weems and Wuehler voted for. Opponents worried data centers would compete with agriculture for scarce water (including the proposed Perkins County Canal) and electricity; the Planning Commission continued drafting local regulations.",
       "source_url": "https://www.knopnews2.com/2026/07/13/lincoln-county-debates-data-center-commissioners-vote-down-moratorium/"
     },
     {
@@ -742,10 +742,10 @@
       "state": "NM",
       "action_type": "moratorium",
       "status": "active",
-      "date": "2026-07",
+      "date": "2026-06",
       "water_related": true,
       "water_angle": "Commissioners cited large water and electricity use, serious risk to the water supply, groundwater impacts, grid reliability, noise from cooling systems, and backup diesel generators.",
-      "summary": "The Santa Fe County Board of County Commissioners voted unanimously on July 1, 2026 to adopt an 18-month moratorium on data center development — extended from a proposed 12 months — with the regulatory threshold lowered from 100 MW to 1 MW. Commissioners cited large water and electricity use, serious risk to the water supply, groundwater impacts, grid reliability, noise from cooling systems, and backup diesel generators. Enacted.",
+      "summary": "The Santa Fe County Board of County Commissioners voted unanimously on June 30, 2026 to adopt an 18-month moratorium on data center development — extended from a proposed 12 months — with the regulatory threshold lowered from 100 MW to 1 MW. Commissioners cited large water and electricity use, serious risk to the water supply, groundwater impacts, grid reliability, noise from cooling systems, and backup diesel generators.",
       "source_url": "https://www.santafecountynm.gov/news/detail/santa-fe-county-approves-18-month-moratorium-on-data-centers"
     },
     {
@@ -973,7 +973,7 @@
       "date": "2026-07",
       "water_related": true,
       "water_angle": "Supporters had cited risks to water supply (up to ~1 million gallons/day at full buildout for the proposed Comanche Circle project), energy demand, air quality, wildlife, and quality of life.",
-      "summary": "On February 10, 2026 the Hood County (Texas) Commissioners Court voted 3-2 to reject a proposed six-month moratorium on new data center/industrial development, after State Senator Paul Bettencourt sent a letter (to the Attorney General) asserting Texas counties lack the authority to impose moratoriums. Supporters had cited risks to water supply (up to ~1 million gallons/day at full buildout for the proposed Comanche Circle project), energy demand, air quality, wildlife, and quality of life. Failed.",
+      "summary": "On February 10, 2026 the Hood County (Texas) Commissioners Court voted 3-2 to reject a proposed six-month moratorium on new data center/industrial development, after State Senator Paul Bettencourt sent a letter (to the Attorney General) asserting Texas counties lack the authority to impose moratoriums. Supporters had cited risks to water supply (up to ~1 million gallons/day at full buildout for the proposed Comanche Circle project), energy demand, air quality, wildlife, and quality of life.",
       "source_url": "https://www.texastribune.org/2026/02/10/texas-hood-county-rejects-data-center-development-pause-ai/"
     },
     {
@@ -1057,7 +1057,7 @@
       "date": "2026-08",
       "water_related": true,
       "water_angle": "Concerns cited: water and electricity consumption, noise, and potential pollution.",
-      "summary": "The Oneida County (Wisconsin) Planning and Development Committee unanimously passed an interim data center moratorium ordinance amendment that would bar the county from accepting, processing, or approving new data center developments for at least one year while it develops regulations. It still requires full County Board approval, expected on the August 2026 agenda; it excludes un-zoned towns and the City of Rhinelander. Concerns cited: water and electricity consumption, noise, and potential pollution. Proposed.",
+      "summary": "The Oneida County (Wisconsin) Planning and Development Committee unanimously passed an interim data center moratorium ordinance amendment that would bar the county from accepting, processing, or approving new data center developments for at least one year while it develops regulations. It still requires full County Board approval, expected on the August 2026 agenda; it excludes un-zoned towns and the City of Rhinelander. Concerns cited: water and electricity consumption, noise, and potential pollution.",
       "source_url": "https://www.wxpr.org/energy-environment/2026-07-10/oneida-county-data-center-moratorium-advances-to-county-board"
     },
     {
@@ -1066,11 +1066,11 @@
       "state": "WY",
       "action_type": "moratorium",
       "status": "rejected",
-      "date": "2026-06",
+      "date": "2026-05",
       "water_related": false,
       "water_angle": "",
-      "summary": "City council rejected proposed nine-month moratorium on data center facility permits (8-1 vote). Proposal would have imposed temporary halt pending infrastructure assessment.",
-      "source_url": "https://www.datacenterbans.com/"
+      "summary": "City council rejected a proposed 12-month moratorium on data center facility permits 8-1 on May 26, 2026; sponsor Mark Moody cast the lone yes vote. The proposal would have paused permits pending an infrastructure assessment.",
+      "source_url": "https://wyofile.com/cheyenne-rejects-moratorium-on-data-centers/"
     }
   ]
 }

@@ -803,3 +803,8 @@ These are large data-center water stories with no formal CWA enforcement action 
 - **Priority**: low (deferred from Spec A)
 - **What**: Boundary Waters Treaty/IJC, Columbia River Treaty, US-Mexico 1944 Treaty — relevant to border-region siting (an El Paso or Great Lakes fact pattern). Needs its own `kind` and at least one anchoring case each; none verified yet.
 - **Sample prompt**: "Research whether the Boundary Waters Treaty/IJC or the 1944 US-Mexico Water Treaty has a verifiable case anchoring a data-center-relevant reading; if yes, add a 'treaty' kind family to water_authorities.json with the same reading+case pairing rules."
+
+## Non-ASCII tokenizer coverage for the Explore index
+- **Priority**: low
+- **What**: `refdata/graph.tokenize` is deliberately ASCII-only (`[^A-Za-z0-9]+` split) for byte-identical Python/JS parity. A full-corpus scan (2026-08-24 verification pass) found zero non-ASCII letters in any record, so nothing is mangled today — but a future record with an accented name ("Piñon Ridge", "Río Grande") would tokenize into disconnected fragments instead of erroring. Either extend both tokenizers to a shared Unicode-letter class (and re-prove parity against Node) or add a corpus test that fails loudly when the first non-ASCII record arrives so the decision is made consciously.
+- **Sample prompt**: "Add a test asserting every Explore-indexed text field is ASCII, with a message pointing at refdata/graph.tokenize's parity constraint; if it ever fails, extend the Python and JS tokenizers to a shared Unicode letter class and re-verify byte parity against Node."

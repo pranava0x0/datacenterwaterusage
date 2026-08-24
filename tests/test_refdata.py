@@ -610,6 +610,14 @@ class TestGraph:
             assert target["kind"] == "hub", edge
             assert target["attrs"]["hub_group"] == graph.DERIVED_EDGE_KINDS[edge["kind"]]
 
+    def test_curated_and_derived_kind_namespaces_are_disjoint(self):
+        """The wire payload drops the per-edge derived flag — the browser tells
+        the two apart purely by kind string against ``derived_edge_kinds``. A
+        future curated field named e.g. ``case.type`` would silently reclassify
+        every one of its edges as derived, so the namespaces must never meet."""
+        collision = set(integrity.EDGE_TARGET_KINDS) & set(graph.DERIVED_EDGE_KINDS)
+        assert not collision, f"curated edge kind shadows a derived kind: {collision}"
+
     def test_all_three_derived_kinds_are_present(self):
         """Guards the guard: if hub building silently stopped, the assertions
         above would pass on an empty derived set."""
