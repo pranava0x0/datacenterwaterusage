@@ -1687,6 +1687,21 @@ class TestStatesAndLocalities:
         assert "inside County" in labels
         assert "outside County" not in labels
 
+    def test_whats_new_boundary_ignores_time_of_day(self):
+        """Event dates parse as midnight; a wall-clock ``today`` (the Streamlit
+        path passes datetime.now()) must not push the exactly-window-old record
+        out of the window depending on when the page happened to render."""
+        import dashboard as dash
+        from datetime import datetime
+
+        bills = [self._instrument("EDGE", "Indiana", ["2026-04-26"])]
+        late = datetime(2026, 8, 24, 23, 59, 59)
+        labels_late = {r["label"] for r in dash._states_whats_new(bills, [], late)}
+        labels_midnight = {
+            r["label"] for r in dash._states_whats_new(bills, [], self.TODAY)
+        }
+        assert labels_late == labels_midnight == {"EDGE"}
+
     def test_whats_new_window_is_configurable(self):
         import dashboard as dash
 

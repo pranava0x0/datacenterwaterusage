@@ -1952,6 +1952,10 @@ def _states_whats_new(
     static build is reproducible. Newest first; ties break on jurisdiction
     then label so the order is stable across builds.
     """
+    # Truncate to midnight: event dates parse as midnight, so a wall-clock
+    # ``today`` would make the exactly-``window_days``-old record's inclusion
+    # depend on the time of day the site was built.
+    today = datetime.combine(today.date(), datetime.min.time())
     cutoff = today - timedelta(days=window_days)
     rows: list[dict] = []
 
@@ -2252,10 +2256,11 @@ def render_states_tab(today: datetime | None = None):
     st.subheader("States & Localities")
     st.markdown(STATES_LEAD)
 
+    today = today or datetime.now()
     bills = load_legislation().get("bills", [])
     payload = load_local_actions()
     actions = payload.get("actions", [])
-    rollup = _state_rollup(bills, actions)
+    rollup = _state_rollup(bills, actions, today)
     metrics = _states_metrics(rollup, actions)
 
     c1, c2, c3 = st.columns(3)
@@ -2269,7 +2274,7 @@ def render_states_tab(today: datetime | None = None):
         f'{STATES_WINDOW_DAYS} days</h3>',
         unsafe_allow_html=True,
     )
-    whats_new = _states_whats_new(bills, actions, today or datetime.now())
+    whats_new = _states_whats_new(bills, actions, today)
     st.markdown(_build_whats_new_html(whats_new), unsafe_allow_html=True)
 
     st.markdown(
@@ -4657,6 +4662,9 @@ def _explore_css() -> str:
 .explore select{font:inherit;font-size:.84rem;padding:.25rem .4rem;border:1px solid #bdd7e7;
   border-radius:.4rem;background:#fff;color:#1a1a2e}
 .explore-controls{display:flex;flex-wrap:wrap;gap:.4rem .7rem;align-items:center;margin:.6rem 0}
+/* A select's minimum width is its widest option — the statute-family names
+   are long enough to drag the whole page sideways on phones without this. */
+.explore-controls select{max-width:100%;min-width:0}
 .explore-controls-label{font-weight:600;font-size:.84rem}
 .explore-chip{display:inline-flex;align-items:center;gap:.35rem;font-size:.82rem;background:#eff3ff;
   border:1px solid #bdd7e7;border-radius:999px;padding:.2rem .6rem;cursor:pointer}
