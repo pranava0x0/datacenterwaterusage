@@ -13,7 +13,7 @@ playwright==1.62.0
 
 # HTML parsing
 beautifulsoup4==4.15.0
-lxml==6.1.1
+lxml==6.1.2
 
 # HTTP
 httpx==0.28.1
@@ -39,7 +39,7 @@ structlog==26.1.0
 click==8.4.2
 
 # Dashboard
-streamlit==1.61.1
+streamlit==1.62.0
 plotly==6.9.0
 streamlit-js-eval==1.0.0
 
