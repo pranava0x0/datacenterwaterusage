@@ -189,6 +189,17 @@ def _classify_source(portal: str) -> str:
 
 # --- Page Config ---
 
+# One sentence, one definition, every surface: the Streamlit caption, the static
+# page's <h1> subtitle, its <meta name="description">, and the llms.txt
+# blockquote all read from here. The old copy ("Virginia & Ohio via public
+# regulatory data") described the scraper pipeline's first two states and had
+# been wrong since the curated datasets went national — 41 states of activity,
+# 25 statute families, 123 water cases, county and city measures.
+TAGLINE = (
+    "Tracking how US data centers draw, discharge, and disclose cooling water — "
+    "permits, enforcement, statutes, and state and local policy, from public records."
+)
+
 st.set_page_config(
     page_title="Data Center Water Use Tracker",
     page_icon="💧",
@@ -2164,11 +2175,28 @@ def _build_whats_new_html(rows: list[dict], window_days: int = STATES_WINDOW_DAY
     return count_line + f'<div class="whatsnew">{"".join(items)}</div>'
 
 
-def _build_state_rollup_html(rollup: list[dict]) -> str:
-    """Responsive grid of per-state cards, newest activity first."""
+def _build_state_rollup_html(rollup: list[dict], fold_after: int | None = None) -> str:
+    """Responsive grid of per-state cards, newest activity first.
+
+    ``fold_after`` puts everything past the Nth state behind a "show the rest"
+    expander. The grid is three columns on a desktop, but one on a phone, where
+    41 stacked cards is most of the tab's scroll depth and the states a reader
+    came for are the ones that moved most recently — which is the sort order.
+    The expander is emitted ``open`` so a reader without JavaScript sees the
+    whole roll-up; ``data-collapsed`` is what closes it (see build_site.CSS).
+    """
     esc = html.escape
     if not rollup:
         return ""
+    if fold_after is not None and len(rollup) > fold_after:
+        head = _build_state_rollup_html(rollup[:fold_after])
+        rest = _build_state_rollup_html(rollup[fold_after:])
+        n = len(rollup) - fold_after
+        return (
+            f"{head}"
+            f'<details class="card-fold" data-collapsed="1" open>'
+            f'<summary>Show the remaining {n} states</summary>{rest}</details>'
+        )
     cards = []
     for row in rollup:
         counts = []
@@ -4750,14 +4778,25 @@ EXPLORE_KIND_LABELS = {
 }
 
 
-def _build_explore_html() -> str:
+def _build_explore_html(payload_src: str | None = None) -> str:
     """The whole Explore surface as one self-contained HTML fragment.
 
-    Returns markup + the graph/index blob + scoped CSS + the vanilla-JS
-    force layout and search. Pure: no Streamlit, no I/O beyond the cached
-    loaders, so ``build_site.py`` and the tests can call it directly.
+    Returns markup + scoped CSS + the vanilla-JS force layout and search.
+    Pure: no Streamlit, no I/O beyond the cached loaders, so ``build_site.py``
+    and the tests can call it directly.
+
+    ``payload_src`` decides where the graph/index blob comes from:
+
+    * ``None`` (default) — inline it in the ``#graph-data`` element. This is
+      the Streamlit path: the fragment goes into a ``components.html`` iframe
+      with no origin of its own to fetch from.
+    * a relative URL — emit an empty ``#graph-data`` carrying ``data-src`` and
+      let the client fetch it the first time the tab is opened. The blob is
+      ~620 KB, two thirds of the static page's markup, and a reader who never
+      opens Explore never needed it.
     """
-    payload = graph_payload_json()
+    payload = "" if payload_src else graph_payload_json()
+    src_attr = f' data-src="{html.escape(payload_src)}"' if payload_src else ""
     nodes = build_graph()["nodes"]
 
     counts: dict[str, int] = {}
@@ -4811,7 +4850,7 @@ def _build_explore_html() -> str:
     </div>
     <p class="explore-count" id="explore-count"></p>
     <div class="explore-results" id="explore-results">
-      <div class="explore-empty">{html.escape(EXPLORE_EMPTY_STATE)}</div>
+      <div class="explore-empty" id="explore-status">{html.escape(EXPLORE_EMPTY_STATE)}</div>
     </div>
   </div>
   <div class="explore-main">
@@ -4839,7 +4878,7 @@ def _build_explore_html() -> str:
     </details>
   </div>
 </div>
-<script type="application/json" id="graph-data">{payload}</script>
+<script type="application/json" id="graph-data"{src_attr}>{payload}</script>
 <style>{_explore_css()}</style>
 <script>{_explore_js()}</script>
 </div>"""
@@ -4859,7 +4898,10 @@ def _explore_js() -> str:
   var blob = root && root.querySelector('#graph-data');
   var canvas = root && root.querySelector('#explore-canvas');
   if (!root || !blob || !canvas) return;
-  var D = JSON.parse(blob.textContent);
+
+  // Everything below runs once the blob is in hand — inline on the Streamlit
+  // surface, fetched on first tab activation on the static one. See init().
+  function boot(D){
 
   // --- Tokenizer: mirrors refdata.graph.tokenize, constants from the blob ---
   var STOP = {}, i;
@@ -5329,16 +5371,43 @@ def _explore_js() -> str:
     sizeCanvas();
     draw();
   });
-  // On the static site the panel is hidden until its tab is clicked, and a
-  // hidden canvas measures 0 — so defer the simulation until it is visible
-  // rather than burning ~7M force computations on every page load.
-  var panel = root.closest ? root.closest('.tabpanel') : null;
-  if (!panel || !panel.hidden){
-    start();
-  } else {
-    var tabBtn = document.querySelector('.tab[data-tab="' + panel.id.replace('panel-', '') + '"]');
-    if (tabBtn) tabBtn.addEventListener('click', function(){ setTimeout(start, 0); });
+  start();
+
+  }  // end boot()
+
+  // --- Entry point ---
+  // The blob is ~620 KB. On the static site it is a separate file that is
+  // fetched the first time the tab is opened, so a reader who never opens
+  // Explore never downloads it — and the layout, which is ~7M force
+  // computations, still cannot run against a hidden (zero-sized) canvas.
+  // Inside the Streamlit iframe there is no origin to fetch from, so the blob
+  // is inline and this runs immediately.
+  var src = blob.getAttribute('data-src');
+  var status = root.querySelector('#explore-status');
+  var idle = status ? status.textContent : '';
+  var kicked = false;
+  function init(){
+    if (kicked) return;
+    kicked = true;
+    if (!src){ boot(JSON.parse(blob.textContent)); return; }
+    if (status) status.textContent = 'Loading the connection graph…';
+    fetch(src).then(function(r){
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function(D){
+      if (status) status.textContent = idle;
+      boot(D);
+    }).catch(function(){
+      // Leave it retryable: switching away and back re-runs the fetch.
+      kicked = false;
+      if (status) status.textContent =
+        'The connection graph could not be loaded. Reload the page to try again — ' +
+        'every record it indexes is also on the other tabs.';
+    });
   }
+  window.exploreInit = init;
+  var panel = root.closest ? root.closest('.tabpanel') : null;
+  if (!src || !panel || !panel.hidden) init();
 })();
 """
 
@@ -5379,10 +5448,7 @@ def main():
         st.title("DC Water Tracker")
     else:
         st.title("Data Center Water Use Tracker")
-        st.caption(
-            "Tracking data center water consumption in **Virginia** & **Ohio** "
-            "via public regulatory data."
-        )
+        st.caption(TAGLINE)
 
     # The same schematic the static site puts under its h1: what happens to the
     # water, and which leg of it carries a permit.

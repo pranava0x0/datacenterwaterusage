@@ -141,7 +141,8 @@ static direction ticks. Nothing else on either surface animates (§12).
 ## 4. Typography
 
 - **System sans-serif for all text.** No web fonts — cold-start on
-  GitHub Pages must stay under 50 KB of blocking resources.
+  GitHub Pages must stay under 50 KB of blocking resources. As of
+  August 2026 the page loads **nothing** from a third-party origin.
 - `st.subheader()` = h2 — used **once per tab** as the tab title.
   Never use it for section headers within a tab.
 - `h3.solution-cat-header` — section / group headers within a tab
@@ -151,6 +152,113 @@ static direction ticks. Nothing else on either surface animates (§12).
   `.solution-cat-header`; these are inside an existing section.
 - `st.caption()` — attribution, source links, dataset-last-updated
   footer. Never hand-roll a `<span style="font-size:small">`.
+
+**The scale** (`build_site.CSS`; the Streamlit app inherits its own
+defaults and only the group-header rule is shared). Each step is
+visibly unequal — h2 sat at 1.5rem against an h1 of 1.9rem and a tab
+title read as a second page title:
+
+| Level | Desktop | ≤760px | Used for |
+|---|---|---|---|
+| h1 | 1.9rem | 1.5rem | The page title, once |
+| h2 | 1.28rem | 1.18rem | The tab title, once per tab |
+| h3 | 1.12rem | — | A section within a tab |
+| `.solution-cat-header` | 1rem | — | A group within a section |
+| h4 | 0.95rem | — | Card-level headings |
+
+`.solution-cat-header` sits **below** h3 and takes its rank from the
+blue and the rule under it, not from being large. The h1 wave underline
+is 80px × 8px at both sizes — it repeats on `x`, so it stays in
+proportion without a second value.
+
+**The tagline** is `dashboard.TAGLINE`, one definition for four
+surfaces: the Streamlit caption, the static page's `<h1>` subtitle and
+`<meta name="description">`, and the llms.txt blockquote. Changing the
+project's scope means changing that constant, not four strings.
+
+---
+
+## 4a. Navigation and scroll control (static site)
+
+Added 2026-08-24, after a phone screenshot showed the tab strip wrapping
+to four unbounded rows and every tab running tens of screens deep.
+
+**The tab strip is sticky and full-bleed.** `.tabs-bar` is
+`position:sticky;top:0;z-index:30` on a `#f2f9fd` ground with a
+`2px #d6e2ee` bottom rule, negative-margined out of `.wrap`'s padding so
+the background reaches the viewport edge. Switching tabs never requires
+scrolling back up.
+
+**Tabs are outline chips in one non-wrapping scroller** (§8's outline-chip
+idiom: `1px #bdd7e7` border, `999px` radius, white ground; the selected
+one takes `#eff3ff` with a `#08519c` border). The row is
+`overflow-x:auto` with `scroll-snap-type:x proximity` and a hidden
+scrollbar; JS adds `.is-scrollable` when it actually overflows and drops
+it again at `.at-end`, so the right-edge fade only appears when there is
+something past the edge. A wrapped two-row bar would have been ~90px of
+a 667px viewport on every screen; one row is ~50px. The active-tab pipe
+marker (§3) moved **inside** the chip — anything hung below it would be
+clipped by the scroll container.
+
+**Every anchor target clears the bar.** `--navh` (54px, 50px on phones)
+is the bar's height, and one rule — `[id]{scroll-margin-top:calc(var(--navh) + .6rem)}` —
+reserves it for every card, reading, site, claim and section heading.
+A per-class list would be forgotten by the next card family. If the
+bar's padding or chip height changes, change `--navh` with it.
+
+**Long lists collapse.** Any section past ~15 cards gets one of three
+treatments, chosen by what the content is:
+
+| Surface | Treatment | Why |
+|---|---|---|
+| Legislation (73) | groups by status, Enacted open | "what is actually law" is the axis, and already the sort order |
+| Water Cases Part 2 (108) | groups by case group, the two data-center ones open | the 83 industrial analogs and precedents are consulted, not read |
+| Water Cases Parts 1/3 | sub-tabs (pre-existing) | already one click, not one scroll |
+| News (51) | fold after 12 | chronological; no grouping axis worth inventing |
+| Operator claims (45) | fold after 5 operators | 17 accordions of two quotes each is noise |
+| State rollup (41) | fold after 12 | a 3-column grid on desktop, one column on a phone |
+| Conflict sites (19) | fold after 8 | a site carries 1-3 issue types, so no single axis |
+| Solutions (18) | category accordions (pre-existing) | three groups of ~6 |
+
+Groups are `<details class="card-group">` with a live `.cg-count`;
+`build_js:syncCardGroups()` rewrites the counts after every filter run,
+hides emptied groups, and opens what survives once a filter is narrow
+enough to fit on a screen or two (`GROUP_AUTO_OPEN_MAX = 15`) — otherwise
+narrowing to one status leaves every match behind a closed summary.
+Folds (`<details class="card-fold">`) force themselves open when their
+tab's filter narrows, for the same reason.
+
+**Progressive enhancement — the markup looks inverted on purpose.** Both
+kinds ship `open` with `data-collapsed="1"`. A `<script>` in `<head>`
+stamps `html.js`; `.js details[data-collapsed]>*:not(summary){display:none}`
+hides the bodies before first paint; the load script then closes them for
+real and drops the attribute. With scripting off the class never lands
+and every card is visible. Emitting them closed instead would have hidden
+~150 cards from a no-JS reader, and **no CSS can force a closed
+`<details>` open** — that is the whole reason for the inversion.
+
+**Back to top** — `#to-top`, a fixed outline chip bottom-right carrying a
+drawn caret and the word "Top" (no emoji, §12). It gets `.is-visible`
+past two viewport heights and fades with a *transition*, not an
+animation: the page is allowed exactly one `@keyframes` block and the
+header schematic has it. Honors `prefers-reduced-motion` for the scroll.
+
+**Per-tab jump rows** — `.jumpnav` / `.jump-link`, the same pill idiom as
+the Part 1 statute jump-nav, on any tab with several stacked sections
+(States & Localities, Issues & Claims, Solutions). Targets are plain
+`href="#id"`; the page's anchor handler opens an ancestor `<details>`,
+or the target `<details>` itself.
+
+**`content-visibility:auto`** on the cards in the long lists
+(`.leg-bill`, `.cwa-case`, `.cwa-potential-case`, `#dc-conflicts .dc-site`,
+`#news-cards .news-card`, `.claim-card`), each with
+`contain-intrinsic-size:auto <h>` so the scrollbar has a plausible height
+until a card has been laid out once. Apply it to **whole cards in a
+list**, never to a container an anchor target's ancestors chain through
+more than once. Anchor jumps still resolve — a fragment navigation forces
+the skipped subtree to lay out first — but re-check that after any change
+here, and `@media print` restores `content-visibility:visible` or the
+sheets come out blank.
 
 ---
 
@@ -351,8 +459,14 @@ easier to restyle without touching every call site.
   `h3.solution-cat-header` (pipe accent, `#08519c`).
 - No `st.subheader` for sub-group headers within a tab — one per tab,
   for the tab title only.
-- No emoji in headers.
+- No emoji in headers, and none in controls either — the back-to-top
+  button draws a caret rather than borrowing an arrow emoji.
 - No purely decorative color — every color in a card or pill encodes
   meaning.
-- No web fonts — system sans-serif only.
+- No web fonts — system sans-serif only. And nothing else from a third
+  party: no CDN script, stylesheet, image or iframe. A build test walks
+  every `href`/`src`/`url()`/`@import` on the page and fails on any
+  absolute origin.
 - No drop shadows heavier than `0 1px 2px rgba(15,23,42,.04)`.
+- No section past ~15 cards left fully expanded — see §4a for which of
+  the three treatments to reach for.
