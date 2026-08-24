@@ -9,10 +9,12 @@ chart lib).
 
 from __future__ import annotations
 
+import json
 import re
 
 import build_site
 import dashboard
+from refdata import graph
 
 
 def _html() -> str:
@@ -383,6 +385,167 @@ class TestNoDanglingAnchors:
         for kind, anchors in by_kind.items():
             present = sum(1 for a in anchors if a in ids)
             assert present, f"no {kind} anchor reaches the page (of {len(anchors)})"
+
+
+class TestExploreTab:
+    """Spec B — the graph and the similarity search reach the page intact."""
+
+    def test_tab_button_and_panel_present(self):
+        html = _html()
+        assert 'data-tab="explore"' in html
+        assert 'id="panel-explore"' in html
+        assert ">Explore</button>" in html
+        assert 'id="explore"' in html
+
+    def test_graph_blob_is_embedded_and_parses(self):
+        html = _html()
+        match = re.search(
+            r'<script type="application/json" id="graph-data">(.*?)</script>', html, re.S
+        )
+        assert match, "graph-data blob missing from the page"
+        # The builder escapes "</" so a record quoting </script> cannot end the
+        # element early; JSON.parse and json.loads both read \/ as /.
+        data = json.loads(match.group(1))
+        assert len(data["nodes"]) == len(graph.build_graph()["nodes"])
+        assert len(data["edges"]) == len(graph.build_graph()["edges"])
+        assert data["docs"] and data["vocab"] and data["df"]
+
+    def test_blob_appears_exactly_once(self):
+        """Two copies would double the page weight and give the JS an ambiguous
+        `#graph-data` to read."""
+        assert _html().count('id="graph-data"') == 1
+
+    def test_tokenizer_parity_is_by_construction(self):
+        """The JS tokenizer must not restate the Python rules — it reads the
+        stopword list and the length floor out of the blob, and its splitting
+        regex is the same pattern. A transcribed copy is the failure mode this
+        blocks: it looks right and silently ranks differently."""
+        js = dashboard._explore_js()
+        assert "D.stopwords" in js and "D.min_token_len" in js
+        # No literal stopword array anywhere in the script.
+        assert not re.search(r"\[\s*'(?:the|and|of)'", js)
+        assert f"/{graph._TOKEN_SPLIT_RE.pattern}/g" in js
+        assert ".toLowerCase()" in js
+        blob = json.loads(
+            re.search(
+                r'<script type="application/json" id="graph-data">(.*?)</script>',
+                _html(),
+                re.S,
+            ).group(1)
+        )
+        assert blob["stopwords"] == sorted(graph.STOPWORDS)
+        assert blob["min_token_len"] == graph.MIN_TOKEN_LEN
+
+    def test_tokenizer_fixture_round_trip(self):
+        """The Python half of the parity contract, pinned to a literal so a
+        change to the splitting rules has to be deliberate."""
+        fixture = "Fort Worth's §404 permit — PFAS/PFOA in the reservoir!"
+        assert graph.tokenize(fixture) == [
+            "fort",
+            "worth",
+            "404",
+            "permit",
+            "pfas",
+            "pfoa",
+            "reservoir",
+            "fort worth",
+            "worth 404",
+            "404 permit",
+            "permit pfas",
+            "pfas pfoa",
+            "pfoa reservoir",
+        ]
+
+    def test_controls_present(self):
+        html = _html()
+        assert 'id="explore-q"' in html          # paste-text box
+        assert 'id="explore-family"' in html     # statute-family select
+        assert 'id="explore-depth"' in html      # 1-2 hop toggle
+        assert 'id="explore-scope"' in html      # restrict to neighbourhood
+        assert 'id="explore-canvas"' in html
+        assert 'id="explore-results"' in html
+        # One kind checkbox per record kind that actually has records.
+        kinds = {n["kind"] for n in graph.build_graph()["nodes"] if n["kind"] != "hub"}
+        assert len(re.findall(r'class="explore-kind"', html)) == len(kinds)
+        for kind in kinds:
+            assert f'class="explore-kind" value="{kind}"' in html
+
+    def test_edge_kind_toggles_cover_every_kind(self):
+        """The checkboxes are built in JS from the blob, so what has to be
+        present is a label for every kind the graph emits."""
+        blob = json.loads(
+            re.search(
+                r'<script type="application/json" id="graph-data">(.*?)</script>',
+                _html(),
+                re.S,
+            ).group(1)
+        )
+        assert len(blob["edge_kinds"]) == len(blob["edge_kind_labels"])
+        assert set(blob["derived_edge_kinds"]) == set(graph.DERIVED_EDGE_KINDS)
+        assert set(blob["derived_edge_kinds"]) <= set(blob["edge_kinds"])
+        for label in blob["edge_kind_labels"]:
+            assert label in graph.EDGE_KIND_LABELS.values()
+
+    def test_results_link_to_registry_anchors(self):
+        """A result row's link is the node's `anchor` field; if the builder
+        stopped shipping anchors the links would silently become dead text."""
+        blob = json.loads(
+            re.search(
+                r'<script type="application/json" id="graph-data">(.*?)</script>',
+                _html(),
+                re.S,
+            ).group(1)
+        )
+        ids = set(re.findall(r'\bid="([^"]+)"', _html()))
+        for node in blob["nodes"]:
+            if node["kind"] == "hub" and not node["anchor"]:
+                continue
+            assert node["anchor"] in ids, node["id"]
+
+    def test_empty_state_names_the_three_questions(self):
+        html = _html()
+        assert dashboard.EXPLORE_EMPTY_STATE in html
+        for phrase in ("same language", "connects to", "narrowing results"):
+            assert phrase in dashboard.EXPLORE_EMPTY_STATE
+
+    def test_reduced_motion_is_honored(self):
+        assert "prefers-reduced-motion" in dashboard._explore_js()
+
+    def test_no_third_party_assets(self):
+        """Standing security rule: the only CDN asset on this page is the
+        SRI-pinned Chart.js. The graph must stay hand-rolled, so the fragment
+        must not load anything. Curated record text can legitimately contain a
+        url, so the data blob is excluded before looking."""
+        fragment = re.sub(
+            r'<script type="application/json".*?</script>',
+            "",
+            dashboard._build_explore_html(),
+            flags=re.S,
+        )
+        assert "http://" not in fragment
+        assert "https://" not in fragment
+        assert "<script src" not in fragment
+        assert "<link" not in fragment
+
+    def test_progressive_enhancement_block(self):
+        html = _html()
+        assert 'class="explore-noscript"' in html
+        assert "need JavaScript" in html
+        # Without JS the tab buttons are inert, so every panel is unhidden
+        # instead of five of seven being unreachable.
+        assert "<noscript><style>.tabpanel[hidden]{display:block}</style></noscript>" in html
+
+    def test_streamlit_and_static_share_one_fragment(self):
+        """Two surfaces, one implementation — the whole reason the builder
+        lives in dashboard.py rather than in build_site.py."""
+        assert dashboard._build_explore_html() in build_site.build_explore_tab()
+
+    def test_llms_txt_notes_the_tab(self):
+        txt = build_site.build_llms_txt()
+        assert "## Explore tab (connection graph + text search)" in txt
+        # The index itself must not be dumped in there.
+        assert "vocab" not in txt
+        assert len(txt) < 400_000
 
 
 class TestNoDuplicateClaimStyles:

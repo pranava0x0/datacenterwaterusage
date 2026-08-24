@@ -1156,6 +1156,32 @@ def build_sources_tab() -> str:
 
 
 # --------------------------------------------------------------------------
+# Explore tab
+# --------------------------------------------------------------------------
+
+
+def build_explore_tab() -> str:
+    """The connection graph + text-similarity surface.
+
+    All of the work is in ``dashboard._build_explore_html`` so the Streamlit
+    app renders the identical fragment; this only supplies the tab chrome
+    (title, lead, dataset note) the way every other tab does.
+    """
+    return f"""
+<section class="panel">
+  <h2>Explore — Connections and Text Search</h2>
+  <p class="lead">{esc(dash.EXPLORE_LEAD)}</p>
+  {dash._build_explore_html()}
+  <p class="src-note">Lines are the cross-references the datasets declare, walked
+  in both directions; taxonomy-membership lines (shared statute family, project
+  type, or principle) are derived and off until you switch them on. Similarity is
+  TF-IDF over each record's own text — it matches wording, not meaning, which is
+  why the terms it matched on are shown. Everything runs in your browser.</p>
+</section>
+"""
+
+
+# --------------------------------------------------------------------------
 # Assembly
 # --------------------------------------------------------------------------
 
@@ -1701,6 +1727,19 @@ def build_llms_txt() -> str:
 
     lines += [
         "",
+        "## Explore tab (connection graph + text search)",
+        "",
+        "The dashboard's Explore tab renders every record above as one graph and "
+        "ranks all of them against a pasted passage by TF-IDF cosine similarity, "
+        "entirely in the browser. Nothing new is recorded there: nodes are the "
+        "records listed in this file, edges are the id cross-references those "
+        "records already declare (a case's statutory readings, a site's analogous "
+        "cases, a claim's site, an instrument's related cases), plus optional "
+        "derived edges joining records that share a statute family, project type "
+        "or legislative principle. The full node and edge list is therefore "
+        "derivable from the datasets linked below; the search index is a build "
+        "artifact and is not reproduced here.",
+        "",
         "## Data files",
         "",
         f"- Legislation dataset: {REPO_URL}/blob/main/data/reference/legislation.json",
@@ -1720,6 +1759,7 @@ def build_html() -> str:
     news = build_news_tab()
     solutions = build_solutions_tab()
     sources_html = build_sources_tab()
+    explore = build_explore_tab()
     js = build_js()
     built = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
@@ -1733,6 +1773,11 @@ def build_html() -> str:
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="alternate" type="text/plain" href="llms.txt" title="LLM-friendly summary">
 <style>{COMPONENT_CSS}{CSS}</style>
+<!-- Tab switching is the one thing on this page that needs JavaScript. Without
+     it five of the seven panels were unreachable — the `hidden` attribute does
+     not care why the button never fired. Unhide everything instead, so a no-JS
+     reader gets one long document rather than a truncated one. -->
+<noscript><style>.tabpanel[hidden]{{display:block}}</style></noscript>
 </head>
 <body>
 <div class="wrap">
@@ -1747,6 +1792,7 @@ def build_html() -> str:
     <button class="tab" role="tab" data-tab="news" aria-selected="false">News</button>
     <button class="tab" role="tab" data-tab="solutions" aria-selected="false">Solutions</button>
     <button class="tab" role="tab" data-tab="sources" aria-selected="false">Sources</button>
+    <button class="tab" role="tab" data-tab="explore" aria-selected="false">Explore</button>
   </div>
 
   <div class="tabpanel" id="panel-legislation" role="tabpanel">{legislation}</div>
@@ -1755,6 +1801,7 @@ def build_html() -> str:
   <div class="tabpanel" id="panel-news" role="tabpanel" hidden>{news}</div>
   <div class="tabpanel" id="panel-solutions" role="tabpanel" hidden>{solutions}</div>
   <div class="tabpanel" id="panel-sources" role="tabpanel" hidden>{sources_html}</div>
+  <div class="tabpanel" id="panel-explore" role="tabpanel" hidden>{explore}</div>
 
   <p class="src-note">Static build {built} · Sources: EPA ECHO DMR, VA DEQ, Ohio EPA,
   Loudoun Water. Data center cooling water tracked via receiving WWTP flow ·

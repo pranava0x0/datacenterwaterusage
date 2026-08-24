@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pytest
 
-from refdata import integrity, loaders, registry, taxonomies
+from refdata import graph, integrity, loaders, registry, taxonomies
 
 
 class TestLoaders:
@@ -508,6 +508,233 @@ class TestTaxonomyConstants:
         assert set(taxonomies.INSTRUMENT_TYPE_LABELS) == set(
             taxonomies.INSTRUMENT_TYPE_COLORS
         )
+
+
+class TestGraph:
+    """Spec B — the Explore graph must be the datasets, not a second opinion.
+
+    The failure mode these guard against is a graph that quietly *invents* a
+    relationship: a node the registry never registered, or an edge no dataset
+    declares. Either one would render as an authoritative-looking line between
+    two records with nothing behind it.
+    """
+
+    def test_nodes_are_registry_ids_plus_declared_hubs(self):
+        g = graph.build_graph()
+        ids = [n["id"] for n in g["nodes"]]
+        assert len(ids) == len(set(ids)), "duplicate node id"
+        record_ids = {i for i in ids if not i.startswith(graph.HUB_ID_PREFIX)}
+        assert record_ids == set(registry.build_registry())
+        for node in g["nodes"]:
+            if node["id"].startswith(graph.HUB_ID_PREFIX):
+                assert node["kind"] == "hub"
+                assert node["attrs"]["hub_group"] in set(graph.DERIVED_EDGE_KINDS.values())
+
+    def test_nodes_carry_the_registry_tab_and_anchor(self):
+        """A result row's link is only correct because it is the registry's
+        anchor — re-deriving it here would be the drift the registry ended."""
+        reg = registry.build_registry()
+        for node in graph.build_graph()["nodes"]:
+            ref = reg.get(node["id"])
+            if ref:
+                assert (node["kind"], node["tab"], node["anchor"]) == (
+                    ref.kind,
+                    ref.tab,
+                    ref.anchor,
+                ), node["id"]
+
+    def test_every_edge_is_declared_or_derived(self):
+        curated = {(s, t, k) for s, t, k in integrity.iter_edges()}
+        for edge in graph.build_graph()["edges"]:
+            key = (edge["source"], edge["target"], edge["kind"])
+            if edge.get("derived"):
+                assert edge["kind"] in graph.DERIVED_EDGE_KINDS, key
+            else:
+                assert key in curated, f"invented edge: {key}"
+
+    def test_derived_edges_land_on_their_own_hub_kind(self):
+        nodes = {n["id"]: n for n in graph.build_graph()["nodes"]}
+        for edge in graph.build_graph()["edges"]:
+            if not edge.get("derived"):
+                continue
+            target = nodes[edge["target"]]
+            assert target["kind"] == "hub", edge
+            assert target["attrs"]["hub_group"] == graph.DERIVED_EDGE_KINDS[edge["kind"]]
+
+    def test_all_three_derived_kinds_are_present(self):
+        """Guards the guard: if hub building silently stopped, the assertions
+        above would pass on an empty derived set."""
+        kinds = {e["kind"] for e in graph.build_graph()["edges"] if e.get("derived")}
+        assert kinds == set(graph.DERIVED_EDGE_KINDS)
+
+    def test_every_edge_kind_has_a_label(self):
+        """The toggles are the graph's only vocabulary; a raw JSON key in the
+        control row is unreadable."""
+        for edge in graph.build_graph()["edges"]:
+            assert edge["kind"] in graph.EDGE_KIND_LABELS, edge["kind"]
+
+    def test_no_hub_without_members(self):
+        """An empty hub is the graph's version of a filter chip matching
+        nothing — the taxonomy rule, restated in edges."""
+        g = graph.build_graph()
+        reached = {e["target"] for e in g["edges"] if e.get("derived")}
+        for node in g["nodes"]:
+            if node["kind"] == "hub":
+                assert node["id"] in reached, node["id"]
+
+    def test_graph_is_deterministic(self):
+        assert graph.build_graph() == graph.build_graph()
+
+
+class TestSearchIndex:
+    def test_index_is_deterministic(self):
+        """Two builds byte-equal, or every regeneration is a spurious diff."""
+        first = json.dumps(graph.build_search_index(), sort_keys=False)
+        second = json.dumps(graph.build_search_index(), sort_keys=False)
+        assert first == second
+        assert graph.payload_json() == graph.payload_json()
+
+    def test_every_record_is_indexed(self):
+        docs = graph.build_search_index()["docs"]
+        assert set(docs) == set(registry.build_registry())
+        empty = [rid for rid, vec in docs.items() if not vec]
+        assert not empty, f"records with no searchable text: {empty}"
+
+    def test_vectors_are_l2_normalized(self):
+        import math
+
+        for record_id, vec in graph.build_search_index()["docs"].items():
+            norm = math.sqrt(sum(w * w for w in vec.values()))
+            # Weights are rounded to 3 decimals on the way out, so the norm
+            # lands near 1 rather than on it.
+            assert abs(norm - 1.0) < 0.01, (record_id, norm)
+
+    def test_per_record_vocabulary_is_capped(self):
+        for record_id, vec in graph.build_search_index()["docs"].items():
+            assert len(vec) <= graph.MAX_TOKENS_PER_RECORD, (record_id, len(vec))
+
+    def test_stopwords_and_short_tokens_are_absent(self):
+        index = graph.build_search_index()
+        for token in index["df"]:
+            for word in token.split(" "):
+                assert word not in graph.STOPWORDS, token
+                assert len(word) >= graph.MIN_TOKEN_LEN, token
+
+    def test_ubiquitous_terms_are_pruned(self):
+        """The df cutoff is what stops 'water' and 'data center' — in nearly
+        every record — from dominating every similarity score."""
+        index = graph.build_search_index()
+        cutoff = graph.DF_CUTOFF * index["n_docs"]
+        for token, count in index["df"].items():
+            assert count < cutoff, (token, count)
+
+    def test_tokenizer_keeps_unigrams_and_adjacent_bigrams(self):
+        assert graph.tokenize("Cooling water, in the reservoir!") == [
+            "cooling",
+            "water",
+            "reservoir",
+            "cooling water",
+            "water reservoir",
+        ]
+        # Punctuation, case and section marks all collapse to separators.
+        assert graph.tokenize("§404 U.S.C. — PFAS/PFOA") == [
+            "404",
+            "pfas",
+            "pfoa",
+            "404 pfas",
+            "pfas pfoa",
+        ]
+        assert graph.tokenize("") == []
+
+    def test_similar_text_ranks_the_right_records(self):
+        """Spec B acceptance: a supply-strain passage must surface supply-side
+        records, not the PFAS contamination cases that share the word 'water'."""
+        import math
+
+        index = graph.build_search_index()
+        n_docs, df = index["n_docs"], index["df"]
+        query = (
+            "Fort Worth is weighing a data center campus that would draw on the "
+            "Cedar Creek Reservoir, and residents worry the city's municipal "
+            "water supply cannot serve both the new industrial demand and "
+            "existing households through a drought."
+        )
+        counts: dict[str, int] = {}
+        for token in graph.tokenize(query):
+            if token in df:
+                counts[token] = counts.get(token, 0) + 1
+        qv = {t: c * math.log(n_docs / df[t]) for t, c in counts.items()}
+        norm = math.sqrt(sum(w * w for w in qv.values())) or 1.0
+        scores = {
+            rid: sum(qv[t] / norm * w for t, w in vec.items() if t in qv)
+            for rid, vec in index["docs"].items()
+        }
+        top = sorted(scores, key=lambda r: -scores[r])[:12]
+        assert top[0] == "fort-worth-cedar-creek-lake-2026-07"
+        assert any("Tucson" in rid or "Charlotte" in rid for rid in top), top
+        pfas = [rid for rid in top if "PFAS" in rid or "Chemours" in rid]
+        assert not pfas, f"PFAS records outranked supply-strain records: {pfas}"
+
+
+class TestExplorePayload:
+    def test_blob_stays_under_the_hard_ceiling(self):
+        """The blob ships inside the HTML on every page load. The spec budgets
+        ~600 KB; 900 KB is the point at which the Explore tab would be paying
+        for itself with everybody else's first paint."""
+        size_kb = len(graph.payload_json().encode("utf-8")) / 1024
+        assert size_kb < 900, f"graph blob is {size_kb:.0f} KB"
+
+    def test_blob_cannot_close_its_own_script_tag(self):
+        assert "</" not in graph.payload_json()
+
+    def test_payload_indices_resolve(self):
+        payload = graph.build_payload()
+        n_nodes, n_kinds, n_vocab = (
+            len(payload["nodes"]),
+            len(payload["edge_kinds"]),
+            len(payload["vocab"]),
+        )
+        for source, target, kind in payload["edges"]:
+            assert 0 <= source < n_nodes and 0 <= target < n_nodes
+            assert 0 <= kind < n_kinds
+        assert len(payload["df"]) == n_vocab
+        assert len(payload["edge_kind_labels"]) == n_kinds
+        for key, doc in payload["docs"].items():
+            assert 0 <= int(key) < n_nodes
+            assert len(doc["t"]) == len(doc["w"])
+            assert all(0 <= t < n_vocab for t in doc["t"])
+
+    def test_adding_a_record_changes_the_blob(self, tmp_path, monkeypatch):
+        """Guards against a stale cached index: the loaders cache on
+        (mtime, size), and a graph that missed a new record would look
+        perfectly healthy while silently omitting it from every search."""
+        before = graph.payload_json()
+        extra = dict(loaders.load_water_news()["items"][0])
+        extra["id"] = "news-graph-cache-probe-9999"
+        extra["title"] = "Zirconium hydrofoil interlock probe headline"
+        extra["summary"] = "A deliberately unusual sentence about zirconium hydrofoils."
+        extra.pop("cross_ref_targets", None)
+        extra.pop("cross_ref_tab", None)
+        extra.pop("cross_ref_note", None)
+        path = tmp_path / "water_news.json"
+        payload = dict(loaders.load_water_news())
+        payload["items"] = list(payload["items"]) + [extra]
+        path.write_text(json.dumps(payload))
+
+        monkeypatch.setattr(loaders, "WATER_NEWS_PATH", path)
+        monkeypatch.setattr(registry, "WATER_NEWS_PATH", path)
+        monkeypatch.setattr(
+            loaders, "load_water_news", lambda p=path: loaders._read_json(str(p), {"items": list})
+        )
+        monkeypatch.setattr(registry, "load_water_news", loaders.load_water_news)
+        monkeypatch.setattr(graph, "load_water_news", loaders.load_water_news)
+        registry._REGISTRY_CACHE["sig"] = None
+        try:
+            after = graph.payload_json()
+            assert after != before
+            assert "zirconium" in after
+        finally:
+            registry._REGISTRY_CACHE["sig"] = None
 
 
 class TestOutcomeTypes:

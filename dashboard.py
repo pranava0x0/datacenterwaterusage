@@ -48,7 +48,14 @@ from refdata.loaders import (  # noqa: F401
     load_water_news,
     load_water_solutions,
 )
+from refdata.graph import (  # noqa: F401
+    EDGE_KIND_LABELS,
+    KIND_COLORS as GRAPH_KIND_COLORS,
+    build_graph,
+    payload_json as graph_payload_json,
+)
 from refdata.registry import (  # noqa: F401
+    KIND_TABS,
     Ref,
     bill_anchor as _bill_anchor,
     build_registry,
@@ -4009,6 +4016,748 @@ def render_sources_tab():
     st.caption("Reference dataset — updated as new sources come online.")
 
 
+# --- Explore tab (connection graph + text similarity) ---
+#
+# One builder, two surfaces: build_site.py drops the fragment straight into the
+# Explore tabpanel, and render_explore() hands the same string to
+# st.components.v1.html. That is why the fragment carries its own <style> and
+# <script> — inside the Streamlit iframe there is no page stylesheet to inherit
+# and no parent JS to rely on.
+
+EXPLORE_LEAD = (
+    "Every curated record in one graph, plus a text search across all of them. "
+    "Click a dot to see what a record connects to, or paste a paragraph — a news "
+    "story, a permit notice, a draft ordinance — to find the records that use the "
+    "same language."
+)
+
+EXPLORE_EMPTY_STATE = (
+    "Nothing searched yet. Paste a paragraph above to find the records that use "
+    "the same language, click any dot to see what a record connects to, or "
+    "combine the two by narrowing results to a record kind, a statute family, or "
+    "the neighbourhood around the record you clicked."
+)
+
+
+def _explore_css() -> str:
+    """Scoped styles for the Explore fragment.
+
+    Everything is under ``.explore`` because this string is injected into two
+    very different documents: the static page (where it must not touch the
+    card CSS) and a bare Streamlit iframe (where nothing else is defined, so
+    even the body font has to be stated here).
+    """
+    return """
+.explore{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color:#1a1a2e;line-height:1.5;font-size:.92rem}
+.explore-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:1rem;align-items:start}
+@media (max-width:900px){.explore-grid{grid-template-columns:minmax(0,1fr)}}
+.explore-side,.explore-main{min-width:0}
+.explore-label{display:block;font-weight:600;font-size:.88rem;margin:0 0 .3rem}
+.explore textarea{width:100%;font:inherit;font-size:.88rem;padding:.55rem .7rem;border:1px solid #cbd5e1;
+  border-radius:.4rem;background:#fff;resize:vertical}
+.explore select{font:inherit;font-size:.84rem;padding:.25rem .4rem;border:1px solid #bdd7e7;
+  border-radius:.4rem;background:#fff;color:#1a1a2e}
+.explore-controls{display:flex;flex-wrap:wrap;gap:.4rem .7rem;align-items:center;margin:.6rem 0}
+.explore-controls-label{font-weight:600;font-size:.84rem}
+.explore-chip{display:inline-flex;align-items:center;gap:.35rem;font-size:.82rem;background:#eff3ff;
+  border:1px solid #bdd7e7;border-radius:999px;padding:.2rem .6rem;cursor:pointer}
+.explore-chip input{accent-color:#08519c;margin:0}
+.explore-btn{appearance:none;font:inherit;font-size:.8rem;font-weight:600;color:#08519c;background:#eff3ff;
+  border:1px solid #bdd7e7;border-radius:.35rem;padding:.25rem .55rem;cursor:pointer;min-height:32px}
+.explore-btn:hover{background:#dfeafb}
+.explore-count{font-size:.84rem;color:#4b5563;margin:.5rem 0 .4rem}
+.explore-results{max-height:26rem;overflow-y:auto;padding-right:.2rem}
+.explore-empty{border:1px solid #cbd5e1;border-radius:.5rem;background:#fff;padding:.75rem .9rem;
+  font-size:.86rem;color:#333}
+.explore-result{border:1px solid #e2e8f0;border-radius:.5rem;background:#fff;padding:.55rem .7rem;margin:0 0 .45rem;
+  box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.explore-result-head{display:flex;align-items:baseline;gap:.4rem;flex-wrap:wrap}
+.explore-dot{width:.6rem;height:.6rem;border-radius:50%;display:inline-block;flex:none}
+.explore-result a{color:#08519c;font-weight:600;text-decoration:none;font-size:.88rem}
+.explore-result a:hover{text-decoration:underline}
+.explore-kindtag{font-size:.72rem;font-weight:600;color:#4b5563;border:1px solid #e2e8f0;
+  border-radius:999px;padding:.02rem .45rem;background:#f8fafc}
+.explore-bar{height:.35rem;border-radius:999px;background:#eff3ff;margin:.35rem 0 .3rem;overflow:hidden}
+.explore-bar span{display:block;height:100%;background:#3182bd}
+.explore-terms{font-size:.76rem;color:#4b5563}
+.explore-term{background:#eff3ff;border:1px solid #bdd7e7;border-radius:999px;padding:.02rem .4rem;margin-right:.25rem}
+.explore-toolbar{display:flex;flex-wrap:wrap;gap:.4rem .6rem;align-items:center;justify-content:space-between;
+  margin:0 0 .4rem}
+.explore-focus{font-size:.84rem;color:#1a1a2e;min-width:0}
+.explore-focus a{color:#08519c}
+.explore-tools{display:flex;gap:.35rem;align-items:center;font-size:.8rem;color:#4b5563}
+.explore-canvas{width:100%;height:520px;display:block;background:#fff;border:1px solid #cbd5e1;
+  border-radius:.5rem;touch-action:none;cursor:grab}
+.explore-canvas:active{cursor:grabbing}
+@media (max-width:900px){.explore-canvas{height:380px}}
+.explore-hint{font-size:.76rem;color:#6b7280;margin:.3rem 0 .5rem}
+.explore-legend{display:flex;flex-wrap:wrap;gap:.3rem .7rem;font-size:.76rem;color:#4b5563;margin-bottom:.5rem}
+.explore-legend span.explore-dot{margin-right:.25rem}
+.explore-edges{border:1px solid #cbd5e1;border-radius:.5rem;background:#fff}
+.explore-edges>summary{cursor:pointer;font-weight:600;color:#08519c;padding:.5rem .7rem;font-size:.85rem;
+  list-style:none;min-height:36px;display:flex;align-items:center}
+.explore-edges>summary::-webkit-details-marker{display:none}
+.explore-edges>summary::before{content:"\\25B8";margin-right:.4rem}
+.explore-edges[open]>summary::before{content:"\\25BE"}
+.explore-edgelist{display:flex;flex-wrap:wrap;gap:.3rem .5rem;padding:0 .7rem .7rem}
+.explore-noscript{border-left:3px solid #b45309;background:#fffbeb;padding:.65rem .9rem;
+  border-radius:0 .4rem .4rem 0;margin-bottom:.8rem}
+.explore-noscript ul{margin:.4rem 0 0;padding-left:1.1rem;font-size:.86rem}
+"""
+
+
+def _explore_noscript_html(counts: dict[str, int]) -> str:
+    """What a reader without JavaScript gets: the honest version.
+
+    The graph and the cosine search are both client-side computation, so there
+    is no degraded rendering of them to offer — saying so and pointing at the
+    tabs that hold the same records is more useful than an empty canvas.
+    """
+    rows = "".join(
+        f'<li><a href="#panel-{html.escape(KIND_TABS[kind])}">'
+        f"{html.escape(EXPLORE_KIND_LABELS[kind])}</a> — {count} records</li>"
+        for kind, count in counts.items()
+    )
+    return (
+        '<noscript><div class="explore-noscript">'
+        "<p><strong>The graph and the text search need JavaScript.</strong> Both run "
+        "entirely in your browser — there is no server to fall back on — so with "
+        "scripting off this tab can only point you at the records themselves, which "
+        "are all on the page already:</p>"
+        f"<ul>{rows}</ul></div></noscript>"
+    )
+
+
+# Plural, reader-facing names for the record kinds. graph.KIND_LABELS holds the
+# singular form, which is what a single result chip needs ("Water case"); the
+# kind filter, the legend and the noscript list all label *groups*, so they read
+# as plurals ("Water cases (109)").
+EXPLORE_KIND_LABELS = {
+    "instrument": "Policy instruments",
+    "reading": "Statutory readings",
+    "case": "Water cases",
+    "site": "Conflict sites",
+    "claim": "Operator claims",
+    "news": "News items",
+    "solution": "Solutions",
+}
+
+
+def _build_explore_html() -> str:
+    """The whole Explore surface as one self-contained HTML fragment.
+
+    Returns markup + the graph/index blob + scoped CSS + the vanilla-JS
+    force layout and search. Pure: no Streamlit, no I/O beyond the cached
+    loaders, so ``build_site.py`` and the tests can call it directly.
+    """
+    payload = graph_payload_json()
+    nodes = build_graph()["nodes"]
+
+    counts: dict[str, int] = {}
+    for node in nodes:
+        if node["kind"] != "hub":
+            counts[node["kind"]] = counts.get(node["kind"], 0) + 1
+    ordered_counts = {k: counts[k] for k in EXPLORE_KIND_LABELS if k in counts}
+
+    kind_boxes = "".join(
+        f'<label class="explore-chip"><input type="checkbox" class="explore-kind" '
+        f'value="{k}" checked> {html.escape(EXPLORE_KIND_LABELS[k])} ({n})</label>'
+        for k, n in ordered_counts.items()
+    )
+
+    statutes = load_water_authorities().get("statutes", {})
+    family_options = "".join(
+        f'<option value="{html.escape(code)}">{html.escape(code)} — '
+        f'{html.escape(statutes.get(code, {}).get("name", code))}</option>'
+        for code in WATER_STATUTE_ORDER
+        if code in statutes
+    )
+
+    legend = "".join(
+        f'<span><span class="explore-dot" style="background:{GRAPH_KIND_COLORS[k]}"></span>'
+        f"{html.escape(EXPLORE_KIND_LABELS[k])}</span>"
+        for k in ordered_counts
+    )
+    legend += (
+        '<span><span class="explore-dot" style="background:'
+        f'{GRAPH_KIND_COLORS["hub"]};border-radius:2px"></span>'
+        "Taxonomy hub (statute, project type, principle)</span>"
+    )
+
+    return f"""<div class="explore" id="explore">
+{_explore_noscript_html(ordered_counts)}
+<div class="explore-grid">
+  <div class="explore-side">
+    <label class="explore-label" for="explore-q">Paste any text — a news story, a
+    permit notice, a bill summary</label>
+    <textarea id="explore-q" rows="5" placeholder="Paste a paragraph here to rank every tracked record by how much of its language it shares."></textarea>
+    <div class="explore-controls">
+      <span class="explore-controls-label">Kinds:</span>{kind_boxes}
+    </div>
+    <div class="explore-controls">
+      <label class="explore-controls-label" for="explore-family">Statute family:</label>
+      <select id="explore-family">
+        <option value="">Any</option>{family_options}
+      </select>
+      <label class="explore-chip"><input type="checkbox" id="explore-scope">
+      Only near the focused record</label>
+    </div>
+    <p class="explore-count" id="explore-count"></p>
+    <div class="explore-results" id="explore-results">
+      <div class="explore-empty">{html.escape(EXPLORE_EMPTY_STATE)}</div>
+    </div>
+  </div>
+  <div class="explore-main">
+    <div class="explore-toolbar">
+      <span class="explore-focus" id="explore-focus">No record focused — click a dot,
+      or use <em>Show connections</em> on a result.</span>
+      <span class="explore-tools">
+        <label for="explore-depth">Hops</label>
+        <select id="explore-depth">
+          <option value="1">1</option>
+          <option value="2" selected>2</option>
+        </select>
+        <button type="button" class="explore-btn" id="explore-zoom-in" aria-label="Zoom in">+</button>
+        <button type="button" class="explore-btn" id="explore-zoom-out" aria-label="Zoom out">&minus;</button>
+        <button type="button" class="explore-btn" id="explore-reset">Reset</button>
+      </span>
+    </div>
+    <canvas class="explore-canvas" id="explore-canvas" role="img" aria-label="Connection graph of every tracked record. The results list carries the same records as text."></canvas>
+    <p class="explore-hint">Drag to pan, scroll to zoom, click a dot to focus its
+    neighbourhood. Lines are connections the datasets declare.</p>
+    <div class="explore-legend">{legend}</div>
+    <details class="explore-edges">
+      <summary>Connection types</summary>
+      <div class="explore-edgelist" id="explore-edgelist"></div>
+    </details>
+  </div>
+</div>
+<script type="application/json" id="graph-data">{payload}</script>
+<style>{_explore_css()}</style>
+<script>{_explore_js()}</script>
+</div>"""
+
+
+def _explore_js() -> str:
+    """The client half: tokenizer, cosine search, force layout, canvas renderer.
+
+    The tokenizer here is the only piece that MUST agree with Python. It reads
+    its stopword list and minimum token length out of the embedded blob rather
+    than restating them, so the two cannot drift; a build test round-trips a
+    fixture string through both to prove the surrounding regex rules match too.
+    """
+    return r"""
+(function(){
+  var root = document.getElementById('explore');
+  var blob = root && root.querySelector('#graph-data');
+  var canvas = root && root.querySelector('#explore-canvas');
+  if (!root || !blob || !canvas) return;
+  var D = JSON.parse(blob.textContent);
+
+  // --- Tokenizer: mirrors refdata.graph.tokenize, constants from the blob ---
+  var STOP = {}, i;
+  for (i = 0; i < D.stopwords.length; i++) STOP[D.stopwords[i]] = 1;
+  function tokenize(text){
+    var raw = String(text == null ? '' : text)
+      .replace(/[^A-Za-z0-9]+/g, ' ').toLowerCase().split(' ');
+    var words = [];
+    for (var j = 0; j < raw.length; j++){
+      if (raw[j].length >= D.min_token_len && !STOP[raw[j]]) words.push(raw[j]);
+    }
+    var out = words.slice();
+    for (var k = 0; k + 1 < words.length; k++) out.push(words[k] + ' ' + words[k + 1]);
+    return out;
+  }
+
+  // --- Index lookup tables ---
+  var vocabPos = {};
+  for (i = 0; i < D.vocab.length; i++) vocabPos[D.vocab[i]] = i;
+  var idf = D.df.map(function(d){ return Math.log(D.n_docs / d); });
+  var docs = [];
+  for (var key in D.docs){
+    if (!Object.prototype.hasOwnProperty.call(D.docs, key)) continue;
+    docs.push({node: parseInt(key, 10), t: D.docs[key].t, w: D.docs[key].w});
+  }
+
+  var nodes = D.nodes;
+  var derived = {};
+  for (i = 0; i < D.derived_edge_kinds.length; i++) derived[D.derived_edge_kinds[i]] = 1;
+  // Curated cross-references are on by default; taxonomy membership is a
+  // different claim about the data and the reader opts into it.
+  var activeKinds = D.edge_kinds.map(function(k){ return !derived[k]; });
+
+  // --- Adjacency, rebuilt whenever the edge-kind toggles change ---
+  var adj = [];
+  function rebuildAdjacency(){
+    adj = nodes.map(function(){ return []; });
+    for (var e = 0; e < D.edges.length; e++){
+      var edge = D.edges[e];
+      if (!activeKinds[edge[2]]) continue;
+      // Walked undirected: "what connects to this" does not care which record
+      // wrote the id down.
+      adj[edge[0]].push(edge[1]);
+      adj[edge[1]].push(edge[0]);
+    }
+  }
+
+  function neighbourhood(start, depth){
+    var seen = {}, frontier = [start], d;
+    seen[start] = 0;
+    for (d = 1; d <= depth; d++){
+      var next = [];
+      for (var f = 0; f < frontier.length; f++){
+        var list = adj[frontier[f]];
+        for (var n = 0; n < list.length; n++){
+          if (seen[list[n]] === undefined){ seen[list[n]] = d; next.push(list[n]); }
+        }
+      }
+      frontier = next;
+    }
+    return seen;
+  }
+
+  // --- Force-directed layout (Fruchterman-Reingold, no library) ---
+  var W = 900, H = 700;
+  var pos = nodes.map(function(_, idx){
+    // Deterministic ring start: same input data always settles the same way,
+    // so a rebuild does not reshuffle the picture for no reason.
+    var a = idx * 2.399963229728653;  // golden angle
+    var r = 40 + 300 * Math.sqrt(idx / nodes.length);
+    return {x: W / 2 + r * Math.cos(a), y: H / 2 + r * Math.sin(a), dx: 0, dy: 0};
+  });
+  var reduceMotion = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function step(temperature){
+    var k = Math.sqrt((W * H) / nodes.length);
+    var a, b, dx, dy, dist, force;
+    for (a = 0; a < nodes.length; a++){ pos[a].dx = 0; pos[a].dy = 0; }
+    for (a = 0; a < nodes.length; a++){
+      for (b = a + 1; b < nodes.length; b++){
+        dx = pos[a].x - pos[b].x; dy = pos[a].y - pos[b].y;
+        dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
+        force = (k * k) / dist;
+        dx = (dx / dist) * force; dy = (dy / dist) * force;
+        pos[a].dx += dx; pos[a].dy += dy;
+        pos[b].dx -= dx; pos[b].dy -= dy;
+      }
+    }
+    for (var e = 0; e < D.edges.length; e++){
+      if (!activeKinds[D.edges[e][2]]) continue;
+      a = D.edges[e][0]; b = D.edges[e][1];
+      dx = pos[a].x - pos[b].x; dy = pos[a].y - pos[b].y;
+      dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
+      force = (dist * dist) / k;
+      dx = (dx / dist) * force; dy = (dy / dist) * force;
+      pos[a].dx -= dx; pos[a].dy -= dy;
+      pos[b].dx += dx; pos[b].dy += dy;
+    }
+    for (a = 0; a < nodes.length; a++){
+      // Gravity keeps disconnected records from drifting off the canvas.
+      pos[a].dx += (W / 2 - pos[a].x) * 0.012;
+      pos[a].dy += (H / 2 - pos[a].y) * 0.012;
+      var mag = Math.sqrt(pos[a].dx * pos[a].dx + pos[a].dy * pos[a].dy) || 0.01;
+      var move = Math.min(mag, temperature);
+      pos[a].x += (pos[a].dx / mag) * move;
+      pos[a].y += (pos[a].dy / mag) * move;
+    }
+  }
+
+  var ITERATIONS = 120;
+  function runLayout(){
+    var t = 0, temp0 = W / 12;
+    if (reduceMotion){
+      for (t = 0; t < ITERATIONS; t++) step(temp0 * (1 - t / ITERATIONS));
+      draw();
+      return;
+    }
+    // Animated: chunks per frame so a slow phone stays responsive instead of
+    // freezing for the whole simulation.
+    (function frame(){
+      for (var c = 0; c < 6 && t < ITERATIONS; c++, t++) step(temp0 * (1 - t / ITERATIONS));
+      draw();
+      if (t < ITERATIONS) requestAnimationFrame(frame);
+    })();
+  }
+
+  // --- Canvas ---
+  var ctx = canvas.getContext('2d');
+  var view = {scale: 0.62, ox: 0, oy: 0};
+  var focused = -1, near = null;
+
+  function sizeCanvas(){
+    var ratio = window.devicePixelRatio || 1;
+    // clientWidth is 0 when the page is opened over file:// — fall back so the
+    // canvas is still drawn rather than collapsing to nothing.
+    var cw = canvas.clientWidth || 640;
+    var ch = canvas.clientHeight || 520;
+    canvas.width = cw * ratio;
+    canvas.height = ch * ratio;
+    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+  }
+
+  function toScreen(p){
+    var cw = canvas.clientWidth || 640, ch = canvas.clientHeight || 520;
+    return {
+      x: (p.x - W / 2) * view.scale + cw / 2 + view.ox,
+      y: (p.y - H / 2) * view.scale + ch / 2 + view.oy
+    };
+  }
+
+  function nodeRadius(idx){
+    return nodes[idx].kind === 'hub' ? 4.5 : 3.6;
+  }
+
+  function draw(){
+    var cw = canvas.clientWidth || 640, ch = canvas.clientHeight || 520;
+    ctx.clearRect(0, 0, cw, ch);
+    var dim = focused >= 0;
+    var e, a, b, pa, pb;
+    for (e = 0; e < D.edges.length; e++){
+      if (!activeKinds[D.edges[e][2]]) continue;
+      a = D.edges[e][0]; b = D.edges[e][1];
+      var lit = !dim || (near[a] !== undefined && near[b] !== undefined);
+      ctx.strokeStyle = lit ? 'rgba(49,130,189,0.45)' : 'rgba(148,163,184,0.10)';
+      ctx.lineWidth = lit ? 1 : 0.6;
+      pa = toScreen(pos[a]); pb = toScreen(pos[b]);
+      ctx.beginPath(); ctx.moveTo(pa.x, pa.y); ctx.lineTo(pb.x, pb.y); ctx.stroke();
+    }
+    var labelled = [];
+    for (a = 0; a < nodes.length; a++){
+      var p = toScreen(pos[a]);
+      var inFocus = !dim || near[a] !== undefined;
+      ctx.globalAlpha = inFocus ? 1 : 0.18;
+      ctx.fillStyle = D.kind_colors[nodes[a].kind] || '#6b7280';
+      var r = nodeRadius(a) * (a === focused ? 2 : 1);
+      if (nodes[a].kind === 'hub'){
+        ctx.fillRect(p.x - r, p.y - r, r * 2, r * 2);
+      } else {
+        ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
+      }
+      if (a === focused){
+        ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(p.x, p.y, r + 3, 0, Math.PI * 2); ctx.stroke();
+      }
+      // Labelling all 362 nodes is unreadable; label the focused neighbourhood
+      // only, and cap it so a hub with 100 members does not turn to mud.
+      if (dim && near[a] !== undefined && labelled.length < 26) labelled.push([a, p]);
+      ctx.globalAlpha = 1;
+    }
+    ctx.font = '11px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';
+    ctx.fillStyle = '#1a1a2e';
+    for (var m = 0; m < labelled.length; m++){
+      var text = nodes[labelled[m][0]].label;
+      if (text.length > 34) text = text.slice(0, 33) + '…';
+      ctx.fillText(text, labelled[m][1].x + 7, labelled[m][1].y + 3);
+    }
+  }
+
+  // --- Pan / zoom ---
+  var dragging = false, dragged = false, lastX = 0, lastY = 0;
+  function pointerDown(x, y){ dragging = true; dragged = false; lastX = x; lastY = y; }
+  function pointerMove(x, y){
+    if (!dragging) return;
+    if (Math.abs(x - lastX) + Math.abs(y - lastY) > 3) dragged = true;
+    view.ox += x - lastX; view.oy += y - lastY;
+    lastX = x; lastY = y;
+    draw();
+  }
+  function zoom(factor){
+    view.scale = Math.min(4, Math.max(0.2, view.scale * factor));
+    draw();
+  }
+  canvas.addEventListener('mousedown', function(e){ pointerDown(e.clientX, e.clientY); });
+  window.addEventListener('mousemove', function(e){ pointerMove(e.clientX, e.clientY); });
+  window.addEventListener('mouseup', function(){ dragging = false; });
+  canvas.addEventListener('touchstart', function(e){
+    if (e.touches.length === 1) pointerDown(e.touches[0].clientX, e.touches[0].clientY);
+  }, {passive: true});
+  canvas.addEventListener('touchmove', function(e){
+    if (e.touches.length === 1){
+      e.preventDefault();
+      pointerMove(e.touches[0].clientX, e.touches[0].clientY);
+    }
+  }, {passive: false});
+  canvas.addEventListener('touchend', function(){ dragging = false; });
+  canvas.addEventListener('wheel', function(e){
+    e.preventDefault();
+    zoom(e.deltaY < 0 ? 1.12 : 1 / 1.12);
+  }, {passive: false});
+
+  // --- Focus ---
+  function setFocus(idx){
+    focused = idx;
+    var box = root.querySelector('#explore-focus');
+    if (idx < 0){
+      near = null;
+      box.textContent = 'No record focused — click a dot, or use Show connections on a result.';
+    } else {
+      var depth = parseInt(root.querySelector('#explore-depth').value, 10) || 1;
+      near = neighbourhood(idx, depth);
+      var count = 0;
+      for (var key2 in near){ if (near[key2] > 0) count++; }
+      var node = nodes[idx];
+      box.replaceChildren();
+      var strong = document.createElement('strong');
+      strong.textContent = node.label;
+      box.appendChild(strong);
+      box.appendChild(document.createTextNode(
+        ' · ' + (D.kind_labels[node.kind] || node.kind) +
+        ' · ' + count + ' connected within ' + depth + (depth === 1 ? ' hop' : ' hops')));
+      if (node.anchor){
+        box.appendChild(document.createTextNode(' · '));
+        var link = document.createElement('a');
+        link.href = '#' + node.anchor;
+        link.textContent = 'open card';
+        box.appendChild(link);
+      }
+    }
+    draw();
+    runSearch();
+  }
+
+  canvas.addEventListener('click', function(ev){
+    if (dragged) return;
+    var rect = canvas.getBoundingClientRect();
+    var mx = ev.clientX - rect.left, my = ev.clientY - rect.top;
+    var best = -1, bestDist = 12 * 12;
+    for (var a = 0; a < nodes.length; a++){
+      var p = toScreen(pos[a]);
+      var d2 = (p.x - mx) * (p.x - mx) + (p.y - my) * (p.y - my);
+      if (d2 < bestDist){ bestDist = d2; best = a; }
+    }
+    setFocus(best);
+  });
+
+  root.querySelector('#explore-zoom-in').addEventListener('click', function(){ zoom(1.2); });
+  root.querySelector('#explore-zoom-out').addEventListener('click', function(){ zoom(1 / 1.2); });
+  root.querySelector('#explore-reset').addEventListener('click', function(){
+    view = {scale: 0.62, ox: 0, oy: 0};
+    setFocus(-1);
+  });
+  root.querySelector('#explore-depth').addEventListener('change', function(){
+    if (focused >= 0) setFocus(focused);
+  });
+
+  // --- Edge-kind toggles ---
+  var edgeList = root.querySelector('#explore-edgelist');
+  D.edge_kinds.forEach(function(kind, idx){
+    var label = document.createElement('label');
+    label.className = 'explore-chip';
+    var box2 = document.createElement('input');
+    box2.type = 'checkbox';
+    box2.checked = activeKinds[idx];
+    box2.addEventListener('change', function(){
+      activeKinds[idx] = box2.checked;
+      rebuildAdjacency();
+      runLayout();
+      if (focused >= 0) setFocus(focused); else draw();
+    });
+    label.appendChild(box2);
+    label.appendChild(document.createTextNode(
+      ' ' + D.edge_kind_labels[idx] + (derived[kind] ? ' (derived)' : '')));
+    edgeList.appendChild(label);
+  });
+
+  // --- Search ---
+  var qBox = root.querySelector('#explore-q');
+  var resultsBox = root.querySelector('#explore-results');
+  var countLine = root.querySelector('#explore-count');
+  var familySel = root.querySelector('#explore-family');
+  var scopeBox = root.querySelector('#explore-scope');
+  var kindBoxes = [].slice.call(root.querySelectorAll('.explore-kind'));
+  var TOP_N = 12;
+  var emptyCopy = resultsBox.textContent.trim();
+
+  function passesFilters(nodeIdx){
+    var node = nodes[nodeIdx];
+    var kinds = {};
+    kindBoxes.forEach(function(c){ if (c.checked) kinds[c.value] = 1; });
+    if (!kinds[node.kind]) return false;
+    var family = familySel.value;
+    if (family){
+      var list = (node.attrs && node.attrs.statutes) || [];
+      if (list.indexOf(family) < 0) return false;
+    }
+    if (scopeBox.checked && focused >= 0 && (!near || near[nodeIdx] === undefined)) return false;
+    return true;
+  }
+
+  function runSearch(){
+    var text = qBox.value;
+    var counts = {}, any = false;
+    tokenize(text).forEach(function(tok){
+      var p = vocabPos[tok];
+      if (p === undefined) return;
+      counts[p] = (counts[p] || 0) + 1;
+      any = true;
+    });
+    if (!any){
+      countLine.textContent = '';
+      resultsBox.replaceChildren(emptyState(text));
+      return;
+    }
+    var qw = {}, norm = 0;
+    for (var p in counts){
+      var w = counts[p] * idf[p];
+      qw[p] = w; norm += w * w;
+    }
+    norm = Math.sqrt(norm) || 1;
+    var scored = [];
+    for (var d = 0; d < docs.length; d++){
+      var doc = docs[d];
+      if (!passesFilters(doc.node)) continue;
+      var total = 0, hits = [];
+      for (var j = 0; j < doc.t.length; j++){
+        var q = qw[doc.t[j]];
+        if (q === undefined) continue;
+        var part = (q / norm) * (doc.w[j] / D.weight_scale);
+        total += part;
+        hits.push([part, D.vocab[doc.t[j]]]);
+      }
+      if (total > 0){
+        hits.sort(function(x, y){ return y[0] - x[0]; });
+        scored.push({node: doc.node, score: total, terms: hits.slice(0, 3)});
+      }
+    }
+    scored.sort(function(x, y){ return y.score - x.score; });
+    render(scored.slice(0, TOP_N), scored.length);
+  }
+
+  function emptyState(text){
+    var div = document.createElement('div');
+    div.className = 'explore-empty';
+    div.textContent = text && text.trim()
+      ? 'No tracked record shares any term with that text. Try a longer passage, or ' +
+        'widen the kind and statute-family filters.'
+      : emptyCopy;
+    return div;
+  }
+
+  function render(rows, totalMatched){
+    if (!rows.length){
+      countLine.textContent = '';
+      resultsBox.replaceChildren(emptyState(qBox.value));
+      return;
+    }
+    countLine.textContent = 'Showing the closest ' + rows.length + ' of ' +
+      totalMatched + ' records that share language with this text.';
+    var top = rows[0].score || 1;
+    var frag = document.createDocumentFragment();
+    rows.forEach(function(row){
+      var node = nodes[row.node];
+      var card = document.createElement('div');
+      card.className = 'explore-result';
+
+      var head = document.createElement('div');
+      head.className = 'explore-result-head';
+      var dot = document.createElement('span');
+      dot.className = 'explore-dot';
+      dot.style.background = D.kind_colors[node.kind] || '#6b7280';
+      head.appendChild(dot);
+      if (node.anchor){
+        var a = document.createElement('a');
+        a.href = '#' + node.anchor;
+        a.textContent = node.label;
+        head.appendChild(a);
+      } else {
+        var strong2 = document.createElement('strong');
+        strong2.textContent = node.label;
+        head.appendChild(strong2);
+      }
+      var tag = document.createElement('span');
+      tag.className = 'explore-kindtag';
+      tag.textContent = D.kind_labels[node.kind] || node.kind;
+      head.appendChild(tag);
+      card.appendChild(head);
+
+      var bar = document.createElement('div');
+      bar.className = 'explore-bar';
+      var fill = document.createElement('span');
+      fill.style.width = Math.max(3, Math.round((row.score / top) * 100)) + '%';
+      bar.appendChild(fill);
+      card.appendChild(bar);
+
+      var terms = document.createElement('div');
+      terms.className = 'explore-terms';
+      terms.appendChild(document.createTextNode('matched '));
+      row.terms.forEach(function(t){
+        var chip = document.createElement('span');
+        chip.className = 'explore-term';
+        chip.textContent = t[1];
+        terms.appendChild(chip);
+      });
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'explore-btn';
+      btn.textContent = 'Show connections';
+      btn.addEventListener('click', function(){ setFocus(row.node); });
+      terms.appendChild(btn);
+      card.appendChild(terms);
+      frag.appendChild(card);
+    });
+    resultsBox.replaceChildren(frag);
+  }
+
+  var debounce;
+  qBox.addEventListener('input', function(){
+    clearTimeout(debounce);
+    debounce = setTimeout(runSearch, 180);
+  });
+  kindBoxes.forEach(function(c){ c.addEventListener('change', runSearch); });
+  familySel.addEventListener('change', runSearch);
+  scopeBox.addEventListener('change', runSearch);
+
+  // --- Boot ---
+  var started = false;
+  function start(){
+    if (started) return;
+    started = true;
+    sizeCanvas();
+    rebuildAdjacency();
+    runLayout();
+  }
+  window.addEventListener('resize', function(){
+    if (!started) return;
+    sizeCanvas();
+    draw();
+  });
+  // On the static site the panel is hidden until its tab is clicked, and a
+  // hidden canvas measures 0 — so defer the simulation until it is visible
+  // rather than burning ~7M force computations on every page load.
+  var panel = root.closest ? root.closest('.tabpanel') : null;
+  if (!panel || !panel.hidden){
+    start();
+  } else {
+    var tabBtn = document.querySelector('.tab[data-tab="' + panel.id.replace('panel-', '') + '"]');
+    if (tabBtn) tabBtn.addEventListener('click', function(){ setTimeout(start, 0); });
+  }
+})();
+"""
+
+
+def render_explore():
+    """Streamlit surface for the Explore tab.
+
+    The fragment is the same string ``build_site.py`` inlines, handed to an
+    iframe because the graph needs a canvas and its own event handlers —
+    neither of which survives ``st.markdown``'s sanitiser. Cross-tab "open
+    card" links cannot cross the iframe boundary; the static site is where
+    those resolve.
+    """
+    import streamlit.components.v1 as components
+
+    st.subheader("Explore")
+    st.markdown(EXPLORE_LEAD)
+    components.html(_build_explore_html(), height=800, scrolling=True)
+    st.caption(
+        "Graph edges are the cross-references the datasets declare, plus shared "
+        "taxonomy values (off by default). Similarity is TF-IDF over each record's "
+        "own text — lexical, not semantic."
+    )
+
+
 # --- Main App ---
 
 
@@ -4036,8 +4785,17 @@ def main():
         tab_news,
         tab_solutions,
         tab_sources,
+        tab_explore,
     ) = st.tabs(
-        ["Legislation", "Water Cases", "Issues & Claims", "News", "Solutions", "Sources"]
+        [
+            "Legislation",
+            "Water Cases",
+            "Issues & Claims",
+            "News",
+            "Solutions",
+            "Sources",
+            "Explore",
+        ]
     )
 
     # --- CWA Cases tab ---
@@ -4078,6 +4836,10 @@ def main():
     # --- Sources tab ---
     with tab_sources:
         render_sources_tab()
+
+    # --- Explore tab ---
+    with tab_explore:
+        render_explore()
 
     # --- Flow data (developer preview, hidden until live map tab ships) ---
     # render_data_freshness, render_inline_filters, render_hero,
