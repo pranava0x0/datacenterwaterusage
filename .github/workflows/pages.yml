@@ -34,8 +34,7 @@ jobs:
           set -eux
           # Only the deps build_site.py needs to import dashboard.py and render
           # markdown — not the full scraper stack — kept version-matched to
-          # requirements.txt. The static HTML is self-contained (data embedded),
-          # so nothing else is copied into _site/.
+          # requirements.txt.
           python -m pip install --upgrade pip
           pip install streamlit==1.50.0 plotly==6.6.0 pandas==2.3.3 markdown==3.9
 
@@ -43,8 +42,18 @@ jobs:
         run: |
           set -eux
           python build_site.py
+          rm -rf _site
           mkdir -p _site
-          cp pages/index.html _site/index.html
+          # Deploy every file build_site.py writes, not just the page. Until
+          # 2026-08-24 this copied index.html alone, which silently 404'd the
+          # llms.txt the page links to; graph-data.json (the Explore tab's
+          # data, fetched on first activation) would have failed the same way.
+          # Copying the directory rather than a hand-kept list means a future
+          # output cannot be forgotten here.
+          cp pages/*.* _site/
+          for f in index.html graph-data.json llms.txt; do
+            test -s "_site/$f" || { echo "missing or empty: _site/$f" >&2; exit 1; }
+          done
 
       - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
 

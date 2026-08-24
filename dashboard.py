@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import html
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import pandas as pd
@@ -36,6 +36,7 @@ from refdata.loaders import (  # noqa: F401
     CWA_INVESTIGATIONS_PATH,
     DC_WATER_CONFLICTS_PATH,
     LEGISLATION_PATH,
+    LOCAL_ACTIONS_PATH,
     WATER_AUTHORITIES_PATH,
     WATER_NEWS_PATH,
     WATER_SOLUTIONS_PATH,
@@ -44,11 +45,19 @@ from refdata.loaders import (  # noqa: F401
     load_cwa_investigations,
     load_dc_water_conflicts,
     load_legislation,
+    load_local_actions,
     load_water_authorities,
     load_water_news,
     load_water_solutions,
 )
+from refdata.graph import (  # noqa: F401
+    EDGE_KIND_LABELS,
+    KIND_COLORS as GRAPH_KIND_COLORS,
+    build_graph,
+    payload_json as graph_payload_json,
+)
 from refdata.registry import (  # noqa: F401
+    KIND_TABS,
     Ref,
     bill_anchor as _bill_anchor,
     build_registry,
@@ -77,12 +86,17 @@ from refdata.taxonomies import (  # noqa: F401
     LEGISLATION_STATUS_BADGE_COLORS,
     LEGISLATION_STATUS_LABELS,
     LEGISLATION_STATUS_ORDER,
+    LOCAL_ACTION_STATUS_COLORS,
+    LOCAL_ACTION_STATUS_LABELS,
+    LOCAL_ACTION_STATUS_ORDER,
+    LOCAL_ACTION_TYPE_LABELS,
     NEWS_TAG_COLORS,
     NEWS_TAG_LABELS,
     OUTCOME_TYPE_LABELS,
     SOLUTION_ACTOR_LABELS,
     SOLUTION_STATUS_COLORS,
     SOLUTION_STATUS_LABELS,
+    US_STATE_NAMES,
     WATER_STATUTE_COLORS,
     WATER_STATUTE_ORDER,
 )
@@ -174,6 +188,17 @@ def _classify_source(portal: str) -> str:
 
 
 # --- Page Config ---
+
+# One sentence, one definition, every surface: the Streamlit caption, the static
+# page's <h1> subtitle, its <meta name="description">, and the llms.txt
+# blockquote all read from here. The old copy ("Virginia & Ohio via public
+# regulatory data") described the scraper pipeline's first two states and had
+# been wrong since the curated datasets went national — 41 states of activity,
+# 25 statute families, 123 water cases, county and city measures.
+TAGLINE = (
+    "Tracking how US data centers draw, discharge, and disclose cooling water — "
+    "permits, enforcement, statutes, and state and local policy, from public records."
+)
 
 st.set_page_config(
     page_title="Data Center Water Use Tracker",
@@ -312,6 +337,128 @@ def render_sidebar(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     return filtered
+
+
+# --- Header water-loop schematic (shared with build_site.py) ---
+
+# One diagram, two surfaces. It answers the question every visitor asks before
+# the first card ("how does a data center use water, and where is it measured?")
+# and, in the same picture, explains why this project's primary source is EPA
+# ECHO DMR data from *receiving* wastewater plants rather than anything filed
+# by the operator: the sewer leg is the only leg with a permit on it.
+#
+# Drawing notes:
+#  - Coordinates are a 960x124 box, so 1 unit ~= 1 px at the site's content
+#    width and label sizes can be reasoned about directly (11 units ~= 0.7rem).
+#  - The pipe run is an OPEN path (intake -> outfall -> back up into the river),
+#    not a closed rectangle: the river closes the loop, not a pipe.
+#  - Everything except the flow animation uses presentation attributes rather
+#    than the <style> block, so the diagram still renders correctly on any
+#    surface that strips <style> — it just stops moving.
+_WL_PIPE_PATH = "M 50 54 H 856 V 96 H 20 V 72"
+_WL_FONT = (
+    "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"
+)
+
+# The one sanctioned animation on either surface (DESIGN.md §3/§12): pale
+# dashes drifting along the pipe. The offset is a whole number of dash periods
+# (28 = 6 + 22) so the loop has no visible jump, and 24 s over ~1,700 units is
+# roughly a slow walk — present in peripheral vision, never competing with the
+# data. Reduced-motion parks it as static direction ticks.
+_WL_ANIM_CSS = (
+    ".wl-flow{stroke-dasharray:6 22;animation:wl-drift 24s linear infinite}"
+    "@keyframes wl-drift{to{stroke-dashoffset:-1680}}"
+    "@media (prefers-reduced-motion:reduce){.wl-flow{animation:none}}"
+)
+
+
+def _build_water_loop_svg() -> str:
+    """The header water-loop schematic, as a self-contained SVG fragment.
+
+    Pure: no Streamlit, no data access — ``build_site.py`` inlines the same
+    string it returns, so the deployed page and the local app cannot drift.
+    """
+    return f"""<div class="schematic">
+<svg viewBox="0 0 960 124" role="img" aria-labelledby="wl-title wl-desc"
+     xmlns="http://www.w3.org/2000/svg" font-family="{_WL_FONT}">
+<title id="wl-title">How water moves through a data center</title>
+<desc id="wl-desc">River or wellfield intake, drinking-water treatment, the data
+center hall, a closed chiller loop, a cooling tower where evaporation leaves the
+basin, then blowdown to the sewer, the wastewater plant, and treated effluent
+back to the river.</desc>
+<style>{_WL_ANIM_CSS}</style>
+<g fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Sewer main drawn under the pipe run so the flow dashes ride over it:
+       heavier stroke because this leg is the metered one. -->
+  <path d="M 640 54 H 740" stroke="#08519c" stroke-width="5.5"/>
+  <path d="{_WL_PIPE_PATH}" stroke="#3182bd" stroke-width="3"/>
+  <path class="wl-flow" d="{_WL_PIPE_PATH}" stroke="#ffffff" stroke-width="1.6"
+        stroke-opacity="0.35"/>
+  <!-- River / wellfield, with a screened intake standing in it. The label sits
+       above this glyph, not below it like every other station: the return leg
+       runs underneath, discharging back into the same water. -->
+  <path d="M 6 40 Q 14 34 22 40 T 38 40 T 54 40 T 70 40" stroke="#6baed6" stroke-width="1.6"/>
+  <path d="M 6 54 Q 14 48 22 54 T 38 54" stroke="#3182bd" stroke-width="1.8"/>
+  <path d="M 6 68 Q 14 62 22 68 T 38 68 T 54 68 T 70 68" stroke="#6baed6" stroke-width="1.6"/>
+  <rect x="38" y="46" width="12" height="16" fill="#ffffff" stroke="#3182bd" stroke-width="1.4"/>
+  <path d="M 41 51 H 47 M 41 57 H 47" stroke="#6baed6" stroke-width="1.2"/>
+  <path d="M 16 77 L 20 70 L 24 77 Z" fill="#3182bd" stroke="none"/>
+  <!-- Drinking-water treatment: two clarifiers and a filter bed. -->
+  <rect x="120" y="38" width="80" height="32" rx="2" fill="#ffffff" stroke="#3182bd" stroke-width="1.6"/>
+  <circle cx="142" cy="54" r="7" stroke="#6baed6" stroke-width="1.2"/>
+  <circle cx="166" cy="54" r="7" stroke="#6baed6" stroke-width="1.2"/>
+  <rect x="180" y="46" width="12" height="16" stroke="#6baed6" stroke-width="1.2"/>
+  <!-- Data center hall: three slotted racks. -->
+  <rect x="246" y="32" width="154" height="44" rx="3" fill="#ffffff" stroke="#08519c" stroke-width="1.8"/>
+  <rect x="262" y="39" width="32" height="30" fill="#eff3ff" stroke="#3182bd" stroke-width="1.2"/>
+  <path d="M 267 46 H 289 M 267 52 H 289 M 267 58 H 289 M 267 64 H 289" stroke="#6baed6" stroke-width="1.5"/>
+  <rect x="306" y="39" width="32" height="30" fill="#eff3ff" stroke="#3182bd" stroke-width="1.2"/>
+  <path d="M 311 46 H 333 M 311 52 H 333 M 311 58 H 333 M 311 64 H 333" stroke="#6baed6" stroke-width="1.5"/>
+  <rect x="350" y="39" width="32" height="30" fill="#eff3ff" stroke="#3182bd" stroke-width="1.2"/>
+  <path d="M 355 46 H 377 M 355 52 H 377 M 355 58 H 377 M 355 64 H 377" stroke="#6baed6" stroke-width="1.5"/>
+  <!-- Closed chiller loop: the water inside recirculates, so only makeup in
+       and blowdown out ever cross this boundary. Arrows show circulation. -->
+  <rect x="428" y="36" width="88" height="36" rx="18" fill="#ffffff" stroke="#3182bd" stroke-width="1.6"/>
+  <path d="M 466 32 L 476 36 L 466 40 Z" fill="#3182bd" stroke="none"/>
+  <path d="M 478 68 L 468 72 L 478 76 Z" fill="#3182bd" stroke="none"/>
+  <!-- Cooling tower, hyperboloid silhouette, with the drift rising off it. -->
+  <path d="M 556 76 C 566 62 566 46 562 34 L 610 34 C 606 46 606 62 616 76 Z"
+        fill="#ffffff" stroke="#08519c" stroke-width="1.8"/>
+  <path d="M 550 76 H 622 M 556 68 H 616" stroke="#08519c" stroke-width="1.6"/>
+  <path d="M 568 32 C 564 26 572 22 568 16 C 565 11 570 9 568 6" stroke="#6baed6" stroke-width="1.5"/>
+  <path d="M 586 32 C 582 25 590 20 586 13 C 583 9 588 7 586 4" stroke="#6baed6" stroke-width="1.5"/>
+  <path d="M 604 32 C 600 26 608 22 604 16 C 601 11 606 9 604 6" stroke="#6baed6" stroke-width="1.5"/>
+  <path d="M 630 20 H 612" stroke="#6baed6" stroke-width="1.2"/>
+  <!-- Wastewater plant: clarifiers plus an aeration basin. -->
+  <rect x="750" y="38" width="92" height="32" rx="2" fill="#ffffff" stroke="#08519c" stroke-width="1.8"/>
+  <circle cx="770" cy="54" r="8" stroke="#6baed6" stroke-width="1.2"/>
+  <circle cx="794" cy="54" r="8" stroke="#6baed6" stroke-width="1.2"/>
+  <rect x="810" y="46" width="24" height="16" stroke="#6baed6" stroke-width="1.2"/>
+  <path d="M 813 55 q 3 -4 6 0 t 6 0 t 6 0" stroke="#6baed6" stroke-width="1.2"/>
+  <!-- Fittings at the joints, the same motif the page texture carries. -->
+  <circle cx="640" cy="54" r="4" fill="#08519c" stroke="none"/>
+  <circle cx="740" cy="54" r="4" fill="#08519c" stroke="none"/>
+  <circle cx="856" cy="54" r="4" fill="#3182bd" stroke="none"/>
+  <circle cx="20" cy="96" r="4" fill="#3182bd" stroke="none"/>
+</g>
+<g font-size="11" fill="#4b5563" text-anchor="middle">
+  <text x="46" y="30">river / wellfield</text>
+  <text x="160" y="86">treatment plant</text>
+  <text x="323" y="86">data center hall</text>
+  <text x="472" y="86">closed chiller loop</text>
+  <text x="586" y="86">cooling tower</text>
+  <text x="690" y="86">blowdown &#8594; sewer</text>
+  <text x="796" y="86">wastewater plant</text>
+  <text x="230" y="113" font-size="10">treated effluent returns to the river</text>
+</g>
+<g font-size="10" fill="#08519c" font-weight="600">
+  <text x="634" y="16">evaporation is the consumptive loss &#8212;</text>
+  <text x="634" y="28">this water leaves the basin, not the sewer</text>
+  <circle cx="422" cy="110" r="3" fill="#08519c"/>
+  <text x="432" y="113">the sewer leg is metered on the receiving plant&#8217;s NPDES permit &#8212; that is where the data shows up</text>
+</g>
+</svg>
+</div>"""
 
 
 # --- Hero Metrics ---
@@ -1724,6 +1871,491 @@ def _build_legislation_themes_html(bills: list[dict]) -> str:
     return '<div class="theme-grid">' + ''.join(cards) + '</div>' + solutions_box
 
 
+# --- States & Localities Tab ---
+
+# How far back "what's new" reaches. Four months is long enough that a tab
+# opened after a quiet stretch is never empty, short enough that the list
+# stays readable without paging.
+STATES_WINDOW_DAYS = 120
+
+STATES_LEAD = (
+    "What each state and locality is actually doing about data-center water: "
+    "everything that moved in the last four months, a per-state rollup of the "
+    "instruments this tracker follows, and the county and city measures the "
+    "legislation tracker is too coarse to hold."
+)
+
+
+def _month_start(value: str) -> datetime | None:
+    """Parse a ``YYYY-MM`` or ``YYYY-MM-DD`` date string.
+
+    County and city actions are recorded to the month, so a month-only value
+    is read as the first of that month. That is the conservative reading for
+    the what's-new window: an action can only enter the window once the whole
+    month it happened in is inside it.
+    """
+    if not value:
+        return None
+    parts = str(value).split("-")
+    try:
+        year, month = int(parts[0]), int(parts[1])
+        day = int(parts[2]) if len(parts) > 2 else 1
+        return datetime(year, month, day)
+    except (ValueError, IndexError):
+        return None
+
+
+def _instrument_movement_date(bill: dict, today: datetime) -> str:
+    """The date an instrument last actually moved, as of ``today``.
+
+    The latest date in its ``timeline`` that has already happened — a filing,
+    a vote, a signature. Scheduled future milestones (a reporting deadline in
+    2027) are common in this dataset and are not movement, so they are
+    excluded; without that, half the tracker's instruments would sort to the
+    top of the what's-new list on the strength of a deadline nobody has met
+    yet. Falls back to ``last_verified`` only when nothing in the timeline has
+    happened yet: a re-verification is curation, not movement, so it is a last
+    resort rather than a signal.
+    """
+    stamp = today.strftime("%Y-%m-%d")
+    dates = [
+        ev.get("date", "")
+        for ev in bill.get("timeline", [])
+        if ev.get("date") and ev["date"] <= stamp
+    ]
+    return max(dates) if dates else bill.get("last_verified", "")
+
+
+def _state_code_for(jurisdiction: str) -> str | None:
+    """Two-letter code for an instrument's jurisdiction string, or None.
+
+    Handles the three shapes the dataset uses: a bare state name
+    ('Texas'), a county/city string ending in a state name ("Prince George's
+    County, Maryland"), and the parenthesised local form ('Local (Denver,
+    CO)'). Federal jurisdictions ('Federal (US)', 'United States') return
+    None and drop out of the rollup.
+    """
+    text = (jurisdiction or "").strip()
+    if not text or text in ("Federal (US)", "United States"):
+        return None
+    by_name = {name: code for code, name in US_STATE_NAMES.items()}
+    if text in by_name:
+        return by_name[text]
+    for token in re.findall(r"\b([A-Z]{2})\b", text):
+        if token in US_STATE_NAMES:
+            return token
+    # Longest name first so 'West Virginia' is not read as 'Virginia'.
+    for name in sorted(by_name, key=len, reverse=True):
+        if name in text:
+            return by_name[name]
+    return None
+
+
+def _states_whats_new(
+    bills: list[dict],
+    actions: list[dict],
+    today: datetime,
+    window_days: int = STATES_WINDOW_DAYS,
+) -> list[dict]:
+    """Instruments and local actions that moved within ``window_days`` of ``today``.
+
+    Pure: the caller supplies ``today``, so the boundary is testable and the
+    static build is reproducible. Newest first; ties break on jurisdiction
+    then label so the order is stable across builds.
+    """
+    # Truncate to midnight: event dates parse as midnight, so a wall-clock
+    # ``today`` would make the exactly-``window_days``-old record's inclusion
+    # depend on the time of day the site was built.
+    today = datetime.combine(today.date(), datetime.min.time())
+    cutoff = today - timedelta(days=window_days)
+    rows: list[dict] = []
+
+    for bill in bills:
+        # State and local only. A federal bill moving is real news, but it is
+        # the Legislation tab's news, and mixing it in here answers a question
+        # this tab is not asking.
+        code = _state_code_for(bill.get("jurisdiction", ""))
+        if not code:
+            continue
+        moved = _instrument_movement_date(bill, today)
+        when = _month_start(moved)
+        if when is None or when < cutoff:
+            continue
+        milestones = [ev for ev in bill.get("timeline", []) if ev.get("date") == moved]
+        latest = milestones[-1] if milestones else {}
+        status = bill.get("status", "unknown")
+        rows.append(
+            {
+                "kind": "instrument",
+                "date": moved,
+                "sort_date": when,
+                "state": code,
+                "jurisdiction": bill.get("jurisdiction", ""),
+                "label": bill.get("bill_id", ""),
+                "title": bill.get("title", ""),
+                "status": status,
+                "status_label": LEGISLATION_STATUS_LABELS.get(status, status),
+                "status_color": LEGISLATION_STATUS_BADGE_COLORS.get(
+                    status, COLORS["secondary"]
+                ),
+                "detail": latest.get("milestone", "") or bill.get("title", ""),
+                "anchor": _bill_anchor(bill.get("bill_id", "")),
+                "url": "",
+            }
+        )
+
+    for action in actions:
+        when = _month_start(action.get("date", ""))
+        if when is None or when < cutoff:
+            continue
+        status = action.get("status", "")
+        code = action.get("state", "")
+        rows.append(
+            {
+                "kind": "action",
+                "date": action.get("date", ""),
+                "sort_date": when,
+                "state": code,
+                "jurisdiction": f"{action.get('jurisdiction', '')}, {code}",
+                "label": action.get("jurisdiction", ""),
+                "title": LOCAL_ACTION_TYPE_LABELS.get(
+                    action.get("action_type", ""), action.get("action_type", "")
+                ),
+                "status": status,
+                "status_label": LOCAL_ACTION_STATUS_LABELS.get(status, status),
+                "status_color": LOCAL_ACTION_STATUS_COLORS.get(
+                    status, COLORS["secondary"]
+                ),
+                "detail": action.get("water_angle") or action.get("summary", ""),
+                "anchor": "",
+                "url": action.get("source_url", ""),
+            }
+        )
+
+    rows.sort(key=lambda r: (r["sort_date"], r["jurisdiction"], r["label"]), reverse=True)
+    return rows
+
+
+def _state_rollup(
+    bills: list[dict], actions: list[dict], today: datetime
+) -> list[dict]:
+    """One row per state with tracked activity, newest first.
+
+    A state is here because something happened in it, not because it exists —
+    absence means nothing has been tracked, not that nothing is going on.
+    """
+    by_state: dict[str, dict] = {}
+
+    def bucket(code: str) -> dict:
+        return by_state.setdefault(
+            code,
+            {
+                "state": code,
+                "state_name": US_STATE_NAMES.get(code, code),
+                "instruments": [],
+                "actions": [],
+                "status_counts": {},
+                "action_status_counts": {},
+                "principles": {},
+                "newest": "",
+            },
+        )
+
+    for bill in bills:
+        code = _state_code_for(bill.get("jurisdiction", ""))
+        if not code:
+            continue
+        row = bucket(code)
+        status = bill.get("status", "unknown")
+        row["instruments"].append(
+            {
+                "bill_id": bill.get("bill_id", ""),
+                "status": status,
+                "anchor": _bill_anchor(bill.get("bill_id", "")),
+            }
+        )
+        row["status_counts"][status] = row["status_counts"].get(status, 0) + 1
+        for tag in {p.get("tag", "") for p in bill.get("general_principles", [])}:
+            if tag:
+                row["principles"][tag] = row["principles"].get(tag, 0) + 1
+        row["newest"] = max(row["newest"], _instrument_movement_date(bill, today))
+
+    for action in actions:
+        code = action.get("state", "")
+        if not code:
+            continue
+        row = bucket(code)
+        row["actions"].append(action)
+        status = action.get("status", "")
+        row["action_status_counts"][status] = (
+            row["action_status_counts"].get(status, 0) + 1
+        )
+        row["newest"] = max(row["newest"], action.get("date", ""))
+
+    rows = list(by_state.values())
+    for row in rows:
+        row["instruments"].sort(
+            key=lambda i: (LEGISLATION_STATUS_ORDER.get(i["status"], 9), i["bill_id"])
+        )
+        row["top_principles"] = [
+            tag
+            for tag, _ in sorted(
+                row["principles"].items(), key=lambda kv: (-kv[1], kv[0])
+            )[:3]
+        ]
+        row["water_actions"] = sum(1 for a in row["actions"] if a.get("water_related"))
+    rows.sort(key=lambda r: (r["newest"], r["state"]), reverse=True)
+    return rows
+
+
+def _states_metrics(rollup: list[dict], actions: list[dict]) -> dict:
+    """The three numbers the tab's summary panel leads with."""
+    newest = max((r["newest"] for r in rollup), default="—")
+    return {
+        "states_active": len(rollup),
+        "actions_tracked": len(actions),
+        "newest": newest or "—",
+    }
+
+
+def _status_pill_html(label: str, color: str) -> str:
+    """DESIGN.md §8 filled status pill. Reuses `.cwa-status-pill`, which is
+    that pattern's one definition in assets/components.css despite the
+    legacy prefix — a second class with identical rules is exactly the drift
+    the shared stylesheet exists to prevent."""
+    return (
+        f'<span class="cwa-status-pill" style="background:{color}">'
+        f'{html.escape(label)}</span>'
+    )
+
+
+# How many movements the what's-new list shows before deferring to the
+# sections below it. The 2026 moratorium wave routinely puts 100+ rows inside
+# a four-month window, which stops being "what's new" and becomes a second
+# copy of the table.
+WHATS_NEW_LIMIT = 20
+
+
+def _build_whats_new_html(rows: list[dict], window_days: int = STATES_WINDOW_DAYS) -> str:
+    """The 'what moved' list at the top of the States & Localities tab."""
+    esc = html.escape
+    if not rows:
+        return (
+            '<p class="src-note">Nothing tracked moved in the last '
+            f'{window_days} days.</p>'
+        )
+    shown = rows[:WHATS_NEW_LIMIT]
+    count_line = (
+        f'<p class="count-line"><strong>{len(rows)} movements</strong> in the last '
+        f'{window_days} days'
+        + (f' — showing the {len(shown)} most recent.' if len(rows) > len(shown) else '.')
+        + '</p>'
+    )
+    items = []
+    for r in shown:
+        if r["anchor"]:
+            name = f'<a href="#{esc(r["anchor"])}">{esc(r["label"])}</a>'
+        elif r["url"]:
+            name = (
+                f'<a href="{esc(r["url"])}" target="_blank" rel="noopener">'
+                f'{esc(r["label"])}</a>'
+            )
+        else:
+            name = esc(r["label"])
+        items.append(
+            '<div class="whatsnew-row">'
+            f'<div class="whatsnew-date">{esc(r["date"])}</div>'
+            '<div class="whatsnew-body">'
+            f'<span class="whatsnew-place">{esc(r["jurisdiction"])}</span> '
+            f'<span class="whatsnew-name">{name}</span> '
+            f'{_status_pill_html(r["status_label"], r["status_color"])}'
+            f'<div class="whatsnew-detail">{esc(r["detail"])}</div>'
+            '</div></div>'
+        )
+    return count_line + f'<div class="whatsnew">{"".join(items)}</div>'
+
+
+def _build_state_rollup_html(rollup: list[dict], fold_after: int | None = None) -> str:
+    """Responsive grid of per-state cards, newest activity first.
+
+    ``fold_after`` puts everything past the Nth state behind a "show the rest"
+    expander. The grid is three columns on a desktop, but one on a phone, where
+    41 stacked cards is most of the tab's scroll depth and the states a reader
+    came for are the ones that moved most recently — which is the sort order.
+    The expander is emitted ``open`` so a reader without JavaScript sees the
+    whole roll-up; ``data-collapsed`` is what closes it (see build_site.CSS).
+    """
+    esc = html.escape
+    if not rollup:
+        return ""
+    if fold_after is not None and len(rollup) > fold_after:
+        head = _build_state_rollup_html(rollup[:fold_after])
+        rest = _build_state_rollup_html(rollup[fold_after:])
+        n = len(rollup) - fold_after
+        return (
+            f"{head}"
+            f'<details class="card-fold" data-collapsed="1" open>'
+            f'<summary>Show the remaining {n} states</summary>{rest}</details>'
+        )
+    cards = []
+    for row in rollup:
+        counts = []
+        for status, n in sorted(
+            row["status_counts"].items(),
+            key=lambda kv: LEGISLATION_STATUS_ORDER.get(kv[0], 9),
+        ):
+            counts.append(
+                f'<span class="state-count">'
+                f'<strong style="color:{LEGISLATION_STATUS_BADGE_COLORS.get(status, COLORS["secondary"])}">'
+                f'{n}</strong> {esc(LEGISLATION_STATUS_LABELS.get(status, status))}</span>'
+            )
+        if row["actions"]:
+            counts.append(
+                f'<span class="state-count"><strong>{len(row["actions"])}</strong> '
+                f'local ({row["water_actions"]} water)</span>'
+            )
+        chips = "".join(
+            f'<span class="bill-principle-chip">{esc(tag)}</span>'
+            for tag in row["top_principles"]
+        )
+        links = " · ".join(
+            f'<a href="#{esc(i["anchor"])}">{esc(i["bill_id"])}</a>'
+            for i in row["instruments"][:3]
+        )
+        if len(row["instruments"]) > 3:
+            links += f' +{len(row["instruments"]) - 3} more'
+        cards.append(
+            '<div class="state-card">'
+            f'<div class="state-card-head"><span class="state-card-name">'
+            f'{esc(row["state_name"])}</span>'
+            f'<span class="state-card-date">{esc(row["newest"])}</span></div>'
+            f'<div class="state-counts">{"".join(counts)}</div>'
+            + (f'<div class="state-chips">{chips}</div>' if chips else "")
+            + (f'<div class="state-links">{links}</div>' if links else "")
+            + '</div>'
+        )
+    return f'<div class="state-grid">{"".join(cards)}</div>'
+
+
+def _build_local_actions_table_html(actions: list[dict]) -> str:
+    """Filterable table of county and city actions.
+
+    Each row carries its filter values as data attributes so the static
+    site's vanilla-JS filters and the Streamlit render share one markup
+    definition. The mirrored summary sits behind a per-row toggle — the
+    columns Spec D names are the scannable part, the summary is the evidence.
+    """
+    esc = html.escape
+    rows = []
+    for a in actions:
+        status = a.get("status", "")
+        water = bool(a.get("water_related"))
+        angle = a.get("water_angle") or ("" if water else "—")
+        rows.append(
+            # data-action-id, not id: Spec D v1 deliberately keeps these
+            # records out of the registry, so they get no in-page anchors.
+            f'<tr data-action-id="{esc(a.get("action_id", ""))}" '
+            f'data-state="{esc(a.get("state", ""))}" '
+            f'data-status="{esc(status)}" '
+            f'data-type="{esc(a.get("action_type", ""))}" '
+            f'data-water="{"1" if water else "0"}">'
+            f'<td class="la-place"><strong>{esc(a.get("jurisdiction", ""))}</strong>'
+            f'<span class="la-state">{esc(a.get("state", ""))}</span></td>'
+            f'<td>{esc(LOCAL_ACTION_TYPE_LABELS.get(a.get("action_type", ""), a.get("action_type", "")))}</td>'
+            f'<td>{_status_pill_html(LOCAL_ACTION_STATUS_LABELS.get(status, status), LOCAL_ACTION_STATUS_COLORS.get(status, COLORS["secondary"]))}</td>'
+            f'<td class="la-date">{esc(a.get("date", ""))}</td>'
+            f'<td class="la-angle">{esc(angle)}'
+            f'<details class="la-more"><summary>What it does</summary>'
+            f'<span>{esc(a.get("summary", ""))}</span></details></td>'
+            f'<td><a href="{esc(a.get("source_url", ""))}" target="_blank" '
+            f'rel="noopener">Source</a></td>'
+            f'</tr>'
+        )
+    return (
+        '<div class="table-wrap"><table class="data-table" id="local-actions-table">'
+        '<thead><tr><th>Jurisdiction</th><th>Action</th><th>Status</th>'
+        '<th>Date</th><th>Water angle</th><th>Link</th></tr></thead>'
+        f'<tbody>{"".join(rows)}</tbody></table></div>'
+    )
+
+
+def render_states_tab(today: datetime | None = None):
+    """Render the States & Localities tab (Streamlit)."""
+    st.subheader("States & Localities")
+    st.markdown(STATES_LEAD)
+
+    today = today or datetime.now()
+    bills = load_legislation().get("bills", [])
+    payload = load_local_actions()
+    actions = payload.get("actions", [])
+    rollup = _state_rollup(bills, actions, today)
+    metrics = _states_metrics(rollup, actions)
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric("States active", metrics["states_active"])
+    c2.metric("Local actions tracked", metrics["actions_tracked"])
+    c3.metric("Newest action", metrics["newest"])
+    st.divider()
+
+    st.markdown(
+        f'<h3 class="solution-cat-header">What\'s new — last '
+        f'{STATES_WINDOW_DAYS} days</h3>',
+        unsafe_allow_html=True,
+    )
+    whats_new = _states_whats_new(bills, actions, today)
+    st.markdown(_build_whats_new_html(whats_new), unsafe_allow_html=True)
+
+    st.markdown(
+        '<h3 class="solution-cat-header">State rollup</h3>', unsafe_allow_html=True
+    )
+    st.caption(
+        "Activity-based, not exhaustive: a state appears because something "
+        "tracked happened there, and its absence means nothing has been "
+        "tracked rather than that nothing is happening."
+    )
+    st.markdown(_build_state_rollup_html(rollup), unsafe_allow_html=True)
+
+    st.markdown(
+        '<h3 class="solution-cat-header">County &amp; city actions</h3>',
+        unsafe_allow_html=True,
+    )
+    codes = sorted({a.get("state", "") for a in actions if a.get("state")})
+    picked_states = st.multiselect(
+        "State", options=codes, default=codes, key="local_action_states"
+    )
+    picked_status = st.multiselect(
+        "Status",
+        options=list(LOCAL_ACTION_STATUS_LABELS),
+        default=list(LOCAL_ACTION_STATUS_LABELS),
+        format_func=lambda s: LOCAL_ACTION_STATUS_LABELS[s],
+        key="local_action_status",
+    )
+    picked_types = st.multiselect(
+        "Action type",
+        options=list(LOCAL_ACTION_TYPE_LABELS),
+        default=list(LOCAL_ACTION_TYPE_LABELS),
+        format_func=lambda t: LOCAL_ACTION_TYPE_LABELS[t],
+        key="local_action_types",
+    )
+    water_only = st.toggle(
+        "Water-related only", value=True, key="local_action_water_only"
+    )
+    filtered = [
+        a
+        for a in actions
+        if a.get("state") in set(picked_states)
+        and a.get("status") in set(picked_status)
+        and a.get("action_type") in set(picked_types)
+        and (not water_only or a.get("water_related"))
+    ]
+    st.markdown(f"**Showing {len(filtered)} of {len(actions)} actions**")
+    st.markdown(_build_local_actions_table_html(filtered), unsafe_allow_html=True)
+    st.caption(
+        f"Dataset last updated {payload.get('last_updated') or 'unknown'}. "
+        f"Mirrored from {payload.get('source_repo', '')}."
+    )
+
+
 # --- Water News Tab ---
 
 def _cross_ref_link_map() -> list[tuple[str, str]]:
@@ -2707,6 +3339,10 @@ def render_cwa_tracker():
     conflicts_payload = load_dc_water_conflicts()
     sites = conflicts_payload.get("sites", [])
     n_readings = len(authorities_payload.get("readings", []))
+    # Derived, not enumerated: the intro used to name the five federal statutes
+    # the registry started with, and had been wrong since the first doctrine
+    # family landed.
+    n_families = len(authorities_payload.get("statutes", {}))
 
     # Sub-tabs instead of stacked expanders: Part 2 (the historical record
     # most users want) no longer sits behind Part 1's content in the scroll
@@ -2723,8 +3359,10 @@ def render_cwa_tracker():
 
     with part_tabs[0]:
         st.markdown(
-            f"**{n_readings} statutory readings** "
-            "across the CWA, SDWA, TSCA, RCRA, and the Rivers & Harbors Act — each "
+            f"**{n_readings} statutory readings** across {n_families} authority "
+            "families — the federal discharge statutes, the supply-side ones that "
+            "govern storage, withdrawal and licensing, interstate compacts, and "
+            "state water doctrine — each "
             "card explains what the authority historically covered, how it could "
             "apply to a data-center fact pattern, and which cases below show it in "
             "use. Case and site cards link back here via the *statute applicability* rows. "
@@ -4009,6 +4647,792 @@ def render_sources_tab():
     st.caption("Reference dataset — updated as new sources come online.")
 
 
+# --- Explore tab (connection graph + text similarity) ---
+#
+# One builder, two surfaces: build_site.py drops the fragment straight into the
+# Explore tabpanel, and render_explore() hands the same string to
+# st.components.v1.html. That is why the fragment carries its own <style> and
+# <script> — inside the Streamlit iframe there is no page stylesheet to inherit
+# and no parent JS to rely on.
+
+EXPLORE_LEAD = (
+    "Every curated record in one graph, plus a text search across all of them. "
+    "Click a dot to see what a record connects to, or paste a paragraph — a news "
+    "story, a permit notice, a draft ordinance — to find the records that use the "
+    "same language."
+)
+
+EXPLORE_EMPTY_STATE = (
+    "Nothing searched yet. Paste a paragraph above to find the records that use "
+    "the same language, click any dot to see what a record connects to, or "
+    "combine the two by narrowing results to a record kind, a statute family, or "
+    "the neighbourhood around the record you clicked."
+)
+
+
+def _explore_css() -> str:
+    """Scoped styles for the Explore fragment.
+
+    Everything is under ``.explore`` because this string is injected into two
+    very different documents: the static page (where it must not touch the
+    card CSS) and a bare Streamlit iframe (where nothing else is defined, so
+    even the body font has to be stated here).
+    """
+    return """
+.explore{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color:#1a1a2e;line-height:1.5;font-size:.92rem}
+.explore-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:1rem;align-items:start}
+@media (max-width:900px){.explore-grid{grid-template-columns:minmax(0,1fr)}}
+.explore-side,.explore-main{min-width:0}
+.explore-label{display:block;font-weight:600;font-size:.88rem;margin:0 0 .3rem}
+.explore textarea{width:100%;font:inherit;font-size:.88rem;padding:.55rem .7rem;border:1px solid #cbd5e1;
+  border-radius:.4rem;background:#fff;resize:vertical}
+.explore select{font:inherit;font-size:.84rem;padding:.25rem .4rem;border:1px solid #bdd7e7;
+  border-radius:.4rem;background:#fff;color:#1a1a2e}
+.explore-controls{display:flex;flex-wrap:wrap;gap:.4rem .7rem;align-items:center;margin:.6rem 0}
+/* A select's minimum width is its widest option — the statute-family names
+   are long enough to drag the whole page sideways on phones without this. */
+.explore-controls select{max-width:100%;min-width:0}
+.explore-controls-label{font-weight:600;font-size:.84rem}
+.explore-chip{display:inline-flex;align-items:center;gap:.35rem;font-size:.82rem;background:#eff3ff;
+  border:1px solid #bdd7e7;border-radius:999px;padding:.2rem .6rem;cursor:pointer}
+.explore-chip input{accent-color:#08519c;margin:0}
+.explore-btn{appearance:none;font:inherit;font-size:.8rem;font-weight:600;color:#08519c;background:#eff3ff;
+  border:1px solid #bdd7e7;border-radius:.35rem;padding:.25rem .55rem;cursor:pointer;min-height:32px}
+.explore-btn:hover{background:#dfeafb}
+.explore-count{font-size:.84rem;color:#4b5563;margin:.5rem 0 .4rem}
+.explore-results{max-height:26rem;overflow-y:auto;padding-right:.2rem}
+.explore-empty{border:1px solid #cbd5e1;border-radius:.5rem;background:#fff;padding:.75rem .9rem;
+  font-size:.86rem;color:#333}
+.explore-result{border:1px solid #e2e8f0;border-radius:.5rem;background:#fff;padding:.55rem .7rem;margin:0 0 .45rem;
+  box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.explore-result-head{display:flex;align-items:baseline;gap:.4rem;flex-wrap:wrap}
+.explore-dot{width:.6rem;height:.6rem;border-radius:50%;display:inline-block;flex:none}
+.explore-result a{color:#08519c;font-weight:600;text-decoration:none;font-size:.88rem}
+.explore-result a:hover{text-decoration:underline}
+.explore-kindtag{font-size:.72rem;font-weight:600;color:#4b5563;border:1px solid #e2e8f0;
+  border-radius:999px;padding:.02rem .45rem;background:#f8fafc}
+.explore-bar{height:.35rem;border-radius:999px;background:#eff3ff;margin:.35rem 0 .3rem;overflow:hidden}
+.explore-bar span{display:block;height:100%;background:#3182bd}
+.explore-terms{font-size:.76rem;color:#4b5563}
+.explore-term{background:#eff3ff;border:1px solid #bdd7e7;border-radius:999px;padding:.02rem .4rem;margin-right:.25rem}
+.explore-toolbar{display:flex;flex-wrap:wrap;gap:.4rem .6rem;align-items:center;justify-content:space-between;
+  margin:0 0 .4rem}
+.explore-focus{font-size:.84rem;color:#1a1a2e;min-width:0}
+.explore-focus a{color:#08519c}
+.explore-tools{display:flex;gap:.35rem;align-items:center;font-size:.8rem;color:#4b5563}
+.explore-canvas{width:100%;height:520px;display:block;background:#fff;border:1px solid #cbd5e1;
+  border-radius:.5rem;touch-action:none;cursor:grab}
+.explore-canvas:active{cursor:grabbing}
+@media (max-width:900px){.explore-canvas{height:380px}}
+.explore-hint{font-size:.76rem;color:#6b7280;margin:.3rem 0 .5rem}
+.explore-legend{display:flex;flex-wrap:wrap;gap:.3rem .7rem;font-size:.76rem;color:#4b5563;margin-bottom:.5rem}
+.explore-legend span.explore-dot{margin-right:.25rem}
+.explore-edges{border:1px solid #cbd5e1;border-radius:.5rem;background:#fff}
+.explore-edges>summary{cursor:pointer;font-weight:600;color:#08519c;padding:.5rem .7rem;font-size:.85rem;
+  list-style:none;min-height:36px;display:flex;align-items:center}
+.explore-edges>summary::-webkit-details-marker{display:none}
+.explore-edges>summary::before{content:"\\25B8";margin-right:.4rem}
+.explore-edges[open]>summary::before{content:"\\25BE"}
+.explore-edgelist{display:flex;flex-wrap:wrap;gap:.3rem .5rem;padding:0 .7rem .7rem}
+.explore-noscript{border-left:3px solid #b45309;background:#fffbeb;padding:.65rem .9rem;
+  border-radius:0 .4rem .4rem 0;margin-bottom:.8rem}
+.explore-noscript ul{margin:.4rem 0 0;padding-left:1.1rem;font-size:.86rem}
+"""
+
+
+def _explore_noscript_html(counts: dict[str, int]) -> str:
+    """What a reader without JavaScript gets: the honest version.
+
+    The graph and the cosine search are both client-side computation, so there
+    is no degraded rendering of them to offer — saying so and pointing at the
+    tabs that hold the same records is more useful than an empty canvas.
+    """
+    rows = "".join(
+        f'<li><a href="#panel-{html.escape(KIND_TABS[kind])}">'
+        f"{html.escape(EXPLORE_KIND_LABELS[kind])}</a> — {count} records</li>"
+        for kind, count in counts.items()
+    )
+    return (
+        '<noscript><div class="explore-noscript">'
+        "<p><strong>The graph and the text search need JavaScript.</strong> Both run "
+        "entirely in your browser — there is no server to fall back on — so with "
+        "scripting off this tab can only point you at the records themselves, which "
+        "are all on the page already:</p>"
+        f"<ul>{rows}</ul></div></noscript>"
+    )
+
+
+# Plural, reader-facing names for the record kinds. graph.KIND_LABELS holds the
+# singular form, which is what a single result chip needs ("Water case"); the
+# kind filter, the legend and the noscript list all label *groups*, so they read
+# as plurals ("Water cases (109)").
+EXPLORE_KIND_LABELS = {
+    "instrument": "Policy instruments",
+    "reading": "Statutory readings",
+    "case": "Water cases",
+    "site": "Conflict sites",
+    "claim": "Operator claims",
+    "news": "News items",
+    "solution": "Solutions",
+}
+
+
+def _build_explore_html(payload_src: str | None = None) -> str:
+    """The whole Explore surface as one self-contained HTML fragment.
+
+    Returns markup + scoped CSS + the vanilla-JS force layout and search.
+    Pure: no Streamlit, no I/O beyond the cached loaders, so ``build_site.py``
+    and the tests can call it directly.
+
+    ``payload_src`` decides where the graph/index blob comes from:
+
+    * ``None`` (default) — inline it in the ``#graph-data`` element. This is
+      the Streamlit path: the fragment goes into a ``components.html`` iframe
+      with no origin of its own to fetch from.
+    * a relative URL — emit an empty ``#graph-data`` carrying ``data-src`` and
+      let the client fetch it the first time the tab is opened. The blob is
+      ~620 KB, two thirds of the static page's markup, and a reader who never
+      opens Explore never needed it.
+    """
+    payload = "" if payload_src else graph_payload_json()
+    src_attr = f' data-src="{html.escape(payload_src)}"' if payload_src else ""
+    nodes = build_graph()["nodes"]
+
+    counts: dict[str, int] = {}
+    for node in nodes:
+        if node["kind"] != "hub":
+            counts[node["kind"]] = counts.get(node["kind"], 0) + 1
+    ordered_counts = {k: counts[k] for k in EXPLORE_KIND_LABELS if k in counts}
+
+    kind_boxes = "".join(
+        f'<label class="explore-chip"><input type="checkbox" class="explore-kind" '
+        f'value="{k}" checked> {html.escape(EXPLORE_KIND_LABELS[k])} ({n})</label>'
+        for k, n in ordered_counts.items()
+    )
+
+    statutes = load_water_authorities().get("statutes", {})
+    family_options = "".join(
+        f'<option value="{html.escape(code)}">{html.escape(code)} — '
+        f'{html.escape(statutes.get(code, {}).get("name", code))}</option>'
+        for code in WATER_STATUTE_ORDER
+        if code in statutes
+    )
+
+    legend = "".join(
+        f'<span><span class="explore-dot" style="background:{GRAPH_KIND_COLORS[k]}"></span>'
+        f"{html.escape(EXPLORE_KIND_LABELS[k])}</span>"
+        for k in ordered_counts
+    )
+    legend += (
+        '<span><span class="explore-dot" style="background:'
+        f'{GRAPH_KIND_COLORS["hub"]};border-radius:2px"></span>'
+        "Taxonomy hub (statute, project type, principle)</span>"
+    )
+
+    return f"""<div class="explore" id="explore">
+{_explore_noscript_html(ordered_counts)}
+<div class="explore-grid">
+  <div class="explore-side">
+    <label class="explore-label" for="explore-q">Paste any text — a news story, a
+    permit notice, a bill summary</label>
+    <textarea id="explore-q" rows="5" placeholder="Paste a paragraph here to rank every tracked record by how much of its language it shares."></textarea>
+    <div class="explore-controls">
+      <span class="explore-controls-label">Kinds:</span>{kind_boxes}
+    </div>
+    <div class="explore-controls">
+      <label class="explore-controls-label" for="explore-family">Statute family:</label>
+      <select id="explore-family">
+        <option value="">Any</option>{family_options}
+      </select>
+      <label class="explore-chip"><input type="checkbox" id="explore-scope">
+      Only near the focused record</label>
+    </div>
+    <p class="explore-count" id="explore-count"></p>
+    <div class="explore-results" id="explore-results">
+      <div class="explore-empty" id="explore-status">{html.escape(EXPLORE_EMPTY_STATE)}</div>
+    </div>
+  </div>
+  <div class="explore-main">
+    <div class="explore-toolbar">
+      <span class="explore-focus" id="explore-focus">No record focused — click a dot,
+      or use <em>Show connections</em> on a result.</span>
+      <span class="explore-tools">
+        <label for="explore-depth">Hops</label>
+        <select id="explore-depth">
+          <option value="1">1</option>
+          <option value="2" selected>2</option>
+        </select>
+        <button type="button" class="explore-btn" id="explore-zoom-in" aria-label="Zoom in">+</button>
+        <button type="button" class="explore-btn" id="explore-zoom-out" aria-label="Zoom out">&minus;</button>
+        <button type="button" class="explore-btn" id="explore-reset">Reset</button>
+      </span>
+    </div>
+    <canvas class="explore-canvas" id="explore-canvas" role="img" aria-label="Connection graph of every tracked record. The results list carries the same records as text."></canvas>
+    <p class="explore-hint">Drag to pan, scroll to zoom, click a dot to focus its
+    neighbourhood. Lines are connections the datasets declare.</p>
+    <div class="explore-legend">{legend}</div>
+    <details class="explore-edges">
+      <summary>Connection types</summary>
+      <div class="explore-edgelist" id="explore-edgelist"></div>
+    </details>
+  </div>
+</div>
+<script type="application/json" id="graph-data"{src_attr}>{payload}</script>
+<style>{_explore_css()}</style>
+<script>{_explore_js()}</script>
+</div>"""
+
+
+def _explore_js() -> str:
+    """The client half: tokenizer, cosine search, force layout, canvas renderer.
+
+    The tokenizer here is the only piece that MUST agree with Python. It reads
+    its stopword list and minimum token length out of the embedded blob rather
+    than restating them, so the two cannot drift; a build test round-trips a
+    fixture string through both to prove the surrounding regex rules match too.
+    """
+    return r"""
+(function(){
+  var root = document.getElementById('explore');
+  var blob = root && root.querySelector('#graph-data');
+  var canvas = root && root.querySelector('#explore-canvas');
+  if (!root || !blob || !canvas) return;
+
+  // Everything below runs once the blob is in hand — inline on the Streamlit
+  // surface, fetched on first tab activation on the static one. See init().
+  function boot(D){
+
+  // --- Tokenizer: mirrors refdata.graph.tokenize, constants from the blob ---
+  var STOP = {}, i;
+  for (i = 0; i < D.stopwords.length; i++) STOP[D.stopwords[i]] = 1;
+  function tokenize(text){
+    var raw = String(text == null ? '' : text)
+      .replace(/[^A-Za-z0-9]+/g, ' ').toLowerCase().split(' ');
+    var words = [];
+    for (var j = 0; j < raw.length; j++){
+      if (raw[j].length >= D.min_token_len && !STOP[raw[j]]) words.push(raw[j]);
+    }
+    var out = words.slice();
+    for (var k = 0; k + 1 < words.length; k++) out.push(words[k] + ' ' + words[k + 1]);
+    return out;
+  }
+
+  // --- Index lookup tables ---
+  var vocabPos = {};
+  for (i = 0; i < D.vocab.length; i++) vocabPos[D.vocab[i]] = i;
+  var idf = D.df.map(function(d){ return Math.log(D.n_docs / d); });
+  var docs = [];
+  for (var key in D.docs){
+    if (!Object.prototype.hasOwnProperty.call(D.docs, key)) continue;
+    docs.push({node: parseInt(key, 10), t: D.docs[key].t, w: D.docs[key].w});
+  }
+
+  var nodes = D.nodes;
+  var derived = {};
+  for (i = 0; i < D.derived_edge_kinds.length; i++) derived[D.derived_edge_kinds[i]] = 1;
+  // Curated cross-references are on by default; taxonomy membership is a
+  // different claim about the data and the reader opts into it.
+  var activeKinds = D.edge_kinds.map(function(k){ return !derived[k]; });
+
+  // --- Adjacency, rebuilt whenever the edge-kind toggles change ---
+  var adj = [];
+  function rebuildAdjacency(){
+    adj = nodes.map(function(){ return []; });
+    for (var e = 0; e < D.edges.length; e++){
+      var edge = D.edges[e];
+      if (!activeKinds[edge[2]]) continue;
+      // Walked undirected: "what connects to this" does not care which record
+      // wrote the id down.
+      adj[edge[0]].push(edge[1]);
+      adj[edge[1]].push(edge[0]);
+    }
+  }
+
+  function neighbourhood(start, depth){
+    var seen = {}, frontier = [start], d;
+    seen[start] = 0;
+    for (d = 1; d <= depth; d++){
+      var next = [];
+      for (var f = 0; f < frontier.length; f++){
+        var list = adj[frontier[f]];
+        for (var n = 0; n < list.length; n++){
+          if (seen[list[n]] === undefined){ seen[list[n]] = d; next.push(list[n]); }
+        }
+      }
+      frontier = next;
+    }
+    return seen;
+  }
+
+  // --- Force-directed layout (Fruchterman-Reingold, no library) ---
+  var W = 900, H = 700;
+  var pos = nodes.map(function(_, idx){
+    // Deterministic ring start: same input data always settles the same way,
+    // so a rebuild does not reshuffle the picture for no reason.
+    var a = idx * 2.399963229728653;  // golden angle
+    var r = 40 + 300 * Math.sqrt(idx / nodes.length);
+    return {x: W / 2 + r * Math.cos(a), y: H / 2 + r * Math.sin(a), dx: 0, dy: 0};
+  });
+  var reduceMotion = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function step(temperature){
+    var k = Math.sqrt((W * H) / nodes.length);
+    var a, b, dx, dy, dist, force;
+    for (a = 0; a < nodes.length; a++){ pos[a].dx = 0; pos[a].dy = 0; }
+    for (a = 0; a < nodes.length; a++){
+      for (b = a + 1; b < nodes.length; b++){
+        dx = pos[a].x - pos[b].x; dy = pos[a].y - pos[b].y;
+        dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
+        force = (k * k) / dist;
+        dx = (dx / dist) * force; dy = (dy / dist) * force;
+        pos[a].dx += dx; pos[a].dy += dy;
+        pos[b].dx -= dx; pos[b].dy -= dy;
+      }
+    }
+    for (var e = 0; e < D.edges.length; e++){
+      if (!activeKinds[D.edges[e][2]]) continue;
+      a = D.edges[e][0]; b = D.edges[e][1];
+      dx = pos[a].x - pos[b].x; dy = pos[a].y - pos[b].y;
+      dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
+      force = (dist * dist) / k;
+      dx = (dx / dist) * force; dy = (dy / dist) * force;
+      pos[a].dx -= dx; pos[a].dy -= dy;
+      pos[b].dx += dx; pos[b].dy += dy;
+    }
+    for (a = 0; a < nodes.length; a++){
+      // Gravity keeps disconnected records from drifting off the canvas.
+      pos[a].dx += (W / 2 - pos[a].x) * 0.012;
+      pos[a].dy += (H / 2 - pos[a].y) * 0.012;
+      var mag = Math.sqrt(pos[a].dx * pos[a].dx + pos[a].dy * pos[a].dy) || 0.01;
+      var move = Math.min(mag, temperature);
+      pos[a].x += (pos[a].dx / mag) * move;
+      pos[a].y += (pos[a].dy / mag) * move;
+    }
+  }
+
+  var ITERATIONS = 120;
+  function runLayout(){
+    var t = 0, temp0 = W / 12;
+    if (reduceMotion){
+      for (t = 0; t < ITERATIONS; t++) step(temp0 * (1 - t / ITERATIONS));
+      draw();
+      return;
+    }
+    // Animated: chunks per frame so a slow phone stays responsive instead of
+    // freezing for the whole simulation.
+    (function frame(){
+      for (var c = 0; c < 6 && t < ITERATIONS; c++, t++) step(temp0 * (1 - t / ITERATIONS));
+      draw();
+      if (t < ITERATIONS) requestAnimationFrame(frame);
+    })();
+  }
+
+  // --- Canvas ---
+  var ctx = canvas.getContext('2d');
+  var view = {scale: 0.62, ox: 0, oy: 0};
+  var focused = -1, near = null;
+
+  function sizeCanvas(){
+    var ratio = window.devicePixelRatio || 1;
+    // clientWidth is 0 when the page is opened over file:// — fall back so the
+    // canvas is still drawn rather than collapsing to nothing.
+    var cw = canvas.clientWidth || 640;
+    var ch = canvas.clientHeight || 520;
+    canvas.width = cw * ratio;
+    canvas.height = ch * ratio;
+    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+  }
+
+  function toScreen(p){
+    var cw = canvas.clientWidth || 640, ch = canvas.clientHeight || 520;
+    return {
+      x: (p.x - W / 2) * view.scale + cw / 2 + view.ox,
+      y: (p.y - H / 2) * view.scale + ch / 2 + view.oy
+    };
+  }
+
+  function nodeRadius(idx){
+    return nodes[idx].kind === 'hub' ? 4.5 : 3.6;
+  }
+
+  function draw(){
+    var cw = canvas.clientWidth || 640, ch = canvas.clientHeight || 520;
+    ctx.clearRect(0, 0, cw, ch);
+    var dim = focused >= 0;
+    var e, a, b, pa, pb;
+    for (e = 0; e < D.edges.length; e++){
+      if (!activeKinds[D.edges[e][2]]) continue;
+      a = D.edges[e][0]; b = D.edges[e][1];
+      var lit = !dim || (near[a] !== undefined && near[b] !== undefined);
+      ctx.strokeStyle = lit ? 'rgba(49,130,189,0.45)' : 'rgba(148,163,184,0.10)';
+      ctx.lineWidth = lit ? 1 : 0.6;
+      pa = toScreen(pos[a]); pb = toScreen(pos[b]);
+      ctx.beginPath(); ctx.moveTo(pa.x, pa.y); ctx.lineTo(pb.x, pb.y); ctx.stroke();
+    }
+    var labelled = [];
+    for (a = 0; a < nodes.length; a++){
+      var p = toScreen(pos[a]);
+      var inFocus = !dim || near[a] !== undefined;
+      ctx.globalAlpha = inFocus ? 1 : 0.18;
+      ctx.fillStyle = D.kind_colors[nodes[a].kind] || '#6b7280';
+      var r = nodeRadius(a) * (a === focused ? 2 : 1);
+      if (nodes[a].kind === 'hub'){
+        ctx.fillRect(p.x - r, p.y - r, r * 2, r * 2);
+      } else {
+        ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
+      }
+      if (a === focused){
+        ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(p.x, p.y, r + 3, 0, Math.PI * 2); ctx.stroke();
+      }
+      // Labelling all 362 nodes is unreadable; label the focused neighbourhood
+      // only, and cap it so a hub with 100 members does not turn to mud.
+      if (dim && near[a] !== undefined && labelled.length < 26) labelled.push([a, p]);
+      ctx.globalAlpha = 1;
+    }
+    ctx.font = '11px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';
+    ctx.fillStyle = '#1a1a2e';
+    for (var m = 0; m < labelled.length; m++){
+      var text = nodes[labelled[m][0]].label;
+      if (text.length > 34) text = text.slice(0, 33) + '…';
+      ctx.fillText(text, labelled[m][1].x + 7, labelled[m][1].y + 3);
+    }
+  }
+
+  // --- Pan / zoom ---
+  var dragging = false, dragged = false, lastX = 0, lastY = 0;
+  function pointerDown(x, y){ dragging = true; dragged = false; lastX = x; lastY = y; }
+  function pointerMove(x, y){
+    if (!dragging) return;
+    if (Math.abs(x - lastX) + Math.abs(y - lastY) > 3) dragged = true;
+    view.ox += x - lastX; view.oy += y - lastY;
+    lastX = x; lastY = y;
+    draw();
+  }
+  function zoom(factor){
+    view.scale = Math.min(4, Math.max(0.2, view.scale * factor));
+    draw();
+  }
+  canvas.addEventListener('mousedown', function(e){ pointerDown(e.clientX, e.clientY); });
+  window.addEventListener('mousemove', function(e){ pointerMove(e.clientX, e.clientY); });
+  window.addEventListener('mouseup', function(){ dragging = false; });
+  canvas.addEventListener('touchstart', function(e){
+    if (e.touches.length === 1) pointerDown(e.touches[0].clientX, e.touches[0].clientY);
+  }, {passive: true});
+  canvas.addEventListener('touchmove', function(e){
+    if (e.touches.length === 1){
+      e.preventDefault();
+      pointerMove(e.touches[0].clientX, e.touches[0].clientY);
+    }
+  }, {passive: false});
+  canvas.addEventListener('touchend', function(){ dragging = false; });
+  canvas.addEventListener('wheel', function(e){
+    e.preventDefault();
+    zoom(e.deltaY < 0 ? 1.12 : 1 / 1.12);
+  }, {passive: false});
+
+  // --- Focus ---
+  function setFocus(idx){
+    focused = idx;
+    var box = root.querySelector('#explore-focus');
+    if (idx < 0){
+      near = null;
+      box.textContent = 'No record focused — click a dot, or use Show connections on a result.';
+    } else {
+      var depth = parseInt(root.querySelector('#explore-depth').value, 10) || 1;
+      near = neighbourhood(idx, depth);
+      var count = 0;
+      for (var key2 in near){ if (near[key2] > 0) count++; }
+      var node = nodes[idx];
+      box.replaceChildren();
+      var strong = document.createElement('strong');
+      strong.textContent = node.label;
+      box.appendChild(strong);
+      box.appendChild(document.createTextNode(
+        ' · ' + (D.kind_labels[node.kind] || node.kind) +
+        ' · ' + count + ' connected within ' + depth + (depth === 1 ? ' hop' : ' hops')));
+      if (node.anchor){
+        box.appendChild(document.createTextNode(' · '));
+        var link = document.createElement('a');
+        link.href = '#' + node.anchor;
+        link.textContent = 'open card';
+        box.appendChild(link);
+      }
+    }
+    draw();
+    runSearch();
+  }
+
+  canvas.addEventListener('click', function(ev){
+    if (dragged) return;
+    var rect = canvas.getBoundingClientRect();
+    var mx = ev.clientX - rect.left, my = ev.clientY - rect.top;
+    var best = -1, bestDist = 12 * 12;
+    for (var a = 0; a < nodes.length; a++){
+      var p = toScreen(pos[a]);
+      var d2 = (p.x - mx) * (p.x - mx) + (p.y - my) * (p.y - my);
+      if (d2 < bestDist){ bestDist = d2; best = a; }
+    }
+    setFocus(best);
+  });
+
+  root.querySelector('#explore-zoom-in').addEventListener('click', function(){ zoom(1.2); });
+  root.querySelector('#explore-zoom-out').addEventListener('click', function(){ zoom(1 / 1.2); });
+  root.querySelector('#explore-reset').addEventListener('click', function(){
+    view = {scale: 0.62, ox: 0, oy: 0};
+    setFocus(-1);
+  });
+  root.querySelector('#explore-depth').addEventListener('change', function(){
+    if (focused >= 0) setFocus(focused);
+  });
+
+  // --- Edge-kind toggles ---
+  var edgeList = root.querySelector('#explore-edgelist');
+  D.edge_kinds.forEach(function(kind, idx){
+    var label = document.createElement('label');
+    label.className = 'explore-chip';
+    var box2 = document.createElement('input');
+    box2.type = 'checkbox';
+    box2.checked = activeKinds[idx];
+    box2.addEventListener('change', function(){
+      activeKinds[idx] = box2.checked;
+      rebuildAdjacency();
+      runLayout();
+      if (focused >= 0) setFocus(focused); else draw();
+    });
+    label.appendChild(box2);
+    label.appendChild(document.createTextNode(
+      ' ' + D.edge_kind_labels[idx] + (derived[kind] ? ' (derived)' : '')));
+    edgeList.appendChild(label);
+  });
+
+  // --- Search ---
+  var qBox = root.querySelector('#explore-q');
+  var resultsBox = root.querySelector('#explore-results');
+  var countLine = root.querySelector('#explore-count');
+  var familySel = root.querySelector('#explore-family');
+  var scopeBox = root.querySelector('#explore-scope');
+  var kindBoxes = [].slice.call(root.querySelectorAll('.explore-kind'));
+  var TOP_N = 12;
+  var emptyCopy = resultsBox.textContent.trim();
+
+  function passesFilters(nodeIdx){
+    var node = nodes[nodeIdx];
+    var kinds = {};
+    kindBoxes.forEach(function(c){ if (c.checked) kinds[c.value] = 1; });
+    if (!kinds[node.kind]) return false;
+    var family = familySel.value;
+    if (family){
+      var list = (node.attrs && node.attrs.statutes) || [];
+      if (list.indexOf(family) < 0) return false;
+    }
+    if (scopeBox.checked && focused >= 0 && (!near || near[nodeIdx] === undefined)) return false;
+    return true;
+  }
+
+  function runSearch(){
+    var text = qBox.value;
+    var counts = {}, any = false;
+    tokenize(text).forEach(function(tok){
+      var p = vocabPos[tok];
+      if (p === undefined) return;
+      counts[p] = (counts[p] || 0) + 1;
+      any = true;
+    });
+    if (!any){
+      countLine.textContent = '';
+      resultsBox.replaceChildren(emptyState(text));
+      return;
+    }
+    var qw = {}, norm = 0;
+    for (var p in counts){
+      var w = counts[p] * idf[p];
+      qw[p] = w; norm += w * w;
+    }
+    norm = Math.sqrt(norm) || 1;
+    var scored = [];
+    for (var d = 0; d < docs.length; d++){
+      var doc = docs[d];
+      if (!passesFilters(doc.node)) continue;
+      var total = 0, hits = [];
+      for (var j = 0; j < doc.t.length; j++){
+        var q = qw[doc.t[j]];
+        if (q === undefined) continue;
+        var part = (q / norm) * (doc.w[j] / D.weight_scale);
+        total += part;
+        hits.push([part, D.vocab[doc.t[j]]]);
+      }
+      if (total > 0){
+        hits.sort(function(x, y){ return y[0] - x[0]; });
+        scored.push({node: doc.node, score: total, terms: hits.slice(0, 3)});
+      }
+    }
+    scored.sort(function(x, y){ return y.score - x.score; });
+    render(scored.slice(0, TOP_N), scored.length);
+  }
+
+  function emptyState(text){
+    var div = document.createElement('div');
+    div.className = 'explore-empty';
+    div.textContent = text && text.trim()
+      ? 'No tracked record shares any term with that text. Try a longer passage, or ' +
+        'widen the kind and statute-family filters.'
+      : emptyCopy;
+    return div;
+  }
+
+  function render(rows, totalMatched){
+    if (!rows.length){
+      countLine.textContent = '';
+      resultsBox.replaceChildren(emptyState(qBox.value));
+      return;
+    }
+    countLine.textContent = 'Showing the closest ' + rows.length + ' of ' +
+      totalMatched + ' records that share language with this text.';
+    var top = rows[0].score || 1;
+    var frag = document.createDocumentFragment();
+    rows.forEach(function(row){
+      var node = nodes[row.node];
+      var card = document.createElement('div');
+      card.className = 'explore-result';
+
+      var head = document.createElement('div');
+      head.className = 'explore-result-head';
+      var dot = document.createElement('span');
+      dot.className = 'explore-dot';
+      dot.style.background = D.kind_colors[node.kind] || '#6b7280';
+      head.appendChild(dot);
+      if (node.anchor){
+        var a = document.createElement('a');
+        a.href = '#' + node.anchor;
+        a.textContent = node.label;
+        head.appendChild(a);
+      } else {
+        var strong2 = document.createElement('strong');
+        strong2.textContent = node.label;
+        head.appendChild(strong2);
+      }
+      var tag = document.createElement('span');
+      tag.className = 'explore-kindtag';
+      tag.textContent = D.kind_labels[node.kind] || node.kind;
+      head.appendChild(tag);
+      card.appendChild(head);
+
+      var bar = document.createElement('div');
+      bar.className = 'explore-bar';
+      var fill = document.createElement('span');
+      fill.style.width = Math.max(3, Math.round((row.score / top) * 100)) + '%';
+      bar.appendChild(fill);
+      card.appendChild(bar);
+
+      var terms = document.createElement('div');
+      terms.className = 'explore-terms';
+      terms.appendChild(document.createTextNode('matched '));
+      row.terms.forEach(function(t){
+        var chip = document.createElement('span');
+        chip.className = 'explore-term';
+        chip.textContent = t[1];
+        terms.appendChild(chip);
+      });
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'explore-btn';
+      btn.textContent = 'Show connections';
+      btn.addEventListener('click', function(){ setFocus(row.node); });
+      terms.appendChild(btn);
+      card.appendChild(terms);
+      frag.appendChild(card);
+    });
+    resultsBox.replaceChildren(frag);
+  }
+
+  var debounce;
+  qBox.addEventListener('input', function(){
+    clearTimeout(debounce);
+    debounce = setTimeout(runSearch, 180);
+  });
+  kindBoxes.forEach(function(c){ c.addEventListener('change', runSearch); });
+  familySel.addEventListener('change', runSearch);
+  scopeBox.addEventListener('change', runSearch);
+
+  // --- Boot ---
+  var started = false;
+  function start(){
+    if (started) return;
+    started = true;
+    sizeCanvas();
+    rebuildAdjacency();
+    runLayout();
+  }
+  window.addEventListener('resize', function(){
+    if (!started) return;
+    sizeCanvas();
+    draw();
+  });
+  start();
+
+  }  // end boot()
+
+  // --- Entry point ---
+  // The blob is ~620 KB. On the static site it is a separate file that is
+  // fetched the first time the tab is opened, so a reader who never opens
+  // Explore never downloads it — and the layout, which is ~7M force
+  // computations, still cannot run against a hidden (zero-sized) canvas.
+  // Inside the Streamlit iframe there is no origin to fetch from, so the blob
+  // is inline and this runs immediately.
+  var src = blob.getAttribute('data-src');
+  var status = root.querySelector('#explore-status');
+  var idle = status ? status.textContent : '';
+  var kicked = false;
+  function init(){
+    if (kicked) return;
+    kicked = true;
+    if (!src){ boot(JSON.parse(blob.textContent)); return; }
+    if (status) status.textContent = 'Loading the connection graph…';
+    fetch(src).then(function(r){
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function(D){
+      if (status) status.textContent = idle;
+      boot(D);
+    }).catch(function(){
+      // Leave it retryable: switching away and back re-runs the fetch.
+      kicked = false;
+      if (status) status.textContent =
+        'The connection graph could not be loaded. Reload the page to try again — ' +
+        'every record it indexes is also on the other tabs.';
+    });
+  }
+  window.exploreInit = init;
+  var panel = root.closest ? root.closest('.tabpanel') : null;
+  if (!src || !panel || !panel.hidden) init();
+})();
+"""
+
+
+def render_explore():
+    """Streamlit surface for the Explore tab.
+
+    The fragment is the same string ``build_site.py`` inlines, handed to an
+    iframe because the graph needs a canvas and its own event handlers —
+    neither of which survives ``st.markdown``'s sanitiser. Cross-tab "open
+    card" links cannot cross the iframe boundary; the static site is where
+    those resolve.
+    """
+    import streamlit.components.v1 as components
+
+    st.subheader("Explore")
+    st.markdown(EXPLORE_LEAD)
+    components.html(_build_explore_html(), height=800, scrolling=True)
+    st.caption(
+        "Graph edges are the cross-references the datasets declare, plus shared "
+        "taxonomy values (off by default). Similarity is TF-IDF over each record's "
+        "own text — lexical, not semantic."
+    )
+
+
 # --- Main App ---
 
 
@@ -4024,21 +5448,37 @@ def main():
         st.title("DC Water Tracker")
     else:
         st.title("Data Center Water Use Tracker")
-        st.caption(
-            "Tracking data center water consumption in **Virginia** & **Ohio** "
-            "via public regulatory data."
-        )
+        st.caption(TAGLINE)
+
+    # The same schematic the static site puts under its h1: what happens to the
+    # water, and which leg of it carries a permit.
+    st.markdown(_build_water_loop_svg(), unsafe_allow_html=True)
 
     (
         tab_legislation,
+        tab_states,
         tab_cwa,
         tab_issues,
         tab_news,
         tab_solutions,
         tab_sources,
+        tab_explore,
     ) = st.tabs(
-        ["Legislation", "Water Cases", "Issues & Claims", "News", "Solutions", "Sources"]
+        [
+            "Legislation",
+            "States & Localities",
+            "Water Cases",
+            "Issues & Claims",
+            "News",
+            "Solutions",
+            "Sources",
+            "Explore",
+        ]
     )
+
+    # --- States & Localities tab ---
+    with tab_states:
+        render_states_tab()
 
     # --- CWA Cases tab ---
     with tab_cwa:
@@ -4078,6 +5518,10 @@ def main():
     # --- Sources tab ---
     with tab_sources:
         render_sources_tab()
+
+    # --- Explore tab ---
+    with tab_explore:
+        render_explore()
 
     # --- Flow data (developer preview, hidden until live map tab ships) ---
     # render_data_freshness, render_inline_filters, render_hero,

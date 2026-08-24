@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-07-26",
-  "note": "Named data-center sites with documented water issues or community pushback, each mapped to the federal statutory readings (reading_ids from water_authorities.json) that could reach the fact pattern, with the historical cases (case_ids from cwa_investigations.json) that show each reading in use. Mappings deliberately overlap — one site can trigger several readings. Sites verified against news/government sources July 2026; status_2026 reflects the latest reporting found at that pass.",
+  "last_updated": "2026-08-24",
+  "note": "Named data-center sites with documented water issues or community pushback, each mapped to the federal statutory readings (reading_ids from water_authorities.json) that could reach the fact pattern, with the historical cases (case_ids from cwa_investigations.json) that show each reading in use. Mappings deliberately overlap — one site can trigger several readings. Sites verified against news/government sources July 2026; status_2026 reflects the latest reporting found at that pass. August 24, 2026: three supply-side mappings added with the federal-statute families — Microsoft Mount Pleasant WI to the Great Lakes Compact's straddling-community diversion it inherited from Foxconn, QTS Fayette County GA to the Corps' authorized-purposes ceiling in the ACF basin, and Project Blue Tucson to Reclamation contract law behind its Central Arizona Project offsets.",
   "sites": [
     {
       "site_id": "google-the-dalles-or",
@@ -58,7 +58,7 @@
       "location": "South Memphis, Tennessee (former Electrolux site)",
       "issue_summary": "Colossus draws roughly 3 MGD of cooling water while the Memphis Sand aquifer — the region's sole drinking-water source — is already being pumped faster than it recharges. xAI promised an $80M recycling plant treating up to ~13 MGD of municipal wastewater to offset withdrawals, then put it on indefinite pause in April 2026 to prioritize Colossus 2.",
       "pushback_summary": "Protect Our Aquifer called the pause 'alarming'; the city council pressed for public meetings on water impacts, and Mayor Young says xAI committed to resume construction no later than Q1 2027.",
-      "status_2026": "Operating on aquifer-sourced water; recycling plant paused with a promised Q1 2027 restart.",
+      "status_2026": "Operating on aquifer-sourced water; xAI confirmed on August 17, 2026 that recycling-plant construction restarts in January 2027, with the finished plant recycling 10 MGD and projected to protect 3.64 billion gallons/year of Memphis Sand aquifer drinking water.",
       "applicable_readings": [
         {
           "reading_id": "cwa-402-npdes",
@@ -117,6 +117,10 @@
         {
           "title": "Action News 5: 'Alarming:' xAI is 'prioritizing other projects'",
           "url": "https://www.actionnews5.com/2026/04/09/xai-pauses-plans-build-water-recycling-plant-memphis/"
+        },
+        {
+          "title": "Action News 5: xAI to continue building water recycling plant in 2027",
+          "url": "https://www.actionnews5.com/2026/08/17/xai-continue-building-water-recycling-plant-2027/"
         }
       ],
       "issue_types": [
@@ -199,7 +203,7 @@
       "location": "Tucson / Pima County, Arizona",
       "issue_summary": "The first two sites would have needed ~2,000 acre-feet of water per year — making the campus Tucson Water's largest customer — negotiated under NDAs that kept the end user secret. The city council rejected annexation 7-0 on August 6, 2025 after intense community pressure.",
       "pushback_summary": "AWS pulled out in late 2025; Beale is proceeding on county land outside city limits with a redesigned air-cooled plan while Tucson cut off water service and sought payback — the clearest municipal-veto precedent over data-center water demand.",
-      "status_2026": "City rejection stands; redesigned county-land project proceeding without city water.",
+      "status_2026": "City rejection stands; the redesigned county-land project is proceeding on two ADWR-permitted wells. One year on, Tucson adopted zoning code amendments (August 2026) setting siting standards for future large data centers (25,000+ sq ft / 20+ MW): a half-mile residential setback, a ~1,000-foot commercial setback, and a 50-foot height cap. Pima County separately considered a 120-day moratorium on unincorporated-county data centers.",
       "applicable_readings": [
         {
           "reading_id": "sdwa-pws-compliance",
@@ -237,6 +241,13 @@
           "analogous_cases": [
             "Agua-Caliente-v-CVWD-2017"
           ]
+        },
+        {
+          "reading_id": "recl-contract-controls-delivery",
+          "how": "Project Blue's public water-positivity offset plan includes purchasing additional Central Arizona Project water and supporting CAP-linked recharge — a Bureau of Reclamation project — to offset its own groundwater pumping, tying its water math to Reclamation-delivered supply even though its physical withdrawal is through private wells under state ADWR permits, not a Reclamation contract directly.",
+          "analogous_cases": [
+            "US-v-Klamath-Drainage-District-2025"
+          ]
         }
       ],
       "related_case_ids": [
@@ -250,6 +261,10 @@
         {
           "title": "KJZZ: Rejected by Tucson and abandoned by Amazon, Project Blue moves forward",
           "url": "https://www.kjzz.org/the-show/2025-12-09/rejected-by-tucson-and-abandoned-by-amazon-project-blue-data-center-moves-forward"
+        },
+        {
+          "title": "KJZZ: A year later, here's where Tucson's Project Blue data center project stands",
+          "url": "https://www.kjzz.org/the-show/2026-08-10/a-year-later-heres-where-tucsons-controversial-project-blue-data-center-project-stands"
         }
       ],
       "issue_types": [
@@ -391,7 +406,7 @@
       "location": "Louisa County, Virginia — Sedges Creek, Lake Anna tributary",
       "issue_summary": "A draft VPDES individual permit would let AWS discharge up to 280,000 gal/day of treated cooling water into Sedges Creek — the first direct-to-surface-water hyperscaler cooling-discharge permit in Virginia. Residents packed a March 2026 hearing, and a June 9, 2026 DEQ meeting turned contentious over chemical additives and the draft's lack of required PFAS testing (DEQ kept only a reopener condition).",
       "pushback_summary": "100+ residents at hearings demanding additive disclosure, PFAS monitoring, and testing transparency before the lake's recreation and drinking-water uses absorb a new industrial outfall.",
-      "status_2026": "DEQ finalizing its decision after the June hearing; permit not yet issued as of early July 2026.",
+      "status_2026": "DEQ issued the final VPDES permit on August 1, 2026 (expires July 31, 2031), authorizing up to 0.28 MGD of treated cooling water to Sedges Creek under a 32°C daily-maximum temperature limit. Coverage of the final permit did not describe a PFAS monitoring requirement being added.",
       "applicable_readings": [
         {
           "reading_id": "cwa-402-npdes",
@@ -441,6 +456,10 @@
         {
           "title": "Virginia Mercury: What's in the water? Data center water discharge in Virginia",
           "url": "https://virginiamercury.com/2026/06/01/whats-in-the-water-what-we-know-and-dont-know-about-data-center-water-discharge-in-virginia/"
+        },
+        {
+          "title": "Lake Anna Life: DEQ issues VPDES permit for the AWS site",
+          "url": "https://lakeannalife.com/vdeg-issues-vpdes-permit-for-aws-site/"
         }
       ],
       "issue_types": [
@@ -723,6 +742,13 @@
           "analogous_cases": [
             "MCWC-v-Nestle-Waters-2007"
           ]
+        },
+        {
+          "reading_id": "basin-glc-diversion",
+          "how": "The campus draws Lake Michigan water through the Racine Water Utility's straddling-community diversion approved in 2018 for the Foxconn campus it now occupies — the same Compact exception, upheld on the same 'is this really public water supply' argument the site's expansion would face again if the diversion volume needs to grow.",
+          "analogous_cases": [
+            "Foxconn-Racine-GreatLakesCompact-Diversion-2019"
+          ]
         }
       ],
       "related_case_ids": [
@@ -784,6 +810,14 @@
           "how": "Unmetered, unbilled connections are the evidentiary situation these claims turn on. Where consumption is not measured, published figures cannot be checked — and utility billing records are the exhibit a consumer-protection claim would rest on.",
           "analogous_cases": [
             "Wangusi-v-Amazon-Web-Services-VA-2026"
+          ]
+        },
+        {
+          "reading_id": "wsa-reallocation-and-alteration",
+          "how": "The campus sits in the Flint River headwaters — part of the ACF basin whose interstate storage and allocation fights (the Lake Lanier reallocation litigation) established the basin-wide ceiling on how much new municipal/industrial demand a Corps reservoir can absorb. This particular incident was a local metering failure rather than a reservoir-storage dispute, but growing unmetered data-center draws in this basin add to the same supply picture the reallocation fight was about.",
+          "analogous_cases": [
+            "Southeastern-Fed-Power-Customers-v-Geren-2008",
+            "InRe-MDL1824-TriState-WaterRights-2011"
           ]
         }
       ],

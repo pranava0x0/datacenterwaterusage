@@ -179,6 +179,70 @@ This "both numbers are true" spine could anchor the Phase 2 landing page / scrol
 
 ## Medium Priority
 
+### States & Localities tab — follow-ups from the 2026-08-24 Spec D/F pass
+
+The tab shipped with 89 mirrored county/city actions, a 41-state rollup, and a
+120-day what's-new window. These were deliberately left out of it.
+
+1. **Promote `local_actions.json` into the registry.** Spec D v1 keeps it out:
+   the records get no anchors, no `cross_ref_targets` and no graph nodes, which
+   is why 89 rows cost table markup only. Promotion means an `action-<id>`
+   anchor kind, a `KIND_TABS` entry, integrity-edge coverage, and llms.txt
+   one-liners — and it lets other datasets cite a specific county action instead
+   of describing it. **Sample prompt**: "Promote local_actions.json to a
+   registry kind: add `action` to `refdata.registry.KIND_TABS` and
+   `_anchor_for`, emit `id="action-<action_id>"` on each table row, extend
+   `EDGE_TARGET_KINDS` so cases and sites may cite an action, and add the
+   llms.txt loop plus tests in both directions. Report the page-size delta."
+2. **Cross-link mirrored actions to the conflict sites they sit under.** Four
+   pairs already match by jurisdiction and are documented but unrendered:
+   `charlotte-nc-moratorium` ↔ `dccb-charlotte-city-2026-06`,
+   `hood-county-granbury-tx` ↔ `dccb-hood-county-tx-2026-02`,
+   `missouri-peculiar-stcharles` ↔ `dccb-st-charles-city-2025-08` and
+   `dccb-st-charles-county-mo-2026-07`, `meta-cheyenne-wy` ↔
+   `dccb-cheyenne-wy-2026-06`. Spec F item 3 called for display-only context
+   lines; item 1 above would make them real edges instead.
+3. **A monitor for the benefits repo.** Fits `scrapers/monitors/` — fingerprint
+   `docs/data/claims.json` and `docs/data/moratoriums.json`, propose-don't-dispose
+   into `monitor_hits.json`. Today §4b of REFRESH.md is entirely by hand.
+4. **Re-check the stale `proposed` records.** Five mirrored records sit at
+   `proposed` past their own named vote date and could not be confirmed in the
+   research window: `dccb-hernando-county-fl-2026-06`,
+   `dccb-lake-county-fl-2026-06`, `dccb-greenwood-county-sc-2026-06`,
+   `dccb-spartanburg-county-sc-2026-06`, and `dccb-indio-ca-2026-06` (whose
+   45-day term lapsed; check whether Indio adopted the permanent ban).
+5. **Monterey Park Measure NDC as a `legislation.json` instrument.** It is in
+   `local_actions.json` today, but it is genuinely first-of-kind — the first US
+   data-center ban enacted by public referendum rather than a council vote —
+   which is the threshold Spec D sets for a local measure to become a tracked
+   instrument. Needs the `instrument_type` question answered first: the
+   taxonomy has no `ballot-measure`, and `local-ordinance` undersells what makes
+   it notable.
+6. **Dedupe `SC H 4583` and `SC HB 4583`.** Two `bill_id`s for what appears to
+   be one South Carolina bill (introduced 2026-01-13). Flagged during the
+   2026-08-24 sweep, not altered — confirm against the SC Statehouse bill lookup
+   and merge, the same way the Durbin duplicate was folded into US S. 4213.
+7. **Tucson's August 2026 data-center zoning amendments as a local action.**
+   Verified in the news pass (half-mile residential setback, ~1,000-foot
+   commercial setback, 50-foot height cap for 25,000+ sq ft / 20+ MW) and
+   recorded in the `project-blue-tucson-az` site's `status_2026`, but not
+   entered as a record. It would be the first `zoning-amendment` action, which
+   is the taxonomy value Spec D named and this pass held back for want of data.
+
+
+### Water-authority registry — follow-ups from the 2026-08-24 federal-statute batch
+
+Surfaced while adding the eight supply-side federal/interstate families (`scripts/add_federal_statute_families_2026_08.py`). Each is verified enough to act on but was outside that spec's scope (new federal-statute families only).
+
+1. **Florida v. Georgia, 592 U.S. ___ (2021) for the existing EQAP family.** The ACF/Flint equitable-apportionment case — Florida's claim that Georgia's Flint River withdrawals were harming Apalachicola Bay oyster fisheries failed on redressability — would give EQAP a surface-river companion to Mississippi v. Tennessee's groundwater angle, and would strengthen the `qts-fayette-county-ga` (Flint headwaters) site mapping, which currently reaches only the Corps' authorized-purposes reading.
+2. **DOE federal-land AI data-center leasing as a NEPA fact pattern.** Requests for offer issued 2025-26 at Oak Ridge, Paducah, Portsmouth, Idaho National Laboratory and Savannah River Site, explicitly using "NEPA streamlining tools" — a live and growing federal-review pipeline squarely on `nepa-federal-financing-review`. No site mapping was added because none of the 19 tracked conflict sites sits on DOE land; add one once a specific leased project reaches a public water or environmental dispute.
+3. **A `hydropower-flow` (or `water-resource-development`) `case_type`.** Ten of the 14 new cases are typed `water-supply` because the 11-value taxonomy has no value for reservoir storage, hydropower licensing or river designation. `water-supply` is a workable fit, not a precise one. Per the closed-taxonomy rule the new value must ship in the same commit as the records retyped onto it.
+4. **CRS R49057, "Data Centers and Water: Frequently Asked Questions" (July 31, 2026)** — mirrored at everycrsreport.com since congress.gov blocks automated fetches. A strong general overview, and it confirms the WRDA 2026 (H.R. 9497) provision directing the Corps to report within a year on how "new commercial and industrial water users" affect its water-supply projects (the report says data centers likely fall in that category; the bill text does not name them). Candidate `legislation.json` entry plus a maintainer read.
+5. **Render the authority `kind`.** `AUTHORITY_KIND_LABELS` has been defined since the doctrine batches and is re-exported by `dashboard.py` but rendered nowhere, so the accordion never tells a reader whether they are looking at a federal statute, an interstate compact or a state doctrine. Related: at 25 families the Part 1 jump-nav wraps to exactly 3 lines at the 1000px content width — group the pills by `kind` when a later batch pushes it past 3.
+
+**Sample prompt:**
+> Add Florida v. Georgia (2021) to `data/reference/cwa_investigations.json` under the existing EQAP family with two independent verified sources (WebSearch only — never construct a Justia or CourtListener URL), map it onto the `eqap-interstate-aquifer` reading's `example_case_ids`, and extend the `qts-fayette-county-ga` site with an EQAP `applicable_readings` entry whose `how` explains the Flint-headwaters connection. Then surface `AUTHORITY_KIND_LABELS` in the Part 1 accordion summary row in both `dashboard.py` and `build_site.py`. Run `python3 build_site.py` and the full test suite before committing.
+
 ### UX table / layout issues noted 2026-06-25 (cross-tab audit)
 
 During the Solutions redesign session the following UX issues were catalogued but not fixed. Fix in order of user-facing impact.
@@ -689,3 +753,58 @@ These are large data-center water stories with no formal CWA enforcement action 
   Pairs with the live-verification item above: the first keyed run is also what
   confirms the bill-number strings.
 - **Sample prompt**: "Add LEGISCAN_API_KEY to the repo secrets and trigger the Status monitors workflow manually to confirm both LegiScan watches resolve."
+
+## Embedding-based semantic search for the Explore tab
+- **Priority**: medium (deferred 2026-08-24 — needs API tokens)
+- **What**: Spec B's similarity is TF-IDF cosine, fully offline. True semantic matching ("aquifer drawdown" ≈ "wells going dry") needs embeddings computed at build time via an embedding API and shipped as vectors in the graph blob. Explicitly deferred because the user's rule for this session was: anything needing live tokens goes here, not in the build. Design note: embed at generation time (one API pass per record, cached by record content hash in data/state/), never at page runtime; page-side scoring stays pure JS (dot products).
+- **Sample prompt**: "Add a build-time embedding pass to refdata/graph.py: for each registry record, embed its index text via the Claude/voyage embedding API (cache by content hash under data/state/embeddings.sqlite), ship float16-quantized vectors in the graph blob behind a size guard, and blend cosine(embedding) with the existing TF-IDF score in the Explore tab's ranking. Keep the no-key path working: if no API key is present, build falls back to TF-IDF-only and the page says so."
+
+## "Ask the record" natural-language querying over the knowledge graph
+- **Priority**: low (deferred 2026-08-24 — needs runtime tokens or a server)
+- **What**: A question box ("which cases could reach a Georgia county moratorium fight?") answered by an LLM given the graph JSON as context. Needs either a hosted endpoint or user-supplied API key at page runtime; both out of scope for a static Pages site today.
+- **Sample prompt**: "Prototype an 'ask the record' mode for the Explore tab: a small hosted endpoint (or claude.ai artifact capability) that receives the question plus the graph blob's relevant neighborhood (selected via the existing TF-IDF search) and returns an answer with record ids, rendered as links. Gate it behind a config flag so the static site never depends on it."
+
+## Saved searches / pinned nodes on the Explore tab
+- **Priority**: low (deferred 2026-08-24)
+- **What**: Pin records and save query text across visits. localStorage gets 90% of it with no backend; cross-device sync would need storage. Start with localStorage.
+- **Sample prompt**: "Add localStorage-backed pins and saved searches to the Explore tab: pin a node from focus mode, list pins in the left column, restore last query on load. No backend."
+
+## US choropleth for the States & Localities tab
+- **Priority**: medium
+- **What**: The tab ships as a rollup grid (Spec D). A state-shaded map (activity count or newest-action recency) reads faster. Needs a US states SVG (public domain, inline — no new CDN asset) wired to the same rollup data.
+- **Sample prompt**: "Add an inline public-domain US states SVG to the States & Localities tab, shade states by tracked-activity recency buckets from the existing rollup builder, tooltip = counts by status, click = scroll to that state's card. Both surfaces, size-budgeted, no external assets."
+
+## Promote local_actions records into the registry
+- **Priority**: low
+- **What**: Spec D v1 keeps the moratorium mirror out of the registry (no anchors/cross-refs). Promotion means: a `local-<id>` anchor kind, KIND_TABS entry, llms.txt coverage, integrity edges from news/sites to actions, and dedupe rules against legislation.json local-ordinance instruments.
+- **Sample prompt**: "Promote data/reference/local_actions.json into refdata's registry as kind 'local-action' with anchors on the States & Localities tab, add news/site cross-ref edge kinds to integrity.EDGE_TARGET_KINDS, extend llms.txt coverage tests, and define the dedupe rule vs legislation.json local-ordinance instruments."
+
+## Monitor the datacentercommunitybenefits source files
+- **Priority**: medium
+- **What**: The claims mirror and the new moratorium mirror (Spec F) refresh by hand. A monitors watch fingerprinting `docs/data/claims.json` and `docs/data/moratoriums.json` in the sibling repo would propose refreshes weekly (propose-don't-dispose, like every monitor).
+- **Sample prompt**: "Add a scrapers/monitors watch that fingerprints raw.githubusercontent.com/pranava0x0/datacentercommunitybenefits/main/docs/data/{claims,moratoriums}.json and files a monitor hit when either changes, with the diff summary in the hit payload."
+
+## DRBC/SRBC docket-calendar watch
+- **Priority**: medium
+- **What**: Basin commissions approve large withdrawals directly — a data-center docket would be a Tier 1 source the day it appears. Their meeting/docket pages are public; a monitor fingerprinting the docket lists (filtered to data-center-ish applicants) closes the gap Spec A's BASIN readings describe.
+- **Sample prompt**: "Add monitors watching the DRBC and SRBC docket/meeting pages for new water-withdrawal dockets, fingerprint the docket lists, and flag applicants matching data-center/NAICS-518210 patterns. Confirm both sites tolerate automated clients first (CLAUDE.md blocked-sources table)."
+
+## Per-tab line-art icon set (racks / pipes / droplet / tower)
+- **Priority**: low (design-gated, deferred from Spec E)
+- **What**: Small inline SVG icons next to tab labels. Only worth doing if it survives a pass against DESIGN.md §12 ("no emoji in headers" spirit — icons must read as wayfinding, not decoration).
+- **Sample prompt**: "Design a 5-icon inline-SVG set (server rack, pipe run, droplet, cooling tower, scale) at 16px stroke style for the static site's tab strip; apply DESIGN.md §12 and drop the idea if it reads as decoration."
+
+## Per-site water-flow visualization on the Data tab
+- **Priority**: low (design-gated, deferred from Spec E)
+- **What**: The header schematic is generic — one diagram for the whole industry. A per-site version (this campus, this WWTP, these volumes) would turn it into data. Blocked on two things: the flow data being per-site rather than per-receiving-plant, and DESIGN.md §12's one-animation rule — a second moving element needs a better argument than "the first one looked good".
+- **Sample prompt**: "Extend dashboard._build_water_loop_svg() into a per-site variant that takes a site's measured volumes and labels the legs with them; reuse the same geometry, keep it static (DESIGN.md §12 sanctions exactly one animation), and only ship it for sites where the numbers are real."
+
+## International/treaty water layer
+- **Priority**: low (deferred from Spec A)
+- **What**: Boundary Waters Treaty/IJC, Columbia River Treaty, US-Mexico 1944 Treaty — relevant to border-region siting (an El Paso or Great Lakes fact pattern). Needs its own `kind` and at least one anchoring case each; none verified yet.
+- **Sample prompt**: "Research whether the Boundary Waters Treaty/IJC or the 1944 US-Mexico Water Treaty has a verifiable case anchoring a data-center-relevant reading; if yes, add a 'treaty' kind family to water_authorities.json with the same reading+case pairing rules."
+
+## Non-ASCII tokenizer coverage for the Explore index
+- **Priority**: low
+- **What**: `refdata/graph.tokenize` is deliberately ASCII-only (`[^A-Za-z0-9]+` split) for byte-identical Python/JS parity. A full-corpus scan (2026-08-24 verification pass) found zero non-ASCII letters in any record, so nothing is mangled today — but a future record with an accented name ("Piñon Ridge", "Río Grande") would tokenize into disconnected fragments instead of erroring. Either extend both tokenizers to a shared Unicode-letter class (and re-prove parity against Node) or add a corpus test that fails loudly when the first non-ASCII record arrives so the decision is made consciously.
+- **Sample prompt**: "Add a test asserting every Explore-indexed text field is ASCII, with a message pointing at refdata/graph.tokenize's parity constraint; if it ever fails, extend the Python and JS tokenizers to a shared Unicode letter class and re-verify byte parity against Node."

@@ -1603,3 +1603,227 @@ class TestDoctrineApplicationTheories:
             "eqap-interstate-aquifer",
         ):
             assert reading in hooks, reading
+
+
+class TestStatesAndLocalities:
+    """Spec D — the States & Localities tab's pure computation layer.
+
+    Everything here takes ``today`` as an argument. A window computed from
+    ``datetime.now()`` inside a builder is untestable at its boundary and
+    makes the static build non-reproducible, so the date comes from the
+    caller and these tests pin both sides of it.
+    """
+
+    from datetime import datetime as _dt
+
+    TODAY = _dt(2026, 8, 24)
+
+    @staticmethod
+    def _instrument(bill_id, jurisdiction, dates, status="introduced"):
+        return {
+            "bill_id": bill_id,
+            "jurisdiction": jurisdiction,
+            "status": status,
+            "title": f"{bill_id} title",
+            "timeline": [{"date": d, "milestone": f"milestone {d}"} for d in dates],
+            "general_principles": [{"tag": "Disclosure", "note": ""}],
+            "last_verified": "2026-08-24",
+        }
+
+    @staticmethod
+    def _action(action_id, state, date, status="active", water=True):
+        return {
+            "action_id": action_id,
+            "jurisdiction": f"{action_id} County",
+            "state": state,
+            "action_type": "moratorium",
+            "status": status,
+            "date": date,
+            "water_related": water,
+            "water_angle": "angle" if water else "",
+            "summary": "summary",
+            "source_url": "https://example.org/a",
+        }
+
+    def test_month_start_parses_both_precisions(self):
+        import dashboard as dash
+
+        assert dash._month_start("2026-08") == self._dt(2026, 8, 1)
+        assert dash._month_start("2026-08-14") == self._dt(2026, 8, 14)
+        assert dash._month_start("") is None
+        assert dash._month_start("not-a-date") is None
+
+    def test_state_code_resolution_covers_every_jurisdiction_shape(self):
+        import dashboard as dash
+
+        assert dash._state_code_for("Texas") == "TX"
+        assert dash._state_code_for("Prince George's County, Maryland") == "MD"
+        assert dash._state_code_for("Local (Denver, CO)") == "CO"
+        # Longest-name-first, or 'West Virginia' silently becomes Virginia.
+        assert dash._state_code_for("West Virginia") == "WV"
+        assert dash._state_code_for("Federal (US)") is None
+        assert dash._state_code_for("United States") is None
+        assert dash._state_code_for("") is None
+
+    def test_whats_new_honors_both_sides_of_the_window(self):
+        """120 days before 2026-08-24 is 2026-04-26. A month-precision action
+        enters the window only once the whole month is inside it, so 2026-05
+        is in and 2026-04 is out."""
+        import dashboard as dash
+
+        actions = [
+            self._action("inside", "TX", "2026-05"),
+            self._action("outside", "TX", "2026-04"),
+        ]
+        bills = [
+            self._instrument("IN WINDOW", "Indiana", ["2026-04-26"]),
+            self._instrument("OUT OF WINDOW", "Indiana", ["2026-04-25"]),
+        ]
+        labels = {
+            r["label"] for r in dash._states_whats_new(bills, actions, self.TODAY)
+        }
+        assert "IN WINDOW" in labels
+        assert "OUT OF WINDOW" not in labels
+        assert "inside County" in labels
+        assert "outside County" not in labels
+
+    def test_whats_new_boundary_ignores_time_of_day(self):
+        """Event dates parse as midnight; a wall-clock ``today`` (the Streamlit
+        path passes datetime.now()) must not push the exactly-window-old record
+        out of the window depending on when the page happened to render."""
+        import dashboard as dash
+        from datetime import datetime
+
+        bills = [self._instrument("EDGE", "Indiana", ["2026-04-26"])]
+        late = datetime(2026, 8, 24, 23, 59, 59)
+        labels_late = {r["label"] for r in dash._states_whats_new(bills, [], late)}
+        labels_midnight = {
+            r["label"] for r in dash._states_whats_new(bills, [], self.TODAY)
+        }
+        assert labels_late == labels_midnight == {"EDGE"}
+
+    def test_whats_new_window_is_configurable(self):
+        import dashboard as dash
+
+        bills = [self._instrument("OLD", "Ohio", ["2026-01-15"])]
+        assert not dash._states_whats_new(bills, [], self.TODAY, window_days=30)
+        assert dash._states_whats_new(bills, [], self.TODAY, window_days=365)
+
+    def test_whats_new_ignores_scheduled_future_milestones(self):
+        """Half the tracked instruments carry a future reporting deadline in
+        their timeline. Treating a deadline nobody has met as movement put
+        them all at the top of the list."""
+        import dashboard as dash
+
+        bill = self._instrument("VA FUTURE", "Virginia", ["2026-02-01", "2027-01-01"])
+        assert dash._instrument_movement_date(bill, self.TODAY) == "2026-02-01"
+        assert not dash._states_whats_new([bill], [], self.TODAY)
+
+    def test_movement_falls_back_to_last_verified_only_when_nothing_happened(self):
+        import dashboard as dash
+
+        future_only = self._instrument("FUTURE ONLY", "Ohio", ["2027-06-01"])
+        assert (
+            dash._instrument_movement_date(future_only, self.TODAY) == "2026-08-24"
+        )
+
+    def test_whats_new_excludes_federal_instruments(self):
+        import dashboard as dash
+
+        bills = [
+            self._instrument("US S. 1", "Federal (US)", ["2026-08-01"]),
+            self._instrument("TX 1", "Texas", ["2026-08-01"]),
+        ]
+        labels = {r["label"] for r in dash._states_whats_new(bills, [], self.TODAY)}
+        assert labels == {"TX 1"}
+
+    def test_whats_new_is_newest_first_and_deterministic(self):
+        import dashboard as dash
+
+        bills = [
+            self._instrument("A", "Texas", ["2026-06-01"]),
+            self._instrument("B", "Texas", ["2026-08-01"]),
+        ]
+        rows = dash._states_whats_new(bills, [], self.TODAY)
+        assert [r["label"] for r in rows] == ["B", "A"]
+        assert rows == dash._states_whats_new(bills, [], self.TODAY)
+
+    def test_state_rollup_counts_and_orders_by_newest(self):
+        import dashboard as dash
+
+        bills = [
+            self._instrument("TX 1", "Texas", ["2026-08-01"], status="enacted"),
+            self._instrument("TX 2", "Texas", ["2026-05-01"], status="failed"),
+            self._instrument("OH 1", "Ohio", ["2026-03-01"]),
+            self._instrument("US 1", "Federal (US)", ["2026-08-20"]),
+        ]
+        actions = [self._action("a", "OH", "2026-04"), self._action("b", "OH", "2026-02", water=False)]
+        rollup = dash._state_rollup(bills, actions, self.TODAY)
+        assert [r["state"] for r in rollup] == ["TX", "OH"], "federal must not appear"
+        tx, oh = rollup
+        assert tx["status_counts"] == {"enacted": 1, "failed": 1}
+        assert tx["newest"] == "2026-08-01"
+        assert len(oh["actions"]) == 2 and oh["water_actions"] == 1
+        assert oh["top_principles"] == ["Disclosure"]
+
+    def test_metrics_match_the_rollup(self):
+        import dashboard as dash
+
+        bills = self._real_bills()
+        actions = self._real_actions()
+        rollup = dash._state_rollup(bills, actions, self.TODAY)
+        metrics = dash._states_metrics(rollup, actions)
+        assert metrics["states_active"] == len(rollup)
+        assert metrics["actions_tracked"] == len(actions)
+        assert metrics["newest"] == max(r["newest"] for r in rollup)
+
+    @staticmethod
+    def _real_bills():
+        import dashboard as dash
+
+        return dash.load_legislation()["bills"]
+
+    @staticmethod
+    def _real_actions():
+        import dashboard as dash
+
+        return dash.load_local_actions()["actions"]
+
+    def test_whats_new_list_is_capped_but_the_count_is_honest(self):
+        """The 2026 moratorium wave puts 100+ movements inside four months.
+        The list caps; the count line must still say how many there were."""
+        import dashboard as dash
+
+        rows = dash._states_whats_new(
+            self._real_bills(), self._real_actions(), self.TODAY
+        )
+        assert len(rows) > dash.WHATS_NEW_LIMIT, "fixture no longer exercises the cap"
+        rendered = dash._build_whats_new_html(rows)
+        assert rendered.count('class="whatsnew-row"') == dash.WHATS_NEW_LIMIT
+        assert f"{len(rows)} movements" in rendered
+
+    def test_empty_window_says_so_instead_of_rendering_nothing(self):
+        import dashboard as dash
+
+        assert "Nothing tracked moved" in dash._build_whats_new_html([])
+
+    def test_table_rows_carry_every_filter_value(self):
+        import dashboard as dash
+
+        actions = self._real_actions()
+        table = dash._build_local_actions_table_html(actions)
+        assert table.count("<tr data-action-id=") == len(actions)
+        for a in actions[:5]:
+            assert f'data-state="{a["state"]}"' in table
+            assert f'data-status="{a["status"]}"' in table
+            assert f'data-type="{a["action_type"]}"' in table
+        assert 'data-water="1"' in table and 'data-water="0"' in table
+
+    def test_state_cards_link_into_the_legislation_tab(self):
+        import dashboard as dash
+
+        rollup = dash._state_rollup(self._real_bills(), self._real_actions(), self.TODAY)
+        html_out = dash._build_state_rollup_html(rollup)
+        assert html_out.count('class="state-card"') == len(rollup)
+        virginia = next(r for r in rollup if r["state"] == "VA")
+        assert f'href="#{virginia["instruments"][0]["anchor"]}"' in html_out

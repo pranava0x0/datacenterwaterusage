@@ -1,4 +1,4 @@
-"""Loaders for the seven curated reference datasets.
+"""Loaders for the eight curated reference datasets.
 
 Moved verbatim out of ``dashboard.py`` (2026-07-25) so both surfaces — the
 Streamlit app and ``build_site.py`` — share one loading layer, and so the
@@ -36,6 +36,7 @@ WATER_AUTHORITIES_PATH = REFERENCE_DIR / "water_authorities.json"
 DC_WATER_CONFLICTS_PATH = REFERENCE_DIR / "dc_water_conflicts.json"
 WATER_NEWS_PATH = REFERENCE_DIR / "water_news.json"
 WATER_SOLUTIONS_PATH = REFERENCE_DIR / "water_solutions.json"
+LOCAL_ACTIONS_PATH = REFERENCE_DIR / "local_actions.json"
 
 
 def file_signature(path) -> tuple:
@@ -163,6 +164,23 @@ def load_water_solutions(path: Path = WATER_SOLUTIONS_PATH) -> dict:
     return _load_water_solutions_cached(str(path), file_signature(path))
 
 
+@lru_cache(maxsize=2)
+def _load_local_actions_cached(path_str: str, signature: tuple) -> dict:
+    return _read_json(path_str, {"actions": list})
+
+
+def load_local_actions(path: Path = LOCAL_ACTIONS_PATH) -> dict:
+    """Load the county/city data-center action table.
+
+    Returns ``{"last_updated", "source_repo", "source_path", "note",
+    "actions": [...]}``. Unlike the other seven datasets these records are a
+    mirrored table rather than curated records: they carry no ids other
+    datasets point at, so they stay out of :mod:`refdata.registry` (Spec D v1)
+    and render only on the States & Localities tab.
+    """
+    return _load_local_actions_cached(str(path), file_signature(path))
+
+
 def clear_caches() -> None:
     """Drop every loader cache. Used by tests that write temp fixtures."""
     for fn in (
@@ -173,5 +191,6 @@ def clear_caches() -> None:
         _load_dc_water_conflicts_cached,
         _load_water_news_cached,
         _load_water_solutions_cached,
+        _load_local_actions_cached,
     ):
         fn.cache_clear()

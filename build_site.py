@@ -14,11 +14,15 @@ This script pre-renders the whole dashboard to a single self-contained static
 the dashboard's pure HTML builders and data constants (``dashboard._build_*``,
 ``dashboard.CONTEXT_DATA``, …) so there is one source of truth: edit the data or
 a card builder and both the local Streamlit app and this static site change
-together. The only client-side dependency is Chart.js (SRI-pinned) for the two
-quantitative charts; everything else is pre-rendered HTML + a little vanilla JS
-for tabs, filters, and collapsible panels.
+together. There are **no third-party assets at all** — no CDN scripts, no web
+fonts, no remote images: pre-rendered HTML plus a little vanilla JS for tabs,
+filters and collapsible panels. (A CDN Chart.js tag survived here until August
+2026 with an SRI pin and zero call sites; deleting it removed the last
+third-party origin in the trust path.)
 
-Run: ``python build_site.py`` → writes ``pages/index.html``.
+Run: ``python build_site.py`` → writes three files into ``pages/``:
+``index.html``, ``graph-data.json`` (the Explore graph + text index, fetched
+lazily the first time that tab is opened) and ``llms.txt``.
 """
 
 from __future__ import annotations
@@ -33,10 +37,16 @@ import markdown as md_lib
 import pandas as pd
 
 import dashboard as dash
+from refdata.graph import payload_json as graph_payload_json
 from utils.device import _RESPONSIVE_CSS
 
 BASE_DIR = Path(__file__).parent
 OUT_PATH = BASE_DIR / "pages" / "index.html"
+# The Explore graph + TF-IDF index, split out of index.html in August 2026: it
+# was ~620 KB of a ~2.1 MB page that only the Explore tab reads. Same-origin,
+# committed alongside index.html, fetched on first activation of that tab.
+GRAPH_DATA_PATH = BASE_DIR / "pages" / "graph-data.json"
+GRAPH_DATA_URL = "graph-data.json"
 
 # The card/timeline/context component CSS that the dashboard's _build_*_html
 # builders target (.bill-card, .cwa-*, .context-card, .explainer-card,
@@ -46,13 +56,6 @@ OUT_PATH = BASE_DIR / "pages" / "index.html"
 # no-ops in the static page.
 COMPONENT_CSS = _RESPONSIVE_CSS.replace("<style>", "").replace("</style>", "")
 
-# Chart.js 4.4.6 UMD, pinned + SRI (sha384). Regenerate with:
-#   curl -sL <url> | openssl dgst -sha384 -binary | openssl base64 -A
-# and verify the hash twice (a partial download yields a wrong hash that fails
-# closed). See CLAUDE.md §10 (Security & Supply-Chain Hygiene).
-CHARTJS_URL = "https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"
-CHARTJS_SRI = "sha384-Sse/HDqcypGpyTDpvZOJNnG0TT3feGQUkF9H+mnRvic+LjR+K1NhTt8f51KIQ3v3"
-
 C = dash.COLORS
 
 esc = html.escape
@@ -61,6 +64,59 @@ esc = html.escape
 def md(text: str) -> str:
     """Render a small markdown blob to HTML (bold, links, lists, blockquotes)."""
     return md_lib.markdown(text, extensions=["extra", "sane_lists"])
+
+
+# --------------------------------------------------------------------------
+# Collapse helpers — the page's answer to "why is this tab 40 screens long?"
+#
+# Two shapes, one mechanism (a plain <details>):
+#
+#   card group — a filterable list split along the axis the reader already
+#     filters by, each part carrying a live count. build_js's syncCardGroups()
+#     rewrites the counts after every filter run, hides emptied groups, and
+#     opens what is left once a filter is narrow enough to fit on a screen.
+#   card fold — "and here are the other N", for a list with no useful grouping
+#     axis (chronological news, per-company claims).
+#
+# Both are emitted OPEN with data-collapsed="1". A reader with no JavaScript
+# therefore sees every card; the .js CSS rule hides the collapsed ones before
+# first paint and the load script closes them for real. Emitting them closed
+# instead would have hidden ~150 cards from a no-JS reader, and no CSS can
+# force a closed <details> open.
+# --------------------------------------------------------------------------
+
+
+def _collapse_attr(collapsed: bool) -> str:
+    return ' data-collapsed="1"' if collapsed else ""
+
+
+def _card_group(label: str, key: str, cards: str, count: int, *, collapsed: bool) -> str:
+    return (
+        f'<details class="card-group" data-group="{esc(key)}"{_collapse_attr(collapsed)} open>'
+        # The space between the spans is inert for layout (whitespace between
+        # flex items is not rendered) but keeps the summary's accessible name
+        # from reading "Enacted26 entries".
+        f"<summary><span>{esc(label)}</span> "
+        f'<span class="cg-count">{count} {"entry" if count == 1 else "entries"}</span>'
+        f"</summary>{cards}</details>"
+    )
+
+
+def _card_fold(summary: str, cards: str, fold_id: str = "") -> str:
+    ident = f' id="{esc(fold_id)}"' if fold_id else ""
+    return (
+        f'<details class="card-fold"{ident} data-collapsed="1" open>'
+        f"<summary>{esc(summary)}</summary>{cards}</details>"
+    )
+
+
+def _jumpnav(items: list[tuple[str, str]]) -> str:
+    """A row of in-page links to the sections stacked below it."""
+    links = "".join(
+        f'<a class="jump-link" href="#{esc(anchor)}">{esc(label)}</a>'
+        for anchor, label in items
+    )
+    return f'<nav class="jumpnav" aria-label="Sections on this tab">{links}</nav>'
 
 
 # --------------------------------------------------------------------------
@@ -83,15 +139,38 @@ def build_legislation_tab() -> str:
         ),
     )
     themes_html = dash._build_legislation_themes_html(bills)
+
     # Wrap each card with machine-readable attrs for client-side filtering.
+    def _card(b: dict) -> str:
+        return (
+            f'<div class="leg-bill" data-status="{esc(b.get("status",""))}" '
+            f'data-level="{esc(b.get("level",""))}" '
+            f'data-scope="{esc(" ".join(b.get("scope", [])))}" '
+            f'data-principles="{esc(" ".join(sorted({_principle_slug(p.get("tag","")) for p in b.get("general_principles", [])})))}" '
+            f'data-instrument="{esc(b.get("instrument_type", "bill"))}">'
+            f"{dash._build_bill_card_html(b)}</div>"
+        )
+
+    # Grouped by status — the axis a reader of a legislation tracker sorts by
+    # anyway ("what is actually law?"), and already the sort order. Enacted
+    # opens; 47 introduced-and-failed cards wait behind two summaries instead
+    # of adding 40 screens of scroll to the default view.
     cards = "".join(
-        f'<div class="leg-bill" data-status="{esc(b.get("status",""))}" '
-        f'data-level="{esc(b.get("level",""))}" '
-        f'data-scope="{esc(" ".join(b.get("scope", [])))}" '
-        f'data-principles="{esc(" ".join(sorted({_principle_slug(p.get("tag","")) for p in b.get("general_principles", [])})))}" '
-        f'data-instrument="{esc(b.get("instrument_type", "bill"))}">'
-        f'{dash._build_bill_card_html(b)}</div>'
-        for b in sorted_bills
+        _card_group(
+            dash.LEGISLATION_STATUS_LABELS.get(status, status),
+            status,
+            "".join(_card(b) for b in group),
+            len(group),
+            collapsed=(status != "enacted"),
+        )
+        for status, group in (
+            (s, [b for b in sorted_bills if b.get("status") == s])
+            for s in sorted(
+                {b.get("status") for b in sorted_bills},
+                key=lambda s: dash.LEGISLATION_STATUS_ORDER.get(s, 9),
+            )
+        )
+        if group
     )
     last_updated = payload.get("last_updated") or "unknown"
     principles_panel = dash._build_principles_summary_html(bills)
@@ -300,6 +379,30 @@ def build_company_claims() -> str:
             f'{caption}{chip_row}{box}</div>'
         )
 
+    # Fold after the fifth company. The claims are grouped by operator and the
+    # operators are the ones a reader recognises; a per-company accordion would
+    # be seventeen summaries hiding two quotes each, which is noise, not
+    # navigation.
+    CLAIM_FOLD_AFTER_COMPANIES = 5
+    if len(rendered) > CLAIM_FOLD_AFTER_COMPANIES:
+        cut = next(
+            i
+            for i, part in enumerate(parts)
+            if part.startswith('<h4 class="claim-company">')
+            and sum(
+                1
+                for p in parts[:i]
+                if p.startswith('<h4 class="claim-company">')
+            )
+            == CLAIM_FOLD_AFTER_COMPANIES
+        )
+        rest = len(rendered) - CLAIM_FOLD_AFTER_COMPANIES
+        folded = _card_fold(
+            f"Show water claims from the other {rest} operators",
+            "".join(parts[cut:]),
+        )
+        parts = parts[:cut] + [folded]
+
     parts.append(
         f'<p class="src-note">Snapshotted from '
         f'{esc(payload.get("source_repo", "datacentercommunitybenefits"))} on '
@@ -345,10 +448,23 @@ def build_issues_claims_tab() -> str:
 
     summary_strip = dash._issue_type_summary_html(conflict_sites)
     doctrine_matrix = dash._build_site_doctrine_matrix_html(conflict_sites, readings_by_id)
-    site_cards = "".join(
-        dash._build_conflict_site_html(s, readings_by_id, all_ids, cases_by_id, claims_ctx)
-        for s in conflict_sites
-    )
+
+    def _site(s: dict) -> str:
+        return dash._build_conflict_site_html(
+            s, readings_by_id, all_ids, cases_by_id, claims_ctx
+        )
+
+    # A fold rather than groups: a site carries one to three issue types, so
+    # there is no single axis to split on without listing a site twice. The
+    # issue-type filter force-opens it (see applyIssueFilter).
+    SITE_FOLD_AFTER = 8
+    site_cards = "".join(_site(s) for s in conflict_sites[:SITE_FOLD_AFTER])
+    if len(conflict_sites) > SITE_FOLD_AFTER:
+        site_cards += _card_fold(
+            f"Show the remaining {len(conflict_sites) - SITE_FOLD_AFTER} sites",
+            "".join(_site(s) for s in conflict_sites[SITE_FOLD_AFTER:]),
+            fold_id="sites-fold",
+        )
 
     issue_counts: dict[str, int] = {}
     for s in conflict_sites:
@@ -396,8 +512,12 @@ def build_issues_claims_tab() -> str:
   water claims, so the promise and the record sit on the same card.</p>
 
   {summary_strip}
+  {_jumpnav([
+      ("issues-sites", f"Sites ({len(conflict_sites)})"),
+      ("issues-claims", f"Operator claims ({len(claims)})"),
+  ])}
 
-  <h3>Sites with reported water issues or pushback ({len(conflict_sites)})</h3>
+  <h3 id="issues-sites">Sites with reported water issues or pushback ({len(conflict_sites)})</h3>
   <h4 class="solution-cat-header">Which doctrines are in play where</h4>
   {doctrine_matrix}
   <div class="cwa-filters">
@@ -408,7 +528,7 @@ def build_issues_claims_tab() -> str:
   <div id="dc-conflicts">{site_cards}</div>
   <p class="src-note">Site roster last updated {esc(conflicts_updated)}.</p>
 
-  <h3>Operator water claims ({len(claims)})</h3>
+  <h3 id="issues-claims">Operator water claims ({len(claims)})</h3>
   {challenge_block}
   {build_company_claims()}
 </section>
@@ -504,13 +624,32 @@ def build_cwa_tab() -> str:
             -dash._cwa_year_end(c.get("year", "")),
         ),
     )
+    def _hist_card(c: dict) -> str:
+        return (
+            f'<div class="cwa-case" data-category="{esc(c.get("category",""))}" '
+            f'data-casetype="{esc(c.get("case_type",""))}" '
+            f'data-statutes="{esc(" ".join(dash._case_statutes(c, readings_by_id)))}" '
+            f'data-yearend="{dash._cwa_year_end(c.get("year",""))}">'
+            f"{dash._build_cwa_case_html(c, all_ids, readings_by_id)}</div>"
+        )
+
+    # Grouped by case group, which is already the sort order. The two
+    # data-center groups open; the industrial analogs and the landmark
+    # precedents — 83 of the 108 cards, and the two groups a reader consults
+    # rather than reads — wait behind a summary each.
     hist_cards = "".join(
-        f'<div class="cwa-case" data-category="{esc(c.get("category",""))}" '
-        f'data-casetype="{esc(c.get("case_type",""))}" '
-        f'data-statutes="{esc(" ".join(dash._case_statutes(c, readings_by_id)))}" '
-        f'data-yearend="{dash._cwa_year_end(c.get("year",""))}">'
-        f'{dash._build_cwa_case_html(c, all_ids, readings_by_id)}</div>'
-        for c in sorted_hist
+        _card_group(
+            dash.CWA_CATEGORY_LABELS.get(cat, cat),
+            cat,
+            "".join(_hist_card(c) for c in group),
+            len(group),
+            collapsed=cat not in ("datacenter", "adjacent"),
+        )
+        for cat, group in (
+            (cat, [c for c in sorted_hist if c.get("category") == cat])
+            for cat in hist_cats
+        )
+        if group
     )
 
     # Section 2: potential/active cases — no client-side filter needed.
@@ -530,6 +669,7 @@ def build_cwa_tab() -> str:
     # Part 1: the statutory toolkit (reading cards grouped by statute).
     toolkit = dash._build_authorities_html(authorities_payload, all_ids)
     n_readings = len(authorities_payload.get("readings", []))
+    n_families = len(authorities_payload.get("statutes", {}))
 
     cat_labels_json = json.dumps(dash.CWA_CATEGORY_LABELS)
     cat_order_json = json.dumps(dash.CWA_CATEGORY_ORDER)
@@ -538,8 +678,9 @@ def build_cwa_tab() -> str:
 <section class="panel">
   <h2>Federal Water Law &amp; Data Centers — Authorities, Record, Exposure</h2>
   <p class="lead">Three views on federal water law and data centers: the <strong>statutory
-  toolkit</strong> (every EPA / Army Corps water authority — CWA, SDWA, TSCA, RCRA,
-  Rivers &amp; Harbors Act — and how each could reach a data center), the
+  toolkit</strong> ({n_families} authority families — federal discharge and supply
+  statutes, interstate compacts, state doctrine — and how each could reach a
+  data center), the
   <strong>historical record</strong> built under those authorities (penalties,
   settlements, court rulings), and the <strong>named sites</strong> where water
   conflicts are live. The mappings overlap by design — one fact pattern can trigger
@@ -569,8 +710,10 @@ def build_cwa_tab() -> str:
 
   <div class="subtabpanel" id="panel-cwa-p1" hidden>
     <h3>Part 1 — The Federal Water-Law Toolkit</h3>
-    <p><strong>{n_readings} statutory readings</strong> across the CWA, SDWA, TSCA, RCRA,
-    and the Rivers &amp; Harbors Act — each card explains what the authority historically
+    <p><strong>{n_readings} statutory readings</strong> across {n_families} authority
+    families — the federal discharge statutes, the supply-side ones that govern storage,
+    withdrawal and licensing, interstate compacts, and state water doctrine — each card
+    explains what the authority historically
     covered, how it could apply to a data-center fact pattern, and which cases below show
     it in use. Case and site cards link back here via their <em>statute applicability</em> rows.</p>
     <div id="water-toolkit">{toolkit}</div>
@@ -704,6 +847,12 @@ def _chart_data(df: pd.DataFrame) -> dict:
 
 
 def build_data_tab() -> tuple[str, dict]:
+    # DORMANT — not wired into build_html(); the Data tab was renamed to Sources
+    # in June 2026 and its two <canvas> charts have had no drawing library since
+    # the Chart.js tag was removed in August 2026. Kept because the scraper-output
+    # views (heatmap, per-query scorecard) are the starting point for the live-map
+    # tab in backlog.md. Anything re-enabling it must supply its own renderer —
+    # this page loads no third-party script.
     df = dash.load_data()
     if df.empty:
         return (
@@ -940,6 +1089,114 @@ def build_records_table(df: pd.DataFrame) -> str:
 
 
 # --------------------------------------------------------------------------
+# States & Localities tab
+# --------------------------------------------------------------------------
+
+
+def build_states_tab(today: datetime | None = None) -> str:
+    """State-by-state view: what moved, who is doing what, and the local table.
+
+    ``today`` is an argument rather than a call to ``datetime.now()`` inside
+    the builder so the 120-day window is testable at its boundary and a build
+    is reproducible from a fixed clock.
+    """
+    now = today or datetime.now(timezone.utc).replace(tzinfo=None)
+    bills = dash.load_legislation().get("bills", [])
+    payload = dash.load_local_actions()
+    actions = payload.get("actions", [])
+    last_updated = payload.get("last_updated") or "unknown"
+
+    rollup = dash._state_rollup(bills, actions, now)
+    metrics = dash._states_metrics(rollup, actions)
+    whats_new = dash._states_whats_new(bills, actions, now)
+
+    hero = "".join(
+        f'<div class="metric"><div class="metric-label">{lbl}</div>'
+        f'<div class="metric-value">{val}</div>'
+        f'<div class="metric-sub">{sub}</div></div>'
+        for lbl, val, sub in [
+            ("States active", metrics["states_active"], "at least one tracked measure"),
+            ("Local actions tracked", metrics["actions_tracked"], "county, city and town"),
+            ("Newest action", metrics["newest"], "most recent movement"),
+        ]
+    )
+
+    codes = sorted({a.get("state", "") for a in actions if a.get("state")})
+    state_options = "".join(
+        f'<option value="{esc(c)}">{esc(c)} — {esc(dash.US_STATE_NAMES.get(c, c))}</option>'
+        for c in codes
+    )
+    status_boxes = "".join(
+        f'<label class="chip-check"><input type="checkbox" class="la-status" '
+        f'value="{k}" checked> {esc(v)}</label>'
+        for k, v in dash.LOCAL_ACTION_STATUS_LABELS.items()
+    )
+    type_boxes = "".join(
+        f'<label class="chip-check"><input type="checkbox" class="la-type" '
+        f'value="{k}" checked> {esc(v)}</label>'
+        for k, v in dash.LOCAL_ACTION_TYPE_LABELS.items()
+    )
+
+    return f"""
+<section class="panel">
+  <h2>States &amp; Localities</h2>
+  <p class="lead">{esc(dash.STATES_LEAD)}</p>
+  <div class="hero src-hero">{hero}</div>
+  {_jumpnav([
+      ("states-whatsnew", "What's new"),
+      ("states-rollup", f"State rollup ({len(rollup)})"),
+      ("states-local", f"County & city ({len(actions)})"),
+  ])}
+</section>
+
+<section class="panel">
+  <h3 class="solution-cat-header" id="states-whatsnew">What's new — last {dash.STATES_WINDOW_DAYS} days</h3>
+  <p class="solution-cat-desc">State and local movement only; federal bills are
+  on the Legislation tab. An instrument moves when its timeline gains an event
+  that has already happened, not when a future deadline is recorded.</p>
+  {dash._build_whats_new_html(whats_new)}
+</section>
+
+<section class="panel">
+  <h3 class="solution-cat-header" id="states-rollup">State rollup</h3>
+  <p class="solution-cat-desc">Activity-based, not exhaustive: a state is here
+  because something tracked happened in it. An absent state means nothing has
+  been tracked there, not that nothing is happening. Instrument names link into
+  the Legislation tab.</p>
+  {dash._build_state_rollup_html(rollup, fold_after=12)}
+</section>
+
+<section class="panel">
+  <h3 class="solution-cat-header" id="states-local">County &amp; city actions</h3>
+  <p class="solution-cat-desc">The layer the Legislation tab is too coarse to
+  hold: {len(actions)} county, city and town measures mirrored from the Data
+  Center Community Benefits project. State-level measures stay on the
+  Legislation tab.</p>
+  <div class="cwa-filters">
+    <span class="filter-label">State:</span>
+    <select class="filter-select" id="la-state">
+      <option value="">All states</option>{state_options}
+    </select>
+    <label class="chip-check"><input type="checkbox" id="la-water" checked>
+      Water-related only</label>
+  </div>
+  <div class="cwa-filters">
+    <span class="filter-label">Status:</span>{status_boxes}
+  </div>
+  <div class="cwa-filters">
+    <span class="filter-label">Action:</span>{type_boxes}
+  </div>
+  <p class="count-line" id="la-count"></p>
+  {dash._build_local_actions_table_html(actions)}
+  <p class="src-note">Dataset last updated {esc(last_updated)}. Mirrored from
+  {esc(payload.get("source_repo", ""))} and corrected against primary sources
+  where the mirror was stale; see the dataset note for what was changed.</p>
+</section>
+<script>window.LA_TOTAL = {len(actions)};</script>
+"""
+
+
+# --------------------------------------------------------------------------
 # News tab
 # --------------------------------------------------------------------------
 
@@ -956,7 +1213,18 @@ def build_news_tab() -> str:
         for t in all_tags
     )
 
-    cards = "".join(dash._build_news_item_html(i) for i in items)
+    # Newest first, so there is no grouping axis worth inventing — the first
+    # dozen headlines are the answer to "what happened lately" and the rest is
+    # archive. The topic filter force-opens the fold (see applyNewsFilter) so a
+    # filter can never appear to match nothing.
+    NEWS_FOLD_AFTER = 12
+    cards = "".join(dash._build_news_item_html(i) for i in items[:NEWS_FOLD_AFTER])
+    if len(items) > NEWS_FOLD_AFTER:
+        cards += _card_fold(
+            f"Show the {len(items) - NEWS_FOLD_AFTER} older headlines",
+            "".join(dash._build_news_item_html(i) for i in items[NEWS_FOLD_AFTER:]),
+            fold_id="news-fold",
+        )
 
     return f"""
 <section class="panel">
@@ -1027,6 +1295,7 @@ def build_solutions_tab() -> str:
 
     status_order = {"deployed": 0, "pilot": 1, "proposed": 2}
     sections = []
+    jump_items: list[tuple[str, str]] = []
     total_solutions = len(all_sols)
     for i, cat in enumerate(categories):
         label = cat.get("label", "")
@@ -1037,8 +1306,12 @@ def build_solutions_tab() -> str:
         )
         cards_html = "".join(dash._build_solution_card_html(s) for s in sols)
         # Accordion per category (first open) — the tab was one long scroll.
+        # The id makes it a jump-nav target; the page's anchor handler opens an
+        # ancestor <details>, and here the target *is* the <details>.
+        cat_id = f"solcat-{_principle_slug(cat.get('id') or label)}"
+        jump_items.append((cat_id, f"{label} ({len(sols)})"))
         sections.append(
-            f'<details class="lazy"{" open" if i == 0 else ""}>'
+            f'<details class="lazy" id="{esc(cat_id)}"{" open" if i == 0 else ""}>'
             f'<summary><span class="solution-cat-header" style="border:none;padding-left:0">'
             f'{esc(label)} ({len(sols)})</span></summary>'
             f'<p class="solution-cat-desc">{esc(desc)}</p>'
@@ -1053,6 +1326,7 @@ def build_solutions_tab() -> str:
   organized by who is driving them: state and federal regulators, water utilities, and
   industry operators. Status badges indicate real-world deployment stage.</p>
   {stats_html}
+  {_jumpnav(jump_items)}
   {"".join(sections)}
   <p class="src-note">Dataset last updated {esc(last_updated)}. Deployment status
   is as of the dataset date; check source links for current status.</p>
@@ -1156,13 +1430,48 @@ def build_sources_tab() -> str:
 
 
 # --------------------------------------------------------------------------
+# Explore tab
+# --------------------------------------------------------------------------
+
+
+def build_explore_tab() -> str:
+    """The connection graph + text-similarity surface.
+
+    All of the work is in ``dashboard._build_explore_html`` so the Streamlit
+    app renders the identical fragment; this only supplies the tab chrome
+    (title, lead, dataset note) the way every other tab does.
+    """
+    return f"""
+<section class="panel">
+  <h2>Explore — Connections and Text Search</h2>
+  <p class="lead">{esc(dash.EXPLORE_LEAD)}</p>
+  {dash._build_explore_html(GRAPH_DATA_URL)}
+  <p class="src-note">Lines are the cross-references the datasets declare, walked
+  in both directions; taxonomy-membership lines (shared statute family, project
+  type, or principle) are derived and off until you switch them on. Similarity is
+  TF-IDF over each record's own text — it matches wording, not meaning, which is
+  why the terms it matched on are shown. Everything runs in your browser.</p>
+</section>
+"""
+
+
+# --------------------------------------------------------------------------
 # Assembly
 # --------------------------------------------------------------------------
 
 CSS = """
-:root{--ink:#1a1a2e;--blue:#08519c;--blue2:#3182bd;--muted:#4b5563}
+:root{--ink:#1a1a2e;--blue:#08519c;--blue2:#3182bd;--muted:#4b5563;
+  /* Height of the sticky tab bar. Every anchor target reserves this much
+     scroll margin, so a deep link never lands under the nav. Keep the two in
+     step: change the bar's padding or the chip's min-height and change this. */
+  --navh:54px}
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
+/* One rule for every anchor target on the page — bill, case, reading, site,
+   claim, news item, solution, and the per-tab section headings. Cheap (it only
+   applies when something scrolls the element into view) and impossible to
+   forget on a new card family, which a per-class list would be. */
+[id]{scroll-margin-top:calc(var(--navh) + .6rem)}
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   color:var(--ink);line-height:1.55;
@@ -1184,22 +1493,101 @@ h1{font-size:1.9rem;margin:0 0 .2rem;padding-bottom:.4rem;
   background-repeat:repeat-x;background-position:left bottom;background-size:80px 8px}
 hr{border:none;height:2px;background:linear-gradient(90deg,var(--blue) 0%,var(--blue2) 25%,#6baed6 60%,transparent 100%);margin:1rem 0;border-radius:1px}
 .tagline{color:var(--muted);margin:0 0 1rem;font-size:.95rem}
-h2{font-size:1.5rem;margin:.2rem 0 .5rem}
-h3{font-size:1.2rem;margin:1rem 0 .5rem}
-h4{margin:.2rem 0 .5rem}
+/* Type scale. h1 (page) → h2 (one per tab, the tab title) → h3 (section) →
+   .solution-cat-header (group within a section) → h4. The steps have to stay
+   visibly unequal: h2 was 1.5rem against an h1 of 1.9rem, close enough that a
+   tab title read as a second page title. */
+h2{font-size:1.28rem;margin:.2rem 0 .5rem}
+h3{font-size:1.12rem;margin:1rem 0 .5rem}
+h4{font-size:.95rem;margin:.2rem 0 .5rem}
 a{color:var(--blue)}
 .lead{color:#333;margin:.2rem 0 .8rem}
 .count-line{margin:.4rem 0 .8rem}
 .src-note{color:#888;font-size:.82rem;margin-top:.6rem}
 .filter-label{font-weight:600;margin-right:.4rem}
 
-/* Tabs */
-.tabs{display:flex;gap:.25rem;border-bottom:2px solid #d6e2ee;margin:.5rem 0 1.25rem;flex-wrap:wrap}
-.tab{appearance:none;border:0;background:none;font:inherit;cursor:pointer;
-  padding:.6rem 1rem;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-2px;
-  font-weight:600;min-height:44px}
-.tab[aria-selected="true"]{color:var(--blue);border-bottom-color:var(--blue)}
+/* Tabs — a sticky, full-bleed strip of outlined chips.
+   Sticky because eight tabs' worth of content is 20-100 cards deep and going
+   back to the top to switch was the single most-repeated scroll on the page.
+   One non-wrapping scrollable row rather than a wrapped grid: at 375px the
+   wrapped version was four loose rows with no boundaries, and a sticky bar
+   that tall would eat ~90px of a 667px viewport on every screen. The strip
+   breaks out of .wrap's padding so the background spans the viewport. */
+.tabs-bar{position:sticky;top:0;z-index:30;background:#f2f9fd;
+  border-bottom:2px solid #d6e2ee;margin:.4rem -1.25rem 1rem;padding:.35rem 0}
+/* Right-edge fade: the affordance that says the row continues. Added by JS
+   only when the row actually overflows (.is-scrollable) and dropped at the end
+   of the scroll (.at-end), so it never smudges a row that already fits. */
+.tabs-bar::after{content:"";position:absolute;right:0;top:0;bottom:2px;width:2.25rem;
+  pointer-events:none;opacity:0;transition:opacity .15s;
+  background:linear-gradient(90deg,rgba(242,249,253,0),#f2f9fd 78%)}
+.tabs-bar.is-scrollable:not(.at-end)::after{opacity:1}
+.tabs{display:flex;gap:.35rem;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;
+  scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  padding:0 1.25rem}
+.tabs::-webkit-scrollbar{display:none}
+.tab{appearance:none;font:inherit;cursor:pointer;position:relative;flex:0 0 auto;
+  scroll-snap-align:start;white-space:nowrap;
+  border:1px solid #bdd7e7;background:#fff;border-radius:999px;
+  padding:.4rem .8rem .55rem;color:var(--muted);font-weight:600;font-size:.87rem;
+  min-height:40px}
+.tab:hover{background:#eff3ff}
+.tab[aria-selected="true"]{color:var(--blue);background:#eff3ff;border-color:var(--blue)}
+/* The active marker is a short pipe run rather than a slab underline: 2px with
+   rounded caps (::after) and a fitting dot at each end (::before, two radial
+   gradients so one pseudo-element carries both). rgba(...,0) rather than
+   `transparent` — `transparent` is transparent BLACK and fringes the dot grey
+   as it interpolates. It sits *inside* the chip now: the row scrolls, and
+   anything hung below the chip would be clipped by the scroll container. */
+.tab[aria-selected="true"]::after{content:"";position:absolute;left:.8rem;right:.8rem;
+  bottom:5px;height:2px;border-radius:999px;background:var(--blue)}
+.tab[aria-selected="true"]::before{content:"";position:absolute;
+  left:calc(.8rem - 3px);right:calc(.8rem - 3px);bottom:3px;height:6px;background-repeat:no-repeat;
+  background:radial-gradient(circle at 3px 3px,var(--blue) 0 2.4px,rgba(8,81,156,0) 2.6px),
+             radial-gradient(circle at calc(100% - 3px) 3px,var(--blue) 0 2.4px,rgba(8,81,156,0) 2.6px)}
 .tabpanel[hidden]{display:none}
+
+/* Back to top — appears after two viewport heights, which is roughly where the
+   sticky bar stops being enough on its own. Fades with a transition rather
+   than an animation — DESIGN.md §12 allows the page exactly one keyframes
+   block, and the header schematic's flow line has it. */
+.to-top{position:fixed;right:1rem;bottom:1rem;z-index:40;display:inline-flex;
+  align-items:center;gap:.3rem;appearance:none;font:inherit;font-size:.78rem;font-weight:600;
+  color:var(--blue);background:#fff;border:1px solid var(--blue);border-radius:999px;
+  padding:.4rem .75rem;min-height:40px;cursor:pointer;box-shadow:0 1px 2px rgba(15,23,42,.04);
+  opacity:0;visibility:hidden;transition:opacity .15s}
+.to-top.is-visible{opacity:1;visibility:visible}
+.to-top:hover{background:#eff3ff}
+.to-top svg{display:block}
+
+/* Collapsible card groups and "show the rest" folds.
+   Both are plain <details>. They ship OPEN with data-collapsed="1" so a reader
+   with no JavaScript gets every card; the head script stamps html.js, this rule
+   hides the body before first paint, and the load script closes them properly
+   and drops the attribute. That order is what makes it flash-free AND correct
+   with scripting off — emitting them closed would have hidden ~150 cards from
+   a no-JS reader, and CSS cannot force a closed <details> open. */
+.js details[data-collapsed]>*:not(summary){display:none}
+details.card-group,details.card-fold{margin:.5rem 0 .75rem}
+details.card-group>summary,details.card-fold>summary{cursor:pointer;list-style:none;
+  display:flex;align-items:center;gap:.4rem;min-height:40px;
+  font-weight:700;font-size:.92rem;color:var(--blue);
+  border:1px solid #bdd7e7;background:#eff3ff;border-radius:.4rem;padding:.4rem .75rem}
+details.card-group>summary::-webkit-details-marker,
+details.card-fold>summary::-webkit-details-marker{display:none}
+details.card-group>summary::before,details.card-fold>summary::before{content:"\\25B8"}
+details.card-group[open]>summary::before,details.card-fold[open]>summary::before{content:"\\25BE"}
+details.card-group>summary:hover,details.card-fold>summary:hover{background:#dfeafb}
+.cg-count{font-weight:400;color:var(--muted);font-size:.85rem}
+details.card-group>*:not(summary){padding-left:.15rem}
+
+/* Per-tab jump row — same idiom as the statute jump-nav in the Part 1 toolkit,
+   for tabs that carry several sections stacked down the page. */
+.jumpnav{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0 .9rem}
+.jump-link{display:inline-flex;align-items:center;min-height:32px;
+  border:1px solid #bdd7e7;background:#eff3ff;color:var(--blue);
+  border-radius:999px;padding:.2rem .7rem;font-size:.82rem;font-weight:600;text-decoration:none}
+.jump-link:hover{background:#dfeafb}
 
 /* Sub-tabs (e.g. Water Cases Part 1-4) — same mechanics as the top-level
    tabs, one visual size down, so a section is one click away instead of a
@@ -1212,6 +1600,23 @@ a{color:var(--blue)}
 .subtabpanel[hidden]{display:none}
 
 .panel{margin-bottom:1.25rem}
+
+/* Offscreen cards cost nothing to lay out.
+   ~10,700 elements live in these lists; content-visibility:auto lets the
+   browser skip layout and paint for the ones outside the viewport, and
+   contain-intrinsic-size:auto <h> gives it a placeholder height (then
+   remembers the real one after a card has been rendered once) so the
+   scrollbar stays honest. The numbers are eyeballed card heights, not
+   measurements — being 30% off costs a little scroll drift, nothing else.
+   Anchor jumps still work: a fragment navigation or scrollIntoView forces the
+   skipped subtree to lay out before scrolling. Applied only to whole cards in
+   long lists — never to a container that an anchor target's ancestors chain
+   through more than one of. */
+.leg-bill,.cwa-case,.cwa-potential-case{content-visibility:auto;contain-intrinsic-size:auto 260px}
+#dc-conflicts .dc-site{content-visibility:auto;contain-intrinsic-size:auto 240px}
+#news-cards .news-card{content-visibility:auto;contain-intrinsic-size:auto 190px}
+.claim-card{content-visibility:auto;contain-intrinsic-size:auto 200px}
+
 details.lazy{border:1px solid #cbd5e1;border-radius:.5rem;background:#fff;margin:.6rem 0;
   box-shadow:0 1px 2px rgba(15,23,42,.04)}
 details.lazy>summary{cursor:pointer;font-weight:600;color:var(--blue);padding:.75rem 1rem;
@@ -1299,7 +1704,11 @@ a.news-title{color:var(--blue)}
 .news-crossref{font-size:.82rem;color:#08519c;margin-top:.3rem}
 
 /* Solutions tab */
-.solution-cat-header{font-size:1.15rem;font-weight:700;color:var(--blue);margin:1.2rem 0 .2rem;
+/* 1rem, matching the canonical rule in assets/components.css (DESIGN.md §9).
+   The static page had overridden it to 1.15rem, which put a group header above
+   the h3 section header it sits under. Its rank is carried by the blue and the
+   rule beneath it, not by being large. */
+.solution-cat-header{font-size:1rem;font-weight:700;color:var(--blue);margin:1.2rem 0 .2rem;
   border-bottom:2px solid #d6e2ee;padding-bottom:.3rem}
 .solution-cat-desc{font-size:.9rem;color:#555;margin:0 0 .6rem}
 .solution-card{border:1px solid #e2e8f0;border-radius:.5rem;background:#fff;padding:.85rem 1rem;margin:.5rem 0}
@@ -1347,8 +1756,17 @@ a.news-title{color:var(--blue)}
 .tl-desc{font-size:.85rem;color:#444;margin:.15rem 0 0;line-height:1.4}
 
 @media (max-width:760px){
+  :root{--navh:50px}
   .wrap{padding:.75rem .75rem 3rem}
-  h1{font-size:1.35rem}
+  h1{font-size:1.5rem}
+  h2{font-size:1.18rem}
+  /* The strip breaks out of the phone padding, not the desktop padding. */
+  .tabs-bar{margin:.3rem -.75rem .8rem;padding:.3rem 0}
+  .tabs{padding:0 .75rem;gap:.3rem}
+  .tab{font-size:.84rem;padding:.35rem .7rem .5rem;min-height:38px}
+  .tab[aria-selected="true"]::after{bottom:4px}
+  .tab[aria-selected="true"]::before{bottom:2px}
+  .to-top{right:.6rem;bottom:.6rem}
   .hero{grid-template-columns:repeat(2,1fr)}
   .chart-wrap{height:300px}
   .theme-grid{grid-template-columns:repeat(2,1fr)}
@@ -1363,21 +1781,130 @@ a.news-title{color:var(--blue)}
      half-screen wall of checkboxes. */
   .cwa-types{max-height:7.5rem;overflow-y:auto}
   .barrier-grid{grid-template-columns:1fr}
+  .state-grid{grid-template-columns:1fr}
+  .whatsnew-row{grid-template-columns:76px 1fr;gap:.45rem}
   .tl-row{grid-template-columns:70px 14px 1fr}
+}
+
+/* Footer pipe run — ornament, held at the 12% ceiling DESIGN.md §1 sets for
+   anything that is not data. */
+.footer-motif{display:block;width:100%;height:auto;margin:1.75rem 0 .25rem;opacity:.12}
+
+/* Print. The page texture prints as grey mush and the footer motif is pure
+   ornament, so both go. The schematic stays — it is the one piece of art here
+   that carries information — but its screen-only minimum drawing width would
+   run off the sheet, so that is dropped and it scales to the page. */
+@media print{
+  body{background-image:none;background-color:#fff}
+  .footer-motif{display:none}
+  .schematic{overflow-x:visible}
+  .schematic svg{min-width:0}
+  /* Screen navigation is meaningless on paper, and a sticky bar reprints on
+     every sheet. content-visibility:auto would leave offscreen cards blank. */
+  .tabs-bar,.to-top{display:none}
+  .leg-bill,.cwa-case,.cwa-potential-case,#dc-conflicts .dc-site,
+  #news-cards .news-card,.claim-card{content-visibility:visible}
 }
 """
 
 
 def build_js() -> str:
     return """
+// --- Collapsed-by-default groups and folds ---
+// They are in the markup as <details open data-collapsed="1"> so a reader with
+// no JavaScript gets every card; the CSS keeps their bodies hidden from first
+// paint (html.js is stamped in <head>), and this closes them for real.
+document.querySelectorAll('details[data-collapsed]').forEach(d => {
+  d.open = false;
+  d.removeAttribute('data-collapsed');
+});
+
 // --- Tabs ---
+const tabsBar = document.querySelector('.tabs-bar');
+const tabsRow = document.querySelector('.tabs');
 const tabs = document.querySelectorAll('.tab');
 const panels = document.querySelectorAll('.tabpanel');
 function activateTab(name){
   tabs.forEach(x => x.setAttribute('aria-selected', x.dataset.tab === name ? 'true' : 'false'));
   panels.forEach(p => p.hidden = (p.id !== 'panel-' + name));
+  // The graph blob is a separate file fetched on first activation.
+  if (name === 'explore' && window.exploreInit) window.exploreInit();
+  scrollTabIntoView(name);
 }
 tabs.forEach(t => t.addEventListener('click', () => activateTab(t.dataset.tab)));
+
+// The row is one non-wrapping scroller, so the selected chip can be off-screen
+// after a cross-tab link. Nudge the scroller itself rather than calling
+// scrollIntoView, which would also scroll the page vertically.
+function scrollTabIntoView(name){
+  if (!tabsRow) return;
+  const el = [...tabs].find(t => t.dataset.tab === name);
+  if (!el) return;
+  const left = el.offsetLeft - tabsRow.offsetLeft;
+  const pad = 24;
+  if (left < tabsRow.scrollLeft + pad) tabsRow.scrollLeft = Math.max(0, left - pad);
+  else if (left + el.offsetWidth > tabsRow.scrollLeft + tabsRow.clientWidth - pad)
+    tabsRow.scrollLeft = left + el.offsetWidth - tabsRow.clientWidth + pad;
+}
+
+// Edge fade, only while there is something past the edge to fade toward.
+function syncTabOverflow(){
+  if (!tabsBar || !tabsRow) return;
+  const over = tabsRow.scrollWidth > tabsRow.clientWidth + 4;
+  tabsBar.classList.toggle('is-scrollable', over);
+  tabsBar.classList.toggle('at-end',
+    tabsRow.scrollLeft + tabsRow.clientWidth >= tabsRow.scrollWidth - 4);
+}
+if (tabsRow){
+  tabsRow.addEventListener('scroll', syncTabOverflow, {passive: true});
+  window.addEventListener('resize', syncTabOverflow);
+  syncTabOverflow();
+}
+
+// --- Back to top ---
+// Two viewport heights: far enough that the sticky bar alone has stopped
+// being the answer, close enough to catch a reader mid-card-list.
+const toTop = document.getElementById('to-top');
+if (toTop){
+  const smooth = !(window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  let ticking = false;
+  const syncToTop = () => {
+    ticking = false;
+    toTop.classList.toggle('is-visible', window.scrollY > window.innerHeight * 2);
+  };
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(syncToTop);
+  }, {passive: true});
+  toTop.addEventListener('click', () =>
+    window.scrollTo({top: 0, behavior: smooth ? 'smooth' : 'auto'}));
+  syncToTop();
+}
+
+// --- Card groups ---
+// A group is a <details> wrapping part of a filtered card list. After a filter
+// runs, each group reports how many of its cards survived, an emptied group
+// gets out of the way entirely, and a filter narrow enough to fit on a screen
+// or two opens whatever is left — otherwise narrowing to one status could
+// leave every match sitting behind a closed summary.
+const GROUP_AUTO_OPEN_MAX = 15;
+function syncCardGroups(scopeSel, cardSel){
+  const groups = [...document.querySelectorAll(scopeSel)];
+  if (!groups.length) return;
+  const live = groups.map(g => ({
+    el: g,
+    n: [...g.querySelectorAll(cardSel)].filter(c => !c.hidden).length,
+  }));
+  const total = live.reduce((sum, g) => sum + g.n, 0);
+  live.forEach(g => {
+    const badge = g.el.querySelector('.cg-count');
+    if (badge) badge.textContent = g.n === 1 ? '1 entry' : g.n + ' entries';
+    g.el.hidden = g.n === 0;
+    if (g.n && total <= GROUP_AUTO_OPEN_MAX) g.el.open = true;
+  });
+}
 
 // --- Sub-tabs (Water Cases Part 1-4) ---
 const subtabs = document.querySelectorAll('.subtab');
@@ -1426,6 +1953,7 @@ function applyLegFilter(){
   legStrong.textContent = 'Showing ' + shown + ' of ' + window.LEG_TOTAL + ' instruments';
   legCount.replaceChildren(legStrong);
   if (lSummary) legCount.append(' — ' + lSummary);
+  syncCardGroups('#leg-bills .card-group', '.leg-bill');
 }
 legChecks.forEach(c => c.addEventListener('change', applyLegFilter));
 if (legCount) applyLegFilter();
@@ -1436,6 +1964,11 @@ const dcSites = [...document.querySelectorAll('.dc-site')];
 const issueChecks = [...document.querySelectorAll('.dc-issue')];
 function applyIssueFilter(){
   const picked = new Set(issueChecks.filter(c => c.checked).map(c => c.value));
+  // Matches can sit behind the "remaining sites" fold; a filter that appears
+  // to match nothing is worse than a long list. Only once the reader has
+  // actually narrowed something — this also runs on load, with everything on.
+  const sitesFold = document.getElementById('sites-fold');
+  if (sitesFold && picked.size < issueChecks.length) sitesFold.open = true;
   let shown = 0;
   dcSites.forEach(el => {
     // A site carries 1-3 tags and matches if ANY is picked — the tags are
@@ -1485,6 +2018,7 @@ function applyCwaFilter(){
     .map(k => counts[k] + ' ' + (labels[k]||k)).join(' · ');
   cwaCount.innerHTML = '<strong>Showing ' + shown + ' of ' + window.CWA_TOTAL +
     ' cases</strong>' + (summary ? ' — ' + summary : '');
+  syncCardGroups('#cwa-cases .card-group', '.cwa-case');
 }
 [...cwaCatChecks, ...cwaTypeChecks, ...cwaStatuteChecks,
  document.getElementById('cwa-recent')].forEach(c =>
@@ -1560,6 +2094,38 @@ function applyRecFilter(){
 document.querySelectorAll('.rec-state').forEach(c => c.addEventListener('change', applyRecFilter));
 if (recCount) applyRecFilter();
 
+// --- County & city action filters (States & Localities tab) ---
+// One <select> for 35 states rather than 35 chips; status and action type
+// stay checkboxes to match every other filter row on the page.
+const laCount = document.getElementById('la-count');
+const laRows = [...document.querySelectorAll('#local-actions-table tbody tr')];
+const laStatusChecks = [...document.querySelectorAll('.la-status')];
+const laTypeChecks = [...document.querySelectorAll('.la-type')];
+const laState = document.getElementById('la-state');
+const laWater = document.getElementById('la-water');
+function applyLocalActionFilter(){
+  const statuses = new Set(laStatusChecks.filter(c => c.checked).map(c => c.value));
+  const types = new Set(laTypeChecks.filter(c => c.checked).map(c => c.value));
+  const state = laState ? laState.value : '';
+  const waterOnly = laWater ? laWater.checked : false;
+  let shown = 0;
+  laRows.forEach(tr => {
+    const ok = statuses.has(tr.dataset.status) && types.has(tr.dataset.type)
+      && (!state || tr.dataset.state === state)
+      && (!waterOnly || tr.dataset.water === '1');
+    tr.hidden = !ok;
+    if (ok) shown++;
+  });
+  if (laCount){
+    const strong = document.createElement('strong');
+    strong.textContent = 'Showing ' + shown + ' of ' + (window.LA_TOTAL || laRows.length) + ' actions';
+    laCount.replaceChildren(strong);
+  }
+}
+[...laStatusChecks, ...laTypeChecks, laState, laWater].forEach(c =>
+  c && c.addEventListener('change', applyLocalActionFilter));
+if (laCount) applyLocalActionFilter();
+
 // --- News tag filter ---
 const newsCount = document.getElementById('news-count');
 function applyNewsFilter(){
@@ -1571,7 +2137,16 @@ function applyNewsFilter(){
     el.hidden = !ok;
     if (ok) shown++;
   });
-  if (newsCount) newsCount.innerHTML = '<strong>' + shown + ' items</strong>';
+  if (newsCount){
+    const strong = document.createElement('strong');
+    strong.textContent = shown + ' items';
+    newsCount.replaceChildren(strong);
+  }
+  // A topic filter that matches nothing in the first twelve headlines would
+  // otherwise look like it matched nothing at all.
+  const newsFold = document.getElementById('news-fold');
+  const newsBoxes = document.querySelectorAll('.news-tag-filter');
+  if (newsFold && active.size < newsBoxes.length) newsFold.open = true;
 }
 document.querySelectorAll('.news-tag-filter').forEach(c => c.addEventListener('change', applyNewsFilter));
 
@@ -1606,21 +2181,21 @@ def build_llms_txt() -> str:
     lines = [
         "# Data Center Water Use Tracker",
         "",
-        "> Tracking data center water consumption in Virginia & Ohio via public "
-        "regulatory data (EPA ECHO DMR flow at receiving wastewater treatment "
-        "plants, state permit portals, utility financial reports), plus curated "
-        "national datasets: data-center water legislation, federal water-law "
-        "cases relevant to data centers (CWA, SDWA, TSCA, RCRA, Rivers & "
-        "Harbors Act) with a statutory-readings mapping, data-center sites with "
-        "documented water conflicts, and company water claims.",
+        f"> {dash.TAGLINE} Scraped sources are EPA ECHO DMR flow at receiving "
+        "wastewater treatment plants, state permit portals and utility financial "
+        "reports; alongside them are curated national datasets: data-center water "
+        "legislation, water-law cases relevant to data centers mapped to a registry "
+        "of statutory and doctrinal readings, county and city measures, "
+        "data-center sites with documented water conflicts, and company water claims.",
         "",
         f"Static build {built}. Dashboard: {SITE_URL} · Source: {REPO_URL}",
         "",
         "## Key numbers",
         "",
         f"- {len(bills)} bills tracked — {dash._legislation_status_summary(bills)}",
-        f"- {len(cases)} federal water enforcement cases "
-        f"(CWA, SDWA, TSCA, RCRA, RHA) — {dash._cwa_summary(cases)}",
+        f"- {len(cases)} water enforcement and precedent cases across "
+        f"{len(authorities.get('statutes', {}))} authority families — "
+        f"{dash._cwa_summary(cases)}",
         "- Core finding: data centers rarely hold their own discharge permits; "
         "operational water shows up at the receiving municipal treatment plant, "
         "so the pipeline tracks WWTP NPDES permits via EPA ECHO.",
@@ -1650,6 +2225,42 @@ def build_llms_txt() -> str:
             f"{b.get('summary')} Source: {b.get('source_url')}"
         )
 
+    # States & Localities. One line per state rollup entry would be 40 rows of
+    # counts with no facts in them, so this carries the tab's shape plus the
+    # thing that is actually perishable: what moved recently.
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    local_payload = dash.load_local_actions()
+    local_actions = local_payload.get("actions", [])
+    rollup = dash._state_rollup(bills, local_actions, now)
+    whats_new = dash._states_whats_new(bills, local_actions, now)
+    water_actions = sum(1 for a in local_actions if a.get("water_related"))
+    lines += [
+        "",
+        "## States and localities",
+        "",
+        f"The dashboard's States & Localities tab covers {len(rollup)} states with at "
+        f"least one tracked measure and {len(local_actions)} county, city and town "
+        f"actions ({water_actions} of them water-related), mirrored from "
+        f"{local_payload.get('source_repo', '')} and corrected against primary sources. "
+        "State-level instruments live in the legislation dataset above; this layer is "
+        "the county and city measures that dataset is too coarse to hold, and it "
+        "carries no cross-references to other records. States are listed because "
+        "something tracked happened in them, so an absent state means nothing has been "
+        "tracked there rather than that nothing is happening.",
+        "",
+        f"State activity, newest first: "
+        + ", ".join(f"{r['state_name']} ({r['newest']})" for r in rollup)
+        + ".",
+        "",
+        f"### Moved in the last {dash.STATES_WINDOW_DAYS} days ({len(whats_new)} movements)",
+        "",
+    ]
+    for r in whats_new[: dash.WHATS_NEW_LIMIT]:
+        lines.append(
+            f"- {r['date']} — {r['jurisdiction']} — {r['label']} — "
+            f"{r['status_label']} — {r['detail']}"
+        )
+
     lines += ["", "## Federal water-law toolkit (statutory readings)", ""]
     for r in readings:
         examples = ", ".join(r.get("example_case_ids", []))
@@ -1659,7 +2270,7 @@ def build_llms_txt() -> str:
             + (f" Example cases: {examples}." if examples else "")
         )
 
-    lines += ["", "## Water enforcement cases (CWA, SDWA, TSCA, RCRA, RHA)", ""]
+    lines += ["", "## Water enforcement cases and precedent", ""]
     for c in sorted(
         cases,
         key=lambda c: (
@@ -1701,6 +2312,19 @@ def build_llms_txt() -> str:
 
     lines += [
         "",
+        "## Explore tab (connection graph + text search)",
+        "",
+        "The dashboard's Explore tab renders every record above as one graph and "
+        "ranks all of them against a pasted passage by TF-IDF cosine similarity, "
+        "entirely in the browser. Nothing new is recorded there: nodes are the "
+        "records listed in this file, edges are the id cross-references those "
+        "records already declare (a case's statutory readings, a site's analogous "
+        "cases, a claim's site, an instrument's related cases), plus optional "
+        "derived edges joining records that share a statute family, project type "
+        "or legislative principle. The full node and edge list is therefore "
+        "derivable from the datasets linked below; the search index is a build "
+        "artifact and is not reproduced here.",
+        "",
         "## Data files",
         "",
         f"- Legislation dataset: {REPO_URL}/blob/main/data/reference/legislation.json",
@@ -1708,19 +2332,51 @@ def build_llms_txt() -> str:
         f"- Water authorities (statutory readings): {REPO_URL}/blob/main/data/reference/water_authorities.json",
         f"- DC water-conflict sites: {REPO_URL}/blob/main/data/reference/dc_water_conflicts.json",
         f"- Company water claims: {REPO_URL}/blob/main/data/reference/company_water_claims.json",
+        f"- County & city actions: {REPO_URL}/blob/main/data/reference/local_actions.json",
         "",
     ]
     return "\n".join(lines)
 
 
+# A pipe run closing the page: fittings, a gate valve, three racks. Ornament,
+# not information — it carries no labels and is aria-hidden, and the opacity
+# that keeps it at texture strength lives in the .footer-motif CSS rule so the
+# ceiling is auditable in one place.
+FOOTER_MOTIF = """
+<svg class="footer-motif" viewBox="0 0 960 26" xmlns="http://www.w3.org/2000/svg"
+     aria-hidden="true" focusable="false">
+<g fill="none" stroke="#08519c" stroke-width="2" stroke-linecap="round">
+  <path d="M 4 16 H 956"/>
+  <path d="M 380 16 V 5 M 368 5 H 392"/>
+  <path d="M 560 16 V 3 H 586 V 16 M 565 7 H 581 M 565 11 H 581"/>
+  <path d="M 604 16 V 3 H 630 V 16 M 609 7 H 625 M 609 11 H 625"/>
+  <path d="M 648 16 V 3 H 674 V 16 M 653 7 H 669 M 653 11 H 669"/>
+</g>
+<g fill="#08519c">
+  <circle cx="140" cy="16" r="4"/>
+  <circle cx="300" cy="16" r="4"/>
+  <circle cx="470" cy="16" r="4"/>
+  <circle cx="720" cy="16" r="4"/>
+  <circle cx="900" cy="16" r="4"/>
+  <path d="M 366 9 L 380 16 L 366 23 Z"/>
+  <path d="M 394 9 L 380 16 L 394 23 Z"/>
+</g>
+</svg>
+"""
+
+
 def build_html() -> str:
     legislation = build_legislation_tab()
+    states = build_states_tab()
     cwa = build_cwa_tab()
     issues = build_issues_claims_tab()
     news = build_news_tab()
     solutions = build_solutions_tab()
     sources_html = build_sources_tab()
+    explore = build_explore_tab()
     js = build_js()
+    # Shared with the Streamlit hero — one diagram, one definition.
+    schematic = dash._build_water_loop_svg()
     built = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     return f"""<!doctype html>
@@ -1729,43 +2385,73 @@ def build_html() -> str:
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Data Center Water Use Tracker</title>
-<meta name="description" content="Tracking data center water consumption in Virginia &amp; Ohio via public regulatory data.">
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<meta name="description" content="{esc(dash.TAGLINE)}">
 <link rel="alternate" type="text/plain" href="llms.txt" title="LLM-friendly summary">
 <style>{COMPONENT_CSS}{CSS}</style>
+<!-- Stamped before the body is parsed so the CSS can keep collapsed card
+     groups shut from the first paint. With scripting off the class never
+     lands and every group renders open — see the .js rule in CSS. -->
+<script>document.documentElement.classList.add('js')</script>
+<!-- Tab switching is the one thing on this page that needs JavaScript. Without
+     it six of the eight panels were unreachable — the `hidden` attribute does
+     not care why the button never fired. Unhide everything instead, so a no-JS
+     reader gets one long document rather than a truncated one. -->
+<noscript><style>.tabpanel[hidden]{{display:block}}</style></noscript>
 </head>
 <body>
 <div class="wrap">
   <h1>Data Center Water Use Tracker</h1>
-  <p class="tagline">Tracking data center water consumption in <strong>Virginia</strong> &amp;
-  <strong>Ohio</strong> via public regulatory data.</p>
+  <p class="tagline">{esc(dash.TAGLINE)}</p>
 
-  <div class="tabs" role="tablist">
-    <button class="tab" role="tab" data-tab="legislation" aria-selected="true">Legislation</button>
-    <button class="tab" role="tab" data-tab="cwa" aria-selected="false">Water Cases</button>
-    <button class="tab" role="tab" data-tab="issues" aria-selected="false">Issues &amp; Claims</button>
-    <button class="tab" role="tab" data-tab="news" aria-selected="false">News</button>
-    <button class="tab" role="tab" data-tab="solutions" aria-selected="false">Solutions</button>
-    <button class="tab" role="tab" data-tab="sources" aria-selected="false">Sources</button>
+  {schematic}
+
+  <div class="tabs-bar">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" data-tab="legislation" aria-selected="true">Legislation</button>
+      <button class="tab" role="tab" data-tab="states" aria-selected="false">States &amp; Localities</button>
+      <button class="tab" role="tab" data-tab="cwa" aria-selected="false">Water Cases</button>
+      <button class="tab" role="tab" data-tab="issues" aria-selected="false">Issues &amp; Claims</button>
+      <button class="tab" role="tab" data-tab="news" aria-selected="false">News</button>
+      <button class="tab" role="tab" data-tab="solutions" aria-selected="false">Solutions</button>
+      <button class="tab" role="tab" data-tab="sources" aria-selected="false">Sources</button>
+      <button class="tab" role="tab" data-tab="explore" aria-selected="false">Explore</button>
+    </div>
   </div>
 
   <div class="tabpanel" id="panel-legislation" role="tabpanel">{legislation}</div>
+  <div class="tabpanel" id="panel-states" role="tabpanel" hidden>{states}</div>
   <div class="tabpanel" id="panel-cwa" role="tabpanel" hidden>{cwa}</div>
   <div class="tabpanel" id="panel-issues" role="tabpanel" hidden>{issues}</div>
   <div class="tabpanel" id="panel-news" role="tabpanel" hidden>{news}</div>
   <div class="tabpanel" id="panel-solutions" role="tabpanel" hidden>{solutions}</div>
   <div class="tabpanel" id="panel-sources" role="tabpanel" hidden>{sources_html}</div>
+  <div class="tabpanel" id="panel-explore" role="tabpanel" hidden>{explore}</div>
 
+  {FOOTER_MOTIF}
   <p class="src-note">Static build {built} · Sources: EPA ECHO DMR, VA DEQ, Ohio EPA,
   Loudoun Water. Data center cooling water tracked via receiving WWTP flow ·
   <a href="llms.txt">llms.txt</a> (LLM-friendly summary) ·
   <a href="{REPO_URL}" target="_blank" rel="noopener">source</a></p>
 </div>
-<script src="{CHARTJS_URL}" integrity="{CHARTJS_SRI}" crossorigin="anonymous"></script>
+<button type="button" class="to-top" id="to-top" aria-label="Back to top">
+<svg width="11" height="11" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+<path d="M2 7.5 L6 3.5 L10 7.5" fill="none" stroke="currentColor" stroke-width="1.8"
+      stroke-linecap="round" stroke-linejoin="round"/></svg>Top</button>
 <script>{js}</script>
 </body>
 </html>
 """
+
+
+def build_graph_data_json() -> str:
+    """The Explore graph + TF-IDF index as a standalone JSON file.
+
+    ``refdata.graph.payload_json`` escapes ``</`` for embedding inside a
+    ``<script>`` element. As a served file that escape is unnecessary — and
+    ``\\/`` is legal JSON that parses back to ``/``, so undoing it changes
+    nothing a consumer sees while keeping the file readable.
+    """
+    return graph_payload_json().replace("<\\/", "</")
 
 
 def main() -> None:
@@ -1773,6 +2459,8 @@ def main() -> None:
     OUT_PATH.write_text(build_html(), encoding="utf-8")
     size_kb = OUT_PATH.stat().st_size / 1024
     print(f"Wrote {OUT_PATH} ({size_kb:.0f} KB)")
+    GRAPH_DATA_PATH.write_text(build_graph_data_json(), encoding="utf-8")
+    print(f"Wrote {GRAPH_DATA_PATH} ({GRAPH_DATA_PATH.stat().st_size / 1024:.0f} KB)")
     LLMS_TXT_PATH.write_text(build_llms_txt(), encoding="utf-8")
     print(f"Wrote {LLMS_TXT_PATH} ({LLMS_TXT_PATH.stat().st_size / 1024:.0f} KB)")
 

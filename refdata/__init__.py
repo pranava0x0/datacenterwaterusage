@@ -1,5 +1,10 @@
 """Curated-reference data layer: loaders, taxonomies, id registry, integrity.
 
+Eight datasets. Seven are curated records that cross-reference each other by
+id and therefore live in the registry; the eighth, ``local_actions.json``, is
+a mirrored county/city table that nothing points at, so it deliberately stays
+out of the registry and the integrity graph (Spec D v1, 2026-08-24).
+
 Extracted from ``dashboard.py`` on 2026-07-25 (plan Spec 0.3). Everything here
 is **pure** — no ``streamlit`` import anywhere in the package — so the
 Streamlit app, ``build_site.py``, the ``scripts/annotate_*.py`` migrations and
@@ -16,6 +21,7 @@ from refdata.loaders import (  # noqa: F401
     CWA_INVESTIGATIONS_PATH,
     DC_WATER_CONFLICTS_PATH,
     LEGISLATION_PATH,
+    LOCAL_ACTIONS_PATH,
     REFERENCE_DIR,
     WATER_AUTHORITIES_PATH,
     WATER_NEWS_PATH,
@@ -26,6 +32,7 @@ from refdata.loaders import (  # noqa: F401
     load_cwa_investigations,
     load_dc_water_conflicts,
     load_legislation,
+    load_local_actions,
     load_water_authorities,
     load_water_news,
     load_water_solutions,

@@ -1,7 +1,273 @@
 {
-  "last_updated": "2026-07-06",
+  "last_updated": "2026-08-24",
   "description": "Curated headlines about data center water use, regulation, enforcement, and solutions — linked to the tracker's datasets where possible.",
   "items": [
+    {
+      "id": "aws-lake-anna-permit-issued-2026-08",
+      "date": "2026-08",
+      "title": "DEQ Issues Final VPDES Permit for AWS Lake Anna Cooling-Water Discharge",
+      "outlet": "Lake Anna Life",
+      "summary": "Virginia DEQ issued the final VPDES permit for AWS's Lake Anna Technology Campus, effective August 1, 2026 through July 31, 2031, authorizing up to 0.28 MGD of treated cooling water into Sedges Creek. The permit sets a 32°C (89.6°F) daily maximum discharge temperature, daily pH/temperature/chlorine sampling, monthly metals monitoring (zinc, cadmium, copper), and quarterly-then-annual toxicity testing — the first direct-to-surface-water hyperscaler cooling-discharge permit finalized in Virginia.",
+      "tags": [
+        "regulation"
+      ],
+      "source_url": "https://lakeannalife.com/vdeg-issues-vpdes-permit-for-aws-site/",
+      "cross_ref_tab": "cwa",
+      "cross_ref_note": "Closes out the permit matter and the site record this tracker has followed since the draft",
+      "cross_ref_targets": [
+        "AWS-LakeAnnaVA-VPDES-cooling-discharge-2026",
+        "aws-lake-anna-va"
+      ]
+    },
+    {
+      "id": "va-deq-potomac-aquifer-study-2026-08",
+      "date": "2026-08",
+      "title": "Delayed Virginia DEQ Study Finds Potomac Aquifer Can't Support New Data-Center Withdrawals",
+      "outlet": "Virginia Mercury",
+      "summary": "A Virginia DEQ groundwater study, due January 1, 2026 but withheld for six months until an Associated Press records request forced its release on August 4, 2026, found the Potomac Aquifer underlying the Coastal Plain east of I-95 cannot support any new industrial water withdrawals, with parts of the region already at emergency groundwater levels. The finding bears directly on siting for water-cooled data centers in Eastern Virginia and prompted some legislators to call for a special session or a new moratorium on data-center approvals in the affected area.",
+      "tags": [
+        "research",
+        "regulation"
+      ],
+      "source_url": "https://virginiamercury.com/2026/08/04/deq-study-throws-cold-water-on-data-center-development-east-of-i-95/",
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "The report itself, and the reporting regime it lands alongside",
+      "cross_ref_targets": [
+        "VA DEQ waterworks data-center reporting regulations",
+        "VA DEQ Eastern Virginia groundwater study"
+      ]
+    },
+    {
+      "id": "texas-abbott-ercot-puct-audit-2026-08",
+      "date": "2026-08",
+      "title": "Texas Gov. Abbott Pauses New Data Center Grid Approvals Pending Water and Power Audit",
+      "outlet": "Houston Public Media",
+      "summary": "Gov. Greg Abbott on August 3, 2026 directed ERCOT and the Public Utility Commission of Texas to audit roughly 250–300 pending data-center interconnection projects — about 90% of the 474 GW in ERCOT's queue — covering both power and water usage, before any new projects advance. The order followed a PUCT water/power survey with under 10% compliance among Texas data centers; the audit is expected to take several months.",
+      "tags": [
+        "regulation",
+        "data"
+      ],
+      "source_url": "https://www.houstonpublicmedia.org/articles/news/energy-environment/2026/08/03/558529/gov-greg-abbott-pauses-new-data-centers-until-ercot-puct-audit-energy-water-usage/",
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "The audit follows the survey most Texas data centers ignored",
+      "cross_ref_targets": [
+        "TX PUC Energy and Water Use Survey (data centers)",
+        "TX EO 2026-08 (data center audit)"
+      ]
+    },
+    {
+      "id": "fort-worth-moratorium-process-2026-08",
+      "date": "2026-08",
+      "title": "Fort Worth City Council Begins 90-Day Data Center Moratorium Process",
+      "outlet": "KERA News",
+      "summary": "Fort Worth's City Council voted unanimously on August 11, 2026 to start the legal process for a 90-day data-center moratorium, targeting an effective date of February 16, 2027; the same session created an 11-member Data Center & Infrastructure Commission and an ordinance requiring new applicants to document PUCT and ERCOT grid approval. City documents list water-supply impact and long-term water availability among the factors the pause is meant to let staff study.",
+      "tags": [
+        "regulation",
+        "policy"
+      ],
+      "source_url": "https://www.keranews.org/news/2026-08-12/data-center-moratorium-takes-first-steps-after-fort-worth-city-councils-unanimous-vote",
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "The grid-approval condition points at the state audit directive",
+      "cross_ref_targets": [
+        "TX EO 2026-08 (data center audit)"
+      ]
+    },
+    {
+      "id": "indianapolis-data-center-moratorium-2026-08",
+      "date": "2026-08",
+      "title": "Indianapolis Enacts Data Center Moratorium Through 2027",
+      "outlet": "WFYI Public Media",
+      "summary": "The Indianapolis Metropolitan Development Commission voted 6-0 on August 19, 2026 to finalize a moratorium on new data-center approvals in Marion County through December 31, 2027, after the City-County Council advanced it 23-1 on August 10. The moratorium exempts three already-approved projects (DC Blox, Metrobloks, Sabey) and requires study of water and electricity impacts, alongside campus size and noise, before new applications resume.",
+      "tags": [
+        "regulation",
+        "policy"
+      ],
+      "source_url": "https://www.wfyi.org/wfyi-news/2026-08-19/new-data-centers-temporarily-banned-in-marion-county",
+      "cross_ref_tab": "news",
+      "cross_ref_note": "Adds Marion County to the Indiana county restriction wave reported here in July 2026"
+    },
+    {
+      "id": "tucson-data-center-zoning-ordinance-2026-08",
+      "date": "2026-08",
+      "title": "Tucson Adopts Data Center Zoning Rules One Year After Rejecting Project Blue",
+      "outlet": "KJZZ",
+      "summary": "A year after the city council's 7-0 rejection of Project Blue, Tucson adopted zoning code amendments in August 2026 requiring large data centers (25,000+ sq ft, 20+ MW) to sit at least a half-mile from residential zones and roughly 1,000 feet from commercial districts, with a 50-foot height cap. Project Blue itself continues on county land outside city limits, drawing water from two ADWR-permitted wells after Tucson barred it from municipal water.",
+      "tags": [
+        "regulation"
+      ],
+      "source_url": "https://www.kjzz.org/the-show/2026-08-10/a-year-later-heres-where-tucsons-controversial-project-blue-data-center-project-stands",
+      "cross_ref_tab": "issues",
+      "cross_ref_note": "Sequel to the Project Blue rejection tracked as a site and a permit matter",
+      "cross_ref_targets": [
+        "project-blue-tucson-az",
+        "ProjectBlue-Tucson-AMES-2026"
+      ]
+    },
+    {
+      "id": "colorado-moratorium-wave-2026-08",
+      "date": "2026-08",
+      "title": "Nine Colorado Jurisdictions Now Pause or Restrict Data Centers",
+      "outlet": "KUNC",
+      "summary": "As of August 10, 2026, nine Colorado local governments have enacted data-center moratoriums or caps: Denver (one year, May 18), Jefferson County (extended to March 2027), Larimer County (extended into February 2027), Boulder County (six months, June), Broomfield and Woodland Park (18 months, July), Monument (six months, July), Lochbuie (five years, July 21 — the longest in the state), and Longmont (capping hyperscale data-center energy use at 5% of the regional grid or 100 MW). Officials cite water supply alongside energy demand; a statewide poll found respondents worried the facilities' water and energy use could raise utility bills.",
+      "tags": [
+        "policy",
+        "regulation"
+      ],
+      "source_url": "https://www.kunc.org/news/2026-08-10/local-governments-in-colorado-enact-moratoriums-on-data-center-development",
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "Denver's pause is the one already tracked as a full instrument",
+      "cross_ref_targets": [
+        "Denver CB 26-0431"
+      ]
+    },
+    {
+      "id": "qts-fayetteville-suit-not-filed-2026-08",
+      "date": "2026-08",
+      "title": "QTS Fayetteville Citizen Suit Still Unfiled as Settlement Talks Continue",
+      "outlet": "Atlanta News First",
+      "summary": "As of August 13, 2026, Flint Riverkeeper had not filed the federal Clean Water Act suit against QTS's Fayetteville, GA data center campus flagged in its May 28, 2026 60-day notice, which had pointed to an on-or-about July 27 filing target. QTS has reached out to discuss resolving the turbidity and sediment-discharge claims before litigation, per Flint Riverkeeper, leaving the case in the notice-and-negotiation phase rather than active litigation.",
+      "tags": [
+        "enforcement"
+      ],
+      "source_url": "https://www.atlantanewsfirst.com/2026/08/13/watchdog-group-threatens-sue-data-center-over-georgia-water-pollution/",
+      "cross_ref_tab": "cwa",
+      "cross_ref_note": "Status of the citizen-suit notice tracked as a case",
+      "cross_ref_targets": [
+        "QTS-Fayetteville-GA-2024"
+      ]
+    },
+    {
+      "id": "xai-memphis-recycling-restart-2026-08",
+      "date": "2026-08",
+      "title": "xAI Confirms January 2027 Restart for Paused Memphis Water Recycling Plant",
+      "outlet": "Action News 5 (Memphis)",
+      "summary": "xAI said on August 17, 2026 that construction of its paused $80 million Colossus greywater recycling plant in Memphis will restart in January 2027, with the finished plant recycling 10 million gallons/day and projected to protect an estimated 3.64 billion gallons/year of Memphis Sand aquifer drinking water. The plant had been on indefinite pause since April 2026 while xAI prioritized finishing Colossus 2, drawing criticism from Protect Our Aquifer and pressure from Memphis Mayor Paul Young.",
+      "tags": [
+        "solutions",
+        "data"
+      ],
+      "source_url": "https://www.actionnews5.com/2026/08/17/xai-continue-building-water-recycling-plant-2027/",
+      "cross_ref_tab": "cwa",
+      "cross_ref_note": "Updates the recycling-plant commitment on the Memphis case and site records",
+      "cross_ref_targets": [
+        "xAI-Colossus-Memphis-TN-2026",
+        "xai-colossus-memphis-tn"
+      ]
+    },
+    {
+      "id": "fort-worth-cedar-creek-lake-withdrawn-2026-07",
+      "date": "2026-07",
+      "title": "Diode Ventures Withdraws Cedar Creek Lake Data Center Proposal",
+      "outlet": "Texas Tribune",
+      "summary": "Diode Ventures withdrew its proposal for a Henderson County, TX data center that would have drawn up to 5 million gallons/day from Cedar Creek Lake — the reservoir supplying most of Fort Worth's drinking water — announcing on July 23, 2026 that it would not advance the site after community opposition and consultation with state and local officials. The company cited Gov. Abbott's tougher posture on rural data-center development as a factor.",
+      "tags": [
+        "policy"
+      ],
+      "source_url": "https://www.texastribune.org/2026/07/23/east-texas-data-center-withdrawn/",
+      "cross_ref_tab": "news",
+      "cross_ref_note": "Outcome of the Cedar Creek Lake withdrawal proposal reported here in July 2026"
+    },
+    {
+      "id": "crs-report-water-faq-2026-07",
+      "date": "2026-07",
+      "title": "CRS Report: No Federal Agency Systematically Tracks Data Center Water Use",
+      "outlet": "Congressional Research Service",
+      "summary": "The Congressional Research Service's July 31, 2026 report, 'Data Centers and Water: Frequently Asked Questions' (R49057), found US data centers consumed about 17 billion gallons in 2023, tripling 2014's 5.6 billion gallons, with roughly 97% sourced from municipal systems. CRS confirmed no federal agency has conducted a systematic assessment of data-center water use and no comprehensive federal data-collection program exists, framing the gap that transparency bills like HR 6984 aim to close.",
+      "tags": [
+        "research"
+      ],
+      "source_url": "https://www.congress.gov/crs-product/R49057",
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "Documents the federal data gap the Menendez transparency bill would close",
+      "cross_ref_targets": [
+        "US HR 6984"
+      ]
+    },
+    {
+      "id": "data-center-watch-q1-report-2026-07",
+      "date": "2026-07",
+      "title": "Data Center Watch: $130 Billion in Projects Blocked or Delayed in Q1 2026",
+      "outlet": "Newsweek",
+      "summary": "A Data Center Watch report, covered July 24, 2026, found at least 75 US data-center projects worth roughly $130 billion were blocked or delayed in the first quarter of 2026 alone — matching the scale of all of 2025 in three months — as active opposition groups grew from 396 to 833 across 49 states. The report names water use, alongside electricity demand and noise, as a central driver of the opposition.",
+      "tags": [
+        "data",
+        "research"
+      ],
+      "source_url": "https://www.newsweek.com/data-center-projects-face-unprecedented-surge-in-blocks-and-delays-study-12240534"
+    },
+    {
+      "id": "monterey-park-data-center-ban-vote-2026-06",
+      "date": "2026-06",
+      "title": "Monterey Park Voters Approve First Permanent Data Center Ban by Ballot Measure",
+      "outlet": "Fox Business",
+      "summary": "Monterey Park, CA voters approved Measure NDC on June 2, 2026 with 86.4% in favor, permanently banning data centers citywide through a General Plan amendment that only a future public vote can reverse. The measure followed opposition to a proposed data center at 1977 Saturn Avenue and cited water use, drinking-water resources, and utility-rate impacts alongside power demand — the first US data-center ban enacted by public referendum rather than a council vote.",
+      "tags": [
+        "regulation",
+        "policy"
+      ],
+      "source_url": "https://www.foxbusiness.com/fox-news-tech/monterey-park-permanent-data-center-ban"
+    },
+    {
+      "id": "google-water-disclosure-2026-06",
+      "date": "2026-06",
+      "title": "Google Discloses 10.9 Billion Gallons of 2025 Water Consumption, Up 34%",
+      "outlet": "Google (2026 Environmental Report)",
+      "summary": "Google's 2026 Environmental Report, published June 30, 2026, disclosed 10.9 billion gallons of company-wide water consumption in 2025 — up 34% from 2024 and more than double 2021 — with data center growth cited as the main driver. Google said its water-stewardship projects replenished about 7.7 billion gallons, or 78% of 2025 consumption, toward a 2030 goal of replenishing more than it consumes; the figure is more than four times Amazon's 2.5-billion-gallon 2025 disclosure reported in June.",
+      "tags": [
+        "data"
+      ],
+      "source_url": "https://blog.google/company-news/outreach-and-initiatives/sustainability/2026-environmental-report/",
+      "cross_ref_tab": "solutions",
+      "cross_ref_note": "Another data point on voluntary WUE and consumption self-reporting",
+      "cross_ref_targets": [
+        "wue-reporting"
+      ]
+    },
+    {
+      "id": "microsoft-nadella-restaurant-water-2026-06",
+      "date": "2026-06",
+      "title": "Microsoft Says New AI Data Centers Use a Restaurant's Worth of Water Per Year",
+      "outlet": "Tom's Hardware",
+      "summary": "Microsoft CEO Satya Nadella said at Build 2026 on June 2, 2026 that the company's newest AI data centers, starting with the Fairwater facility in Wisconsin, use a closed-loop direct-to-chip cooling system that is filled once and then runs with near-zero ongoing water consumption — comparing the annual water draw to a single restaurant's. The claim covers new-build design only, not Microsoft's existing data center fleet.",
+      "tags": [
+        "solutions"
+      ],
+      "source_url": "https://www.tomshardware.com/tech-industry/big-tech/microsoft-ceo-says-new-ai-data-centers-use-as-little-water-annually-as-a-restaurant-closed-loop-cooling-system-aims-to-slash-consumption-from-millions-of-gallons-as-ai-infrastructure-faces-mounting-environmental-scrutiny",
+      "cross_ref_tab": "solutions",
+      "cross_ref_note": "A first-party claim for the direct-liquid-cooling solution entry",
+      "cross_ref_targets": [
+        "direct-liquid-cooling"
+      ]
+    },
+    {
+      "id": "google-wetlands-donation-2026-06",
+      "date": "2026-06",
+      "title": "Google Funds $1M Georgia Wetlands Restoration Amid Data Center Backlash",
+      "outlet": "Metro Atlanta CEO",
+      "summary": "Google committed $1 million, part of a $17 million nationwide pledge announced the week of June 8, 2026, to restore 35 acres of wetlands in Georgia's Flint River Wildlife Management Area, to be managed by Ducks Unlimited. The donation came as Google's Douglas County, GA data center, which uses recycled municipal wastewater for cooling, faced regional backlash over water use, with a Google sustainability executive saying of industrial water misuse, 'we know that that can't be us.'",
+      "tags": [
+        "solutions"
+      ],
+      "source_url": "https://metroatlantaceo.com/news/2026/06/amid-data-center-backlash-google-gives-1m-south-georgia-wetlands/"
+    },
+    {
+      "id": "aoc-epa-morgan-county-hearing-2026-05",
+      "date": "2026-05",
+      "title": "AOC Presses EPA Over Brown Well Water Near Meta's Georgia Data Center",
+      "outlet": "CBS Atlanta",
+      "summary": "Rep. Alexandria Ocasio-Cortez held up jars of discolored well water at a May 20, 2026 House Energy and Commerce oversight hearing, citing residents near Meta's Stanton Springs data center in Morgan/Newton County, GA who reported failing wells and a 33% water-rate increase. EPA Assistant Administrator for Water Jessica Kramer said she directed EPA Region 4 to contact Georgia regulators and Morgan County officials, but the agency stressed the outreach was fact-gathering, not a formal investigation.",
+      "tags": [
+        "enforcement",
+        "data"
+      ],
+      "source_url": "https://www.cbsnews.com/atlanta/news/aoc-presses-epa-over-morgan-county-drinking-water-concerns-tied-to-georgia-data-center-development/",
+      "cross_ref_tab": "cwa",
+      "cross_ref_note": "Congressional pressure on the Georgia well-failure fact pattern",
+      "cross_ref_targets": [
+        "Meta-MorganCo-GA-investigation-2026",
+        "Meta-NewtonCountyGA-well-failures-2018-2025"
+      ]
+    },
     {
       "id": "itif-water-problem-soluble-2026-07",
       "date": "2026-07",
@@ -334,7 +600,7 @@
       "summary": "Google filed individual §404 permit applications for Project Raspberry (VA), Project Loch (VA), and a Port of Little Rock (AR) site. The Arkansas application involves 16.8 acres of wetland fill — the largest §404 wetland footprint in any active data center permit. Each application triggers a public comment period and Section 401 water quality certification from the respective state.",
       "tags": [
         "enforcement",
-        "permits"
+        "regulation"
       ],
       "source_url": null,
       "cross_ref_tab": "cwa",
@@ -403,8 +669,7 @@
       "outlet": "Oregon Department of Justice / Oregon DEQ",
       "summary": "Amazon and its WWTP operator settled with Oregon DEQ and DOJ over nitrogen discharge at the Boardman industrial park — the first direct hyperscaler water-penalty case to reach eight figures. Data center cooling-tower blowdown was among the industrial loads routed to the facility. The settlement funds nutrient trading credits in the Columbia River basin.",
       "tags": [
-        "enforcement",
-        "settlements"
+        "enforcement"
       ],
       "source_url": "https://www.doj.state.or.us/",
       "cross_ref_tab": "cwa",

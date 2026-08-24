@@ -14,6 +14,14 @@ Format:
 
 ---
 
+### [2026-08-24] Incoming research records violated three legislation.json schema gates
+- **Module**: tests/test_dashboard.py::TestLegislationTracker, data/reference/legislation.json
+- **Error**: `test_enacted_bills_are_verified` (US NDAA FY2026 Sec. 1531, VA DEQ Eastern Virginia groundwater study — `status: enacted` with `verified: false`), `test_timeline_entries_dated_and_labeled` (WRDA 2026 timeline used month-only `2026-07` dates), `test_public_sentiment_is_nontrivial_paragraph` (NDAA Sec. 1531, US H.R. 2940, SC S. 724 under the 80-character floor).
+- **Context**: Merging the Spec D state/local research sweep's seven new policy instruments. The research agent had flagged all three records as medium-confidence, so the failures were the schema gates doing their job rather than a code fault.
+- **Root cause**: Data bug in the incoming payload — the corpus's fail-closed rule is that nothing may be recorded as enacted without primary-source verification, timelines carry full `YYYY-MM-DD` dates, and `public_sentiment` is a paragraph rather than "Not yet characterized".
+- **Fix**: Verified all three against primary/near-primary sources rather than downgrading the records. Sec. 1531 confirmed via CRS IF13197 and P.L. 119-60 (enacted 2025-12-18); WRDA 2026's H.R. 9497 confirmed ordered reported by the House T&I Committee 66-0 on 2026-07-14 (committee press release); the VA DEQ study confirmed via Virginia Mercury and WAVY, including its 2024 statutory mandate and the per-region sustainable maxima. Each record's `status_detail` now names what remains unread (enrolled-bill text, committee-report language, the DEQ report PDF — deq.virginia.gov is WAF-blocked). Short sentiment paragraphs were rewritten with what the sourcing actually supports.
+- **Resolution**: Fixed. 726 tests green before the States & Localities work began.
+
 ### [2026-02-26] test_pdf_extractor failures — broken cryptography/pdfminer chain in dev environment
 - **Module**: tests/test_pdf_extractor.py
 - **Error**: `pyo3_runtime.PanicException: Python API call failed` inside `cryptography/exceptions.py`, triggered by `pdfminer → pdfplumber` import chain. Stderr shows `ModuleNotFoundError: No module named '_cffi_backend'`.

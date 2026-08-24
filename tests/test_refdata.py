@@ -19,13 +19,13 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pytest
 
-from refdata import integrity, loaders, registry, taxonomies
+from refdata import graph, integrity, loaders, registry, taxonomies
 
 
 class TestLoaders:
     """The loaders moved out of dashboard.py must behave identically."""
 
-    def test_all_seven_datasets_load_non_empty(self):
+    def test_all_eight_datasets_load_non_empty(self):
         assert loaders.load_legislation()["bills"]
         assert loaders.load_company_water_claims()["claims"]
         assert loaders.load_cwa_investigations()["cases"]
@@ -33,6 +33,7 @@ class TestLoaders:
         assert loaders.load_dc_water_conflicts()["sites"]
         assert loaders.load_water_news()["items"]
         assert loaders.load_water_solutions()["categories"]
+        assert loaders.load_local_actions()["actions"]
 
     def test_missing_file_returns_empty_payload(self, tmp_path):
         """A missing dataset renders an empty section, never a crash."""
@@ -343,6 +344,30 @@ class TestPolicyInstrumentSchema:
         ]
 
 
+class TestNewsTags:
+    """News tags are a closed 6-value taxonomy (CLAUDE.md), but nothing
+    enforced membership until 2026-08-24 — two spring items shipped invented
+    tags ("permits", "settlements") that no filter chip could ever match."""
+
+    @staticmethod
+    def _items():
+        return loaders.load_water_news()["items"]
+
+    def test_every_item_tagged_within_the_taxonomy(self):
+        for item in self._items():
+            tags = item.get("tags")
+            assert tags, item["id"]
+            assert len(tags) == len(set(tags)), item["id"]
+            for tag in tags:
+                assert tag in taxonomies.NEWS_TAG_LABELS, (item["id"], tag)
+
+    def test_every_taxonomy_value_is_used(self):
+        used = {tag for item in self._items() for tag in item.get("tags", [])}
+        assert set(taxonomies.NEWS_TAG_LABELS) == used, (
+            f"unused: {sorted(set(taxonomies.NEWS_TAG_LABELS) - used)}"
+        )
+
+
 class TestIssueTypes:
     """Spec A1 — a closed classification over the conflict registry."""
 
@@ -462,6 +487,30 @@ class TestAuthorityFamilies:
         kinds = {meta["kind"] for meta in self._statutes().values()}
         assert kinds - {"federal-statute"}, "no non-federal family is registered"
 
+    def test_supply_side_federal_families_present(self):
+        """Spec A's gap: every federal family in the registry was a discharge
+        statute, so a Corps storage reallocation, a basin-commission withdrawal
+        docket or a Reclamation delivery contract had nowhere to sit."""
+        codes = set(self._statutes())
+        assert {"NEPA", "CERCLA", "WSA", "WSR", "FPA", "RECL", "EPCRA", "BASIN"} <= codes
+
+    def test_federal_families_have_readings_and_cases(self):
+        """The federal mirror of the doctrine anchoring rule: a statute with
+        readings but no case is a reading list, and a reading whose example
+        cases don't resolve is a dead link. Both are checked per family so the
+        failure names the family that arrived without its anchor."""
+        statutes = self._statutes()
+        readings = loaders.load_water_authorities()["readings"]
+        case_ids = {c["case_id"] for c in loaders.load_cwa_investigations()["cases"]}
+        federal = [c for c, m in statutes.items() if m["kind"] == "federal-statute"]
+        assert federal
+        for code in federal:
+            family = [r for r in readings if r["statute"] == code]
+            assert family, f"{code}: no readings"
+            anchors = {cid for r in family for cid in r["example_case_ids"]}
+            assert anchors, f"{code}: readings name no example case"
+            assert anchors <= case_ids, f"{code}: unknown cases {sorted(anchors - case_ids)}"
+
     def test_doctrine_anchors_reach_tracked_fact_patterns(self):
         """A precedent that names no tracked conflict is a history entry. The
         anchors must point at live data-center matters in the corpus, which is
@@ -508,6 +557,241 @@ class TestTaxonomyConstants:
         assert set(taxonomies.INSTRUMENT_TYPE_LABELS) == set(
             taxonomies.INSTRUMENT_TYPE_COLORS
         )
+
+
+class TestGraph:
+    """Spec B — the Explore graph must be the datasets, not a second opinion.
+
+    The failure mode these guard against is a graph that quietly *invents* a
+    relationship: a node the registry never registered, or an edge no dataset
+    declares. Either one would render as an authoritative-looking line between
+    two records with nothing behind it.
+    """
+
+    def test_nodes_are_registry_ids_plus_declared_hubs(self):
+        g = graph.build_graph()
+        ids = [n["id"] for n in g["nodes"]]
+        assert len(ids) == len(set(ids)), "duplicate node id"
+        record_ids = {i for i in ids if not i.startswith(graph.HUB_ID_PREFIX)}
+        assert record_ids == set(registry.build_registry())
+        for node in g["nodes"]:
+            if node["id"].startswith(graph.HUB_ID_PREFIX):
+                assert node["kind"] == "hub"
+                assert node["attrs"]["hub_group"] in set(graph.DERIVED_EDGE_KINDS.values())
+
+    def test_nodes_carry_the_registry_tab_and_anchor(self):
+        """A result row's link is only correct because it is the registry's
+        anchor — re-deriving it here would be the drift the registry ended."""
+        reg = registry.build_registry()
+        for node in graph.build_graph()["nodes"]:
+            ref = reg.get(node["id"])
+            if ref:
+                assert (node["kind"], node["tab"], node["anchor"]) == (
+                    ref.kind,
+                    ref.tab,
+                    ref.anchor,
+                ), node["id"]
+
+    def test_every_edge_is_declared_or_derived(self):
+        curated = {(s, t, k) for s, t, k in integrity.iter_edges()}
+        for edge in graph.build_graph()["edges"]:
+            key = (edge["source"], edge["target"], edge["kind"])
+            if edge.get("derived"):
+                assert edge["kind"] in graph.DERIVED_EDGE_KINDS, key
+            else:
+                assert key in curated, f"invented edge: {key}"
+
+    def test_derived_edges_land_on_their_own_hub_kind(self):
+        nodes = {n["id"]: n for n in graph.build_graph()["nodes"]}
+        for edge in graph.build_graph()["edges"]:
+            if not edge.get("derived"):
+                continue
+            target = nodes[edge["target"]]
+            assert target["kind"] == "hub", edge
+            assert target["attrs"]["hub_group"] == graph.DERIVED_EDGE_KINDS[edge["kind"]]
+
+    def test_curated_and_derived_kind_namespaces_are_disjoint(self):
+        """The wire payload drops the per-edge derived flag — the browser tells
+        the two apart purely by kind string against ``derived_edge_kinds``. A
+        future curated field named e.g. ``case.type`` would silently reclassify
+        every one of its edges as derived, so the namespaces must never meet."""
+        collision = set(integrity.EDGE_TARGET_KINDS) & set(graph.DERIVED_EDGE_KINDS)
+        assert not collision, f"curated edge kind shadows a derived kind: {collision}"
+
+    def test_all_three_derived_kinds_are_present(self):
+        """Guards the guard: if hub building silently stopped, the assertions
+        above would pass on an empty derived set."""
+        kinds = {e["kind"] for e in graph.build_graph()["edges"] if e.get("derived")}
+        assert kinds == set(graph.DERIVED_EDGE_KINDS)
+
+    def test_every_edge_kind_has_a_label(self):
+        """The toggles are the graph's only vocabulary; a raw JSON key in the
+        control row is unreadable."""
+        for edge in graph.build_graph()["edges"]:
+            assert edge["kind"] in graph.EDGE_KIND_LABELS, edge["kind"]
+
+    def test_no_hub_without_members(self):
+        """An empty hub is the graph's version of a filter chip matching
+        nothing — the taxonomy rule, restated in edges."""
+        g = graph.build_graph()
+        reached = {e["target"] for e in g["edges"] if e.get("derived")}
+        for node in g["nodes"]:
+            if node["kind"] == "hub":
+                assert node["id"] in reached, node["id"]
+
+    def test_graph_is_deterministic(self):
+        assert graph.build_graph() == graph.build_graph()
+
+
+class TestSearchIndex:
+    def test_index_is_deterministic(self):
+        """Two builds byte-equal, or every regeneration is a spurious diff."""
+        first = json.dumps(graph.build_search_index(), sort_keys=False)
+        second = json.dumps(graph.build_search_index(), sort_keys=False)
+        assert first == second
+        assert graph.payload_json() == graph.payload_json()
+
+    def test_every_record_is_indexed(self):
+        docs = graph.build_search_index()["docs"]
+        assert set(docs) == set(registry.build_registry())
+        empty = [rid for rid, vec in docs.items() if not vec]
+        assert not empty, f"records with no searchable text: {empty}"
+
+    def test_vectors_are_l2_normalized(self):
+        import math
+
+        for record_id, vec in graph.build_search_index()["docs"].items():
+            norm = math.sqrt(sum(w * w for w in vec.values()))
+            # Weights are rounded to 3 decimals on the way out, so the norm
+            # lands near 1 rather than on it.
+            assert abs(norm - 1.0) < 0.01, (record_id, norm)
+
+    def test_per_record_vocabulary_is_capped(self):
+        for record_id, vec in graph.build_search_index()["docs"].items():
+            assert len(vec) <= graph.MAX_TOKENS_PER_RECORD, (record_id, len(vec))
+
+    def test_stopwords_and_short_tokens_are_absent(self):
+        index = graph.build_search_index()
+        for token in index["df"]:
+            for word in token.split(" "):
+                assert word not in graph.STOPWORDS, token
+                assert len(word) >= graph.MIN_TOKEN_LEN, token
+
+    def test_ubiquitous_terms_are_pruned(self):
+        """The df cutoff is what stops 'water' and 'data center' — in nearly
+        every record — from dominating every similarity score."""
+        index = graph.build_search_index()
+        cutoff = graph.DF_CUTOFF * index["n_docs"]
+        for token, count in index["df"].items():
+            assert count < cutoff, (token, count)
+
+    def test_tokenizer_keeps_unigrams_and_adjacent_bigrams(self):
+        assert graph.tokenize("Cooling water, in the reservoir!") == [
+            "cooling",
+            "water",
+            "reservoir",
+            "cooling water",
+            "water reservoir",
+        ]
+        # Punctuation, case and section marks all collapse to separators.
+        assert graph.tokenize("§404 U.S.C. — PFAS/PFOA") == [
+            "404",
+            "pfas",
+            "pfoa",
+            "404 pfas",
+            "pfas pfoa",
+        ]
+        assert graph.tokenize("") == []
+
+    def test_similar_text_ranks_the_right_records(self):
+        """Spec B acceptance: a supply-strain passage must surface supply-side
+        records, not the PFAS contamination cases that share the word 'water'."""
+        import math
+
+        index = graph.build_search_index()
+        n_docs, df = index["n_docs"], index["df"]
+        query = (
+            "Fort Worth is weighing a data center campus that would draw on the "
+            "Cedar Creek Reservoir, and residents worry the city's municipal "
+            "water supply cannot serve both the new industrial demand and "
+            "existing households through a drought."
+        )
+        counts: dict[str, int] = {}
+        for token in graph.tokenize(query):
+            if token in df:
+                counts[token] = counts.get(token, 0) + 1
+        qv = {t: c * math.log(n_docs / df[t]) for t, c in counts.items()}
+        norm = math.sqrt(sum(w * w for w in qv.values())) or 1.0
+        scores = {
+            rid: sum(qv[t] / norm * w for t, w in vec.items() if t in qv)
+            for rid, vec in index["docs"].items()
+        }
+        top = sorted(scores, key=lambda r: -scores[r])[:12]
+        assert top[0] == "fort-worth-cedar-creek-lake-2026-07"
+        assert any("Tucson" in rid or "Charlotte" in rid for rid in top), top
+        pfas = [rid for rid in top if "PFAS" in rid or "Chemours" in rid]
+        assert not pfas, f"PFAS records outranked supply-strain records: {pfas}"
+
+
+class TestExplorePayload:
+    def test_blob_stays_under_the_hard_ceiling(self):
+        """The blob ships inside the HTML on every page load. The spec budgets
+        ~600 KB; 900 KB is the point at which the Explore tab would be paying
+        for itself with everybody else's first paint."""
+        size_kb = len(graph.payload_json().encode("utf-8")) / 1024
+        assert size_kb < 900, f"graph blob is {size_kb:.0f} KB"
+
+    def test_blob_cannot_close_its_own_script_tag(self):
+        assert "</" not in graph.payload_json()
+
+    def test_payload_indices_resolve(self):
+        payload = graph.build_payload()
+        n_nodes, n_kinds, n_vocab = (
+            len(payload["nodes"]),
+            len(payload["edge_kinds"]),
+            len(payload["vocab"]),
+        )
+        for source, target, kind in payload["edges"]:
+            assert 0 <= source < n_nodes and 0 <= target < n_nodes
+            assert 0 <= kind < n_kinds
+        assert len(payload["df"]) == n_vocab
+        assert len(payload["edge_kind_labels"]) == n_kinds
+        for key, doc in payload["docs"].items():
+            assert 0 <= int(key) < n_nodes
+            assert len(doc["t"]) == len(doc["w"])
+            assert all(0 <= t < n_vocab for t in doc["t"])
+
+    def test_adding_a_record_changes_the_blob(self, tmp_path, monkeypatch):
+        """Guards against a stale cached index: the loaders cache on
+        (mtime, size), and a graph that missed a new record would look
+        perfectly healthy while silently omitting it from every search."""
+        before = graph.payload_json()
+        extra = dict(loaders.load_water_news()["items"][0])
+        extra["id"] = "news-graph-cache-probe-9999"
+        extra["title"] = "Zirconium hydrofoil interlock probe headline"
+        extra["summary"] = "A deliberately unusual sentence about zirconium hydrofoils."
+        extra.pop("cross_ref_targets", None)
+        extra.pop("cross_ref_tab", None)
+        extra.pop("cross_ref_note", None)
+        path = tmp_path / "water_news.json"
+        payload = dict(loaders.load_water_news())
+        payload["items"] = list(payload["items"]) + [extra]
+        path.write_text(json.dumps(payload))
+
+        monkeypatch.setattr(loaders, "WATER_NEWS_PATH", path)
+        monkeypatch.setattr(registry, "WATER_NEWS_PATH", path)
+        monkeypatch.setattr(
+            loaders, "load_water_news", lambda p=path: loaders._read_json(str(p), {"items": list})
+        )
+        monkeypatch.setattr(registry, "load_water_news", loaders.load_water_news)
+        monkeypatch.setattr(graph, "load_water_news", loaders.load_water_news)
+        registry._REGISTRY_CACHE["sig"] = None
+        try:
+            after = graph.payload_json()
+            assert after != before
+            assert "zirconium" in after
+        finally:
+            registry._REGISTRY_CACHE["sig"] = None
 
 
 class TestOutcomeTypes:
@@ -621,11 +905,21 @@ class TestSiteDoctrineMappings:
 
     @classmethod
     def _doctrine_ids(cls):
-        federal = {"CWA", "SDWA", "TSCA", "RCRA", "RHA"}
+        """Readings of every family that is not a federal statute.
+
+        Derived from the declared ``kind`` rather than a hardcoded list of
+        federal codes: the 2026-08-24 batch added seven more federal statutes,
+        and a hardcoded list would have silently demanded a site mapping for
+        each of them. A federal statute proves itself with readings and cases
+        (TestAuthorityFamilies.test_federal_families_have_readings_and_cases);
+        a doctrine has no permit program behind it, so the only proof it is a
+        usable tool is that it reaches a tracked site.
+        """
+        statutes = loaders.load_water_authorities()["statutes"]
         return {
             rid
             for rid, r in cls._readings().items()
-            if r["statute"] not in federal
+            if statutes[r["statute"]]["kind"] != "federal-statute"
         }
 
     def test_doctrine_registry_actually_reaches_sites(self):
@@ -815,3 +1109,149 @@ class TestDoctrineMatrixAndOutcomeNote:
             assert "does not predict" in note, site["site_id"]
             assert "How comparable matters resolved" in note
         assert rendered >= 15
+
+
+class TestLocalActions:
+    """Spec D/F — the mirrored county/city table.
+
+    This is the one curated file that is a *mirror* rather than adjudicated
+    records, so its schema tests do double duty: they check the data, and they
+    check that a re-sync from upstream cannot quietly introduce a taxonomy
+    value or a state code the renderer would drop on the floor.
+    """
+
+    @staticmethod
+    def _payload():
+        return loaders.load_local_actions()
+
+    @staticmethod
+    def _actions():
+        return loaders.load_local_actions()["actions"]
+
+    def test_dataset_loads_with_its_provenance(self):
+        payload = self._payload()
+        assert payload["last_updated"]
+        assert payload["source_repo"] == "pranava0x0/datacentercommunitybenefits"
+        assert payload["source_path"]
+        # The note carries the refresh contract; a mirror without one is a
+        # dataset nobody can safely re-sync.
+        assert "upsert" in payload["note"] and "action_id" in payload["note"]
+        assert len(payload["actions"]) >= 50
+
+    def test_missing_file_returns_empty(self):
+        assert loaders.load_local_actions("/nonexistent/local_actions.json")["actions"] == []
+
+    def test_required_fields_present(self):
+        required = {
+            "action_id",
+            "jurisdiction",
+            "state",
+            "action_type",
+            "status",
+            "date",
+            "water_related",
+            "water_angle",
+            "summary",
+            "source_url",
+        }
+        for action in self._actions():
+            missing = required - set(action)
+            assert not missing, f"{action.get('action_id')} missing {missing}"
+
+    def test_action_ids_are_unique_and_prefixed(self):
+        ids = [a["action_id"] for a in self._actions()]
+        assert len(ids) == len(set(ids))
+        # `dccb-` mirrors an upstream id (upsert key); `direct-` was verified
+        # here rather than mirrored. Anything else has no refresh story.
+        for action_id in ids:
+            assert action_id.startswith(("dccb-", "direct-")), action_id
+
+    def test_action_types_are_in_the_closed_taxonomy(self):
+        for action in self._actions():
+            assert action["action_type"] in taxonomies.LOCAL_ACTION_TYPE_LABELS, (
+                action["action_id"],
+                action["action_type"],
+            )
+
+    def test_every_action_type_value_is_used(self):
+        """Taxonomy values ship with their data — an unused value renders a
+        filter chip that matches nothing."""
+        used = {a["action_type"] for a in self._actions()}
+        assert set(taxonomies.LOCAL_ACTION_TYPE_LABELS) == used, (
+            f"unused: {sorted(set(taxonomies.LOCAL_ACTION_TYPE_LABELS) - used)}"
+        )
+
+    def test_statuses_are_in_the_closed_taxonomy(self):
+        for action in self._actions():
+            assert action["status"] in taxonomies.LOCAL_ACTION_STATUS_LABELS, (
+                action["action_id"],
+                action["status"],
+            )
+
+    def test_every_status_value_is_used(self):
+        used = {a["status"] for a in self._actions()}
+        assert set(taxonomies.LOCAL_ACTION_STATUS_LABELS) == used, (
+            f"unused: {sorted(set(taxonomies.LOCAL_ACTION_STATUS_LABELS) - used)}"
+        )
+
+    def test_status_taxonomy_has_a_colour_and_a_rank_for_every_value(self):
+        assert set(taxonomies.LOCAL_ACTION_STATUS_LABELS) == set(
+            taxonomies.LOCAL_ACTION_STATUS_COLORS
+        )
+        assert set(taxonomies.LOCAL_ACTION_STATUS_LABELS) == set(
+            taxonomies.LOCAL_ACTION_STATUS_ORDER
+        )
+
+    def test_state_codes_are_real(self):
+        for action in self._actions():
+            code = action["state"]
+            assert len(code) == 2 and code.isupper(), action["action_id"]
+            assert code in taxonomies.US_STATE_NAMES, (action["action_id"], code)
+
+    def test_dates_parse_as_a_month(self):
+        import re as _re
+
+        for action in self._actions():
+            assert _re.fullmatch(r"\d{4}-\d{2}", action["date"]), (
+                action["action_id"],
+                action["date"],
+            )
+            month = int(action["date"].split("-")[1])
+            assert 1 <= month <= 12, action["action_id"]
+
+    def test_water_flag_and_angle_agree(self):
+        """A water-related record without an angle is an unexplained filter
+        hit; an angle on a non-water record is a filter that lies."""
+        for action in self._actions():
+            if action["water_related"]:
+                assert action["water_angle"].strip(), action["action_id"]
+            else:
+                assert not action["water_angle"], action["action_id"]
+
+    def test_sources_are_retrievable_urls(self):
+        for action in self._actions():
+            assert action["source_url"].startswith("http"), action["action_id"]
+
+    def test_summaries_are_substantive(self):
+        for action in self._actions():
+            assert len(action["summary"]) > 40, action["action_id"]
+
+    def test_actions_stay_out_of_the_registry(self):
+        """Spec D v1: these are a mirrored table, not curated records. They
+        carry no anchors and nothing cross-references them, so putting them in
+        the registry would promise integrity guarantees that do not exist."""
+        reg = registry.build_registry()
+        for action in self._actions():
+            assert action["action_id"] not in reg, action["action_id"]
+
+    def test_the_graph_ignores_them_too(self):
+        """The Explore blob is the page's largest single asset; an
+        unregistered dataset must not leak into it."""
+        node_ids = {n["id"] for n in graph.build_graph()["nodes"]}
+        for action in self._actions():
+            assert action["action_id"] not in node_ids, action["action_id"]
+
+    def test_state_names_cover_every_state_the_data_uses(self):
+        assert len(taxonomies.US_STATE_NAMES) == 51  # 50 states + DC
+        assert taxonomies.US_STATE_NAMES["VA"] == "Virginia"
+        assert taxonomies.US_STATE_NAMES["WV"] == "West Virginia"
