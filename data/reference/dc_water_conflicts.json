@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-07-26",
-  "note": "Named data-center sites with documented water issues or community pushback, each mapped to the federal statutory readings (reading_ids from water_authorities.json) that could reach the fact pattern, with the historical cases (case_ids from cwa_investigations.json) that show each reading in use. Mappings deliberately overlap — one site can trigger several readings. Sites verified against news/government sources July 2026; status_2026 reflects the latest reporting found at that pass.",
+  "last_updated": "2026-08-24",
+  "note": "Named data-center sites with documented water issues or community pushback, each mapped to the federal statutory readings (reading_ids from water_authorities.json) that could reach the fact pattern, with the historical cases (case_ids from cwa_investigations.json) that show each reading in use. Mappings deliberately overlap — one site can trigger several readings. Sites verified against news/government sources July 2026; status_2026 reflects the latest reporting found at that pass. August 24, 2026: three supply-side mappings added with the federal-statute families — Microsoft Mount Pleasant WI to the Great Lakes Compact's straddling-community diversion it inherited from Foxconn, QTS Fayette County GA to the Corps' authorized-purposes ceiling in the ACF basin, and Project Blue Tucson to Reclamation contract law behind its Central Arizona Project offsets.",
   "sites": [
     {
       "site_id": "google-the-dalles-or",
@@ -236,6 +236,13 @@
           "how": "Reserved rights are live across this basin and extend to groundwater, so quantification would reduce what the state has to allocate. The exposure runs through the supply contract rather than through any conduct by the project.",
           "analogous_cases": [
             "Agua-Caliente-v-CVWD-2017"
+          ]
+        },
+        {
+          "reading_id": "recl-contract-controls-delivery",
+          "how": "Project Blue's public water-positivity offset plan includes purchasing additional Central Arizona Project water and supporting CAP-linked recharge — a Bureau of Reclamation project — to offset its own groundwater pumping, tying its water math to Reclamation-delivered supply even though its physical withdrawal is through private wells under state ADWR permits, not a Reclamation contract directly.",
+          "analogous_cases": [
+            "US-v-Klamath-Drainage-District-2025"
           ]
         }
       ],
@@ -723,6 +730,13 @@
           "analogous_cases": [
             "MCWC-v-Nestle-Waters-2007"
           ]
+        },
+        {
+          "reading_id": "basin-glc-diversion",
+          "how": "The campus draws Lake Michigan water through the Racine Water Utility's straddling-community diversion approved in 2018 for the Foxconn campus it now occupies — the same Compact exception, upheld on the same 'is this really public water supply' argument the site's expansion would face again if the diversion volume needs to grow.",
+          "analogous_cases": [
+            "Foxconn-Racine-GreatLakesCompact-Diversion-2019"
+          ]
         }
       ],
       "related_case_ids": [
@@ -784,6 +798,14 @@
           "how": "Unmetered, unbilled connections are the evidentiary situation these claims turn on. Where consumption is not measured, published figures cannot be checked — and utility billing records are the exhibit a consumer-protection claim would rest on.",
           "analogous_cases": [
             "Wangusi-v-Amazon-Web-Services-VA-2026"
+          ]
+        },
+        {
+          "reading_id": "wsa-reallocation-and-alteration",
+          "how": "The campus sits in the Flint River headwaters — part of the ACF basin whose interstate storage and allocation fights (the Lake Lanier reallocation litigation) established the basin-wide ceiling on how much new municipal/industrial demand a Corps reservoir can absorb. This particular incident was a local metering failure rather than a reservoir-storage dispute, but growing unmetered data-center draws in this basin add to the same supply picture the reallocation fight was about.",
+          "analogous_cases": [
+            "Southeastern-Fed-Power-Customers-v-Geren-2008",
+            "InRe-MDL1824-TriState-WaterRights-2011"
           ]
         }
       ],

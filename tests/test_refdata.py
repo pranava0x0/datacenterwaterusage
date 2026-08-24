@@ -462,6 +462,30 @@ class TestAuthorityFamilies:
         kinds = {meta["kind"] for meta in self._statutes().values()}
         assert kinds - {"federal-statute"}, "no non-federal family is registered"
 
+    def test_supply_side_federal_families_present(self):
+        """Spec A's gap: every federal family in the registry was a discharge
+        statute, so a Corps storage reallocation, a basin-commission withdrawal
+        docket or a Reclamation delivery contract had nowhere to sit."""
+        codes = set(self._statutes())
+        assert {"NEPA", "CERCLA", "WSA", "WSR", "FPA", "RECL", "EPCRA", "BASIN"} <= codes
+
+    def test_federal_families_have_readings_and_cases(self):
+        """The federal mirror of the doctrine anchoring rule: a statute with
+        readings but no case is a reading list, and a reading whose example
+        cases don't resolve is a dead link. Both are checked per family so the
+        failure names the family that arrived without its anchor."""
+        statutes = self._statutes()
+        readings = loaders.load_water_authorities()["readings"]
+        case_ids = {c["case_id"] for c in loaders.load_cwa_investigations()["cases"]}
+        federal = [c for c, m in statutes.items() if m["kind"] == "federal-statute"]
+        assert federal
+        for code in federal:
+            family = [r for r in readings if r["statute"] == code]
+            assert family, f"{code}: no readings"
+            anchors = {cid for r in family for cid in r["example_case_ids"]}
+            assert anchors, f"{code}: readings name no example case"
+            assert anchors <= case_ids, f"{code}: unknown cases {sorted(anchors - case_ids)}"
+
     def test_doctrine_anchors_reach_tracked_fact_patterns(self):
         """A precedent that names no tracked conflict is a history entry. The
         anchors must point at live data-center matters in the corpus, which is
@@ -848,11 +872,21 @@ class TestSiteDoctrineMappings:
 
     @classmethod
     def _doctrine_ids(cls):
-        federal = {"CWA", "SDWA", "TSCA", "RCRA", "RHA"}
+        """Readings of every family that is not a federal statute.
+
+        Derived from the declared ``kind`` rather than a hardcoded list of
+        federal codes: the 2026-08-24 batch added seven more federal statutes,
+        and a hardcoded list would have silently demanded a site mapping for
+        each of them. A federal statute proves itself with readings and cases
+        (TestAuthorityFamilies.test_federal_families_have_readings_and_cases);
+        a doctrine has no permit program behind it, so the only proof it is a
+        usable tool is that it reaches a tracked site.
+        """
+        statutes = loaders.load_water_authorities()["statutes"]
         return {
             rid
             for rid, r in cls._readings().items()
-            if r["statute"] not in federal
+            if statutes[r["statute"]]["kind"] != "federal-statute"
         }
 
     def test_doctrine_registry_actually_reaches_sites(self):

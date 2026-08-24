@@ -530,6 +530,7 @@ def build_cwa_tab() -> str:
     # Part 1: the statutory toolkit (reading cards grouped by statute).
     toolkit = dash._build_authorities_html(authorities_payload, all_ids)
     n_readings = len(authorities_payload.get("readings", []))
+    n_families = len(authorities_payload.get("statutes", {}))
 
     cat_labels_json = json.dumps(dash.CWA_CATEGORY_LABELS)
     cat_order_json = json.dumps(dash.CWA_CATEGORY_ORDER)
@@ -538,8 +539,9 @@ def build_cwa_tab() -> str:
 <section class="panel">
   <h2>Federal Water Law &amp; Data Centers — Authorities, Record, Exposure</h2>
   <p class="lead">Three views on federal water law and data centers: the <strong>statutory
-  toolkit</strong> (every EPA / Army Corps water authority — CWA, SDWA, TSCA, RCRA,
-  Rivers &amp; Harbors Act — and how each could reach a data center), the
+  toolkit</strong> ({n_families} authority families — federal discharge and supply
+  statutes, interstate compacts, state doctrine — and how each could reach a
+  data center), the
   <strong>historical record</strong> built under those authorities (penalties,
   settlements, court rulings), and the <strong>named sites</strong> where water
   conflicts are live. The mappings overlap by design — one fact pattern can trigger
@@ -569,8 +571,10 @@ def build_cwa_tab() -> str:
 
   <div class="subtabpanel" id="panel-cwa-p1" hidden>
     <h3>Part 1 — The Federal Water-Law Toolkit</h3>
-    <p><strong>{n_readings} statutory readings</strong> across the CWA, SDWA, TSCA, RCRA,
-    and the Rivers &amp; Harbors Act — each card explains what the authority historically
+    <p><strong>{n_readings} statutory readings</strong> across {n_families} authority
+    families — the federal discharge statutes, the supply-side ones that govern storage,
+    withdrawal and licensing, interstate compacts, and state water doctrine — each card
+    explains what the authority historically
     covered, how it could apply to a data-center fact pattern, and which cases below show
     it in use. Case and site cards link back here via their <em>statute applicability</em> rows.</p>
     <div id="water-toolkit">{toolkit}</div>
@@ -1661,9 +1665,9 @@ def build_llms_txt() -> str:
         "> Tracking data center water consumption in Virginia & Ohio via public "
         "regulatory data (EPA ECHO DMR flow at receiving wastewater treatment "
         "plants, state permit portals, utility financial reports), plus curated "
-        "national datasets: data-center water legislation, federal water-law "
-        "cases relevant to data centers (CWA, SDWA, TSCA, RCRA, Rivers & "
-        "Harbors Act) with a statutory-readings mapping, data-center sites with "
+        "national datasets: data-center water legislation, water-law cases "
+        "relevant to data centers mapped to a registry of statutory and "
+        "doctrinal readings, data-center sites with "
         "documented water conflicts, and company water claims.",
         "",
         f"Static build {built}. Dashboard: {SITE_URL} · Source: {REPO_URL}",
@@ -1671,8 +1675,9 @@ def build_llms_txt() -> str:
         "## Key numbers",
         "",
         f"- {len(bills)} bills tracked — {dash._legislation_status_summary(bills)}",
-        f"- {len(cases)} federal water enforcement cases "
-        f"(CWA, SDWA, TSCA, RCRA, RHA) — {dash._cwa_summary(cases)}",
+        f"- {len(cases)} water enforcement and precedent cases across "
+        f"{len(authorities.get('statutes', {}))} authority families — "
+        f"{dash._cwa_summary(cases)}",
         "- Core finding: data centers rarely hold their own discharge permits; "
         "operational water shows up at the receiving municipal treatment plant, "
         "so the pipeline tracks WWTP NPDES permits via EPA ECHO.",
@@ -1711,7 +1716,7 @@ def build_llms_txt() -> str:
             + (f" Example cases: {examples}." if examples else "")
         )
 
-    lines += ["", "## Water enforcement cases (CWA, SDWA, TSCA, RCRA, RHA)", ""]
+    lines += ["", "## Water enforcement cases and precedent", ""]
     for c in sorted(
         cases,
         key=lambda c: (

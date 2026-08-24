@@ -2836,6 +2836,10 @@ def render_cwa_tracker():
     conflicts_payload = load_dc_water_conflicts()
     sites = conflicts_payload.get("sites", [])
     n_readings = len(authorities_payload.get("readings", []))
+    # Derived, not enumerated: the intro used to name the five federal statutes
+    # the registry started with, and had been wrong since the first doctrine
+    # family landed.
+    n_families = len(authorities_payload.get("statutes", {}))
 
     # Sub-tabs instead of stacked expanders: Part 2 (the historical record
     # most users want) no longer sits behind Part 1's content in the scroll
@@ -2852,8 +2856,10 @@ def render_cwa_tracker():
 
     with part_tabs[0]:
         st.markdown(
-            f"**{n_readings} statutory readings** "
-            "across the CWA, SDWA, TSCA, RCRA, and the Rivers & Harbors Act — each "
+            f"**{n_readings} statutory readings** across {n_families} authority "
+            "families — the federal discharge statutes, the supply-side ones that "
+            "govern storage, withdrawal and licensing, interstate compacts, and "
+            "state water doctrine — each "
             "card explains what the authority historically covered, how it could "
             "apply to a data-center fact pattern, and which cases below show it in "
             "use. Case and site cards link back here via the *statute applicability* rows. "

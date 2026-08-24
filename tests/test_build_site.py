@@ -644,13 +644,14 @@ class TestInfrastructureVisuals:
         assert opacity and int(opacity.group(1)) <= 12
 
     def test_page_stays_under_the_weight_ceiling(self):
-        """Every record is embedded, so the page is ~1.71 MB by design (the
+        """Every record is embedded, so the page is ~1.85 MB by design (the
         Explore graph blob is most of it). This is a tripwire for an accidental
         order-of-magnitude regression — a second copy of the blob, an embedded
-        raster, a duplicated tab — not a diet. The headroom is ~140 KB, more
-        than Spec E's entire 25 KB visual budget, so ordinary content growth
-        will not trip it."""
-        assert len(_html().encode("utf-8")) < 1_850_000
+        raster, a duplicated tab — not a diet. The ceiling went 1.85 MB → 2 MB
+        when the eight federal statute families (2026-08-24) spent the last of
+        the old headroom; the ~150 KB left is still far more than any single
+        visual addition, so ordinary content growth will not trip it."""
+        assert len(_html().encode("utf-8")) < 2_000_000
 
 
 class TestNoDuplicateClaimStyles:

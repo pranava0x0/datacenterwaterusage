@@ -179,6 +179,19 @@ This "both numbers are true" spine could anchor the Phase 2 landing page / scrol
 
 ## Medium Priority
 
+### Water-authority registry — follow-ups from the 2026-08-24 federal-statute batch
+
+Surfaced while adding the eight supply-side federal/interstate families (`scripts/add_federal_statute_families_2026_08.py`). Each is verified enough to act on but was outside that spec's scope (new federal-statute families only).
+
+1. **Florida v. Georgia, 592 U.S. ___ (2021) for the existing EQAP family.** The ACF/Flint equitable-apportionment case — Florida's claim that Georgia's Flint River withdrawals were harming Apalachicola Bay oyster fisheries failed on redressability — would give EQAP a surface-river companion to Mississippi v. Tennessee's groundwater angle, and would strengthen the `qts-fayette-county-ga` (Flint headwaters) site mapping, which currently reaches only the Corps' authorized-purposes reading.
+2. **DOE federal-land AI data-center leasing as a NEPA fact pattern.** Requests for offer issued 2025-26 at Oak Ridge, Paducah, Portsmouth, Idaho National Laboratory and Savannah River Site, explicitly using "NEPA streamlining tools" — a live and growing federal-review pipeline squarely on `nepa-federal-financing-review`. No site mapping was added because none of the 19 tracked conflict sites sits on DOE land; add one once a specific leased project reaches a public water or environmental dispute.
+3. **A `hydropower-flow` (or `water-resource-development`) `case_type`.** Ten of the 14 new cases are typed `water-supply` because the 11-value taxonomy has no value for reservoir storage, hydropower licensing or river designation. `water-supply` is a workable fit, not a precise one. Per the closed-taxonomy rule the new value must ship in the same commit as the records retyped onto it.
+4. **CRS R49057, "Data Centers and Water: Frequently Asked Questions" (July 31, 2026)** — mirrored at everycrsreport.com since congress.gov blocks automated fetches. A strong general overview, and it confirms the WRDA 2026 (H.R. 9497) provision directing the Corps to report within a year on how "new commercial and industrial water users" affect its water-supply projects (the report says data centers likely fall in that category; the bill text does not name them). Candidate `legislation.json` entry plus a maintainer read.
+5. **Render the authority `kind`.** `AUTHORITY_KIND_LABELS` has been defined since the doctrine batches and is re-exported by `dashboard.py` but rendered nowhere, so the accordion never tells a reader whether they are looking at a federal statute, an interstate compact or a state doctrine. Related: at 25 families the Part 1 jump-nav wraps to exactly 3 lines at the 1000px content width — group the pills by `kind` when a later batch pushes it past 3.
+
+**Sample prompt:**
+> Add Florida v. Georgia (2021) to `data/reference/cwa_investigations.json` under the existing EQAP family with two independent verified sources (WebSearch only — never construct a Justia or CourtListener URL), map it onto the `eqap-interstate-aquifer` reading's `example_case_ids`, and extend the `qts-fayette-county-ga` site with an EQAP `applicable_readings` entry whose `how` explains the Flint-headwaters connection. Then surface `AUTHORITY_KIND_LABELS` in the Part 1 accordion summary row in both `dashboard.py` and `build_site.py`. Run `python3 build_site.py` and the full test suite before committing.
+
 ### UX table / layout issues noted 2026-06-25 (cross-tab audit)
 
 During the Solutions redesign session the following UX issues were catalogued but not fixed. Fix in order of user-facing impact.

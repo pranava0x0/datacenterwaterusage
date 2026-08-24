@@ -219,13 +219,25 @@ AUTHORITY_KIND_LABELS = {
 # of it.
 # Federal statutes first, then the doctrine families in rough legal-hierarchy
 # order (interstate/constitutional → public trust → property).
+# The 2026-08-24 federal batch sits between RHA and EQAP: the discharge
+# statutes, then the supply-side ones (review → liability → storage →
+# designation → licensing → contract → reporting). BASIN follows EQAP because
+# both are interstate.
 WATER_STATUTE_ORDER = [
     "CWA",
     "SDWA",
     "TSCA",
     "RCRA",
     "RHA",
+    "NEPA",
+    "CERCLA",
+    "WSA",
+    "WSR",
+    "FPA",
+    "RECL",
+    "EPCRA",
     "EQAP",
+    "BASIN",
     "PTD",
     "GW",
     "WELL",
@@ -247,7 +259,19 @@ WATER_STATUTE_COLORS = {
     "TSCA": "#7c3aed",
     "RCRA": "#b45309",
     "RHA": "#475569",
+    # 2026-08-24 federal batch. The blue/green/earth bands were already
+    # crowded, so these sit in the indigo→magenta arc the palette had left
+    # open; each clears ΔE≈25 from every other family pill and 5:1 contrast
+    # against the white pill text. No turquoise/aqua/teal (DESIGN.md §12).
+    "NEPA": "#242bb2",
+    "CERCLA": "#7f1a24",
+    "WSA": "#5a532b",
+    "WSR": "#1a7f1a",
+    "FPA": "#553267",
+    "RECL": "#9624b2",
+    "EPCRA": "#b2248e",
     "EQAP": "#1a4f8a",
+    "BASIN": "#79204d",
     "PTD": "#1a7a8a",
     "GW": "#8a6d1f",
     "WELL": "#3182bd",
