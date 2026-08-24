@@ -344,6 +344,30 @@ class TestPolicyInstrumentSchema:
         ]
 
 
+class TestNewsTags:
+    """News tags are a closed 6-value taxonomy (CLAUDE.md), but nothing
+    enforced membership until 2026-08-24 — two spring items shipped invented
+    tags ("permits", "settlements") that no filter chip could ever match."""
+
+    @staticmethod
+    def _items():
+        return loaders.load_water_news()["items"]
+
+    def test_every_item_tagged_within_the_taxonomy(self):
+        for item in self._items():
+            tags = item.get("tags")
+            assert tags, item["id"]
+            assert len(tags) == len(set(tags)), item["id"]
+            for tag in tags:
+                assert tag in taxonomies.NEWS_TAG_LABELS, (item["id"], tag)
+
+    def test_every_taxonomy_value_is_used(self):
+        used = {tag for item in self._items() for tag in item.get("tags", [])}
+        assert set(taxonomies.NEWS_TAG_LABELS) == used, (
+            f"unused: {sorted(set(taxonomies.NEWS_TAG_LABELS) - used)}"
+        )
+
+
 class TestIssueTypes:
     """Spec A1 — a closed classification over the conflict registry."""
 

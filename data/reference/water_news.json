@@ -600,7 +600,7 @@
       "summary": "Google filed individual §404 permit applications for Project Raspberry (VA), Project Loch (VA), and a Port of Little Rock (AR) site. The Arkansas application involves 16.8 acres of wetland fill — the largest §404 wetland footprint in any active data center permit. Each application triggers a public comment period and Section 401 water quality certification from the respective state.",
       "tags": [
         "enforcement",
-        "permits"
+        "regulation"
       ],
       "source_url": null,
       "cross_ref_tab": "cwa",
@@ -669,8 +669,7 @@
       "outlet": "Oregon Department of Justice / Oregon DEQ",
       "summary": "Amazon and its WWTP operator settled with Oregon DEQ and DOJ over nitrogen discharge at the Boardman industrial park — the first direct hyperscaler water-penalty case to reach eight figures. Data center cooling-tower blowdown was among the industrial loads routed to the facility. The settlement funds nutrient trading credits in the Columbia River basin.",
       "tags": [
-        "enforcement",
-        "settlements"
+        "enforcement"
       ],
       "source_url": "https://www.doj.state.or.us/",
       "cross_ref_tab": "cwa",

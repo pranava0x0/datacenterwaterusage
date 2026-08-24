@@ -3194,7 +3194,7 @@
       ],
       "status": "failed",
       "status_detail": "Vetoed April 24, 2026; House sustained the veto April 29, 2026 (override fell short of two-thirds). Verified on mainelegislature.org bill status.",
-      "source_url": "http://www.mainelegislature.org/legis/bills/display_ps.asp?ld=307&PID=1456&snum=132",
+      "source_url": "https://www.mainelegislature.org/legis/bills/display_ps.asp?ld=307&PID=1456&snum=132",
       "last_verified": "2026-06-10",
       "verified": true,
       "confidence": "high",
@@ -4397,7 +4397,7 @@
         "water"
       ],
       "status": "introduced",
-      "status_detail": "Introduced 2025-04-17 (prior session of the current Congress, not summer 2026 — surfaced by this sweep via CRS report R49057, 2026-07-31, which lists it as part of the current federal data-center-water landscape). Referred to House Ways and Means; no further committee action found. A Senate companion bill has been reported by WateReuse Association/waterfm.com but its bill number was not independently confirmed here.",
+      "status_detail": "Introduced 2025-04-17 (prior session of the current Congress, not summer 2026 — surfaced by this sweep via CRS report R49057, 2026-07-31, which lists it among the federal data-center water measures in play). Referred to House Ways and Means; no further committee action found. A Senate companion bill has been reported by WateReuse Association/waterfm.com but its bill number was not independently confirmed here.",
       "source_url": "https://www.congress.gov/bill/119th-congress/house-bill/2940/text",
       "last_verified": "2026-08-24",
       "verified": true,
