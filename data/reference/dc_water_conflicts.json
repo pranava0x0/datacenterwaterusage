@@ -58,7 +58,7 @@
       "location": "South Memphis, Tennessee (former Electrolux site)",
       "issue_summary": "Colossus draws roughly 3 MGD of cooling water while the Memphis Sand aquifer — the region's sole drinking-water source — is already being pumped faster than it recharges. xAI promised an $80M recycling plant treating up to ~13 MGD of municipal wastewater to offset withdrawals, then put it on indefinite pause in April 2026 to prioritize Colossus 2.",
       "pushback_summary": "Protect Our Aquifer called the pause 'alarming'; the city council pressed for public meetings on water impacts, and Mayor Young says xAI committed to resume construction no later than Q1 2027.",
-      "status_2026": "Operating on aquifer-sourced water; recycling plant paused with a promised Q1 2027 restart.",
+      "status_2026": "Operating on aquifer-sourced water; xAI confirmed on August 17, 2026 that recycling-plant construction restarts in January 2027, with the finished plant recycling 10 MGD and projected to protect 3.64 billion gallons/year of Memphis Sand aquifer drinking water.",
       "applicable_readings": [
         {
           "reading_id": "cwa-402-npdes",
@@ -117,6 +117,10 @@
         {
           "title": "Action News 5: 'Alarming:' xAI is 'prioritizing other projects'",
           "url": "https://www.actionnews5.com/2026/04/09/xai-pauses-plans-build-water-recycling-plant-memphis/"
+        },
+        {
+          "title": "Action News 5: xAI to continue building water recycling plant in 2027",
+          "url": "https://www.actionnews5.com/2026/08/17/xai-continue-building-water-recycling-plant-2027/"
         }
       ],
       "issue_types": [
@@ -199,7 +203,7 @@
       "location": "Tucson / Pima County, Arizona",
       "issue_summary": "The first two sites would have needed ~2,000 acre-feet of water per year — making the campus Tucson Water's largest customer — negotiated under NDAs that kept the end user secret. The city council rejected annexation 7-0 on August 6, 2025 after intense community pressure.",
       "pushback_summary": "AWS pulled out in late 2025; Beale is proceeding on county land outside city limits with a redesigned air-cooled plan while Tucson cut off water service and sought payback — the clearest municipal-veto precedent over data-center water demand.",
-      "status_2026": "City rejection stands; redesigned county-land project proceeding without city water.",
+      "status_2026": "City rejection stands; the redesigned county-land project is proceeding on two ADWR-permitted wells. One year on, Tucson adopted zoning code amendments (August 2026) setting siting standards for future large data centers (25,000+ sq ft / 20+ MW): a half-mile residential setback, a ~1,000-foot commercial setback, and a 50-foot height cap. Pima County separately considered a 120-day moratorium on unincorporated-county data centers.",
       "applicable_readings": [
         {
           "reading_id": "sdwa-pws-compliance",
@@ -257,6 +261,10 @@
         {
           "title": "KJZZ: Rejected by Tucson and abandoned by Amazon, Project Blue moves forward",
           "url": "https://www.kjzz.org/the-show/2025-12-09/rejected-by-tucson-and-abandoned-by-amazon-project-blue-data-center-moves-forward"
+        },
+        {
+          "title": "KJZZ: A year later, here's where Tucson's Project Blue data center project stands",
+          "url": "https://www.kjzz.org/the-show/2026-08-10/a-year-later-heres-where-tucsons-controversial-project-blue-data-center-project-stands"
         }
       ],
       "issue_types": [
@@ -398,7 +406,7 @@
       "location": "Louisa County, Virginia — Sedges Creek, Lake Anna tributary",
       "issue_summary": "A draft VPDES individual permit would let AWS discharge up to 280,000 gal/day of treated cooling water into Sedges Creek — the first direct-to-surface-water hyperscaler cooling-discharge permit in Virginia. Residents packed a March 2026 hearing, and a June 9, 2026 DEQ meeting turned contentious over chemical additives and the draft's lack of required PFAS testing (DEQ kept only a reopener condition).",
       "pushback_summary": "100+ residents at hearings demanding additive disclosure, PFAS monitoring, and testing transparency before the lake's recreation and drinking-water uses absorb a new industrial outfall.",
-      "status_2026": "DEQ finalizing its decision after the June hearing; permit not yet issued as of early July 2026.",
+      "status_2026": "DEQ issued the final VPDES permit on August 1, 2026 (expires July 31, 2031), authorizing up to 0.28 MGD of treated cooling water to Sedges Creek under a 32°C daily-maximum temperature limit. Coverage of the final permit did not describe a PFAS monitoring requirement being added.",
       "applicable_readings": [
         {
           "reading_id": "cwa-402-npdes",
@@ -448,6 +456,10 @@
         {
           "title": "Virginia Mercury: What's in the water? Data center water discharge in Virginia",
           "url": "https://virginiamercury.com/2026/06/01/whats-in-the-water-what-we-know-and-dont-know-about-data-center-water-discharge-in-virginia/"
+        },
+        {
+          "title": "Lake Anna Life: DEQ issues VPDES permit for the AWS site",
+          "url": "https://lakeannalife.com/vdeg-issues-vpdes-permit-for-aws-site/"
         }
       ],
       "issue_types": [

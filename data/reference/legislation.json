@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-07-27",
-  "note": "State + federal data center water/energy legislation, plus selected regulatory actions and major local zoning decisions. Verified entries had their status confirmed against a primary source (state legislature page, Congress.gov / GovInfo, official sponsor press release) on the listed last_verified date; unverified entries should be re-checked before being relied upon. July 5, 2026 addition: FL SB 484 — enacted (signed May 7, 2026, effective July 1, 2026), ratepayer cost-allocation protections, a 100,000 gal/day reclaimed-water cooling requirement, and preserved local zoning authority; resolves the 'Florida hyperscale data-center regulatory framework' backlog candidate with a confirmed bill number. June 27, 2026 additions: IA HF 2690 (water + energy reporting and a separate data-center electric tariff; introduced) and CT SB 245 (would have repealed Connecticut's data-center tax incentives and added clean-energy/sustainability conditions; failed — died on the Senate calendar). Each bill is enriched with recent_news (up to 3 dated items with source URLs), public_sentiment (a paragraph naming supporters/opponents), general_principles (tagged policy concepts), and a procedural timeline. These fields are best-effort as of last_updated and should be re-verified before being cited. Scope expanded 2026-05-28 to include regulatory rulemakings (OH EPA OHD000001) and major local ordinances (Loudoun ZOAM) that function as de facto data-center policy.",
+  "last_updated": "2026-08-24",
+  "note": "State + federal data center water/energy legislation, plus selected regulatory actions and major local zoning decisions. Verified entries had their status confirmed against a primary source (state legislature page, Congress.gov / GovInfo, official sponsor press release) on the listed last_verified date; unverified entries should be re-checked before being relied upon. July 5, 2026 addition: FL SB 484 — enacted (signed May 7, 2026, effective July 1, 2026), ratepayer cost-allocation protections, a 100,000 gal/day reclaimed-water cooling requirement, and preserved local zoning authority; resolves the 'Florida hyperscale data-center regulatory framework' backlog candidate with a confirmed bill number. June 27, 2026 additions: IA HF 2690 (water + energy reporting and a separate data-center electric tariff; introduced) and CT SB 245 (would have repealed Connecticut's data-center tax incentives and added clean-energy/sustainability conditions; failed — died on the Senate calendar). Each bill is enriched with recent_news (up to 3 dated items with source URLs), public_sentiment (a paragraph naming supporters/opponents), general_principles (tagged policy concepts), and a procedural timeline. These fields are best-effort as of last_updated and should be re-verified before being cited. Scope expanded 2026-05-28 to include regulatory rulemakings (OH EPA OHD000001) and major local ordinances (Loudoun ZOAM) that function as de facto data-center policy. August 24, 2026 additions (state/local + federal sweep): TX EO 2026-08 (data center audit) — Abbott's directive gating the ERCOT interconnection queue on a water-and-power audit of ~250-300 projects; VA DEQ Eastern Virginia groundwater study — the delayed Potomac Aquifer report finding no headroom for new industrial withdrawals east of I-95; ME EO 2026-04 (data center advisory council) — the alternative Gov. Mills chose the day the LD 307 veto was sustained; SC S. 724 — annual water-consumption reporting for data centers over 100 MW and 3 MGal/month; and three federal items (WRDA 2026 H.R. 9497, NDAA FY2026 Sec. 1531, H.R. 2940 Advancing Water Reuse Act). The House companion H.R. 9825 was merged into the existing US S. 4213 record rather than entered twice. County and city measures below the first-of-kind threshold live in local_actions.json and render on the States & Localities tab.",
   "bills": [
     {
       "bill_id": "VA HB 496 / SB 553",
@@ -995,17 +995,17 @@
       "bill_id": "US S. 4213",
       "jurisdiction": "Federal (US)",
       "level": "federal",
-      "title": "Data Center Water and Energy Transparency Act",
-      "sponsor": "Sen. Dick Durbin (D-IL)",
+      "title": "Data Center Water and Energy Transparency Act of 2026",
+      "sponsor": "Sen. Dick Durbin (D-IL); House companion H.R. 9825",
       "summary": "Would require data-center operators to report actual energy and water consumption (plus five-year pre-construction estimates) to their states; states would aggregate/anonymize data for EPA, DOE, and USDA, who would issue joint regional reports and could fine non-compliance.",
       "scope": [
         "water",
         "energy"
       ],
       "status": "introduced",
-      "status_detail": "Introduced March 25, 2026 and referred to committee. Confirmed as S. 4213 in the 119th Congress; do not confuse with S. 4214 (AI Data Center Moratorium Act, introduced the same day). (Merged 2026-07-27: the dataset separately carried this same act as a 'number TBD' stub from the press release; the duplicate was folded in here.)",
+      "status_detail": "Introduced March 25, 2026 and referred to committee. Confirmed as S. 4213 in the 119th Congress; do not confuse with S. 4214 (AI Data Center Moratorium Act, introduced the same day). (Merged 2026-07-27: the dataset separately carried this same act as a 'number TBD' stub from the press release; the duplicate was folded in here.) Re-checked 2026-08-24: still in the Senate Committee on Energy and Natural Resources with no further action; a House companion, H.R. 9825, carries the same text.",
       "source_url": "https://www.congress.gov/bill/119th-congress/senate-bill/4213",
-      "last_verified": "2026-07-27",
+      "last_verified": "2026-08-24",
       "verified": true,
       "confidence": "high",
       "recent_news": [
@@ -1062,6 +1062,11 @@
           "date": "2026-03-25",
           "milestone": "Introduced",
           "detail": "Sen. Dick Durbin (D-IL) introduced S. 4213; referred to committee."
+        },
+        {
+          "date": "2026-08-24",
+          "milestone": "Re-verified — no committee action",
+          "detail": "House companion H.R. 9825 identified; Senate record unchanged since introduction."
         }
       ],
       "instrument_type": "bill",
@@ -4207,6 +4212,398 @@
         }
       ],
       "public_sentiment": "Scrutiny intensified around the existing QTS construction, which the moratorium deliberately does not stop — a limit opponents have noted."
+    },
+    {
+      "bill_id": "TX EO 2026-08 (data center audit)",
+      "instrument_type": "executive-order",
+      "jurisdiction": "Texas",
+      "level": "state",
+      "title": "Data center interconnection audit directive",
+      "sponsor": "Gov. Greg Abbott",
+      "summary": "Directive letter to the Public Utility Commission of Texas and ERCOT ordering a 'comprehensive verification and audit' of all data center projects advancing through ERCOT's interconnection process — roughly 250-300 projects, most of them data centers — covering power demand, water use, public financial assistance, community protections, and ownership. No additional data center may move forward in the interconnection queue until the audit is complete; projects that fail to meet requirements are to be denied a grid connection.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Issued 2026-08-03 as a directive letter to PUCT and ERCOT leadership rather than a numbered executive order, so the id above is a tracker label, not an order number. Distinct from the two Texas instruments already tracked and directly built on them: 'TX PUC Energy and Water Use Survey (data centers)' is the water/power survey whose low response rate the directive cites as its reason, and 'TX SB 6' is the 2025 statute governing the large-load interconnection queue the directive now gates. Cites ERCOT's ~474 GW interconnection queue (~90% data centers, 5x the state's record peak demand) and 'the failure of some data centers to comply with the PUC's survey measuring water and power usage under the General Appropriations Act.' ERCOT immediately announced it would miss an Aug. 7, 2026 Batch Zero interconnection-study deadline and would seek a good-cause exception. Per MultiState (2026-06-22), Abbott separately previewed 2027 legislative priorities including water-efficient cooling requirements and repeal of the data-center sales-tax exemption.",
+      "source_url": "https://gov.texas.gov/news/post/governor-abbott-directs-comprehensive-data-center-audit",
+      "last_verified": "2026-08-24",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-08-03",
+          "title": "Gov. Greg Abbott pauses new data centers until ERCOT, PUCT audit energy, water usage",
+          "source": "Houston Public Media",
+          "url": "https://www.houstonpublicmedia.org/articles/news/energy-environment/2026/08/03/558529/gov-greg-abbott-pauses-new-data-centers-until-ercot-puct-audit-energy-water-usage/",
+          "takeaway": "First statewide pause tied explicitly to a water-and-energy usage audit, issued via letter to PUCT and ERCOT rather than a bill or numbered order."
+        },
+        {
+          "date": "2026-08-14",
+          "title": "Texas will audit up to 300 projects, mostly data center proposals",
+          "source": "Texas Tribune",
+          "url": "https://www.texastribune.org/2026/08/14/texas-data-center-approval-pause-ercot-power-grid/",
+          "takeaway": "Scopes the audit at roughly 250-300 projects; noncompliant projects denied grid connection."
+        },
+        {
+          "date": "2026-08-19",
+          "title": "The local fight over data centers: a Texas case study",
+          "source": "MultiState",
+          "url": "https://www.multistate.us/insider/2026/8/19/the-local-fight-over-data-centers-a-texas-case-study",
+          "takeaway": "Frames the directive alongside a wave of TX county/city moratoriums (Austin County, Hill County's rescinded pause) as state-vs-local tension over data-center siting authority."
+        }
+      ],
+      "public_sentiment": "Framed by the Governor's office as accountability for data centers that did not comply with the PUC's existing water/power usage survey; industry groups and developers with projects in the ERCOT queue face months of delay (BloombergNEF estimated ~20% of the US development pipeline is TX-based and now at risk of delay per Utility Dive).",
+      "general_principles": [
+        {
+          "tag": "Permit oversight",
+          "note": "Gates further ERCOT interconnection approval on audit completion."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "Collects water and power usage data on each project in the queue."
+        },
+        {
+          "tag": "Preemptive review",
+          "note": "Requires verification before, not after, additional grid connections proceed."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-08-03",
+          "milestone": "Directive letter issued to PUCT and ERCOT"
+        },
+        {
+          "date": "2026-08-03",
+          "milestone": "ERCOT announces it will miss the Aug. 7 Batch Zero deadline, seeks good-cause exception"
+        },
+        {
+          "date": "2026-08-14",
+          "milestone": "Texas Tribune reports audit scope: ~250-300 projects"
+        }
+      ]
+    },
+    {
+      "bill_id": "WRDA 2026 (H.R. 9497)",
+      "instrument_type": "bill",
+      "jurisdiction": "Federal (US)",
+      "level": "federal",
+      "title": "Water Resources Development Act of 2026 — commercial/industrial water-user reporting provision",
+      "sponsor": "House Transportation & Infrastructure Committee (bipartisan)",
+      "summary": "WRDA 2026 provision directs the Secretary of the Army, within one year of enactment, to report on the impacts of 'new commercial and industrial water users' — a category that would include data centers — on USACE water resources development projects authorized for water supply or water conservation purposes.",
+      "scope": [
+        "water"
+      ],
+      "status": "introduced",
+      "status_detail": "The House Transportation & Infrastructure Committee favorably reported H.R. 9497 on 2026-07-14 by 66-0 (a markup first set for July 1 and rescheduled); the Senate Environment and Public Works Committee moved its own WRDA 2026 companion the same month. Neither chamber had held a floor vote as of 2026-08-24. The water-user reporting provision is characterized via CRS report R49057 (2026-07-31); the committee-report language was not pulled to quote verbatim, so re-read the provision text before citing its exact scope.",
+      "source_url": "https://www.govtrack.us/congress/bills/119/hr9497",
+      "last_verified": "2026-08-24",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-07-14",
+          "title": "Committee Approves Bipartisan Water Resources Development Act",
+          "source": "House Transportation and Infrastructure Committee",
+          "url": "https://transportation.house.gov/news/documentsingle.aspx?DocumentID=410235",
+          "takeaway": "H.R. 9497 reported 66-0; 131 new feasibility studies and 10 new projects authorized."
+        },
+        {
+          "date": "2026-07-31",
+          "title": "Data Centers and Water: Frequently Asked Questions",
+          "source": "Congressional Research Service (R49057)",
+          "url": "https://www.everycrsreport.com/reports/R49057.html",
+          "takeaway": "CRS's own framing of the WRDA 2026 provision as the Army Corps' response to data-center cooling-water demand on federal water-supply infrastructure."
+        }
+      ],
+      "public_sentiment": "No data-center-specific advocacy found; the provision surfaced as one line item in a much larger bipartisan infrastructure bill.",
+      "general_principles": [
+        {
+          "tag": "Disclosure",
+          "note": "Reporting requirement on new commercial/industrial water users' impact on federal water-supply projects."
+        },
+        {
+          "tag": "Federal coordination",
+          "note": "Army Corps reporting mechanism distinct from EPA/DOE/state tracks in other federal bills."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-07-14",
+          "milestone": "Ordered reported by the House T&I Committee",
+          "detail": "Bipartisan 66-0 vote; awaits House floor consideration"
+        },
+        {
+          "date": "2026-07-31",
+          "milestone": "Provision described by CRS",
+          "detail": "R49057 frames the reporting requirement as the Corps' answer to data-center demand on federal water-supply projects"
+        }
+      ]
+    },
+    {
+      "bill_id": "US NDAA FY2026 Sec. 1531 (P.L. 119-60)",
+      "instrument_type": "bill",
+      "jurisdiction": "Federal (US)",
+      "level": "federal",
+      "title": "NDAA FY2026 — DoD computing roadmap water-impact reporting (Section 1531)",
+      "sponsor": "House/Senate Armed Services Committees",
+      "summary": "Section 1531 amends the DoD high-performance computing roadmap (Sec. 1532 of the FY2025 NDAA) to cover commercially procured cloud and infrastructure-as-a-service capacity as well as DoD-owned assets, and to require, for any new or expanded data center on a military installation, estimates of additional physical space, electricity and water usage, effects on the installation and surrounding community, mitigation measures, and steps to prevent local utility disruption in coordination with local, state and federal agencies.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Enacted 2025-12-18 as part of P.L. 119-60 (FY2026 NDAA). The water clause is confirmed in two Congressional Research Service products — IF13197 on the NDAA's cyber and AI provisions and R49057 on data centers and water — which describe Section 1531 as requiring electricity and water usage estimates for installation data centers, to the extent the estimates do not delay the roadmap's triennial updates. Law-firm NDAA client alerts describe Section 1531 as a computing-capability and commercial-cloud roadmap requirement without foregrounding water, which is why the water framing is cited to CRS rather than to the alerts. The roadmap itself is an internal DoD document, so this produces no public water dataset unless a roadmap update is released or requested.",
+      "source_url": "https://www.congress.gov/119/plaws/publ60/PLAW-119publ60.pdf",
+      "last_verified": "2026-08-24",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-07-31",
+          "title": "Data Centers and Water: Frequently Asked Questions (R49057)",
+          "source": "Congressional Research Service",
+          "url": "https://www.everycrsreport.com/reports/R49057.html",
+          "takeaway": "Lists Sec. 1531 among the few federal provisions that touch data-center water use at all."
+        },
+        {
+          "date": "2025-12-18",
+          "title": "Cyber and Artificial Intelligence Provisions in the FY2026 NDAA (IF13197)",
+          "source": "Congressional Research Service",
+          "url": "https://www.congress.gov/crs-product/IF13197",
+          "takeaway": "Confirms Sec. 1531 requires electricity and water usage estimates for data centers on military installations."
+        }
+      ],
+      "public_sentiment": "No data-center-water advocacy attached to this section; it moved as one line in the FY2026 NDAA's AI and cloud-computing title, and the coverage that followed was law-firm client alerts to defense contractors rather than water or environmental groups. That is the point of interest here — a federal water-reporting requirement passed with no water constituency watching it.",
+      "general_principles": [
+        {
+          "tag": "Disclosure",
+          "note": "DoD computing roadmap must estimate water usage and community effects of data-center buildout on military installations."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2025-12-18",
+          "milestone": "Enacted",
+          "detail": "Signed as P.L. 119-60; Sec. 1531 amends the FY2025 NDAA's computing roadmap"
+        }
+      ]
+    },
+    {
+      "bill_id": "US H.R. 2940 (Advancing Water Reuse Act)",
+      "instrument_type": "bill",
+      "jurisdiction": "Federal (US)",
+      "level": "federal",
+      "title": "Advancing Water Reuse Act",
+      "sponsor": "Reps. Darin LaHood (R-IL), Linda Sánchez (D-CA), Brad Schneider (D-IL), Claudia Tenney (R-NY)",
+      "summary": "Provides a 30% investment tax credit for qualifying water-reuse projects — a water-recycling system installed, replaced, or modified at an industrial, manufacturing, data-center, or food-processing facility.",
+      "scope": [
+        "water"
+      ],
+      "status": "introduced",
+      "status_detail": "Introduced 2025-04-17 (prior session of the current Congress, not summer 2026 — surfaced by this sweep via CRS report R49057, 2026-07-31, which lists it as part of the current federal data-center-water landscape). Referred to House Ways and Means; no further committee action found. A Senate companion bill has been reported by WateReuse Association/waterfm.com but its bill number was not independently confirmed here.",
+      "source_url": "https://www.congress.gov/bill/119th-congress/house-bill/2940/text",
+      "last_verified": "2026-08-24",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-05-20",
+          "title": "Bill Receives Bipartisan Support to Increase Water Reuse for Data Centers",
+          "source": "WC&P Online",
+          "url": "https://wcponline.com/2026/05/20/bill-receives-bipartisan-support-to-increase-water-reuse-for-data-centers/",
+          "takeaway": "Frames data centers as a named beneficiary class alongside industrial/manufacturing/food-processing facilities."
+        }
+      ],
+      "public_sentiment": "Bipartisan sponsorship (two Republicans, two Democrats) and backing from the WateReuse Association trade group, which frames data centers as a demand source that can be served by on-site recycling rather than fresh withdrawals. No organized opposition found; as a tax-credit bill it has drawn none of the industry pushback the reporting mandates have.",
+      "general_principles": [
+        {
+          "tag": "Conservation",
+          "note": "30% tax credit incentivizes on-site water-recycling systems at data centers and other industrial facilities."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2025-04-17",
+          "milestone": "Introduced",
+          "detail": "Referred to House Committee on Ways and Means"
+        }
+      ]
+    },
+    {
+      "bill_id": "ME EO 2026-04 (data center advisory council)",
+      "instrument_type": "executive-order",
+      "jurisdiction": "Maine",
+      "level": "state",
+      "title": "Executive order establishing the Maine Data Center Advisory Council",
+      "sponsor": "Gov. Janet Mills",
+      "summary": "Signed 2026-04-29, the same day the House sustained Mills's veto of LD 307 (72-65, short of two-thirds). Establishes a 15-member Data Center Advisory Council to recommend policy on ratepayer protection, electric grid reliability, environmental impact minimization, and economic development; separately directs the Department of Energy Resources and the Maine Public Utilities Commission to protect ratepayers from data-center-driven cost increases. Council reports to the Governor and Legislature by 2027-01-29.",
+      "scope": [
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "The Governor's office published the order without a public order number, so the id above is a tracker label. The order's own four mandate areas (ratepayer protection, grid reliability, environmental impact, economic development) do not itemize water the way LD 307's findings did (hydro-dam drought sensitivity, aquifer depletion, cooling-water discharge — see the existing 'ME LD 307' entry). 'Environmental impact minimization' could reach water once the council scopes its work, but that is not yet confirmed in primary text. Direct successor to the vetoed LD 307, not an implementation of it — Mills said she would have signed LD 307 with an exemption for the Androscoggin Mill redevelopment in Jay; this EO is the alternative she chose instead.",
+      "source_url": "https://www.maine.gov/governor/mills/news/governor-mills-signs-executive-order-establish-maine-data-center-advisory-council-2026-04-29",
+      "last_verified": "2026-08-24",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-04-29",
+          "title": "Governor Mills Signs Executive Order to Establish Maine Data Center Advisory Council",
+          "source": "Office of Governor Janet T. Mills",
+          "url": "https://www.maine.gov/governor/mills/news/governor-mills-signs-executive-order-establish-maine-data-center-advisory-council-2026-04-29",
+          "takeaway": "Signed same day as the failed LD 307 override vote; positioned as the Governor's preferred alternative to a moratorium."
+        },
+        {
+          "date": "2026-04-29",
+          "title": "Despite initial support, Legislature fails to override Mills' veto of landmark data center ban",
+          "source": "Maine Morning Star",
+          "url": "https://mainemorningstar.com/2026/04/29/despite-initial-support-legislature-fails-to-override-mills-veto-of-landmark-data-center-ban/",
+          "takeaway": "House vote was 72-65, short of the two-thirds threshold needed to override."
+        }
+      ],
+      "public_sentiment": "Not yet characterized in sourcing found; LD 307's own supporters (Conservation Law Foundation, Maine Audubon) had pushed for the stronger moratorium Mills declined to sign.",
+      "general_principles": [
+        {
+          "tag": "Preemptive review",
+          "note": "Studies data-center impacts and produces recommendations before further legislation."
+        },
+        {
+          "tag": "Cost allocation",
+          "note": "Directs DER/PUC to protect ratepayers from data-center-driven cost increases."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-04-24",
+          "milestone": "Mills vetoes LD 307"
+        },
+        {
+          "date": "2026-04-29",
+          "milestone": "House sustains veto 72-65; Mills signs this EO same day"
+        }
+      ]
+    },
+    {
+      "bill_id": "SC S. 724",
+      "instrument_type": "bill",
+      "jurisdiction": "South Carolina",
+      "level": "state",
+      "title": "Commercial Data Center Water Usage Report",
+      "sponsor": "Sens. Blackmon and Sutton",
+      "summary": "Requires commercial data centers (peak demand >=100 MW) that consume 3 million or more gallons of water per month to file annual reports with the SC Department of Environmental Services by January 31, detailing prior-year water consumption and current-year projections. Civil penalties up to $10,000/day for late filing and $10,000 for inaccurate information; the department may audit reports with 30 days' notice.",
+      "scope": [
+        "water"
+      ],
+      "status": "introduced",
+      "status_detail": "Prefiled 2025-12-10, introduced and read first time 2026-01-13, referred to Senate Judiciary Committee; no votes recorded as of 2026-08-24. Companion to the already-tracked 'SC H 4583' / 'SC HB 4583' (The South Carolina Data Center Responsibility Act, requiring closed-loop cooling with zero net water withdrawal) — H4583 was also confirmed still in the House, not yet advanced to the Senate, contradicting a WRHI headline about a different SC data-center bill advancing in committee. NOTE: 'SC H 4583' and 'SC HB 4583' appear to be two bill_ids for the same bill in the existing legislation.json — flagged in notes, not altered here.",
+      "source_url": "https://www.scstatehouse.gov/sess126_2025-2026/bills/724.htm",
+      "last_verified": "2026-08-24",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [],
+      "public_sentiment": "No advocacy or opposition statements found on this bill specifically. It is the reporting half of a two-bill South Carolina package whose other half — the closed-loop cooling mandate in H 4583 — is where the industry's attention has gone; a disclosure bill with $10,000-a-day penalties has so far moved without a public fight.",
+      "general_principles": [
+        {
+          "tag": "Disclosure",
+          "note": "Annual water-consumption reporting by large data centers with real civil penalties for noncompliance."
+        },
+        {
+          "tag": "Transparency",
+          "note": "Companion to H4583's cooling-system mandate; the reporting half of a two-bill SC package."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2025-12-10",
+          "milestone": "Prefiled",
+          "detail": "Referred to Judiciary Committee"
+        },
+        {
+          "date": "2026-01-13",
+          "milestone": "Introduced and read first time"
+        }
+      ]
+    },
+    {
+      "bill_id": "VA DEQ Eastern Virginia groundwater study",
+      "instrument_type": "agency-rule",
+      "jurisdiction": "Virginia",
+      "level": "state",
+      "title": "DEQ groundwater study of the Potomac Aquifer east of I-95",
+      "sponsor": "Virginia Department of Environmental Quality",
+      "summary": "A DEQ groundwater study of the Coastal Plain east of I-95, required by 2024 legislation, tested whether a hypothetical industrial facility withdrawing 3 million gallons a day could be permitted anywhere in the Eastern Virginia Groundwater Management Area. No region evaluated could support it: the sustainable maxima run from about 360,000 gal/day in Northumberland County down to under 30,000 gal/day in Henrico and Sussex. It is a report rather than a rule, but it is the factual record DEQ's groundwater withdrawal permits are now decided against, in the part of Virginia where water-cooled data centers are being sited.",
+      "scope": [
+        "water"
+      ],
+      "status": "enacted",
+      "status_detail": "Required by legislation enacted in March 2024 and due January 1, 2026; withheld for six months and released 2026-08-04 only after an Associated Press public-records request. Within three weeks it was being used against a live application: Sen. Richard Stuart cited it in opposing an Amazon data-center permit to draw 6.4 million gallons a year from the Potomac Aquifer, and legislators began weighing a special session or a moratorium on data-center approvals in the affected area. The report document itself was not pulled directly — deq.virginia.gov is WAF-blocked to automated clients (errors.md, 2026-02-24) — so the figures here come from Virginia Mercury and WAVY coverage of the release.",
+      "source_url": "https://virginiamercury.com/2026/08/04/deq-study-throws-cold-water-on-data-center-development-east-of-i-95/",
+      "last_verified": "2026-08-24",
+      "verified": true,
+      "confidence": "high",
+      "general_principles": [
+        {
+          "tag": "Preemptive review",
+          "note": "Measures aquifer capacity before more industrial withdrawals are permitted, not after."
+        },
+        {
+          "tag": "Permit oversight",
+          "note": "The finding is the record DEQ's groundwater withdrawal permits are decided against."
+        },
+        {
+          "tag": "Transparency",
+          "note": "Released only under a records request, six months past its statutory due date."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2024-03-01",
+          "milestone": "Study mandated",
+          "detail": "2024 legislation directs DEQ to assess Eastern Virginia groundwater availability (month-precision; exact enactment day not pinned)"
+        },
+        {
+          "date": "2026-01-01",
+          "milestone": "Statutory due date passes",
+          "detail": "Report complete but not released"
+        },
+        {
+          "date": "2026-08-04",
+          "milestone": "Released after an AP records request",
+          "detail": "Finding: no region east of I-95 can support a new 3 MGD industrial withdrawal"
+        },
+        {
+          "date": "2026-08-21",
+          "milestone": "Legislators weigh policy response",
+          "detail": "Special session and moratorium proposals; the report cited against a pending Amazon withdrawal permit"
+        }
+      ],
+      "recent_news": [
+        {
+          "date": "2026-08-04",
+          "title": "DEQ study throws cold water on data center development east of I-95",
+          "source": "Virginia Mercury",
+          "url": "https://virginiamercury.com/2026/08/04/deq-study-throws-cold-water-on-data-center-development-east-of-i-95/",
+          "takeaway": "The Potomac Aquifer cannot support new industrial withdrawals; parts of the Coastal Plain are already at emergency levels."
+        },
+        {
+          "date": "2026-08-05",
+          "title": "Six-month delay in release of Virginia DEQ study on data centers' water usage",
+          "source": "Blue Virginia",
+          "url": "https://bluevirginia.us/2026/08/six-month-delay-in-release-of-virginia-deq-study-on-data-centers-water-usage-as-the-public-turns-strongly-against-them/",
+          "takeaway": "Documents the six-month delay and the AP records request that forced the release."
+        },
+        {
+          "date": "2026-08-06",
+          "title": "Newly released DEQ report on Eastern Va. groundwater supply shows possibility of future decline",
+          "source": "WAVY",
+          "url": "https://www.wavy.com/news/virginia/call-for-tighter-data-center-regulations-after-new-deq-report/",
+          "takeaway": "Per-region sustainable maxima: ~360,000 gal/day in Northumberland down to under 30,000 gal/day in Henrico and Sussex."
+        }
+      ],
+      "public_sentiment": "The six-month delay became half the story: the finding lands as evidence that Eastern Virginia's aquifer has no headroom, and legislators who pushed HB 496's reporting mandate treated the withholding as proof the disclosure regime is still too weak. Water advocates read it as grounds for tighter data-center rules; the industry's position is that surface-water and reclaimed supply, not the aquifer, is where new campuses would draw."
     }
   ]
 }

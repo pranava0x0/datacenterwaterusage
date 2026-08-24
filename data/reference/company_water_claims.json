@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-07-26",
+  "last_updated": "2026-08-24",
   "source_repo": "pranava0x0/datacentercommunitybenefits",
   "source_path": "docs/data/claims.json",
   "live_dashboard": "https://pranava0x0.github.io/datacentercommunitybenefits/",
@@ -526,6 +526,130 @@
         "source_title": "GeekWire — Microsoft says its data centers use 90% less water than its earliest facilities",
         "assessed_at": "2026-07-26"
       }
+    },
+    {
+      "id": "aws-calvert-cliffs-md-water",
+      "company_slug": "amazon",
+      "theme": "water",
+      "statement": "In this particular case, one of the biggest benefits of this project is that there is no new water required to cool our data centers",
+      "source_url": "https://thebaynet.com/amazon-introduces-potential-calvert-county-data-center-emphasizes-infrastructure-workforce-and-growth/",
+      "source_title": "The BayNet - Becky Ford (AWS Economic Development) on the Calvert County campus",
+      "captured_at": "2026-06-08",
+      "published_at": "2026-03-31",
+      "project_id": "aws-calvert-cliffs-md",
+      "formal_agreement": false,
+      "claim_type": "site-specific-promise"
+    },
+    {
+      "id": "google-henderson-water-2026",
+      "company_slug": "google",
+      "theme": "water",
+      "statement": "Google supports the Colorado River Indian Tribes (CRIT) System Conservation and Canal Lining Projects.",
+      "source_url": "https://datacenters.google/locations/henderson-nevada/",
+      "source_title": "Google Data Centers — Henderson, Nevada location page",
+      "captured_at": "2026-06-19",
+      "project_id": "google-henderson-nv",
+      "formal_agreement": false,
+      "claim_type": "site-specific-promise"
+    },
+    {
+      "id": "google-mayes-water-2026",
+      "company_slug": "google",
+      "theme": "water",
+      "statement": "We're supporting regenerative agriculture to improve watershed health in Oklahoma.",
+      "source_url": "https://datacenters.google/locations/oklahoma/",
+      "source_title": "Google Data Centers — Oklahoma (Mayes County / Pryor) location page",
+      "captured_at": "2026-06-18",
+      "project_id": "google-mayes-county-ok",
+      "formal_agreement": false,
+      "claim_type": "site-specific-promise"
+    },
+    {
+      "id": "google-new-florence-water-air-cooling-2026",
+      "company_slug": "google",
+      "theme": "water",
+      "statement": "The Montgomery County data center will use advanced air-cooling technology, limiting water consumption to uses like kitchens.",
+      "source_url": "https://www.prnewswire.com/news-releases/google-deepens-missouri-roots-with-new-data-center-energy-and-community-investments-302778322.html",
+      "source_title": "Google Deepens Missouri Roots with New Data Center, Energy, and Community Investments (PR Newswire)",
+      "captured_at": "2026-05-31",
+      "published_at": "2026-05-20",
+      "project_id": "google-new-florence-mo",
+      "formal_agreement": false,
+      "claim_type": "zero-water-design"
+    },
+    {
+      "id": "meta-eagle-mountain-water-2021",
+      "company_slug": "meta",
+      "theme": "water",
+      "statement": "In 2020, we partnered with Trout Unlimited to invest in the Provo River water restoration project in Utah.",
+      "source_url": "https://datacenters.atmeta.com/2021/07/utah-county-we-are-online/",
+      "source_title": "Meta Data Centers — Utah County, We Are Online! (Jul 2021)",
+      "captured_at": "2026-06-18",
+      "project_id": "meta-eagle-mountain-ut",
+      "formal_agreement": false,
+      "claim_type": "site-specific-promise"
+    },
+    {
+      "id": "meta-los-lunas-water-2021",
+      "company_slug": "meta",
+      "theme": "water",
+      "statement": "We will restore 200% of the water our data center consumes into the New Mexico watersheds.",
+      "source_url": "https://datacenters.atmeta.com/2021/10/hello-again-los-lunas/",
+      "source_title": "Meta Data Centers — Hello Again, Los Lunas! (Oct 27 2021)",
+      "captured_at": "2026-06-18",
+      "published_at": "2021-10-27",
+      "project_id": "meta-los-lunas-nm",
+      "formal_agreement": false,
+      "claim_type": "site-specific-promise"
+    },
+    {
+      "id": "meta-temple-water-davis-2026",
+      "company_slug": "meta",
+      "theme": "water",
+      "statement": "We use a water-efficient, closed-loop liquid-cooling system that will use zero water for a majority of the year.",
+      "source_url": "https://kdhnews.com/news/region/first-ai-optimized-meta-data-center-in-nation-opens-in-temple-tx/article_fd6cd4ad-d6a5-52cf-bf85-86199550c88d.html",
+      "source_title": "Killeen Daily Herald — Bradley Davis (Meta Director of Global Economic Development) on the Temple TX data center",
+      "captured_at": "2026-07-27",
+      "published_at": "2026-07-22",
+      "project_id": "meta-temple-tx",
+      "formal_agreement": false,
+      "claim_type": "zero-water-design"
+    },
+    {
+      "id": "microsoft-water-intensity-40pct-2026",
+      "company_slug": "microsoft",
+      "theme": "water",
+      "statement": "Microsoft will achieve a 40 percent improvement in datacenter water-use intensity by 2030.",
+      "source_url": "https://blogs.microsoft.com/on-the-issues/2026/01/13/community-first-ai-infrastructure/",
+      "source_title": "Microsoft — Building Community-First AI Infrastructure (Brad Smith, Jan 13 2026)",
+      "captured_at": "2026-06-05",
+      "published_at": "2026-01-13",
+      "formal_agreement": false,
+      "claim_type": "efficiency-wue"
+    },
+    {
+      "id": "ms-el-mirage-water-2024",
+      "company_slug": "microsoft",
+      "theme": "water",
+      "statement": "We'll minimize our water use and replenish more of your water than we use.",
+      "source_url": "https://local.microsoft.com/communities/americas/greater-phoenix/",
+      "source_title": "Microsoft Local — Greater Phoenix (Datacenter Community Pledge)",
+      "captured_at": "2026-06-19",
+      "project_id": "microsoft-el-mirage-az",
+      "formal_agreement": true,
+      "claim_type": "water-positive-pledge"
+    },
+    {
+      "id": "ms-san-antonio-water-2024",
+      "company_slug": "microsoft",
+      "theme": "water",
+      "statement": "We'll minimize our water use and replenish more of your water than we use.",
+      "source_url": "https://local.microsoft.com/communities/americas/greater-san-antonio/",
+      "source_title": "Microsoft Local — Greater San Antonio (Datacenter Community Pledge)",
+      "captured_at": "2026-06-18",
+      "project_id": "microsoft-san-antonio-tx",
+      "formal_agreement": true,
+      "claim_type": "water-positive-pledge"
     }
   ]
 }

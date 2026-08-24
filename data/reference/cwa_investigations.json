@@ -478,7 +478,7 @@
       "year": "2024-2026",
       "cwa_section": "Mixed — Flint Riverkeeper invoked the U.S. Clean Water Act (Sec. 402 NPDES construction general permit) plus Georgia Erosion & Sedimentation Act sediment-control standards; engagement was through citizen monitoring and notification to Georgia EPD rather than a formal §505 citizen suit filing.",
       "violation_summary": "Flint Riverkeeper documented repeated discharge of heavily sediment-laden water — including flocculant-treated runoff — onto neighboring private property and into Sandy Creek during rain events from summer 2023 through spring 2024, with monitoring data showing sediment 'many, many times allowable limits.' Riverkeeper escalated to the City of Fayetteville in March 2024 and to Georgia EPD that spring after city/developer remediation lagged. This is a Riverkeeper-driven CWA enforcement-style action, not a filed lawsuit.",
-      "outcome": "PENDING / partially resolved — A stop-work order plus developer-installed erosion-control upgrades resulted in at least one >2-inch rain event with 'no detectable pollution' by mid-2024. No formal NOV, consent order, or civil penalty against QTS has been publicly confirmed; monitoring is ongoing. Separately, in May 2025 QTS paid ~$147,000 in retroactive water bills for ~29M gallons of unbilled construction water (a billing dispute, not CWA enforcement). The dispute escalated on May 28, 2026, when counsel for Flint Riverkeeper and adjacent landowners sent a formal CWA §505(b) 60-day notice of intent to sue to QTS and its contractors (Clayco, HITT Contracting, Brasfield & Gorrie) and subcontractors, documenting turbidity exceedances above the permit's 50 NTU outfall limit on at least 51 separate rain-event dates from February 2024 through May 2026 (including a 259 NTU reading in March 2026) plus three dry-day discharges from pond pumping, and alleging unpermitted §404 fill from redeposited excavated material into the stream and adjacent wetlands. Plaintiffs' counsel stated intent to file a federal citizen suit on or about July 27, 2026 if the dispute isn't resolved within the notice period — open as of this writing.",
+      "outcome": "PENDING / partially resolved — A stop-work order plus developer-installed erosion-control upgrades resulted in at least one >2-inch rain event with 'no detectable pollution' by mid-2024. No formal NOV, consent order, or civil penalty against QTS has been publicly confirmed; monitoring is ongoing. Separately, in May 2025 QTS paid ~$147,000 in retroactive water bills for ~29M gallons of unbilled construction water (a billing dispute, not CWA enforcement). The dispute escalated on May 28, 2026, when counsel for Flint Riverkeeper and adjacent landowners sent a formal CWA §505(b) 60-day notice of intent to sue to QTS and its contractors (Clayco, HITT Contracting, Brasfield & Gorrie) and subcontractors, documenting turbidity exceedances above the permit's 50 NTU outfall limit on at least 51 separate rain-event dates from February 2024 through May 2026 (including a 259 NTU reading in March 2026) plus three dry-day discharges from pond pumping, and alleging unpermitted §404 fill from redeposited excavated material into the stream and adjacent wetlands. Plaintiffs' counsel stated intent to file a federal citizen suit on or about July 27, 2026 if the dispute isn't resolved within the notice period — open as of this writing. Update (2026-08-13): past the on-or-about July 27 filing target, no federal suit has been filed. Flint Riverkeeper says QTS has engaged in settlement discussions; the matter remains in the notice-and-negotiation phase rather than active litigation.",
       "takeaway": "QTS Fayetteville is the clearest example of an environmental NGO using CWA construction-stormwater standards to pressure a hyperscale colocation operator. Even without a filed lawsuit, citizen documentation forced site changes — a template likely to spread, especially in Georgia where data center sprawl is concentrated in sensitive Flint and Chattahoochee basins.",
       "sources": [
         {
@@ -500,6 +500,11 @@
           "title": "Flint Riverkeeper and Fayetteville residents plan to file lawsuit against data center developers",
           "url": "https://www.times-herald.com/data_center/flint-riverkeeper-and-fayetteville-residents-plan-to-file-lawsuit-against-data-center-developers/article_d5249896-534a-4d28-98fb-f6349a14c68e.html",
           "type": "news"
+        },
+        {
+          "title": "Atlanta News First: Watchdog group threatens to sue data center over Georgia water pollution",
+          "url": "https://www.atlantanewsfirst.com/2026/08/13/watchdog-group-threatens-sue-data-center-over-georgia-water-pollution/",
+          "type": "news"
         }
       ],
       "case_type": "construction-stormwater",
@@ -514,7 +519,8 @@
       "outcome_type": [
         "injunction-stop-work",
         "pending-undecided"
-      ]
+      ],
+      "last_verified": "2026-08-24"
     },
     {
       "case_id": "QTS-CedarRapids-IA-2025",
@@ -1889,7 +1895,7 @@
       "year": "2025-2026",
       "cwa_section": "Tennessee state water program — TDEC Division of Water Resources operating permit for the Colossus greywater recycling plant (CWA Section 402 NPDES is state-administered in Tennessee). Important framing: the active federal citizen suit against xAI (NAACP / Earthjustice, notice of intent filed Feb 2026) is a Clean AIR Act case over ~27 unpermitted methane gas turbines — NOT a CWA action. The water dimension here is the permitted-but-paused wastewater-reuse plant and the aquifer-withdrawal governance around it, not a discharge-violation enforcement order.",
       "violation_summary": "xAI's Colossus campus draws cooling water from the Memphis Sand Aquifer, the city's drinking-water source. To offset that draw, xAI committed to an ~$80 million greywater recycling plant (permittee CTC Property LLC) that would treat effluent from the city's T.E. Maxson wastewater treatment plant for industrial cooling, preserving up to 13 million gallons per day of aquifer water. TDEC's Division of Water Resources accepted the application in February 2025 and held public hearings June 25–26, 2025; residents of the predominantly Black 38109 ZIP code raised environmental-justice objections about cumulative pollution burden. On April 9, 2026, xAI paused construction of the recycling plant, saying it was 'prioritizing other more immediate projects' (finishing the Colossus 2 supercomputer first) — leaving cooling demand on the aquifer in the interim.",
-      "outcome": "No CWA enforcement action, NOV, or penalty over water as of mid-2026. The greywater plant is permitted but indefinitely paused (announced April 9, 2026); aquifer-protection group Protect Our Aquifer called the pause 'deeply concerning' and 'alarming,' noting the plant 'was not optional — it was a core commitment.' Memphis Mayor Paul Young said he would keep pressing xAI to build it. Separately, the federal Clean Air Act citizen suit over the gas turbines remains active.",
+      "outcome": "No CWA enforcement action, NOV, or penalty over water as of mid-2026. The greywater plant is permitted but indefinitely paused (announced April 9, 2026); aquifer-protection group Protect Our Aquifer called the pause 'deeply concerning' and 'alarming,' noting the plant 'was not optional — it was a core commitment.' Memphis Mayor Paul Young said he would keep pressing xAI to build it. Separately, the federal Clean Air Act citizen suit over the gas turbines remains active. Update (2026-08-17): xAI confirmed the paused recycling plant will resume construction in January 2027; the completed plant is projected to recycle 10 MGD and protect 3.64 billion gallons/year of aquifer-sourced drinking water. Still no CWA enforcement action, notice of violation, or penalty over water as of this update.",
       "takeaway": "The most prominent AI-data-center water fight to date shows the binding regulatory levers are usually NOT a CWA discharge violation: xAI's promised wastewater-reuse plant — which would have cut aquifer draw by up to 13 MGD — was permitted and then shelved, and no CWA mechanism compels it to build. This mirrors the tracker's core thesis: when a data center's operational water sits behind aquifer withdrawals and municipal-sewer arrangements, CWA discharge enforcement has little grip, and the real pressure points are state withdrawal permits, voluntary commitments, and (as the parallel air-permit suit shows) the Clean Air Act.",
       "sources": [
         {
@@ -1911,6 +1917,11 @@
           "title": "Illegal Pollution from Data Center Power Plants Shouldn't Harm Our Communities. We're Suing xAI. — Earthjustice",
           "url": "https://earthjustice.org/case/xai-illegal-gas-power-plant-data-center-colossus",
           "type": "advocacy / litigation"
+        },
+        {
+          "title": "Action News 5: xAI to continue building water recycling plant in 2027",
+          "url": "https://www.actionnews5.com/2026/08/17/xai-continue-building-water-recycling-plant-2027/",
+          "type": "news"
         }
       ],
       "case_type": "groundwater",
@@ -1929,7 +1940,8 @@
       ],
       "outcome_type": [
         "pending-undecided"
-      ]
+      ],
+      "last_verified": "2026-08-24"
     },
     {
       "case_id": "Amazon-NewCarlisle-IN-wetlands-2025",
@@ -2515,7 +2527,7 @@
       "year": "2025-2026",
       "cwa_section": "CWA §402 via Virginia's delegated VPDES program — draft individual discharge permit for treated cooling water (thermal limits under §301/§316(a)-type conditions, metals limits; PFAS monitoring not required but reserved via special condition).",
       "violation_summary": "Not an enforcement action — a permit application in active state review. AWS is seeking a VPDES individual permit to discharge up to 280,000 gallons/day of treated cooling-tower water from its Lake Anna Tech Campus data centers into Sedges Creek, a tributary of Lake Anna. The draft permit caps discharge temperature at 89.6°F and sets zinc/copper limits but does not mandate PFAS testing (DEQ retained authority to add it later). AWS says discharge would occur only during the hottest ~4% of the year. A contentious DEQ public hearing was held June 9, 2026 at Louisa County Middle School, where residents objected to thermal and contaminant impacts on the lake.",
-      "outcome": "Pending as of June 10, 2026 — DEQ has published responses to public comments and says it will make a final permit decision; no timeline announced. This is one of the first direct-to-surface-water cooling discharge permits sought by a hyperscaler in Virginia.",
+      "outcome": "Pending as of June 10, 2026 — DEQ has published responses to public comments and says it will make a final permit decision; no timeline announced. This is one of the first direct-to-surface-water cooling discharge permits sought by a hyperscaler in Virginia. RESOLVED (2026-08): DEQ issued the final VPDES permit, effective August 1, 2026 and expiring July 31, 2031, authorizing up to 0.28 MGD of treated cooling water to Sedges Creek. Final terms: 32°C (89.6°F) daily maximum temperature, pH 6.0–9.0, total residual chlorine below 0.008 mg/L, daily temperature/pH/TRC sampling, monthly zinc, cadmium and copper sampling, and toxicity testing quarterly in year one then annually. Reporting on the final permit did not mention a PFAS monitoring requirement.",
       "takeaway": "Hyperscalers are beginning to seek their own direct NPDES/VPDES discharge permits rather than routing all cooling water through municipal WWTPs — moving the operational CWA exposure from the receiving POTW's permit onto the data center itself. The PFAS-testing gap and thermal limits in this draft are likely to template (and be litigated in) future data-center discharge permits.",
       "case_type": "cooling-water",
       "cwa_applied": "applied",
@@ -2535,6 +2547,11 @@
           "title": "What we know and don't know about data center water discharge in Virginia (Virginia Mercury via WHRO)",
           "url": "https://www.whro.org/environment/2026-06-04/what-we-know-and-dont-know-about-data-center-water-discharge-in-virginia",
           "type": "news"
+        },
+        {
+          "title": "Lake Anna Life: DEQ issues VPDES permit for the AWS site",
+          "url": "https://lakeannalife.com/vdeg-issues-vpdes-permit-for-aws-site/",
+          "type": "news"
         }
       ],
       "display_section": "historical",
@@ -2547,7 +2564,8 @@
       "outcome_type": [
         "permit-issued",
         "pending-undecided"
-      ]
+      ],
+      "last_verified": "2026-08-24"
     },
     {
       "case_id": "Google-FortWayneIN-isolated-wetland-permit-2025",
