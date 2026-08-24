@@ -285,3 +285,25 @@ All resolved on the branch unless noted.
   was added (a bare prefix match then over-counted to 1203 — now a boundary regex).
 - `VALID_DELIVERED_STATUS` duplicated the taxonomy as a literal and failed on a
   value it had no opinion about; now derived from `DELIVERED_STATUS_COLORS`.
+
+### [BUG-109] llms.txt 404ed on the live site since June — Pages deployed index.html alone
+- **Severity**: high · **Root cause**: code bug (deploy workflow, pre-existing) · **Status**: resolved (9f790ca)
+- `.github/workflows/pages.yml` copied `index.html` by name, so `llms.txt` — linked from the page, test-enforced for coverage — 404ed in production for ~2 months, and the new `graph-data.json` would have taken the Explore tab down identically on deploy. Found by the UX/perf agent outside its brief.
+- **Fix**: workflow deploys everything `build_site.py` writes; a test asserts the deploy manifest covers every emitted file. Lesson promoted to coding-best-practices: a build that emits N files needs its deploy step derived from the emitter or tested against it.
+
+### [BUG-110] States tab: Streamlit crash, boundary drift, mobile overflow
+- **Severity**: high/medium · **Root cause**: code bugs (this branch) · **Status**: resolved (9fc6f4f)
+- `render_states_tab()` called `_state_rollup(bills, actions)` without its required `today` — `TypeError` on the Streamlit surface only (static path passed 3 args, suite green: nothing drives `render_*`, see TEST-002). The 120-day what's-new boundary compared midnight-parsed event dates to wall-clock `now()`, so the exactly-120-day record's inclusion depended on build time of day (`_states_whats_new` now self-truncates; 23:59:59 regression test). The Explore statute-family `<select>`'s widest option (563px intrinsic) dragged the page sideways at 375px — a select never shrinks below its widest option without `max-width`.
+
+### [DATA-003] Community-benefits moratorium mirror: 8 factual errors in 89 records
+- **Severity**: medium · **Root cause**: data bug (upstream mirror) · **Status**: resolved (ebb3d10, cb9f348)
+- Two verification passes against primary sources corrected: Maine LD 307 "enacted" (actually vetoed + sustained), Hill County TX active (rescinded under a $100M suit), Cleveland proposed (passed 14-1), Indianapolis proposed (finalized 6-0), Monterey Park 90%/May (86.4%/June 2), Cheyenne nine-month/June (12-month/May 26, aggregator source swapped for WyoFile), Santa Fe July 1 (June 30), Boulder not-water (commissioners cited water demands). Plus 23 summaries carrying a trailing "Status." sentence that duplicated — and after correction contradicted — the status field.
+- **Standing rule** (also in CLAUDE.md and the file's own note): the mirror is a lead list, not a source of truth; verify mirrored records against primary coverage before shipping, and re-apply corrections after any re-sync (the upsert has no field-level protection).
+
+### [TEST-002] Nothing exercises the Streamlit render_* layer
+- **Severity**: medium · **Root cause**: test gap · **Status**: open
+- BUG-110's crash was invisible to an 800-test suite because every test drives the pure builders or the static build; no test calls a `render_*` function. `streamlit.testing.v1.AppTest` can smoke-run the app headlessly — one test booting each tab would catch this whole class. Backlog-worthy next session.
+
+### [TEST-003] News tags were a closed taxonomy nobody enforced
+- **Severity**: low · **Root cause**: test gap (pre-existing) · **Status**: resolved (bac174b)
+- Two spring-2026 items shipped invented tags ("permits", "settlements") that no filter chip could match — CLAUDE.md called the 6-value set test-enforced, but only sites/principles/case-types actually were. `TestNewsTags` now enforces membership both directions, same idiom as `TestIssueTypes`.

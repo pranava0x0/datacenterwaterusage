@@ -272,7 +272,47 @@ the ~3-4× waste patterns. Score each run on:
 
 ### Agent-use evaluation log
 
-**2026-07-27 — one code-reviewer agent over a 12k-line PR. Verdict: justified,
+**2026-08-24 — ten agents (3 Sonnet research, 5 Opus implementation, Haiku +
+Sonnet checkers) through two usage-limit walls. Verdict: the fleet was
+user-directed and every run survived scrutiny; the durable finds are the
+resume pattern and the checker-tier calibration.**
+
+- *Research (Sonnet, parallel, background):* news sweep 250.8k/90 tools →
+  17 items + 6 ripples (~10.9k/unit — on the hybrid seed+sweep band);
+  federal statutes 304.2k → 8 families / 12 readings / 14 cases / 3 mappings
+  (~8.2k/unit); state-local + benefits mirror 291.4k → 7 instruments + 89
+  actions + 10 claims (~2.7k/unit — mirror-transform work is the cheap end).
+  Seeding with orchestrator WebSearch results first (4 searches) kept all
+  three out of the 35k/entry open-discovery regime.
+- *Implementation (Opus, serialized — all four touch `build_site.py` /
+  `dashboard.py`):* graph 270k, visuals 222k, statutes merge 287k/144 tools,
+  news+states integration 384k/178 tools, UX/perf pass 290k/186 tools. Zero
+  merge conflicts because they never ran concurrently; the 2026-06-24
+  merge-conflict anti-pattern stayed dead.
+- *Orchestrator pre-validation pays for itself:* ~15k tokens of inline python
+  schema checks over the research deliverables caught the `US S. 4213`
+  semantic duplicate and two shape mismatches BEFORE the Opus integrators ran.
+  Validation between research and implementation is now standard.
+- *Checker tiers:* Haiku (92k/38 tools) is the right first pass for mechanical
+  sweeps — it caught a real class bug (news tags had no membership test) — but
+  produced **2 false blockers** (its own 2-min Bash timeout reported as "pytest
+  hangs"; a file-changed claim on an untouched file). **Verify every Haiku
+  blocker with one direct command before acting.** The Sonnet second pass
+  (~620k across a limit-death resume) found what test-green could not: a
+  `TypeError` crash in `render_states_tab` (nothing exercises the Streamlit
+  render_* layer — see issues.md TEST-002), a time-of-day-dependent window
+  boundary, a mobile overflow, and 2 real data errors in 15 source
+  re-verifications. Different tiers, different failure classes; run both when
+  a branch is this large.
+- *Usage-limit deaths (two walls: ~01:45 and ~10:50):* 4 agents killed
+  mid-flight the first time, 1 the second. **Every one resumed via SendMessage
+  with full context intact** — zero respawns, zero re-research. The one agent
+  that had written nothing before dying (statutes) lost no work only because
+  its findings lived in its transcript; since then every research prompt says
+  **write the deliverable file incrementally** so a death can't strand work in
+  a context. The scheduled-task janitor (fireAt + liveness guard) is the
+  correct backstop; the first one fired into the dead window exactly as
+  designed and no-op'd.
 and the cheapest defect-per-token of any agent run logged here.**
 
 - *Agent — review the Python diff of PR #20:* 170k subagent tokens, 48 tool
