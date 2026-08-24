@@ -730,6 +730,11 @@ These are large data-center water stories with no formal CWA enforcement action 
 - **What**: Small inline SVG icons next to tab labels. Only worth doing if it survives a pass against DESIGN.md §12 ("no emoji in headers" spirit — icons must read as wayfinding, not decoration).
 - **Sample prompt**: "Design a 5-icon inline-SVG set (server rack, pipe run, droplet, cooling tower, scale) at 16px stroke style for the static site's tab strip; apply DESIGN.md §12 and drop the idea if it reads as decoration."
 
+## Per-site water-flow visualization on the Data tab
+- **Priority**: low (design-gated, deferred from Spec E)
+- **What**: The header schematic is generic — one diagram for the whole industry. A per-site version (this campus, this WWTP, these volumes) would turn it into data. Blocked on two things: the flow data being per-site rather than per-receiving-plant, and DESIGN.md §12's one-animation rule — a second moving element needs a better argument than "the first one looked good".
+- **Sample prompt**: "Extend dashboard._build_water_loop_svg() into a per-site variant that takes a site's measured volumes and labels the legs with them; reuse the same geometry, keep it static (DESIGN.md §12 sanctions exactly one animation), and only ship it for sites where the numbers are real."
+
 ## International/treaty water layer
 - **Priority**: low (deferred from Spec A)
 - **What**: Boundary Waters Treaty/IJC, Columbia River Treaty, US-Mexico 1944 Treaty — relevant to border-region siting (an El Paso or Great Lakes fact pattern). Needs its own `kind` and at least one anchoring case each; none verified yet.

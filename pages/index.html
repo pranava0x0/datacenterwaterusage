@@ -83,6 +83,23 @@
     border-radius: 1px;
 }
 
+/* --- Header water-loop schematic (dashboard._build_water_loop_svg) --- */
+/* One definition for both surfaces: the Streamlit app injects this file and
+   build_site.py inlines it into the static page. The diagram stops being
+   readable much below 900px of drawing width — its labels are 11 units in a
+   960-unit box — so it holds that width and the container scrolls, rather than
+   shrinking the type to nothing on a phone. */
+.schematic {
+    overflow-x: auto;
+    margin: 0.25rem 0 1rem;
+}
+.schematic svg {
+    display: block;
+    width: 100%;
+    min-width: 900px;
+    height: auto;
+}
+
 /* --- Base: tighten default Streamlit padding --- */
 .stMainBlockContainer {
     padding-top: 1rem;
@@ -852,6 +869,25 @@ a.claim-site-link:hover { text-decoration: underline; }
     padding-left: 0.7rem;
     margin: 1.2rem 0 0.3rem;
 }
+/* A pipe fitting capping the top of that border — the joint the schematic and
+   the page texture both draw. Scoped to h3/h4 because the static site also
+   hangs this class on a <details> summary span with the border removed, where
+   a fitting would cap nothing. */
+h3.solution-cat-header,
+h4.solution-cat-header {
+    position: relative;
+}
+h3.solution-cat-header::before,
+h4.solution-cat-header::before {
+    content: "";
+    position: absolute;
+    left: -7px;
+    top: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #3182bd;
+}
 .solution-cat-desc {
     font-size: 0.88rem;
     color: #4b5563;
@@ -894,10 +930,21 @@ a{color:var(--blue)}
 
 /* Tabs */
 .tabs{display:flex;gap:.25rem;border-bottom:2px solid #d6e2ee;margin:.5rem 0 1.25rem;flex-wrap:wrap}
-.tab{appearance:none;border:0;background:none;font:inherit;cursor:pointer;
+.tab{appearance:none;border:0;background:none;font:inherit;cursor:pointer;position:relative;
   padding:.6rem 1rem;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-2px;
   font-weight:600;min-height:44px}
-.tab[aria-selected="true"]{color:var(--blue);border-bottom-color:var(--blue)}
+.tab[aria-selected="true"]{color:var(--blue)}
+/* The active marker is a short pipe run rather than a slab underline: 2px with
+   rounded caps (::after) and a fitting dot at each end (::before, two radial
+   gradients so one pseudo-element carries both). rgba(...,0) rather than
+   `transparent` — `transparent` is transparent BLACK and fringes the dot grey
+   as it interpolates. */
+.tab[aria-selected="true"]::after{content:"";position:absolute;left:.8rem;right:.8rem;
+  bottom:-3px;height:2px;border-radius:999px;background:var(--blue)}
+.tab[aria-selected="true"]::before{content:"";position:absolute;
+  left:calc(.8rem - 3px);right:calc(.8rem - 3px);bottom:-5px;height:6px;background-repeat:no-repeat;
+  background:radial-gradient(circle at 3px 3px,var(--blue) 0 2.4px,rgba(8,81,156,0) 2.6px),
+             radial-gradient(circle at calc(100% - 3px) 3px,var(--blue) 0 2.4px,rgba(8,81,156,0) 2.6px)}
 .tabpanel[hidden]{display:none}
 
 /* Sub-tabs (e.g. Water Cases Part 1-4) — same mechanics as the top-level
@@ -1064,6 +1111,21 @@ a.news-title{color:var(--blue)}
   .barrier-grid{grid-template-columns:1fr}
   .tl-row{grid-template-columns:70px 14px 1fr}
 }
+
+/* Footer pipe run — ornament, held at the 12% ceiling DESIGN.md §1 sets for
+   anything that is not data. */
+.footer-motif{display:block;width:100%;height:auto;margin:1.75rem 0 .25rem;opacity:.12}
+
+/* Print. The page texture prints as grey mush and the footer motif is pure
+   ornament, so both go. The schematic stays — it is the one piece of art here
+   that carries information — but its screen-only minimum drawing width would
+   run off the sheet, so that is dropped and it scales to the page. */
+@media print{
+  body{background-image:none;background-color:#fff}
+  .footer-motif{display:none}
+  .schematic{overflow-x:visible}
+  .schematic svg{min-width:0}
+}
 </style>
 <!-- Tab switching is the one thing on this page that needs JavaScript. Without
      it five of the seven panels were unreachable — the `hidden` attribute does
@@ -1076,6 +1138,88 @@ a.news-title{color:var(--blue)}
   <h1>Data Center Water Use Tracker</h1>
   <p class="tagline">Tracking data center water consumption in <strong>Virginia</strong> &amp;
   <strong>Ohio</strong> via public regulatory data.</p>
+
+  <div class="schematic">
+<svg viewBox="0 0 960 124" role="img" aria-labelledby="wl-title wl-desc"
+     xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+<title id="wl-title">How water moves through a data center</title>
+<desc id="wl-desc">River or wellfield intake, drinking-water treatment, the data
+center hall, a closed chiller loop, a cooling tower where evaporation leaves the
+basin, then blowdown to the sewer, the wastewater plant, and treated effluent
+back to the river.</desc>
+<style>.wl-flow{stroke-dasharray:6 22;animation:wl-drift 24s linear infinite}@keyframes wl-drift{to{stroke-dashoffset:-1680}}@media (prefers-reduced-motion:reduce){.wl-flow{animation:none}}</style>
+<g fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Sewer main drawn under the pipe run so the flow dashes ride over it:
+       heavier stroke because this leg is the metered one. -->
+  <path d="M 640 54 H 740" stroke="#08519c" stroke-width="5.5"/>
+  <path d="M 50 54 H 856 V 96 H 20 V 72" stroke="#3182bd" stroke-width="3"/>
+  <path class="wl-flow" d="M 50 54 H 856 V 96 H 20 V 72" stroke="#ffffff" stroke-width="1.6"
+        stroke-opacity="0.35"/>
+  <!-- River / wellfield, with a screened intake standing in it. The label sits
+       above this glyph, not below it like every other station: the return leg
+       runs underneath, discharging back into the same water. -->
+  <path d="M 6 40 Q 14 34 22 40 T 38 40 T 54 40 T 70 40" stroke="#6baed6" stroke-width="1.6"/>
+  <path d="M 6 54 Q 14 48 22 54 T 38 54" stroke="#3182bd" stroke-width="1.8"/>
+  <path d="M 6 68 Q 14 62 22 68 T 38 68 T 54 68 T 70 68" stroke="#6baed6" stroke-width="1.6"/>
+  <rect x="38" y="46" width="12" height="16" fill="#ffffff" stroke="#3182bd" stroke-width="1.4"/>
+  <path d="M 41 51 H 47 M 41 57 H 47" stroke="#6baed6" stroke-width="1.2"/>
+  <path d="M 16 77 L 20 70 L 24 77 Z" fill="#3182bd" stroke="none"/>
+  <!-- Drinking-water treatment: two clarifiers and a filter bed. -->
+  <rect x="120" y="38" width="80" height="32" rx="2" fill="#ffffff" stroke="#3182bd" stroke-width="1.6"/>
+  <circle cx="142" cy="54" r="7" stroke="#6baed6" stroke-width="1.2"/>
+  <circle cx="166" cy="54" r="7" stroke="#6baed6" stroke-width="1.2"/>
+  <rect x="180" y="46" width="12" height="16" stroke="#6baed6" stroke-width="1.2"/>
+  <!-- Data center hall: three slotted racks. -->
+  <rect x="246" y="32" width="154" height="44" rx="3" fill="#ffffff" stroke="#08519c" stroke-width="1.8"/>
+  <rect x="262" y="39" width="32" height="30" fill="#eff3ff" stroke="#3182bd" stroke-width="1.2"/>
+  <path d="M 267 46 H 289 M 267 52 H 289 M 267 58 H 289 M 267 64 H 289" stroke="#6baed6" stroke-width="1.5"/>
+  <rect x="306" y="39" width="32" height="30" fill="#eff3ff" stroke="#3182bd" stroke-width="1.2"/>
+  <path d="M 311 46 H 333 M 311 52 H 333 M 311 58 H 333 M 311 64 H 333" stroke="#6baed6" stroke-width="1.5"/>
+  <rect x="350" y="39" width="32" height="30" fill="#eff3ff" stroke="#3182bd" stroke-width="1.2"/>
+  <path d="M 355 46 H 377 M 355 52 H 377 M 355 58 H 377 M 355 64 H 377" stroke="#6baed6" stroke-width="1.5"/>
+  <!-- Closed chiller loop: the water inside recirculates, so only makeup in
+       and blowdown out ever cross this boundary. Arrows show circulation. -->
+  <rect x="428" y="36" width="88" height="36" rx="18" fill="#ffffff" stroke="#3182bd" stroke-width="1.6"/>
+  <path d="M 466 32 L 476 36 L 466 40 Z" fill="#3182bd" stroke="none"/>
+  <path d="M 478 68 L 468 72 L 478 76 Z" fill="#3182bd" stroke="none"/>
+  <!-- Cooling tower, hyperboloid silhouette, with the drift rising off it. -->
+  <path d="M 556 76 C 566 62 566 46 562 34 L 610 34 C 606 46 606 62 616 76 Z"
+        fill="#ffffff" stroke="#08519c" stroke-width="1.8"/>
+  <path d="M 550 76 H 622 M 556 68 H 616" stroke="#08519c" stroke-width="1.6"/>
+  <path d="M 568 32 C 564 26 572 22 568 16 C 565 11 570 9 568 6" stroke="#6baed6" stroke-width="1.5"/>
+  <path d="M 586 32 C 582 25 590 20 586 13 C 583 9 588 7 586 4" stroke="#6baed6" stroke-width="1.5"/>
+  <path d="M 604 32 C 600 26 608 22 604 16 C 601 11 606 9 604 6" stroke="#6baed6" stroke-width="1.5"/>
+  <path d="M 630 20 H 612" stroke="#6baed6" stroke-width="1.2"/>
+  <!-- Wastewater plant: clarifiers plus an aeration basin. -->
+  <rect x="750" y="38" width="92" height="32" rx="2" fill="#ffffff" stroke="#08519c" stroke-width="1.8"/>
+  <circle cx="770" cy="54" r="8" stroke="#6baed6" stroke-width="1.2"/>
+  <circle cx="794" cy="54" r="8" stroke="#6baed6" stroke-width="1.2"/>
+  <rect x="810" y="46" width="24" height="16" stroke="#6baed6" stroke-width="1.2"/>
+  <path d="M 813 55 q 3 -4 6 0 t 6 0 t 6 0" stroke="#6baed6" stroke-width="1.2"/>
+  <!-- Fittings at the joints, the same motif the page texture carries. -->
+  <circle cx="640" cy="54" r="4" fill="#08519c" stroke="none"/>
+  <circle cx="740" cy="54" r="4" fill="#08519c" stroke="none"/>
+  <circle cx="856" cy="54" r="4" fill="#3182bd" stroke="none"/>
+  <circle cx="20" cy="96" r="4" fill="#3182bd" stroke="none"/>
+</g>
+<g font-size="11" fill="#4b5563" text-anchor="middle">
+  <text x="46" y="30">river / wellfield</text>
+  <text x="160" y="86">treatment plant</text>
+  <text x="323" y="86">data center hall</text>
+  <text x="472" y="86">closed chiller loop</text>
+  <text x="586" y="86">cooling tower</text>
+  <text x="690" y="86">blowdown &#8594; sewer</text>
+  <text x="796" y="86">wastewater plant</text>
+  <text x="230" y="113" font-size="10">treated effluent returns to the river</text>
+</g>
+<g font-size="10" fill="#08519c" font-weight="600">
+  <text x="634" y="16">evaporation is the consumptive loss &#8212;</text>
+  <text x="634" y="28">this water leaves the basin, not the sewer</text>
+  <circle cx="422" cy="110" r="3" fill="#08519c"/>
+  <text x="432" y="113">the sewer leg is metered on the receiving plant&#8217;s NPDES permit &#8212; that is where the data shows up</text>
+</g>
+</svg>
+</div>
 
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" data-tab="legislation" aria-selected="true">Legislation</button>
@@ -1967,6 +2111,27 @@ a.news-title{color:var(--blue)}
   why the terms it matched on are shown. Everything runs in your browser.</p>
 </section>
 </div>
+
+  
+<svg class="footer-motif" viewBox="0 0 960 26" xmlns="http://www.w3.org/2000/svg"
+     aria-hidden="true" focusable="false">
+<g fill="none" stroke="#08519c" stroke-width="2" stroke-linecap="round">
+  <path d="M 4 16 H 956"/>
+  <path d="M 380 16 V 5 M 368 5 H 392"/>
+  <path d="M 560 16 V 3 H 586 V 16 M 565 7 H 581 M 565 11 H 581"/>
+  <path d="M 604 16 V 3 H 630 V 16 M 609 7 H 625 M 609 11 H 625"/>
+  <path d="M 648 16 V 3 H 674 V 16 M 653 7 H 669 M 653 11 H 669"/>
+</g>
+<g fill="#08519c">
+  <circle cx="140" cy="16" r="4"/>
+  <circle cx="300" cy="16" r="4"/>
+  <circle cx="470" cy="16" r="4"/>
+  <circle cx="720" cy="16" r="4"/>
+  <circle cx="900" cy="16" r="4"/>
+  <path d="M 366 9 L 380 16 L 366 23 Z"/>
+  <path d="M 394 9 L 380 16 L 394 23 Z"/>
+</g>
+</svg>
 
   <p class="src-note">Static build 2026-08-24 · Sources: EPA ECHO DMR, VA DEQ, Ohio EPA,
   Loudoun Water. Data center cooling water tracked via receiving WWTP flow ·

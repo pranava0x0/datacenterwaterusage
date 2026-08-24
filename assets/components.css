@@ -73,6 +73,23 @@
     border-radius: 1px;
 }
 
+/* --- Header water-loop schematic (dashboard._build_water_loop_svg) --- */
+/* One definition for both surfaces: the Streamlit app injects this file and
+   build_site.py inlines it into the static page. The diagram stops being
+   readable much below 900px of drawing width — its labels are 11 units in a
+   960-unit box — so it holds that width and the container scrolls, rather than
+   shrinking the type to nothing on a phone. */
+.schematic {
+    overflow-x: auto;
+    margin: 0.25rem 0 1rem;
+}
+.schematic svg {
+    display: block;
+    width: 100%;
+    min-width: 900px;
+    height: auto;
+}
+
 /* --- Base: tighten default Streamlit padding --- */
 .stMainBlockContainer {
     padding-top: 1rem;
@@ -841,6 +858,25 @@ a.claim-site-link:hover { text-decoration: underline; }
     border-left: 4px solid #3182bd;
     padding-left: 0.7rem;
     margin: 1.2rem 0 0.3rem;
+}
+/* A pipe fitting capping the top of that border — the joint the schematic and
+   the page texture both draw. Scoped to h3/h4 because the static site also
+   hangs this class on a <details> summary span with the border removed, where
+   a fitting would cap nothing. */
+h3.solution-cat-header,
+h4.solution-cat-header {
+    position: relative;
+}
+h3.solution-cat-header::before,
+h4.solution-cat-header::before {
+    content: "";
+    position: absolute;
+    left: -7px;
+    top: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #3182bd;
 }
 .solution-cat-desc {
     font-size: 0.88rem;

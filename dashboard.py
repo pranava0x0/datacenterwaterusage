@@ -321,6 +321,128 @@ def render_sidebar(df: pd.DataFrame) -> pd.DataFrame:
     return filtered
 
 
+# --- Header water-loop schematic (shared with build_site.py) ---
+
+# One diagram, two surfaces. It answers the question every visitor asks before
+# the first card ("how does a data center use water, and where is it measured?")
+# and, in the same picture, explains why this project's primary source is EPA
+# ECHO DMR data from *receiving* wastewater plants rather than anything filed
+# by the operator: the sewer leg is the only leg with a permit on it.
+#
+# Drawing notes:
+#  - Coordinates are a 960x124 box, so 1 unit ~= 1 px at the site's content
+#    width and label sizes can be reasoned about directly (11 units ~= 0.7rem).
+#  - The pipe run is an OPEN path (intake -> outfall -> back up into the river),
+#    not a closed rectangle: the river closes the loop, not a pipe.
+#  - Everything except the flow animation uses presentation attributes rather
+#    than the <style> block, so the diagram still renders correctly on any
+#    surface that strips <style> — it just stops moving.
+_WL_PIPE_PATH = "M 50 54 H 856 V 96 H 20 V 72"
+_WL_FONT = (
+    "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"
+)
+
+# The one sanctioned animation on either surface (DESIGN.md §3/§12): pale
+# dashes drifting along the pipe. The offset is a whole number of dash periods
+# (28 = 6 + 22) so the loop has no visible jump, and 24 s over ~1,700 units is
+# roughly a slow walk — present in peripheral vision, never competing with the
+# data. Reduced-motion parks it as static direction ticks.
+_WL_ANIM_CSS = (
+    ".wl-flow{stroke-dasharray:6 22;animation:wl-drift 24s linear infinite}"
+    "@keyframes wl-drift{to{stroke-dashoffset:-1680}}"
+    "@media (prefers-reduced-motion:reduce){.wl-flow{animation:none}}"
+)
+
+
+def _build_water_loop_svg() -> str:
+    """The header water-loop schematic, as a self-contained SVG fragment.
+
+    Pure: no Streamlit, no data access — ``build_site.py`` inlines the same
+    string it returns, so the deployed page and the local app cannot drift.
+    """
+    return f"""<div class="schematic">
+<svg viewBox="0 0 960 124" role="img" aria-labelledby="wl-title wl-desc"
+     xmlns="http://www.w3.org/2000/svg" font-family="{_WL_FONT}">
+<title id="wl-title">How water moves through a data center</title>
+<desc id="wl-desc">River or wellfield intake, drinking-water treatment, the data
+center hall, a closed chiller loop, a cooling tower where evaporation leaves the
+basin, then blowdown to the sewer, the wastewater plant, and treated effluent
+back to the river.</desc>
+<style>{_WL_ANIM_CSS}</style>
+<g fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Sewer main drawn under the pipe run so the flow dashes ride over it:
+       heavier stroke because this leg is the metered one. -->
+  <path d="M 640 54 H 740" stroke="#08519c" stroke-width="5.5"/>
+  <path d="{_WL_PIPE_PATH}" stroke="#3182bd" stroke-width="3"/>
+  <path class="wl-flow" d="{_WL_PIPE_PATH}" stroke="#ffffff" stroke-width="1.6"
+        stroke-opacity="0.35"/>
+  <!-- River / wellfield, with a screened intake standing in it. The label sits
+       above this glyph, not below it like every other station: the return leg
+       runs underneath, discharging back into the same water. -->
+  <path d="M 6 40 Q 14 34 22 40 T 38 40 T 54 40 T 70 40" stroke="#6baed6" stroke-width="1.6"/>
+  <path d="M 6 54 Q 14 48 22 54 T 38 54" stroke="#3182bd" stroke-width="1.8"/>
+  <path d="M 6 68 Q 14 62 22 68 T 38 68 T 54 68 T 70 68" stroke="#6baed6" stroke-width="1.6"/>
+  <rect x="38" y="46" width="12" height="16" fill="#ffffff" stroke="#3182bd" stroke-width="1.4"/>
+  <path d="M 41 51 H 47 M 41 57 H 47" stroke="#6baed6" stroke-width="1.2"/>
+  <path d="M 16 77 L 20 70 L 24 77 Z" fill="#3182bd" stroke="none"/>
+  <!-- Drinking-water treatment: two clarifiers and a filter bed. -->
+  <rect x="120" y="38" width="80" height="32" rx="2" fill="#ffffff" stroke="#3182bd" stroke-width="1.6"/>
+  <circle cx="142" cy="54" r="7" stroke="#6baed6" stroke-width="1.2"/>
+  <circle cx="166" cy="54" r="7" stroke="#6baed6" stroke-width="1.2"/>
+  <rect x="180" y="46" width="12" height="16" stroke="#6baed6" stroke-width="1.2"/>
+  <!-- Data center hall: three slotted racks. -->
+  <rect x="246" y="32" width="154" height="44" rx="3" fill="#ffffff" stroke="#08519c" stroke-width="1.8"/>
+  <rect x="262" y="39" width="32" height="30" fill="#eff3ff" stroke="#3182bd" stroke-width="1.2"/>
+  <path d="M 267 46 H 289 M 267 52 H 289 M 267 58 H 289 M 267 64 H 289" stroke="#6baed6" stroke-width="1.5"/>
+  <rect x="306" y="39" width="32" height="30" fill="#eff3ff" stroke="#3182bd" stroke-width="1.2"/>
+  <path d="M 311 46 H 333 M 311 52 H 333 M 311 58 H 333 M 311 64 H 333" stroke="#6baed6" stroke-width="1.5"/>
+  <rect x="350" y="39" width="32" height="30" fill="#eff3ff" stroke="#3182bd" stroke-width="1.2"/>
+  <path d="M 355 46 H 377 M 355 52 H 377 M 355 58 H 377 M 355 64 H 377" stroke="#6baed6" stroke-width="1.5"/>
+  <!-- Closed chiller loop: the water inside recirculates, so only makeup in
+       and blowdown out ever cross this boundary. Arrows show circulation. -->
+  <rect x="428" y="36" width="88" height="36" rx="18" fill="#ffffff" stroke="#3182bd" stroke-width="1.6"/>
+  <path d="M 466 32 L 476 36 L 466 40 Z" fill="#3182bd" stroke="none"/>
+  <path d="M 478 68 L 468 72 L 478 76 Z" fill="#3182bd" stroke="none"/>
+  <!-- Cooling tower, hyperboloid silhouette, with the drift rising off it. -->
+  <path d="M 556 76 C 566 62 566 46 562 34 L 610 34 C 606 46 606 62 616 76 Z"
+        fill="#ffffff" stroke="#08519c" stroke-width="1.8"/>
+  <path d="M 550 76 H 622 M 556 68 H 616" stroke="#08519c" stroke-width="1.6"/>
+  <path d="M 568 32 C 564 26 572 22 568 16 C 565 11 570 9 568 6" stroke="#6baed6" stroke-width="1.5"/>
+  <path d="M 586 32 C 582 25 590 20 586 13 C 583 9 588 7 586 4" stroke="#6baed6" stroke-width="1.5"/>
+  <path d="M 604 32 C 600 26 608 22 604 16 C 601 11 606 9 604 6" stroke="#6baed6" stroke-width="1.5"/>
+  <path d="M 630 20 H 612" stroke="#6baed6" stroke-width="1.2"/>
+  <!-- Wastewater plant: clarifiers plus an aeration basin. -->
+  <rect x="750" y="38" width="92" height="32" rx="2" fill="#ffffff" stroke="#08519c" stroke-width="1.8"/>
+  <circle cx="770" cy="54" r="8" stroke="#6baed6" stroke-width="1.2"/>
+  <circle cx="794" cy="54" r="8" stroke="#6baed6" stroke-width="1.2"/>
+  <rect x="810" y="46" width="24" height="16" stroke="#6baed6" stroke-width="1.2"/>
+  <path d="M 813 55 q 3 -4 6 0 t 6 0 t 6 0" stroke="#6baed6" stroke-width="1.2"/>
+  <!-- Fittings at the joints, the same motif the page texture carries. -->
+  <circle cx="640" cy="54" r="4" fill="#08519c" stroke="none"/>
+  <circle cx="740" cy="54" r="4" fill="#08519c" stroke="none"/>
+  <circle cx="856" cy="54" r="4" fill="#3182bd" stroke="none"/>
+  <circle cx="20" cy="96" r="4" fill="#3182bd" stroke="none"/>
+</g>
+<g font-size="11" fill="#4b5563" text-anchor="middle">
+  <text x="46" y="30">river / wellfield</text>
+  <text x="160" y="86">treatment plant</text>
+  <text x="323" y="86">data center hall</text>
+  <text x="472" y="86">closed chiller loop</text>
+  <text x="586" y="86">cooling tower</text>
+  <text x="690" y="86">blowdown &#8594; sewer</text>
+  <text x="796" y="86">wastewater plant</text>
+  <text x="230" y="113" font-size="10">treated effluent returns to the river</text>
+</g>
+<g font-size="10" fill="#08519c" font-weight="600">
+  <text x="634" y="16">evaporation is the consumptive loss &#8212;</text>
+  <text x="634" y="28">this water leaves the basin, not the sewer</text>
+  <circle cx="422" cy="110" r="3" fill="#08519c"/>
+  <text x="432" y="113">the sewer leg is metered on the receiving plant&#8217;s NPDES permit &#8212; that is where the data shows up</text>
+</g>
+</svg>
+</div>"""
+
+
 # --- Hero Metrics ---
 
 
@@ -4777,6 +4899,10 @@ def main():
             "Tracking data center water consumption in **Virginia** & **Ohio** "
             "via public regulatory data."
         )
+
+    # The same schematic the static site puts under its h1: what happens to the
+    # water, and which leg of it carries a permit.
+    st.markdown(_build_water_loop_svg(), unsafe_allow_html=True)
 
     (
         tab_legislation,

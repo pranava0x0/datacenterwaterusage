@@ -548,6 +548,111 @@ class TestExploreTab:
         assert len(txt) < 400_000
 
 
+class TestInfrastructureVisuals:
+    """Spec E — the water-infrastructure visual language on the deployed page.
+
+    The load-bearing piece is the header schematic: it is the only art on the
+    page that carries information, and what it explains is the project's own
+    architecture — the sewer leg is the metered one, which is why the pipeline
+    reads EPA ECHO DMR data from receiving WWTPs. Losing a label or an
+    annotation would quietly turn it back into decoration.
+    """
+
+    def test_schematic_present_with_every_station_label(self):
+        html = _html()
+        assert 'class="schematic"' in html
+        for label in (
+            "river / wellfield",
+            "treatment plant",
+            "data center hall",
+            "closed chiller loop",
+            "cooling tower",
+            "wastewater plant",
+            "treated effluent returns to the river",
+        ):
+            assert f">{label}</text>" in html, f"schematic label missing: {label}"
+        # The arrow in this one is a numeric entity, so match around it.
+        assert "blowdown &#8594; sewer" in html
+
+    def test_schematic_carries_the_two_facts_it_exists_for(self):
+        html = _html()
+        assert "evaporation is the consumptive loss" in html
+        assert "this water leaves the basin, not the sewer" in html
+        assert "the sewer leg is metered on the receiving plant" in html
+        assert "NPDES permit" in html
+        assert "that is where the data shows up" in html
+
+    def test_streamlit_and_static_share_one_schematic(self):
+        """Same contract as the Explore fragment: one builder, two surfaces."""
+        assert dashboard._build_water_loop_svg() in build_site.build_html()
+
+    def test_schematic_is_labelled_for_screen_readers(self):
+        svg = dashboard._build_water_loop_svg()
+        assert 'role="img"' in svg
+        assert 'aria-labelledby="wl-title wl-desc"' in svg
+        assert 'id="wl-title"' in svg and 'id="wl-desc"' in svg
+
+    def test_body_carries_the_inline_texture_and_print_drops_it(self):
+        html = _html()
+        body = re.search(r"\nbody\{(.*?)\n\}", html, re.S)
+        assert body, "no body rule in the page CSS"
+        rule = body.group(1)
+        assert "url(\"data:image/svg+xml" in rule, "texture is not an inline data: URI"
+        assert "background-attachment:fixed" in rule
+        # Texture strokes/fills stay at texture strength (DESIGN.md §1).
+        opacities = [float(v) for v in re.findall(r"opacity='([0-9.]+)'", rule)]
+        assert opacities and max(opacities) <= 0.12, opacities
+        # ...and no printer has to render any of it.
+        assert "@media print{" in html
+        assert "body{background-image:none" in html
+
+    def test_one_animation_only_and_it_switches_itself_off(self):
+        """DESIGN.md §12: the schematic's flow line is the only thing that
+        moves. A second @keyframes block is the regression this catches."""
+        html = _html()
+        assert html.count("@keyframes") == 1
+        assert "@keyframes wl-drift" in html
+        svg = dashboard._build_water_loop_svg()
+        assert "animation:" in svg
+        assert "@media (prefers-reduced-motion:reduce)" in svg
+        # The moving dashes stay under the ornament ceiling.
+        assert 'class="wl-flow"' in svg and 'stroke-opacity="0.35"' in svg
+
+    def test_active_tab_underline_is_a_pipe_with_end_fittings(self):
+        html = _html()
+        assert '.tab[aria-selected="true"]::after' in html
+        assert '.tab[aria-selected="true"]::before' in html
+        assert "height:2px;border-radius:999px;background:var(--blue)" in html
+        assert html.count("radial-gradient(circle at 3px 3px,var(--blue)") == 1
+
+    def test_section_headers_carry_a_pipe_fitting(self):
+        html = _html()
+        # Defined once, in assets/components.css, so both surfaces get it; the
+        # element scope keeps it off the <span> variant that has no border.
+        assert "h3.solution-cat-header::before" in html
+        assert "h4.solution-cat-header::before" in html
+        assert html.count("h4.solution-cat-header::before") == 1
+
+    def test_footer_motif_is_ornament_strength_and_silent(self):
+        html = _html()
+        assert 'class="footer-motif"' in html
+        motif = html[html.index('<svg class="footer-motif"'):]
+        motif = motif[: motif.index("</svg>")]
+        assert 'aria-hidden="true"' in motif
+        assert "<text" not in motif, "the motif is ornament; it carries no labels"
+        opacity = re.search(r"\.footer-motif\{[^}]*opacity:\.(\d+)\}", html)
+        assert opacity and int(opacity.group(1)) <= 12
+
+    def test_page_stays_under_the_weight_ceiling(self):
+        """Every record is embedded, so the page is ~1.71 MB by design (the
+        Explore graph blob is most of it). This is a tripwire for an accidental
+        order-of-magnitude regression — a second copy of the blob, an embedded
+        raster, a duplicated tab — not a diet. The headroom is ~140 KB, more
+        than Spec E's entire 25 KB visual budget, so ordinary content growth
+        will not trip it."""
+        assert len(_html().encode("utf-8")) < 1_850_000
+
+
 class TestNoDuplicateClaimStyles:
     def test_lifecycle_classes_defined_once(self):
         """They were defined in build_site.py's CSS block AND (after the move)

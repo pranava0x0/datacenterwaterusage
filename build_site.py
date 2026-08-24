@@ -1221,10 +1221,21 @@ a{color:var(--blue)}
 
 /* Tabs */
 .tabs{display:flex;gap:.25rem;border-bottom:2px solid #d6e2ee;margin:.5rem 0 1.25rem;flex-wrap:wrap}
-.tab{appearance:none;border:0;background:none;font:inherit;cursor:pointer;
+.tab{appearance:none;border:0;background:none;font:inherit;cursor:pointer;position:relative;
   padding:.6rem 1rem;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-2px;
   font-weight:600;min-height:44px}
-.tab[aria-selected="true"]{color:var(--blue);border-bottom-color:var(--blue)}
+.tab[aria-selected="true"]{color:var(--blue)}
+/* The active marker is a short pipe run rather than a slab underline: 2px with
+   rounded caps (::after) and a fitting dot at each end (::before, two radial
+   gradients so one pseudo-element carries both). rgba(...,0) rather than
+   `transparent` — `transparent` is transparent BLACK and fringes the dot grey
+   as it interpolates. */
+.tab[aria-selected="true"]::after{content:"";position:absolute;left:.8rem;right:.8rem;
+  bottom:-3px;height:2px;border-radius:999px;background:var(--blue)}
+.tab[aria-selected="true"]::before{content:"";position:absolute;
+  left:calc(.8rem - 3px);right:calc(.8rem - 3px);bottom:-5px;height:6px;background-repeat:no-repeat;
+  background:radial-gradient(circle at 3px 3px,var(--blue) 0 2.4px,rgba(8,81,156,0) 2.6px),
+             radial-gradient(circle at calc(100% - 3px) 3px,var(--blue) 0 2.4px,rgba(8,81,156,0) 2.6px)}
 .tabpanel[hidden]{display:none}
 
 /* Sub-tabs (e.g. Water Cases Part 1-4) — same mechanics as the top-level
@@ -1390,6 +1401,21 @@ a.news-title{color:var(--blue)}
   .cwa-types{max-height:7.5rem;overflow-y:auto}
   .barrier-grid{grid-template-columns:1fr}
   .tl-row{grid-template-columns:70px 14px 1fr}
+}
+
+/* Footer pipe run — ornament, held at the 12% ceiling DESIGN.md §1 sets for
+   anything that is not data. */
+.footer-motif{display:block;width:100%;height:auto;margin:1.75rem 0 .25rem;opacity:.12}
+
+/* Print. The page texture prints as grey mush and the footer motif is pure
+   ornament, so both go. The schematic stays — it is the one piece of art here
+   that carries information — but its screen-only minimum drawing width would
+   run off the sheet, so that is dropped and it scales to the page. */
+@media print{
+  body{background-image:none;background-color:#fff}
+  .footer-motif{display:none}
+  .schematic{overflow-x:visible}
+  .schematic svg{min-width:0}
 }
 """
 
@@ -1752,6 +1778,33 @@ def build_llms_txt() -> str:
     return "\n".join(lines)
 
 
+# A pipe run closing the page: fittings, a gate valve, three racks. Ornament,
+# not information — it carries no labels and is aria-hidden, and the opacity
+# that keeps it at texture strength lives in the .footer-motif CSS rule so the
+# ceiling is auditable in one place.
+FOOTER_MOTIF = """
+<svg class="footer-motif" viewBox="0 0 960 26" xmlns="http://www.w3.org/2000/svg"
+     aria-hidden="true" focusable="false">
+<g fill="none" stroke="#08519c" stroke-width="2" stroke-linecap="round">
+  <path d="M 4 16 H 956"/>
+  <path d="M 380 16 V 5 M 368 5 H 392"/>
+  <path d="M 560 16 V 3 H 586 V 16 M 565 7 H 581 M 565 11 H 581"/>
+  <path d="M 604 16 V 3 H 630 V 16 M 609 7 H 625 M 609 11 H 625"/>
+  <path d="M 648 16 V 3 H 674 V 16 M 653 7 H 669 M 653 11 H 669"/>
+</g>
+<g fill="#08519c">
+  <circle cx="140" cy="16" r="4"/>
+  <circle cx="300" cy="16" r="4"/>
+  <circle cx="470" cy="16" r="4"/>
+  <circle cx="720" cy="16" r="4"/>
+  <circle cx="900" cy="16" r="4"/>
+  <path d="M 366 9 L 380 16 L 366 23 Z"/>
+  <path d="M 394 9 L 380 16 L 394 23 Z"/>
+</g>
+</svg>
+"""
+
+
 def build_html() -> str:
     legislation = build_legislation_tab()
     cwa = build_cwa_tab()
@@ -1761,6 +1814,8 @@ def build_html() -> str:
     sources_html = build_sources_tab()
     explore = build_explore_tab()
     js = build_js()
+    # Shared with the Streamlit hero — one diagram, one definition.
+    schematic = dash._build_water_loop_svg()
     built = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     return f"""<!doctype html>
@@ -1785,6 +1840,8 @@ def build_html() -> str:
   <p class="tagline">Tracking data center water consumption in <strong>Virginia</strong> &amp;
   <strong>Ohio</strong> via public regulatory data.</p>
 
+  {schematic}
+
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" data-tab="legislation" aria-selected="true">Legislation</button>
     <button class="tab" role="tab" data-tab="cwa" aria-selected="false">Water Cases</button>
@@ -1803,6 +1860,7 @@ def build_html() -> str:
   <div class="tabpanel" id="panel-sources" role="tabpanel" hidden>{sources_html}</div>
   <div class="tabpanel" id="panel-explore" role="tabpanel" hidden>{explore}</div>
 
+  {FOOTER_MOTIF}
   <p class="src-note">Static build {built} · Sources: EPA ECHO DMR, VA DEQ, Ohio EPA,
   Loudoun Water. Data center cooling water tracked via receiving WWTP flow ·
   <a href="llms.txt">llms.txt</a> (LLM-friendly summary) ·

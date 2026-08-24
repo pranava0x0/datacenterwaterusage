@@ -14,18 +14,23 @@
 2. **Blue palette anchored to deep water.** Primary `#08519c` (deep
    blue) reads as authoritative and watery without going into pool /
    bathtub territory.
-3. **Infrastructure texture, not illustration.** The page background
-   carries a near-invisible pipe-and-droplet tile: two pipe segments
-   (L-shape + T-junction) with circular fittings at every joint, plus
-   four teardrop droplets — all ≤7% opacity. Motif reads as texture,
-   not art. Does not appear in the static site (`pages/index.html`).
+3. **Infrastructure texture, not illustration.** Both surfaces carry the
+   same near-invisible water tile plus a handful of pipe-fitting marks
+   (section headers, the active tab, the footer strip) — all ≤12%
+   opacity, all texture rather than art. The single exception is the
+   header water-loop schematic: it is a labeled diagram carrying
+   information, so it is drawn at full palette strength. See §3.
 4. **Status reads at a glance.** Color carries semantic meaning —
    green = enacted / working, blue = introduced, red = failed / vetoed /
    blocked, amber = partial / pending, purple = coming soon.
    Never use palette colors decoratively in ways that conflict with
    these signals.
-5. **Plot-data ink dominates.** Backgrounds, decorations, and chrome
-   sit at ≤10% opacity. Anything above that is showing real data.
+5. **Plot-data ink dominates.** Background and ornament layers — the
+   page texture, the footer pipe run — sit at ≤12% opacity (the texture
+   itself at 6–8%). Structural chrome (section-header borders and their
+   fittings, the active-tab pipe, rules) is full-strength but stays
+   monochrome blue and never borrows a status color. Anything else drawn
+   above texture strength is showing real data.
 
 ---
 
@@ -46,28 +51,90 @@ Defined in `dashboard.py:COLORS`.
 | purple | `#7c3aed` | Coming-soon source badge, upcoming-unlock timeline |
 | text | `#1a1a2e` | Body text |
 
-Page surface: `#f5f9fc` — near-white with a barely-perceptible blue tint.
+Page surface: `#eaf4fb`, under the three-layer water ground described in
+§3 (`#f2f9fd → #e6f2fa → #d8ebf6`). Cards sit on `#fff` above it.
 
 ---
 
-## 3. Background — water & pipe texture
+## 3. Water & infrastructure surface
 
-**200×200 px SVG tile** in `assets/components.css`, loaded at module
-import as `utils/device.py:_RESPONSIVE_CSS`, injected by
-`inject_responsive_css()` in `main()`:
+Everything here exists on **both surfaces**. The Streamlit app gets it
+from `assets/components.css` (loaded at import as
+`utils/device.py:_RESPONSIVE_CSS`, injected by `inject_responsive_css()`);
+the static site inlines that same file as `build_site.COMPONENT_CSS` and
+adds its page-level rules in `build_site.CSS`. Nothing here loads from a
+network — every asset is an inline `data:` URI or inline SVG.
 
-- Two pipe segments (L-shape top-left, T-junction bottom-right),
-  `stroke:#08519c` at 6.5% opacity, `stroke-linecap:round`.
-- Five circular fittings at pipe joints/ends, `fill:#08519c` 7.5% opacity.
-- Four teardrop ellipses at open corners, `fill:#08519c` 7.5% opacity.
-- `background-attachment:fixed` so scrolling doesn't shear the texture.
+**Page background** — three layers, back to front, `background-attachment:
+fixed` on all three so scrolling doesn't shear them:
+
+1. a soft radial white highlight top-center — light on a water surface;
+2. a top-to-bottom depth wash, `#f2f9fd → #e6f2fa → #d8ebf6`;
+3. a 240×120 tile of three staggered ripple lines + scattered bubbles,
+   `#08519c`/`#3182bd` at 6–8% opacity. The ripple period (40px) divides
+   both tile dimensions, so it tiles seamlessly in both axes.
+
+The tile replaced an earlier pipe-and-droplet schematic in July 2026:
+open water reads better as a ground than plumbing does, and the plumbing
+motif now lives where it means something (fittings, schematic).
+`@media print` drops the whole background — it prints as grey mush.
 
 **h1 wave underline** — 80px double-amplitude SVG sinusoid at `#3182bd`,
 opacity 0.65, `stroke-width:1.5`, repeating on `x`, anchored `left bottom`.
 
-**Horizontal rules** — `st.divider()` maps to `.stApp hr`. Pipe-flow
-gradient: `#08519c → #3182bd → #6baed6 → transparent`, `height:2px`,
-`border-radius:1px`, no `border`.
+**Horizontal rules** — `st.divider()` maps to `.stApp hr`; the static page
+styles bare `hr`. Pipe-flow gradient: `#08519c → #3182bd → #6baed6 →
+transparent`, `height:2px`, `border-radius:1px`, no `border`.
+
+**Pipe fittings** — a 10px `#3182bd` dot capping the top of the left
+border on `h3.solution-cat-header` / `h4.solution-cat-header` (§9), and
+the active tab's marker: a 2px round-capped `#08519c` bar with a fitting
+dot at each end (`::after` + one `::before` carrying two radial
+gradients). Scoped to `h3`/`h4` because the static Solutions accordion
+hangs the same class on a `<summary>` span with the border removed.
+
+**Footer pipe run** — a 960×26 inline SVG above the footer note: pipe,
+five fittings, a gate valve, three rack silhouettes. Ornament, so
+`opacity:.12`, `aria-hidden`, no labels, and `display:none` in print.
+
+### Header water-loop schematic
+
+`dashboard._build_water_loop_svg()` — pure, returns a self-contained
+`<div class="schematic">` + inline SVG. `build_site.build_html()` inlines
+the same string under the h1; `dashboard.main()` renders it under the
+title. One definition, two surfaces, test-enforced.
+
+It is the one piece of art on either surface that is data-ink, because it
+explains the project's own architecture: **river/wellfield intake →
+treatment plant → data center hall (three slotted racks) → closed chiller
+loop → cooling tower → blowdown → sewer → wastewater plant → treated
+effluent back to the river.** Two annotations carry the two facts the
+whole tracker rests on:
+
+- *evaporation is the consumptive loss — this water leaves the basin, not
+  the sewer* (at the cooling-tower drift), and
+- *the sewer leg is metered on the receiving plant's NPDES permit — that
+  is where the data shows up* (under the sewer→WWTP leg), which is why
+  the pipeline's primary source is EPA ECHO DMR data from receiving WWTPs
+  rather than anything a data center files itself.
+
+Conventions: a 960×124 viewBox so one unit ≈ one pixel at content width;
+station labels 11 units (≈0.7rem) in `#4b5563` under each element — the
+river's sits above it, because the return leg runs underneath;
+annotations 10 units in `#08519c`. The pipe run is an **open** path
+(intake → outfall → back up into the river): the river closes the loop,
+not a pipe. Below ~900px of drawing width the labels stop being legible,
+so `.schematic` scrolls horizontally rather than shrinking the type
+(print drops that minimum so the diagram fits the sheet). Everything but
+the animation uses presentation attributes, so a surface that strips
+`<style>` still gets a correct diagram — it just stops moving.
+
+**The one sanctioned animation.** Pale dashes (`stroke-opacity` 0.35)
+drift along the pipe: `stroke-dasharray:6 22`, `stroke-dashoffset` to
+`-1680` over 24s linear, infinite. The offset is a whole number of dash
+periods so the loop has no visible jump. Off entirely under
+`@media (prefers-reduced-motion: reduce)`, which leaves the dashes as
+static direction ticks. Nothing else on either surface animates (§12).
 
 ---
 
@@ -256,6 +323,11 @@ easier to restyle without touching every call site.
 ## 12. Don'ts
 
 - No animated rain, falling droplets, wave loops, or parallax.
+- **One animation is sanctioned: the header schematic's flow line
+  (§3). Nothing else moves.** It is CSS `@keyframes`, so the page must
+  contain exactly one `@keyframes` block — a build test asserts that.
+  (The Explore graph's force layout settles once on load and honors
+  `prefers-reduced-motion`; a layout computation is not decoration.)
 - No turquoise / aqua / teal. Stay in the blue family of the palette.
 - No backtick code marks (`` `status` ``) for status badges — use
   styled HTML spans with the tinted-pill pattern.
