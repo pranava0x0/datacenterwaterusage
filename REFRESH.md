@@ -8,8 +8,9 @@ main way a refresh goes wrong:
 
 - **Scraped data** (`data/output/results.csv`) — 22 scrapers, append-only,
   re-runs skip already-fetched documents automatically.
-- **Curated reference data** (`data/reference/*.json`) — seven hand-adjudicated
-  datasets. **Nothing writes to these automatically.** Monitors and research
+- **Curated reference data** (`data/reference/*.json`) — eight datasets: seven
+  hand-adjudicated, plus `local_actions.json`, a mirrored county/city table
+  (see §4b). **Nothing writes to these automatically.** Monitors and research
   propose; a person decides. That is the whole reason these records are worth
   more than a scrape, so don't automate it away.
 
@@ -103,6 +104,64 @@ All take `--dry-run`. They abort rather than writing partial or unvalidated data
 it. A value with no records renders a filter chip matching nothing, and tests
 enforce both directions.
 
+## 4b. Re-syncing the two mirrored datasets
+
+Two datasets mirror the Data Center Community Benefits project
+(`pranava0x0/datacentercommunitybenefits`). There is no monitor for it yet, so
+this is a by-hand pass — do it when that repo has moved, or before a release.
+
+| This tracker | Source file | Filter |
+|---|---|---|
+| `data/reference/company_water_claims.json` | `docs/data/claims.json` | `theme == "water"` |
+| `data/reference/local_actions.json` | `docs/data/moratoriums.json` | `jurisdiction_type` is county / city / town |
+
+```bash
+curl -sL https://raw.githubusercontent.com/pranava0x0/datacentercommunitybenefits/main/docs/data/claims.json      -o /tmp/claims.json
+curl -sL https://raw.githubusercontent.com/pranava0x0/datacentercommunitybenefits/main/docs/data/moratoriums.json -o /tmp/moratoriums.json
+```
+
+**Claims** need no mapping — the mirror keeps the source shape:
+
+```bash
+python3 scripts/sync_community_benefits.py --claims /tmp/claims.json          # report
+python3 scripts/sync_community_benefits.py --claims /tmp/claims.json --write
+```
+
+New claims arrive without a `claim_type` (the source has no such field); give
+each one a value from `CLAIM_TYPE_LABELS` or the suite fails. Existing claims
+are never re-written — `statement` is a verbatim quote — and a source
+`delivered` block is adopted only when its `assessed_at` is strictly newer than
+ours, which as of August 2026 it never is.
+
+**Moratoriums** need mapping first, and the mapping is the judgment:
+
+- Drop anything `jurisdiction_type == "state"` — state measures belong in
+  `legislation.json`, and several already are.
+- `action_type`: `moratorium` unless the source's own text describes a
+  permanent ban (`ordinance`) or a non-binding measure (`resolution`).
+- `status`: `failed` → `rejected`; `proposed` → `proposed`; `enacted` → work out
+  `active` / `expired` / `superseded` from the duration and any replacement the
+  summary names. **Re-check every `proposed` record whose date is more than
+  about 60 days old** — the source leaves them at `proposed` past their own
+  named vote date.
+- `water_related` / `water_angle`: true when the record's reasons or summary
+  actually name water, aquifer, sewer or cooling draw. When the source tags
+  water without describing an impact, say exactly that rather than inventing
+  one.
+
+Then upsert the mapped records:
+
+```bash
+python3 scripts/sync_community_benefits.py --actions /tmp/mapped_actions.json          # report
+python3 scripts/sync_community_benefits.py --actions /tmp/mapped_actions.json --write
+```
+
+The upsert is pure on `action_id`, so re-running an unchanged source changes
+nothing. It **reports every field it would overwrite on an existing record** —
+read that list against the corrections named in `local_actions.json`'s own
+`note` (Hill County TX, Cleveland, Indianapolis, Monterey Park, Maine LD 307)
+and re-apply any the source has reverted.
+
 ## 5. Scrapers, when you need them
 
 ```bash
@@ -116,7 +175,7 @@ documents via `data/state/scraper_state.db`.
 ## 6. Before committing
 
 ```bash
-python3 -m pytest -q          # must be green; ~620 tests, under 10s
+python3 -m pytest -q          # must be green; ~740 tests, under 20s
 python3 build_site.py         # regenerates pages/index.html + pages/llms.txt
 ```
 

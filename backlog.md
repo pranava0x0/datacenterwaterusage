@@ -179,6 +179,57 @@ This "both numbers are true" spine could anchor the Phase 2 landing page / scrol
 
 ## Medium Priority
 
+### States & Localities tab — follow-ups from the 2026-08-24 Spec D/F pass
+
+The tab shipped with 89 mirrored county/city actions, a 41-state rollup, and a
+120-day what's-new window. These were deliberately left out of it.
+
+1. **Promote `local_actions.json` into the registry.** Spec D v1 keeps it out:
+   the records get no anchors, no `cross_ref_targets` and no graph nodes, which
+   is why 89 rows cost table markup only. Promotion means an `action-<id>`
+   anchor kind, a `KIND_TABS` entry, integrity-edge coverage, and llms.txt
+   one-liners — and it lets other datasets cite a specific county action instead
+   of describing it. **Sample prompt**: "Promote local_actions.json to a
+   registry kind: add `action` to `refdata.registry.KIND_TABS` and
+   `_anchor_for`, emit `id="action-<action_id>"` on each table row, extend
+   `EDGE_TARGET_KINDS` so cases and sites may cite an action, and add the
+   llms.txt loop plus tests in both directions. Report the page-size delta."
+2. **Cross-link mirrored actions to the conflict sites they sit under.** Four
+   pairs already match by jurisdiction and are documented but unrendered:
+   `charlotte-nc-moratorium` ↔ `dccb-charlotte-city-2026-06`,
+   `hood-county-granbury-tx` ↔ `dccb-hood-county-tx-2026-02`,
+   `missouri-peculiar-stcharles` ↔ `dccb-st-charles-city-2025-08` and
+   `dccb-st-charles-county-mo-2026-07`, `meta-cheyenne-wy` ↔
+   `dccb-cheyenne-wy-2026-06`. Spec F item 3 called for display-only context
+   lines; item 1 above would make them real edges instead.
+3. **A monitor for the benefits repo.** Fits `scrapers/monitors/` — fingerprint
+   `docs/data/claims.json` and `docs/data/moratoriums.json`, propose-don't-dispose
+   into `monitor_hits.json`. Today §4b of REFRESH.md is entirely by hand.
+4. **Re-check the stale `proposed` records.** Five mirrored records sit at
+   `proposed` past their own named vote date and could not be confirmed in the
+   research window: `dccb-hernando-county-fl-2026-06`,
+   `dccb-lake-county-fl-2026-06`, `dccb-greenwood-county-sc-2026-06`,
+   `dccb-spartanburg-county-sc-2026-06`, and `dccb-indio-ca-2026-06` (whose
+   45-day term lapsed; check whether Indio adopted the permanent ban).
+5. **Monterey Park Measure NDC as a `legislation.json` instrument.** It is in
+   `local_actions.json` today, but it is genuinely first-of-kind — the first US
+   data-center ban enacted by public referendum rather than a council vote —
+   which is the threshold Spec D sets for a local measure to become a tracked
+   instrument. Needs the `instrument_type` question answered first: the
+   taxonomy has no `ballot-measure`, and `local-ordinance` undersells what makes
+   it notable.
+6. **Dedupe `SC H 4583` and `SC HB 4583`.** Two `bill_id`s for what appears to
+   be one South Carolina bill (introduced 2026-01-13). Flagged during the
+   2026-08-24 sweep, not altered — confirm against the SC Statehouse bill lookup
+   and merge, the same way the Durbin duplicate was folded into US S. 4213.
+7. **Tucson's August 2026 data-center zoning amendments as a local action.**
+   Verified in the news pass (half-mile residential setback, ~1,000-foot
+   commercial setback, 50-foot height cap for 25,000+ sq ft / 20+ MW) and
+   recorded in the `project-blue-tucson-az` site's `status_2026`, but not
+   entered as a record. It would be the first `zoning-amendment` action, which
+   is the taxonomy value Spec D named and this pass held back for want of data.
+
+
 ### Water-authority registry — follow-ups from the 2026-08-24 federal-statute batch
 
 Surfaced while adding the eight supply-side federal/interstate families (`scripts/add_federal_statute_families_2026_08.py`). Each is verified enough to act on but was outside that spec's scope (new federal-statute families only).

@@ -37,11 +37,18 @@ class TestStaticBuild:
         for banned in ("stlite", "pyodide", "@stlite/browser", "micropip"):
             assert banned not in html, f"WASM runtime artifact present: {banned}"
 
-    def test_five_tabs_present(self):
+    def test_content_tabs_present(self):
         html = _html()
-        for tab in ("legislation", "cwa", "news", "solutions", "sources"):
+        for tab in ("legislation", "states", "cwa", "news", "solutions", "sources"):
             assert f'data-tab="{tab}"' in html
-        for pid in ("panel-legislation", "panel-cwa", "panel-news", "panel-solutions", "panel-sources"):
+        for pid in (
+            "panel-legislation",
+            "panel-states",
+            "panel-cwa",
+            "panel-news",
+            "panel-solutions",
+            "panel-sources",
+        ):
             assert f'id="{pid}"' in html
 
     def test_three_tabs_present(self):
@@ -644,14 +651,19 @@ class TestInfrastructureVisuals:
         assert opacity and int(opacity.group(1)) <= 12
 
     def test_page_stays_under_the_weight_ceiling(self):
-        """Every record is embedded, so the page is ~1.85 MB by design (the
-        Explore graph blob is most of it). This is a tripwire for an accidental
-        order-of-magnitude regression — a second copy of the blob, an embedded
-        raster, a duplicated tab — not a diet. The ceiling went 1.85 MB → 2 MB
-        when the eight federal statute families (2026-08-24) spent the last of
-        the old headroom; the ~150 KB left is still far more than any single
-        visual addition, so ordinary content growth will not trip it."""
-        assert len(_html().encode("utf-8")) < 2_000_000
+        """Every record is embedded, so the page is ~2.1 MB by design (the
+        Explore graph blob is ~635 KB of it). This is a tripwire for an
+        accidental order-of-magnitude regression — a second copy of the blob,
+        an embedded raster, a duplicated tab — not a diet.
+
+        Raised twice on 2026-08-24: 1.85 MB → 2 MB for the eight federal
+        statute families, then 2 MB → 2.25 MB for the States & Localities tab
+        (~135 KB: an 89-row county/city table, 41 state cards, the what's-new
+        list) plus ~115 KB the news, claims and instrument additions added to
+        the Explore blob. The county/city records stay out of the registry, so
+        they cost table markup only and nothing in the graph. The ~140 KB of
+        headroom left is still far more than any single visual addition."""
+        assert len(_html().encode("utf-8")) < 2_250_000
 
 
 class TestNoDuplicateClaimStyles:
@@ -662,3 +674,99 @@ class TestNoDuplicateClaimStyles:
         html = _html()
         for cls in (".claim-type-pill", ".claim-challenge-pill", ".claim-chips"):
             assert html.count(cls + "{") + html.count(cls + " {") == 1, cls
+
+
+class TestStatesTab:
+    """Spec D — the States & Localities tab on the static surface."""
+
+    from datetime import datetime as _dt
+
+    TODAY = _dt(2026, 8, 24)
+
+    def test_tab_button_sits_between_legislation_and_water_cases(self):
+        html = _html()
+        order = [
+            html.index('data-tab="legislation"'),
+            html.index('data-tab="states"'),
+            html.index('data-tab="cwa"'),
+        ]
+        assert order == sorted(order)
+        assert ">States &amp; Localities</button>" in html
+
+    def test_every_active_state_gets_a_card(self):
+        tab = build_site.build_states_tab(self.TODAY)
+        rollup = dashboard._state_rollup(
+            dashboard.load_legislation()["bills"],
+            dashboard.load_local_actions()["actions"],
+            self.TODAY,
+        )
+        assert tab.count('class="state-card"') == len(rollup)
+        assert ">Virginia<" in tab and ">Texas<" in tab
+
+    def test_every_local_action_gets_a_row(self):
+        tab = build_site.build_states_tab(self.TODAY)
+        actions = dashboard.load_local_actions()["actions"]
+        assert tab.count("<tr data-action-id=") == len(actions)
+        assert f"window.LA_TOTAL = {len(actions)}" in tab
+
+    def test_whats_new_renders_and_respects_the_frozen_date(self):
+        """The window is computed from the argument, not the clock. Build the
+        same tab a year later and the same records fall out of it."""
+        now = build_site.build_states_tab(self.TODAY)
+        assert 'class="whatsnew-row"' in now
+        assert "movements</strong> in the last 120 days" in now
+
+        later = build_site.build_states_tab(self._dt(2027, 12, 31))
+        assert "Nothing tracked moved in the last 120 days" in later
+        assert 'class="whatsnew-row"' not in later
+
+    def test_filters_cover_state_status_type_and_water(self):
+        tab = build_site.build_states_tab(self.TODAY)
+        assert 'id="la-state"' in tab and 'id="la-water" checked' in tab
+        for status in dashboard.LOCAL_ACTION_STATUS_LABELS:
+            assert f'class="la-status" value="{status}" checked' in tab
+        for kind in dashboard.LOCAL_ACTION_TYPE_LABELS:
+            assert f'class="la-type" value="{kind}" checked' in tab
+        # Every state in the data is selectable.
+        for code in {a["state"] for a in dashboard.load_local_actions()["actions"]}:
+            assert f'<option value="{code}">' in tab
+
+    def test_filter_js_is_wired(self):
+        js = build_site.build_js()
+        assert "applyLocalActionFilter" in js
+        assert "local-actions-table" in js
+
+    def test_streamlit_and_static_share_the_builders(self):
+        """Both surfaces call the same dashboard builders — the parity rule
+        that keeps a change to one card from skipping the other."""
+        tab = build_site.build_states_tab(self.TODAY)
+        bills = dashboard.load_legislation()["bills"]
+        actions = dashboard.load_local_actions()["actions"]
+        rollup = dashboard._state_rollup(bills, actions, self.TODAY)
+        assert dashboard._build_state_rollup_html(rollup) in tab
+        assert dashboard._build_local_actions_table_html(actions) in tab
+
+    def test_tab_follows_the_standard_anatomy(self):
+        """DESIGN.md §5: title, one-liner, summary panel, filters, count line,
+        content, last-updated caption."""
+        tab = build_site.build_states_tab(self.TODAY)
+        assert "<h2>States &amp; Localities</h2>" in tab
+        assert 'class="lead"' in tab
+        assert tab.count('class="metric-label"') == 3
+        assert 'class="count-line" id="la-count"' in tab
+        assert "Dataset last updated" in tab
+        assert tab.count("<h2>") == 1, "one tab title only"
+
+    def test_rollup_says_it_is_activity_based(self):
+        """A per-state view invites 'my state is missing, so nothing is
+        happening'. The tab has to say otherwise."""
+        tab = build_site.build_states_tab(self.TODAY)
+        assert "Activity-based, not exhaustive" in tab
+
+    def test_llms_txt_carries_the_tab_and_what_is_new(self):
+        txt = build_site.build_llms_txt()
+        assert "## States and localities" in txt
+        assert "Moved in the last 120 days" in txt
+        assert "local_actions.json" in txt
+        actions = dashboard.load_local_actions()["actions"]
+        assert f"{len(actions)} county, city and town" in txt

@@ -172,6 +172,17 @@ st.caption(f"Dataset last updated {last_updated}.")  # bottom of every tab
 Tabs without user-facing filters (Sources) omit the filter and count
 lines, but keep all other elements including the summary panel and caption.
 
+A tab whose filters apply to only one of several sections (States &
+Localities: the filters drive the county/city table, not the what's-new list
+or the state rollup) puts the filter row and count line **inside that
+section**, immediately above its content, rather than at the top of the tab
+where they would appear to govern everything.
+
+**Anything time-windowed takes `today` as an argument.** `_states_whats_new`
+and `_state_rollup` are pure functions the callers pass a date into, never
+`datetime.now()` inside a builder — otherwise the window has no testable
+boundary and two builds of the same data differ.
+
 ---
 
 ## 6. Summary panels — "what's the overall picture?"
@@ -182,6 +193,7 @@ before the user scrolls into the card list. Panel shape varies by data type:
 | Tab | Panel |
 |---|---|
 | Legislation | Principles panel (cross-bill taxonomy counts) + theme grid (6 themes) |
+| States & Localities | 3-metric row: States active / Local actions tracked / Newest action |
 | CWA Cases | Datacenter insights callout + application-theories table |
 | News | 3-metric row: Headlines / Topics / Most recent date |
 | Solutions | 6-metric row (Deployed/Pilot/Proposed × Mandate/Utility/Industry) + key-patterns callout |
@@ -201,6 +213,7 @@ but are rendered differently:
 |---|---|---|---|
 | `.bill-card` | `1px solid #cbd5e1` | `0 1px 2px rgba(15,23,42,.04)` | Legislation, CWA Cases |
 | `.solution-card` | `1px solid #d6e4f0` | `0 1px 2px rgba(15,23,42,.04)` | Solutions |
+| `.state-card` | `1px solid #cbd5e1` | `0 1px 2px rgba(15,23,42,.04)` | States & Localities |
 | news card (inline styled) | `1px solid #d6e4f0` | none | News |
 
 All three: `border-radius:0.5rem`, `padding:~1rem`, `background:#fff`.

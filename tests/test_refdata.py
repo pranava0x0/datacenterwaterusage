@@ -25,7 +25,7 @@ from refdata import graph, integrity, loaders, registry, taxonomies
 class TestLoaders:
     """The loaders moved out of dashboard.py must behave identically."""
 
-    def test_all_seven_datasets_load_non_empty(self):
+    def test_all_eight_datasets_load_non_empty(self):
         assert loaders.load_legislation()["bills"]
         assert loaders.load_company_water_claims()["claims"]
         assert loaders.load_cwa_investigations()["cases"]
@@ -33,6 +33,7 @@ class TestLoaders:
         assert loaders.load_dc_water_conflicts()["sites"]
         assert loaders.load_water_news()["items"]
         assert loaders.load_water_solutions()["categories"]
+        assert loaders.load_local_actions()["actions"]
 
     def test_missing_file_returns_empty_payload(self, tmp_path):
         """A missing dataset renders an empty section, never a crash."""
@@ -1076,3 +1077,149 @@ class TestDoctrineMatrixAndOutcomeNote:
             assert "does not predict" in note, site["site_id"]
             assert "How comparable matters resolved" in note
         assert rendered >= 15
+
+
+class TestLocalActions:
+    """Spec D/F — the mirrored county/city table.
+
+    This is the one curated file that is a *mirror* rather than adjudicated
+    records, so its schema tests do double duty: they check the data, and they
+    check that a re-sync from upstream cannot quietly introduce a taxonomy
+    value or a state code the renderer would drop on the floor.
+    """
+
+    @staticmethod
+    def _payload():
+        return loaders.load_local_actions()
+
+    @staticmethod
+    def _actions():
+        return loaders.load_local_actions()["actions"]
+
+    def test_dataset_loads_with_its_provenance(self):
+        payload = self._payload()
+        assert payload["last_updated"]
+        assert payload["source_repo"] == "pranava0x0/datacentercommunitybenefits"
+        assert payload["source_path"]
+        # The note carries the refresh contract; a mirror without one is a
+        # dataset nobody can safely re-sync.
+        assert "upsert" in payload["note"] and "action_id" in payload["note"]
+        assert len(payload["actions"]) >= 50
+
+    def test_missing_file_returns_empty(self):
+        assert loaders.load_local_actions("/nonexistent/local_actions.json")["actions"] == []
+
+    def test_required_fields_present(self):
+        required = {
+            "action_id",
+            "jurisdiction",
+            "state",
+            "action_type",
+            "status",
+            "date",
+            "water_related",
+            "water_angle",
+            "summary",
+            "source_url",
+        }
+        for action in self._actions():
+            missing = required - set(action)
+            assert not missing, f"{action.get('action_id')} missing {missing}"
+
+    def test_action_ids_are_unique_and_prefixed(self):
+        ids = [a["action_id"] for a in self._actions()]
+        assert len(ids) == len(set(ids))
+        # `dccb-` mirrors an upstream id (upsert key); `direct-` was verified
+        # here rather than mirrored. Anything else has no refresh story.
+        for action_id in ids:
+            assert action_id.startswith(("dccb-", "direct-")), action_id
+
+    def test_action_types_are_in_the_closed_taxonomy(self):
+        for action in self._actions():
+            assert action["action_type"] in taxonomies.LOCAL_ACTION_TYPE_LABELS, (
+                action["action_id"],
+                action["action_type"],
+            )
+
+    def test_every_action_type_value_is_used(self):
+        """Taxonomy values ship with their data — an unused value renders a
+        filter chip that matches nothing."""
+        used = {a["action_type"] for a in self._actions()}
+        assert set(taxonomies.LOCAL_ACTION_TYPE_LABELS) == used, (
+            f"unused: {sorted(set(taxonomies.LOCAL_ACTION_TYPE_LABELS) - used)}"
+        )
+
+    def test_statuses_are_in_the_closed_taxonomy(self):
+        for action in self._actions():
+            assert action["status"] in taxonomies.LOCAL_ACTION_STATUS_LABELS, (
+                action["action_id"],
+                action["status"],
+            )
+
+    def test_every_status_value_is_used(self):
+        used = {a["status"] for a in self._actions()}
+        assert set(taxonomies.LOCAL_ACTION_STATUS_LABELS) == used, (
+            f"unused: {sorted(set(taxonomies.LOCAL_ACTION_STATUS_LABELS) - used)}"
+        )
+
+    def test_status_taxonomy_has_a_colour_and_a_rank_for_every_value(self):
+        assert set(taxonomies.LOCAL_ACTION_STATUS_LABELS) == set(
+            taxonomies.LOCAL_ACTION_STATUS_COLORS
+        )
+        assert set(taxonomies.LOCAL_ACTION_STATUS_LABELS) == set(
+            taxonomies.LOCAL_ACTION_STATUS_ORDER
+        )
+
+    def test_state_codes_are_real(self):
+        for action in self._actions():
+            code = action["state"]
+            assert len(code) == 2 and code.isupper(), action["action_id"]
+            assert code in taxonomies.US_STATE_NAMES, (action["action_id"], code)
+
+    def test_dates_parse_as_a_month(self):
+        import re as _re
+
+        for action in self._actions():
+            assert _re.fullmatch(r"\d{4}-\d{2}", action["date"]), (
+                action["action_id"],
+                action["date"],
+            )
+            month = int(action["date"].split("-")[1])
+            assert 1 <= month <= 12, action["action_id"]
+
+    def test_water_flag_and_angle_agree(self):
+        """A water-related record without an angle is an unexplained filter
+        hit; an angle on a non-water record is a filter that lies."""
+        for action in self._actions():
+            if action["water_related"]:
+                assert action["water_angle"].strip(), action["action_id"]
+            else:
+                assert not action["water_angle"], action["action_id"]
+
+    def test_sources_are_retrievable_urls(self):
+        for action in self._actions():
+            assert action["source_url"].startswith("http"), action["action_id"]
+
+    def test_summaries_are_substantive(self):
+        for action in self._actions():
+            assert len(action["summary"]) > 40, action["action_id"]
+
+    def test_actions_stay_out_of_the_registry(self):
+        """Spec D v1: these are a mirrored table, not curated records. They
+        carry no anchors and nothing cross-references them, so putting them in
+        the registry would promise integrity guarantees that do not exist."""
+        reg = registry.build_registry()
+        for action in self._actions():
+            assert action["action_id"] not in reg, action["action_id"]
+
+    def test_the_graph_ignores_them_too(self):
+        """The Explore blob is the page's largest single asset; an
+        unregistered dataset must not leak into it."""
+        node_ids = {n["id"] for n in graph.build_graph()["nodes"]}
+        for action in self._actions():
+            assert action["action_id"] not in node_ids, action["action_id"]
+
+    def test_state_names_cover_every_state_the_data_uses(self):
+        assert len(taxonomies.US_STATE_NAMES) == 51  # 50 states + DC
+        assert taxonomies.US_STATE_NAMES["VA"] == "Virginia"
+        assert taxonomies.US_STATE_NAMES["WV"] == "West Virginia"

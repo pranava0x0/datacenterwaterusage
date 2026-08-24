@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import html
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import pandas as pd
@@ -36,6 +36,7 @@ from refdata.loaders import (  # noqa: F401
     CWA_INVESTIGATIONS_PATH,
     DC_WATER_CONFLICTS_PATH,
     LEGISLATION_PATH,
+    LOCAL_ACTIONS_PATH,
     WATER_AUTHORITIES_PATH,
     WATER_NEWS_PATH,
     WATER_SOLUTIONS_PATH,
@@ -44,6 +45,7 @@ from refdata.loaders import (  # noqa: F401
     load_cwa_investigations,
     load_dc_water_conflicts,
     load_legislation,
+    load_local_actions,
     load_water_authorities,
     load_water_news,
     load_water_solutions,
@@ -84,12 +86,17 @@ from refdata.taxonomies import (  # noqa: F401
     LEGISLATION_STATUS_BADGE_COLORS,
     LEGISLATION_STATUS_LABELS,
     LEGISLATION_STATUS_ORDER,
+    LOCAL_ACTION_STATUS_COLORS,
+    LOCAL_ACTION_STATUS_LABELS,
+    LOCAL_ACTION_STATUS_ORDER,
+    LOCAL_ACTION_TYPE_LABELS,
     NEWS_TAG_COLORS,
     NEWS_TAG_LABELS,
     OUTCOME_TYPE_LABELS,
     SOLUTION_ACTOR_LABELS,
     SOLUTION_STATUS_COLORS,
     SOLUTION_STATUS_LABELS,
+    US_STATE_NAMES,
     WATER_STATUTE_COLORS,
     WATER_STATUTE_ORDER,
 )
@@ -1851,6 +1858,469 @@ def _build_legislation_themes_html(bills: list[dict]) -> str:
     )
 
     return '<div class="theme-grid">' + ''.join(cards) + '</div>' + solutions_box
+
+
+# --- States & Localities Tab ---
+
+# How far back "what's new" reaches. Four months is long enough that a tab
+# opened after a quiet stretch is never empty, short enough that the list
+# stays readable without paging.
+STATES_WINDOW_DAYS = 120
+
+STATES_LEAD = (
+    "What each state and locality is actually doing about data-center water: "
+    "everything that moved in the last four months, a per-state rollup of the "
+    "instruments this tracker follows, and the county and city measures the "
+    "legislation tracker is too coarse to hold."
+)
+
+
+def _month_start(value: str) -> datetime | None:
+    """Parse a ``YYYY-MM`` or ``YYYY-MM-DD`` date string.
+
+    County and city actions are recorded to the month, so a month-only value
+    is read as the first of that month. That is the conservative reading for
+    the what's-new window: an action can only enter the window once the whole
+    month it happened in is inside it.
+    """
+    if not value:
+        return None
+    parts = str(value).split("-")
+    try:
+        year, month = int(parts[0]), int(parts[1])
+        day = int(parts[2]) if len(parts) > 2 else 1
+        return datetime(year, month, day)
+    except (ValueError, IndexError):
+        return None
+
+
+def _instrument_movement_date(bill: dict, today: datetime) -> str:
+    """The date an instrument last actually moved, as of ``today``.
+
+    The latest date in its ``timeline`` that has already happened — a filing,
+    a vote, a signature. Scheduled future milestones (a reporting deadline in
+    2027) are common in this dataset and are not movement, so they are
+    excluded; without that, half the tracker's instruments would sort to the
+    top of the what's-new list on the strength of a deadline nobody has met
+    yet. Falls back to ``last_verified`` only when nothing in the timeline has
+    happened yet: a re-verification is curation, not movement, so it is a last
+    resort rather than a signal.
+    """
+    stamp = today.strftime("%Y-%m-%d")
+    dates = [
+        ev.get("date", "")
+        for ev in bill.get("timeline", [])
+        if ev.get("date") and ev["date"] <= stamp
+    ]
+    return max(dates) if dates else bill.get("last_verified", "")
+
+
+def _state_code_for(jurisdiction: str) -> str | None:
+    """Two-letter code for an instrument's jurisdiction string, or None.
+
+    Handles the three shapes the dataset uses: a bare state name
+    ('Texas'), a county/city string ending in a state name ("Prince George's
+    County, Maryland"), and the parenthesised local form ('Local (Denver,
+    CO)'). Federal jurisdictions ('Federal (US)', 'United States') return
+    None and drop out of the rollup.
+    """
+    text = (jurisdiction or "").strip()
+    if not text or text in ("Federal (US)", "United States"):
+        return None
+    by_name = {name: code for code, name in US_STATE_NAMES.items()}
+    if text in by_name:
+        return by_name[text]
+    for token in re.findall(r"\b([A-Z]{2})\b", text):
+        if token in US_STATE_NAMES:
+            return token
+    # Longest name first so 'West Virginia' is not read as 'Virginia'.
+    for name in sorted(by_name, key=len, reverse=True):
+        if name in text:
+            return by_name[name]
+    return None
+
+
+def _states_whats_new(
+    bills: list[dict],
+    actions: list[dict],
+    today: datetime,
+    window_days: int = STATES_WINDOW_DAYS,
+) -> list[dict]:
+    """Instruments and local actions that moved within ``window_days`` of ``today``.
+
+    Pure: the caller supplies ``today``, so the boundary is testable and the
+    static build is reproducible. Newest first; ties break on jurisdiction
+    then label so the order is stable across builds.
+    """
+    cutoff = today - timedelta(days=window_days)
+    rows: list[dict] = []
+
+    for bill in bills:
+        # State and local only. A federal bill moving is real news, but it is
+        # the Legislation tab's news, and mixing it in here answers a question
+        # this tab is not asking.
+        code = _state_code_for(bill.get("jurisdiction", ""))
+        if not code:
+            continue
+        moved = _instrument_movement_date(bill, today)
+        when = _month_start(moved)
+        if when is None or when < cutoff:
+            continue
+        milestones = [ev for ev in bill.get("timeline", []) if ev.get("date") == moved]
+        latest = milestones[-1] if milestones else {}
+        status = bill.get("status", "unknown")
+        rows.append(
+            {
+                "kind": "instrument",
+                "date": moved,
+                "sort_date": when,
+                "state": code,
+                "jurisdiction": bill.get("jurisdiction", ""),
+                "label": bill.get("bill_id", ""),
+                "title": bill.get("title", ""),
+                "status": status,
+                "status_label": LEGISLATION_STATUS_LABELS.get(status, status),
+                "status_color": LEGISLATION_STATUS_BADGE_COLORS.get(
+                    status, COLORS["secondary"]
+                ),
+                "detail": latest.get("milestone", "") or bill.get("title", ""),
+                "anchor": _bill_anchor(bill.get("bill_id", "")),
+                "url": "",
+            }
+        )
+
+    for action in actions:
+        when = _month_start(action.get("date", ""))
+        if when is None or when < cutoff:
+            continue
+        status = action.get("status", "")
+        code = action.get("state", "")
+        rows.append(
+            {
+                "kind": "action",
+                "date": action.get("date", ""),
+                "sort_date": when,
+                "state": code,
+                "jurisdiction": f"{action.get('jurisdiction', '')}, {code}",
+                "label": action.get("jurisdiction", ""),
+                "title": LOCAL_ACTION_TYPE_LABELS.get(
+                    action.get("action_type", ""), action.get("action_type", "")
+                ),
+                "status": status,
+                "status_label": LOCAL_ACTION_STATUS_LABELS.get(status, status),
+                "status_color": LOCAL_ACTION_STATUS_COLORS.get(
+                    status, COLORS["secondary"]
+                ),
+                "detail": action.get("water_angle") or action.get("summary", ""),
+                "anchor": "",
+                "url": action.get("source_url", ""),
+            }
+        )
+
+    rows.sort(key=lambda r: (r["sort_date"], r["jurisdiction"], r["label"]), reverse=True)
+    return rows
+
+
+def _state_rollup(
+    bills: list[dict], actions: list[dict], today: datetime
+) -> list[dict]:
+    """One row per state with tracked activity, newest first.
+
+    A state is here because something happened in it, not because it exists —
+    absence means nothing has been tracked, not that nothing is going on.
+    """
+    by_state: dict[str, dict] = {}
+
+    def bucket(code: str) -> dict:
+        return by_state.setdefault(
+            code,
+            {
+                "state": code,
+                "state_name": US_STATE_NAMES.get(code, code),
+                "instruments": [],
+                "actions": [],
+                "status_counts": {},
+                "action_status_counts": {},
+                "principles": {},
+                "newest": "",
+            },
+        )
+
+    for bill in bills:
+        code = _state_code_for(bill.get("jurisdiction", ""))
+        if not code:
+            continue
+        row = bucket(code)
+        status = bill.get("status", "unknown")
+        row["instruments"].append(
+            {
+                "bill_id": bill.get("bill_id", ""),
+                "status": status,
+                "anchor": _bill_anchor(bill.get("bill_id", "")),
+            }
+        )
+        row["status_counts"][status] = row["status_counts"].get(status, 0) + 1
+        for tag in {p.get("tag", "") for p in bill.get("general_principles", [])}:
+            if tag:
+                row["principles"][tag] = row["principles"].get(tag, 0) + 1
+        row["newest"] = max(row["newest"], _instrument_movement_date(bill, today))
+
+    for action in actions:
+        code = action.get("state", "")
+        if not code:
+            continue
+        row = bucket(code)
+        row["actions"].append(action)
+        status = action.get("status", "")
+        row["action_status_counts"][status] = (
+            row["action_status_counts"].get(status, 0) + 1
+        )
+        row["newest"] = max(row["newest"], action.get("date", ""))
+
+    rows = list(by_state.values())
+    for row in rows:
+        row["instruments"].sort(
+            key=lambda i: (LEGISLATION_STATUS_ORDER.get(i["status"], 9), i["bill_id"])
+        )
+        row["top_principles"] = [
+            tag
+            for tag, _ in sorted(
+                row["principles"].items(), key=lambda kv: (-kv[1], kv[0])
+            )[:3]
+        ]
+        row["water_actions"] = sum(1 for a in row["actions"] if a.get("water_related"))
+    rows.sort(key=lambda r: (r["newest"], r["state"]), reverse=True)
+    return rows
+
+
+def _states_metrics(rollup: list[dict], actions: list[dict]) -> dict:
+    """The three numbers the tab's summary panel leads with."""
+    newest = max((r["newest"] for r in rollup), default="—")
+    return {
+        "states_active": len(rollup),
+        "actions_tracked": len(actions),
+        "newest": newest or "—",
+    }
+
+
+def _status_pill_html(label: str, color: str) -> str:
+    """DESIGN.md §8 filled status pill. Reuses `.cwa-status-pill`, which is
+    that pattern's one definition in assets/components.css despite the
+    legacy prefix — a second class with identical rules is exactly the drift
+    the shared stylesheet exists to prevent."""
+    return (
+        f'<span class="cwa-status-pill" style="background:{color}">'
+        f'{html.escape(label)}</span>'
+    )
+
+
+# How many movements the what's-new list shows before deferring to the
+# sections below it. The 2026 moratorium wave routinely puts 100+ rows inside
+# a four-month window, which stops being "what's new" and becomes a second
+# copy of the table.
+WHATS_NEW_LIMIT = 20
+
+
+def _build_whats_new_html(rows: list[dict], window_days: int = STATES_WINDOW_DAYS) -> str:
+    """The 'what moved' list at the top of the States & Localities tab."""
+    esc = html.escape
+    if not rows:
+        return (
+            '<p class="src-note">Nothing tracked moved in the last '
+            f'{window_days} days.</p>'
+        )
+    shown = rows[:WHATS_NEW_LIMIT]
+    count_line = (
+        f'<p class="count-line"><strong>{len(rows)} movements</strong> in the last '
+        f'{window_days} days'
+        + (f' — showing the {len(shown)} most recent.' if len(rows) > len(shown) else '.')
+        + '</p>'
+    )
+    items = []
+    for r in shown:
+        if r["anchor"]:
+            name = f'<a href="#{esc(r["anchor"])}">{esc(r["label"])}</a>'
+        elif r["url"]:
+            name = (
+                f'<a href="{esc(r["url"])}" target="_blank" rel="noopener">'
+                f'{esc(r["label"])}</a>'
+            )
+        else:
+            name = esc(r["label"])
+        items.append(
+            '<div class="whatsnew-row">'
+            f'<div class="whatsnew-date">{esc(r["date"])}</div>'
+            '<div class="whatsnew-body">'
+            f'<span class="whatsnew-place">{esc(r["jurisdiction"])}</span> '
+            f'<span class="whatsnew-name">{name}</span> '
+            f'{_status_pill_html(r["status_label"], r["status_color"])}'
+            f'<div class="whatsnew-detail">{esc(r["detail"])}</div>'
+            '</div></div>'
+        )
+    return count_line + f'<div class="whatsnew">{"".join(items)}</div>'
+
+
+def _build_state_rollup_html(rollup: list[dict]) -> str:
+    """Responsive grid of per-state cards, newest activity first."""
+    esc = html.escape
+    if not rollup:
+        return ""
+    cards = []
+    for row in rollup:
+        counts = []
+        for status, n in sorted(
+            row["status_counts"].items(),
+            key=lambda kv: LEGISLATION_STATUS_ORDER.get(kv[0], 9),
+        ):
+            counts.append(
+                f'<span class="state-count">'
+                f'<strong style="color:{LEGISLATION_STATUS_BADGE_COLORS.get(status, COLORS["secondary"])}">'
+                f'{n}</strong> {esc(LEGISLATION_STATUS_LABELS.get(status, status))}</span>'
+            )
+        if row["actions"]:
+            counts.append(
+                f'<span class="state-count"><strong>{len(row["actions"])}</strong> '
+                f'local ({row["water_actions"]} water)</span>'
+            )
+        chips = "".join(
+            f'<span class="bill-principle-chip">{esc(tag)}</span>'
+            for tag in row["top_principles"]
+        )
+        links = " · ".join(
+            f'<a href="#{esc(i["anchor"])}">{esc(i["bill_id"])}</a>'
+            for i in row["instruments"][:3]
+        )
+        if len(row["instruments"]) > 3:
+            links += f' +{len(row["instruments"]) - 3} more'
+        cards.append(
+            '<div class="state-card">'
+            f'<div class="state-card-head"><span class="state-card-name">'
+            f'{esc(row["state_name"])}</span>'
+            f'<span class="state-card-date">{esc(row["newest"])}</span></div>'
+            f'<div class="state-counts">{"".join(counts)}</div>'
+            + (f'<div class="state-chips">{chips}</div>' if chips else "")
+            + (f'<div class="state-links">{links}</div>' if links else "")
+            + '</div>'
+        )
+    return f'<div class="state-grid">{"".join(cards)}</div>'
+
+
+def _build_local_actions_table_html(actions: list[dict]) -> str:
+    """Filterable table of county and city actions.
+
+    Each row carries its filter values as data attributes so the static
+    site's vanilla-JS filters and the Streamlit render share one markup
+    definition. The mirrored summary sits behind a per-row toggle — the
+    columns Spec D names are the scannable part, the summary is the evidence.
+    """
+    esc = html.escape
+    rows = []
+    for a in actions:
+        status = a.get("status", "")
+        water = bool(a.get("water_related"))
+        angle = a.get("water_angle") or ("" if water else "—")
+        rows.append(
+            # data-action-id, not id: Spec D v1 deliberately keeps these
+            # records out of the registry, so they get no in-page anchors.
+            f'<tr data-action-id="{esc(a.get("action_id", ""))}" '
+            f'data-state="{esc(a.get("state", ""))}" '
+            f'data-status="{esc(status)}" '
+            f'data-type="{esc(a.get("action_type", ""))}" '
+            f'data-water="{"1" if water else "0"}">'
+            f'<td class="la-place"><strong>{esc(a.get("jurisdiction", ""))}</strong>'
+            f'<span class="la-state">{esc(a.get("state", ""))}</span></td>'
+            f'<td>{esc(LOCAL_ACTION_TYPE_LABELS.get(a.get("action_type", ""), a.get("action_type", "")))}</td>'
+            f'<td>{_status_pill_html(LOCAL_ACTION_STATUS_LABELS.get(status, status), LOCAL_ACTION_STATUS_COLORS.get(status, COLORS["secondary"]))}</td>'
+            f'<td class="la-date">{esc(a.get("date", ""))}</td>'
+            f'<td class="la-angle">{esc(angle)}'
+            f'<details class="la-more"><summary>What it does</summary>'
+            f'<span>{esc(a.get("summary", ""))}</span></details></td>'
+            f'<td><a href="{esc(a.get("source_url", ""))}" target="_blank" '
+            f'rel="noopener">Source</a></td>'
+            f'</tr>'
+        )
+    return (
+        '<div class="table-wrap"><table class="data-table" id="local-actions-table">'
+        '<thead><tr><th>Jurisdiction</th><th>Action</th><th>Status</th>'
+        '<th>Date</th><th>Water angle</th><th>Link</th></tr></thead>'
+        f'<tbody>{"".join(rows)}</tbody></table></div>'
+    )
+
+
+def render_states_tab(today: datetime | None = None):
+    """Render the States & Localities tab (Streamlit)."""
+    st.subheader("States & Localities")
+    st.markdown(STATES_LEAD)
+
+    bills = load_legislation().get("bills", [])
+    payload = load_local_actions()
+    actions = payload.get("actions", [])
+    rollup = _state_rollup(bills, actions)
+    metrics = _states_metrics(rollup, actions)
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric("States active", metrics["states_active"])
+    c2.metric("Local actions tracked", metrics["actions_tracked"])
+    c3.metric("Newest action", metrics["newest"])
+    st.divider()
+
+    st.markdown(
+        f'<h3 class="solution-cat-header">What\'s new — last '
+        f'{STATES_WINDOW_DAYS} days</h3>',
+        unsafe_allow_html=True,
+    )
+    whats_new = _states_whats_new(bills, actions, today or datetime.now())
+    st.markdown(_build_whats_new_html(whats_new), unsafe_allow_html=True)
+
+    st.markdown(
+        '<h3 class="solution-cat-header">State rollup</h3>', unsafe_allow_html=True
+    )
+    st.caption(
+        "Activity-based, not exhaustive: a state appears because something "
+        "tracked happened there, and its absence means nothing has been "
+        "tracked rather than that nothing is happening."
+    )
+    st.markdown(_build_state_rollup_html(rollup), unsafe_allow_html=True)
+
+    st.markdown(
+        '<h3 class="solution-cat-header">County &amp; city actions</h3>',
+        unsafe_allow_html=True,
+    )
+    codes = sorted({a.get("state", "") for a in actions if a.get("state")})
+    picked_states = st.multiselect(
+        "State", options=codes, default=codes, key="local_action_states"
+    )
+    picked_status = st.multiselect(
+        "Status",
+        options=list(LOCAL_ACTION_STATUS_LABELS),
+        default=list(LOCAL_ACTION_STATUS_LABELS),
+        format_func=lambda s: LOCAL_ACTION_STATUS_LABELS[s],
+        key="local_action_status",
+    )
+    picked_types = st.multiselect(
+        "Action type",
+        options=list(LOCAL_ACTION_TYPE_LABELS),
+        default=list(LOCAL_ACTION_TYPE_LABELS),
+        format_func=lambda t: LOCAL_ACTION_TYPE_LABELS[t],
+        key="local_action_types",
+    )
+    water_only = st.toggle(
+        "Water-related only", value=True, key="local_action_water_only"
+    )
+    filtered = [
+        a
+        for a in actions
+        if a.get("state") in set(picked_states)
+        and a.get("status") in set(picked_status)
+        and a.get("action_type") in set(picked_types)
+        and (not water_only or a.get("water_related"))
+    ]
+    st.markdown(f"**Showing {len(filtered)} of {len(actions)} actions**")
+    st.markdown(_build_local_actions_table_html(filtered), unsafe_allow_html=True)
+    st.caption(
+        f"Dataset last updated {payload.get('last_updated') or 'unknown'}. "
+        f"Mirrored from {payload.get('source_repo', '')}."
+    )
 
 
 # --- Water News Tab ---
@@ -4912,6 +5382,7 @@ def main():
 
     (
         tab_legislation,
+        tab_states,
         tab_cwa,
         tab_issues,
         tab_news,
@@ -4921,6 +5392,7 @@ def main():
     ) = st.tabs(
         [
             "Legislation",
+            "States & Localities",
             "Water Cases",
             "Issues & Claims",
             "News",
@@ -4929,6 +5401,10 @@ def main():
             "Explore",
         ]
     )
+
+    # --- States & Localities tab ---
+    with tab_states:
+        render_states_tab()
 
     # --- CWA Cases tab ---
     with tab_cwa:

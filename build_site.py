@@ -944,6 +944,109 @@ def build_records_table(df: pd.DataFrame) -> str:
 
 
 # --------------------------------------------------------------------------
+# States & Localities tab
+# --------------------------------------------------------------------------
+
+
+def build_states_tab(today: datetime | None = None) -> str:
+    """State-by-state view: what moved, who is doing what, and the local table.
+
+    ``today`` is an argument rather than a call to ``datetime.now()`` inside
+    the builder so the 120-day window is testable at its boundary and a build
+    is reproducible from a fixed clock.
+    """
+    now = today or datetime.now(timezone.utc).replace(tzinfo=None)
+    bills = dash.load_legislation().get("bills", [])
+    payload = dash.load_local_actions()
+    actions = payload.get("actions", [])
+    last_updated = payload.get("last_updated") or "unknown"
+
+    rollup = dash._state_rollup(bills, actions, now)
+    metrics = dash._states_metrics(rollup, actions)
+    whats_new = dash._states_whats_new(bills, actions, now)
+
+    hero = "".join(
+        f'<div class="metric"><div class="metric-label">{lbl}</div>'
+        f'<div class="metric-value">{val}</div>'
+        f'<div class="metric-sub">{sub}</div></div>'
+        for lbl, val, sub in [
+            ("States active", metrics["states_active"], "at least one tracked measure"),
+            ("Local actions tracked", metrics["actions_tracked"], "county, city and town"),
+            ("Newest action", metrics["newest"], "most recent movement"),
+        ]
+    )
+
+    codes = sorted({a.get("state", "") for a in actions if a.get("state")})
+    state_options = "".join(
+        f'<option value="{esc(c)}">{esc(c)} — {esc(dash.US_STATE_NAMES.get(c, c))}</option>'
+        for c in codes
+    )
+    status_boxes = "".join(
+        f'<label class="chip-check"><input type="checkbox" class="la-status" '
+        f'value="{k}" checked> {esc(v)}</label>'
+        for k, v in dash.LOCAL_ACTION_STATUS_LABELS.items()
+    )
+    type_boxes = "".join(
+        f'<label class="chip-check"><input type="checkbox" class="la-type" '
+        f'value="{k}" checked> {esc(v)}</label>'
+        for k, v in dash.LOCAL_ACTION_TYPE_LABELS.items()
+    )
+
+    return f"""
+<section class="panel">
+  <h2>States &amp; Localities</h2>
+  <p class="lead">{esc(dash.STATES_LEAD)}</p>
+  <div class="hero src-hero">{hero}</div>
+</section>
+
+<section class="panel">
+  <h3 class="solution-cat-header">What's new — last {dash.STATES_WINDOW_DAYS} days</h3>
+  <p class="solution-cat-desc">State and local movement only; federal bills are
+  on the Legislation tab. An instrument moves when its timeline gains an event
+  that has already happened, not when a future deadline is recorded.</p>
+  {dash._build_whats_new_html(whats_new)}
+</section>
+
+<section class="panel">
+  <h3 class="solution-cat-header">State rollup</h3>
+  <p class="solution-cat-desc">Activity-based, not exhaustive: a state is here
+  because something tracked happened in it. An absent state means nothing has
+  been tracked there, not that nothing is happening. Instrument names link into
+  the Legislation tab.</p>
+  {dash._build_state_rollup_html(rollup)}
+</section>
+
+<section class="panel">
+  <h3 class="solution-cat-header">County &amp; city actions</h3>
+  <p class="solution-cat-desc">The layer the Legislation tab is too coarse to
+  hold: {len(actions)} county, city and town measures mirrored from the Data
+  Center Community Benefits project. State-level measures stay on the
+  Legislation tab.</p>
+  <div class="cwa-filters">
+    <span class="filter-label">State:</span>
+    <select class="filter-select" id="la-state">
+      <option value="">All states</option>{state_options}
+    </select>
+    <label class="chip-check"><input type="checkbox" id="la-water" checked>
+      Water-related only</label>
+  </div>
+  <div class="cwa-filters">
+    <span class="filter-label">Status:</span>{status_boxes}
+  </div>
+  <div class="cwa-filters">
+    <span class="filter-label">Action:</span>{type_boxes}
+  </div>
+  <p class="count-line" id="la-count"></p>
+  {dash._build_local_actions_table_html(actions)}
+  <p class="src-note">Dataset last updated {esc(last_updated)}. Mirrored from
+  {esc(payload.get("source_repo", ""))} and corrected against primary sources
+  where the mirror was stale; see the dataset note for what was changed.</p>
+</section>
+<script>window.LA_TOTAL = {len(actions)};</script>
+"""
+
+
+# --------------------------------------------------------------------------
 # News tab
 # --------------------------------------------------------------------------
 
@@ -1404,6 +1507,8 @@ a.news-title{color:var(--blue)}
      half-screen wall of checkboxes. */
   .cwa-types{max-height:7.5rem;overflow-y:auto}
   .barrier-grid{grid-template-columns:1fr}
+  .state-grid{grid-template-columns:1fr}
+  .whatsnew-row{grid-template-columns:76px 1fr;gap:.45rem}
   .tl-row{grid-template-columns:70px 14px 1fr}
 }
 
@@ -1616,6 +1721,38 @@ function applyRecFilter(){
 document.querySelectorAll('.rec-state').forEach(c => c.addEventListener('change', applyRecFilter));
 if (recCount) applyRecFilter();
 
+// --- County & city action filters (States & Localities tab) ---
+// One <select> for 35 states rather than 35 chips; status and action type
+// stay checkboxes to match every other filter row on the page.
+const laCount = document.getElementById('la-count');
+const laRows = [...document.querySelectorAll('#local-actions-table tbody tr')];
+const laStatusChecks = [...document.querySelectorAll('.la-status')];
+const laTypeChecks = [...document.querySelectorAll('.la-type')];
+const laState = document.getElementById('la-state');
+const laWater = document.getElementById('la-water');
+function applyLocalActionFilter(){
+  const statuses = new Set(laStatusChecks.filter(c => c.checked).map(c => c.value));
+  const types = new Set(laTypeChecks.filter(c => c.checked).map(c => c.value));
+  const state = laState ? laState.value : '';
+  const waterOnly = laWater ? laWater.checked : false;
+  let shown = 0;
+  laRows.forEach(tr => {
+    const ok = statuses.has(tr.dataset.status) && types.has(tr.dataset.type)
+      && (!state || tr.dataset.state === state)
+      && (!waterOnly || tr.dataset.water === '1');
+    tr.hidden = !ok;
+    if (ok) shown++;
+  });
+  if (laCount){
+    const strong = document.createElement('strong');
+    strong.textContent = 'Showing ' + shown + ' of ' + (window.LA_TOTAL || laRows.length) + ' actions';
+    laCount.replaceChildren(strong);
+  }
+}
+[...laStatusChecks, ...laTypeChecks, laState, laWater].forEach(c =>
+  c && c.addEventListener('change', applyLocalActionFilter));
+if (laCount) applyLocalActionFilter();
+
 // --- News tag filter ---
 const newsCount = document.getElementById('news-count');
 function applyNewsFilter(){
@@ -1707,6 +1844,42 @@ def build_llms_txt() -> str:
             f"{b.get('summary')} Source: {b.get('source_url')}"
         )
 
+    # States & Localities. One line per state rollup entry would be 40 rows of
+    # counts with no facts in them, so this carries the tab's shape plus the
+    # thing that is actually perishable: what moved recently.
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    local_payload = dash.load_local_actions()
+    local_actions = local_payload.get("actions", [])
+    rollup = dash._state_rollup(bills, local_actions, now)
+    whats_new = dash._states_whats_new(bills, local_actions, now)
+    water_actions = sum(1 for a in local_actions if a.get("water_related"))
+    lines += [
+        "",
+        "## States and localities",
+        "",
+        f"The dashboard's States & Localities tab covers {len(rollup)} states with at "
+        f"least one tracked measure and {len(local_actions)} county, city and town "
+        f"actions ({water_actions} of them water-related), mirrored from "
+        f"{local_payload.get('source_repo', '')} and corrected against primary sources. "
+        "State-level instruments live in the legislation dataset above; this layer is "
+        "the county and city measures that dataset is too coarse to hold, and it "
+        "carries no cross-references to other records. States are listed because "
+        "something tracked happened in them, so an absent state means nothing has been "
+        "tracked there rather than that nothing is happening.",
+        "",
+        f"State activity, newest first: "
+        + ", ".join(f"{r['state_name']} ({r['newest']})" for r in rollup)
+        + ".",
+        "",
+        f"### Moved in the last {dash.STATES_WINDOW_DAYS} days ({len(whats_new)} movements)",
+        "",
+    ]
+    for r in whats_new[: dash.WHATS_NEW_LIMIT]:
+        lines.append(
+            f"- {r['date']} — {r['jurisdiction']} — {r['label']} — "
+            f"{r['status_label']} — {r['detail']}"
+        )
+
     lines += ["", "## Federal water-law toolkit (statutory readings)", ""]
     for r in readings:
         examples = ", ".join(r.get("example_case_ids", []))
@@ -1778,6 +1951,7 @@ def build_llms_txt() -> str:
         f"- Water authorities (statutory readings): {REPO_URL}/blob/main/data/reference/water_authorities.json",
         f"- DC water-conflict sites: {REPO_URL}/blob/main/data/reference/dc_water_conflicts.json",
         f"- Company water claims: {REPO_URL}/blob/main/data/reference/company_water_claims.json",
+        f"- County & city actions: {REPO_URL}/blob/main/data/reference/local_actions.json",
         "",
     ]
     return "\n".join(lines)
@@ -1812,6 +1986,7 @@ FOOTER_MOTIF = """
 
 def build_html() -> str:
     legislation = build_legislation_tab()
+    states = build_states_tab()
     cwa = build_cwa_tab()
     issues = build_issues_claims_tab()
     news = build_news_tab()
@@ -1834,7 +2009,7 @@ def build_html() -> str:
 <link rel="alternate" type="text/plain" href="llms.txt" title="LLM-friendly summary">
 <style>{COMPONENT_CSS}{CSS}</style>
 <!-- Tab switching is the one thing on this page that needs JavaScript. Without
-     it five of the seven panels were unreachable — the `hidden` attribute does
+     it six of the eight panels were unreachable — the `hidden` attribute does
      not care why the button never fired. Unhide everything instead, so a no-JS
      reader gets one long document rather than a truncated one. -->
 <noscript><style>.tabpanel[hidden]{{display:block}}</style></noscript>
@@ -1849,6 +2024,7 @@ def build_html() -> str:
 
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" data-tab="legislation" aria-selected="true">Legislation</button>
+    <button class="tab" role="tab" data-tab="states" aria-selected="false">States &amp; Localities</button>
     <button class="tab" role="tab" data-tab="cwa" aria-selected="false">Water Cases</button>
     <button class="tab" role="tab" data-tab="issues" aria-selected="false">Issues &amp; Claims</button>
     <button class="tab" role="tab" data-tab="news" aria-selected="false">News</button>
@@ -1858,6 +2034,7 @@ def build_html() -> str:
   </div>
 
   <div class="tabpanel" id="panel-legislation" role="tabpanel">{legislation}</div>
+  <div class="tabpanel" id="panel-states" role="tabpanel" hidden>{states}</div>
   <div class="tabpanel" id="panel-cwa" role="tabpanel" hidden>{cwa}</div>
   <div class="tabpanel" id="panel-issues" role="tabpanel" hidden>{issues}</div>
   <div class="tabpanel" id="panel-news" role="tabpanel" hidden>{news}</div>

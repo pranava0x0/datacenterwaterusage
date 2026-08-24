@@ -107,6 +107,77 @@ INSTRUMENT_TYPE_COLORS = {
 }
 
 
+# --- US states ---------------------------------------------------------------
+
+# The `state` field of local_actions.json is validated against these keys, and
+# the States & Localities rollup uses the names to join a county/city action
+# ("TX") to a state instrument whose jurisdiction is spelled out ("Texas").
+# Fifty states plus DC; territories arrive with their first record.
+US_STATE_NAMES = {
+    "AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas",
+    "CA": "California", "CO": "Colorado", "CT": "Connecticut", "DE": "Delaware",
+    "DC": "District of Columbia", "FL": "Florida", "GA": "Georgia",
+    "HI": "Hawaii", "ID": "Idaho", "IL": "Illinois", "IN": "Indiana",
+    "IA": "Iowa", "KS": "Kansas", "KY": "Kentucky", "LA": "Louisiana",
+    "ME": "Maine", "MD": "Maryland", "MA": "Massachusetts", "MI": "Michigan",
+    "MN": "Minnesota", "MS": "Mississippi", "MO": "Missouri", "MT": "Montana",
+    "NE": "Nebraska", "NV": "Nevada", "NH": "New Hampshire", "NJ": "New Jersey",
+    "NM": "New Mexico", "NY": "New York", "NC": "North Carolina",
+    "ND": "North Dakota", "OH": "Ohio", "OK": "Oklahoma", "OR": "Oregon",
+    "PA": "Pennsylvania", "RI": "Rhode Island", "SC": "South Carolina",
+    "SD": "South Dakota", "TN": "Tennessee", "TX": "Texas", "UT": "Utah",
+    "VT": "Vermont", "VA": "Virginia", "WA": "Washington",
+    "WV": "West Virginia", "WI": "Wisconsin", "WY": "Wyoming",
+}
+
+
+# --- County & city actions (local_actions.json) ------------------------------
+
+# What KIND of measure a county or city passed. Only the three values the
+# mirrored table actually uses ship here: Spec D also names `zoning-amendment`
+# and `permit-denial`, but a taxonomy value with no records renders a filter
+# chip that matches nothing, so those two arrive with their first record and
+# a schema test fails loudly on a value that is not listed yet.
+LOCAL_ACTION_TYPE_LABELS = {
+    "moratorium": "Moratorium / pause",
+    "ordinance": "Permanent ordinance",
+    "resolution": "Resolution",
+}
+
+# Where the measure stands. `superseded` is the one that needs saying out
+# loud: a pause replaced by permanent zoning and a pause rescinded under a
+# developer lawsuit both land here, and neither is "expired".
+LOCAL_ACTION_STATUS_LABELS = {
+    "active": "In force",
+    "proposed": "Proposed",
+    "expired": "Expired",
+    "superseded": "Superseded",
+    "rejected": "Rejected",
+}
+
+# Reuses the semantic status colours of DESIGN.md §8 — nothing new enters the
+# palette. In force reads as the enacted green, proposed as the introduced
+# blue, rejected as the failed red; expired and superseded are outcomes that
+# are neither wins nor losses, so they take the amber and neutral greys.
+LOCAL_ACTION_STATUS_COLORS = {
+    "active": COLORS["success"],
+    "proposed": COLORS["primary"],
+    "expired": "#b45309",
+    "superseded": "#6b7280",
+    "rejected": COLORS["danger"],
+}
+
+# Display order for the rollup counts and the filter row: in force first,
+# then what is still moving, then the three ways a measure stops mattering.
+LOCAL_ACTION_STATUS_ORDER = {
+    "active": 0,
+    "proposed": 1,
+    "superseded": 2,
+    "expired": 3,
+    "rejected": 4,
+}
+
+
 # --- News (water_news.json) --------------------------------------------------
 
 NEWS_TAG_LABELS = {

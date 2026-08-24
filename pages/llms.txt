@@ -103,6 +103,35 @@ Static build 2026-08-24. Dashboard: https://pranava0x0.github.io/datacenterwater
 - WV HB 4832 (West Virginia) — Failed / Vetoed — Would have designated data centers high-volume water users, required them to submit water quantity and quality impact analyses to DEP, mandated public notice and hearings before approval, and authorized DEP to prohibit or limit withdrawals where adverse impacts to a state water resource would occur. Source: https://www.wvlegislature.gov/Bill_Text_HTML/2026_SESSIONS/RS/bills/hb4832%20intr.pdf
 - WI AB 840 / SB 843 (Wisconsin) — Failed / Vetoed — Would have required data centers to recycle the water used to cool computer equipment, report water usage to the Wisconsin DNR, and meet utility-rate requirements ensuring facilities, not residential ratepayers, pay for their energy and water infrastructure demands. Source: https://docs.legis.wisconsin.gov/2025/proposals/ab840
 
+## States and localities
+
+The dashboard's States & Localities tab covers 41 states with at least one tracked measure and 89 county, city and town actions (58 of them water-related), mirrored from pranava0x0/datacentercommunitybenefits and corrected against primary sources. State-level instruments live in the legislation dataset above; this layer is the county and city measures that dataset is too coarse to hold, and it carries no cross-references to other records. States are listed because something tracked happened in them, so an absent state means nothing has been tracked there rather than that nothing is happening.
+
+State activity, newest first: Virginia (2026-08-21), Texas (2026-08-14), Wisconsin (2026-08), Michigan (2026-07-15), New York (2026-07-14), South Carolina (2026-07-13), Maryland (2026-07-07), New Mexico (2026-07-02), Washington (2026-07-01), Illinois (2026-07-01), Florida (2026-07-01), Ohio (2026-07), Nevada (2026-07), Nebraska (2026-07), North Carolina (2026-07), Mississippi (2026-07), Missouri (2026-07), Minnesota (2026-07), Massachusetts (2026-07), Indiana (2026-07), Iowa (2026-07), Colorado (2026-07), California (2026-06-24), Wyoming (2026-06), Utah (2026-06), Kentucky (2026-06), Georgia (2026-06), Arkansas (2026-06), New Jersey (2026-05-27), Pennsylvania (2026-05-24), Connecticut (2026-05-06), Kansas (2026-05-01), Rhode Island (2026-05), Idaho (2026-05), Maine (2026-04-29), Alabama (2026-04-10), Oklahoma (2026-04), West Virginia (2026-03-27), South Dakota (2026-03-24), Oregon (2026-03-01), Louisiana (2026-01).
+
+### Moved in the last 120 days (102 movements)
+
+- 2026-08-21 — Virginia — VA DEQ Eastern Virginia groundwater study — Enacted — Legislators weigh policy response
+- 2026-08-14 — Texas — TX EO 2026-08 (data center audit) — Enacted — Texas Tribune reports audit scope: ~250-300 projects
+- 2026-08 — Oneida County, WI — Oneida County — Proposed — Concerns cited: water and electricity consumption, noise, and potential pollution.
+- 2026-08 — Fort Worth, TX — Fort Worth — Proposed — Resolution's stated purpose includes evaluating the water impacts of data center facilities, alongside noise and land-use compatibility.
+- 2026-07-15 — Michigan — MI SB 1046-1050 — Introduced — Package reported introduced
+- 2026-07-14 — New York — NY EO 62 — Enacted — EO 62 signed
+- 2026-07-14 — New York — NY DPS Data Center Impact Report (EO 62) — Introduced — Ordered
+- 2026-07-13 — York County, South Carolina — York County SC data center moratorium — Enacted — Adopted on third reading
+- 2026-07-07 — Prince George's County, Maryland — Prince George's County MD CB-2026 data center moratorium — Enacted — Adopted
+- 2026-07-02 — Santa Fe County, New Mexico — Santa Fe County NM data center moratorium — Enacted — Adopted unanimously
+- 2026-07 — Woodland Park, CO — Woodland Park — In force — Woodland Park City Council passed an ordinance at its July 16, 2026 meeting imposing an 18-month moratorium on the submission, acceptance, processing, and approval of data center applications, giving the city time to study county-level rules and draft its own zoning use standards.
+- 2026-07-01 — Washington County, Maryland — Washington County MD data center moratorium — Enacted — Approved
+- 2026-07-01 — Texas — TX PUC Energy and Water Use Survey (data centers) — Introduced — Survey reopened
+- 2026-07 — Taylor County, FL — Taylor County — Rejected — On July 6, 2026 the Taylor County (Florida) Commission declined to adopt a proposed data center moratorium — recommended by Commissioner Pam Feagle to run through December 31 — with the motion failing for lack of support after Commissioner Michael Newman said he lacked sufficient information to back the policy. Commissioners agreed to hold a data center workshop on August 25, 2026. Failed.
+- 2026-07 — Surry County, NC — Surry County — In force — Surry County commissioners unanimously approved a two-year moratorium on new data center development on July 21, 2026, giving the county time to research impacts via a steering committee that will visit operating data centers and consult power providers and environmental officials before new zoning standards are set.
+- 2026-07 — St. Charles County, MO — St. Charles County — In force — Charles County Council unanimously approved a six-month moratorium on data-center development exceeding 100,000 sq ft or drawing more than 5 MW, to study impacts on health, water access, energy bills, and quality of life.
+- 2026-07 — Spartanburg County, SC — Spartanburg County — Proposed — Water is tagged among this jurisdiction's stated reasons in source data; the source summary does not itemize a specific water impact.
+- 2026-07 — Sarasota County, FL — Sarasota County — In force — Sarasota County (southwest Florida) commissioners voted 5-0 on July 9, 2026 to stop accepting or reviewing data center applications for one year, after the county was approached by a company interested in a Cattleman Road property. No formal applications had been received; the pause gives staff time to evaluate how data centers fit the zoning code before any are considered. Part of the broader wave of Florida county moratoriums enacted under the 1-year pathway created by Florida SB484.
+- 2026-07 — Santa Fe County, NM — Santa Fe County — In force — Commissioners cited large water and electricity use, serious risk to the water supply, groundwater impacts, grid reliability, noise from cooling systems, and backup diesel generators.
+- 2026-07 — Prince George's County, MD — Prince George's County — In force — Council members cited unanswered questions about water, health, environmental, and utility impacts.
+
 ## Federal water-law toolkit (statutory readings)
 
 - cwa-402-npdes — CWA §402 / 33 U.S.C. §1342 (with §301, 33 U.S.C. §1311) (NPDES permit for direct discharge): Applies whenever a data center discharges cooling-tower blowdown, on-site treatment effluent, or process water directly to surface water rather than to a sewer. The AWS Lake Anna VPDES draft permit is the first direct cooling-discharge NPDES action at a hyperscaler campus; the Homer City PA draft permit covers cooling outfalls at a DC power plant. Once a campus holds its own NPDES permit, every exceedance is ECHO-visible and enforceable — including by citizen suit. Example cases: Smithfield-Pagan-River-1997, AWS-LakeAnnaVA-VPDES-cooling-discharge-2026, HomerCity-IndianaCounty-PA-NPDES-2026, Hanover-Foods-2025, PortOfMorrow-DEQ-OR-2024.
@@ -316,3 +345,4 @@ The dashboard's Explore tab renders every record above as one graph and ranks al
 - Water authorities (statutory readings): https://github.com/pranava0x0/datacenterwaterusage/blob/main/data/reference/water_authorities.json
 - DC water-conflict sites: https://github.com/pranava0x0/datacenterwaterusage/blob/main/data/reference/dc_water_conflicts.json
 - Company water claims: https://github.com/pranava0x0/datacenterwaterusage/blob/main/data/reference/company_water_claims.json
+- County & city actions: https://github.com/pranava0x0/datacenterwaterusage/blob/main/data/reference/local_actions.json
