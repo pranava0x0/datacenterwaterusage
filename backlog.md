@@ -689,3 +689,48 @@ These are large data-center water stories with no formal CWA enforcement action 
   Pairs with the live-verification item above: the first keyed run is also what
   confirms the bill-number strings.
 - **Sample prompt**: "Add LEGISCAN_API_KEY to the repo secrets and trigger the Status monitors workflow manually to confirm both LegiScan watches resolve."
+
+## Embedding-based semantic search for the Explore tab
+- **Priority**: medium (deferred 2026-08-24 — needs API tokens)
+- **What**: Spec B's similarity is TF-IDF cosine, fully offline. True semantic matching ("aquifer drawdown" ≈ "wells going dry") needs embeddings computed at build time via an embedding API and shipped as vectors in the graph blob. Explicitly deferred because the user's rule for this session was: anything needing live tokens goes here, not in the build. Design note: embed at generation time (one API pass per record, cached by record content hash in data/state/), never at page runtime; page-side scoring stays pure JS (dot products).
+- **Sample prompt**: "Add a build-time embedding pass to refdata/graph.py: for each registry record, embed its index text via the Claude/voyage embedding API (cache by content hash under data/state/embeddings.sqlite), ship float16-quantized vectors in the graph blob behind a size guard, and blend cosine(embedding) with the existing TF-IDF score in the Explore tab's ranking. Keep the no-key path working: if no API key is present, build falls back to TF-IDF-only and the page says so."
+
+## "Ask the record" natural-language querying over the knowledge graph
+- **Priority**: low (deferred 2026-08-24 — needs runtime tokens or a server)
+- **What**: A question box ("which cases could reach a Georgia county moratorium fight?") answered by an LLM given the graph JSON as context. Needs either a hosted endpoint or user-supplied API key at page runtime; both out of scope for a static Pages site today.
+- **Sample prompt**: "Prototype an 'ask the record' mode for the Explore tab: a small hosted endpoint (or claude.ai artifact capability) that receives the question plus the graph blob's relevant neighborhood (selected via the existing TF-IDF search) and returns an answer with record ids, rendered as links. Gate it behind a config flag so the static site never depends on it."
+
+## Saved searches / pinned nodes on the Explore tab
+- **Priority**: low (deferred 2026-08-24)
+- **What**: Pin records and save query text across visits. localStorage gets 90% of it with no backend; cross-device sync would need storage. Start with localStorage.
+- **Sample prompt**: "Add localStorage-backed pins and saved searches to the Explore tab: pin a node from focus mode, list pins in the left column, restore last query on load. No backend."
+
+## US choropleth for the States & Localities tab
+- **Priority**: medium
+- **What**: The tab ships as a rollup grid (Spec D). A state-shaded map (activity count or newest-action recency) reads faster. Needs a US states SVG (public domain, inline — no new CDN asset) wired to the same rollup data.
+- **Sample prompt**: "Add an inline public-domain US states SVG to the States & Localities tab, shade states by tracked-activity recency buckets from the existing rollup builder, tooltip = counts by status, click = scroll to that state's card. Both surfaces, size-budgeted, no external assets."
+
+## Promote local_actions records into the registry
+- **Priority**: low
+- **What**: Spec D v1 keeps the moratorium mirror out of the registry (no anchors/cross-refs). Promotion means: a `local-<id>` anchor kind, KIND_TABS entry, llms.txt coverage, integrity edges from news/sites to actions, and dedupe rules against legislation.json local-ordinance instruments.
+- **Sample prompt**: "Promote data/reference/local_actions.json into refdata's registry as kind 'local-action' with anchors on the States & Localities tab, add news/site cross-ref edge kinds to integrity.EDGE_TARGET_KINDS, extend llms.txt coverage tests, and define the dedupe rule vs legislation.json local-ordinance instruments."
+
+## Monitor the datacentercommunitybenefits source files
+- **Priority**: medium
+- **What**: The claims mirror and the new moratorium mirror (Spec F) refresh by hand. A monitors watch fingerprinting `docs/data/claims.json` and `docs/data/moratoriums.json` in the sibling repo would propose refreshes weekly (propose-don't-dispose, like every monitor).
+- **Sample prompt**: "Add a scrapers/monitors watch that fingerprints raw.githubusercontent.com/pranava0x0/datacentercommunitybenefits/main/docs/data/{claims,moratoriums}.json and files a monitor hit when either changes, with the diff summary in the hit payload."
+
+## DRBC/SRBC docket-calendar watch
+- **Priority**: medium
+- **What**: Basin commissions approve large withdrawals directly — a data-center docket would be a Tier 1 source the day it appears. Their meeting/docket pages are public; a monitor fingerprinting the docket lists (filtered to data-center-ish applicants) closes the gap Spec A's BASIN readings describe.
+- **Sample prompt**: "Add monitors watching the DRBC and SRBC docket/meeting pages for new water-withdrawal dockets, fingerprint the docket lists, and flag applicants matching data-center/NAICS-518210 patterns. Confirm both sites tolerate automated clients first (CLAUDE.md blocked-sources table)."
+
+## Per-tab line-art icon set (racks / pipes / droplet / tower)
+- **Priority**: low (design-gated, deferred from Spec E)
+- **What**: Small inline SVG icons next to tab labels. Only worth doing if it survives a pass against DESIGN.md §12 ("no emoji in headers" spirit — icons must read as wayfinding, not decoration).
+- **Sample prompt**: "Design a 5-icon inline-SVG set (server rack, pipe run, droplet, cooling tower, scale) at 16px stroke style for the static site's tab strip; apply DESIGN.md §12 and drop the idea if it reads as decoration."
+
+## International/treaty water layer
+- **Priority**: low (deferred from Spec A)
+- **What**: Boundary Waters Treaty/IJC, Columbia River Treaty, US-Mexico 1944 Treaty — relevant to border-region siting (an El Paso or Great Lakes fact pattern). Needs its own `kind` and at least one anchoring case each; none verified yet.
+- **Sample prompt**: "Research whether the Boundary Waters Treaty/IJC or the 1944 US-Mexico Water Treaty has a verifiable case anchoring a data-center-relevant reading; if yes, add a 'treaty' kind family to water_authorities.json with the same reading+case pairing rules."
