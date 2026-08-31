@@ -36,11 +36,11 @@ aiosqlite==0.22.1
 structlog==26.1.0
 
 # CLI
-click==8.4.2
+click==8.5.0
 
 # Dashboard
 streamlit==1.62.0
-plotly==6.9.0
+plotly==7.0.0
 streamlit-js-eval==1.0.0
 
 # Static site build (build_site.py pre-renders the dashboard to static HTML
