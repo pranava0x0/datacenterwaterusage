@@ -722,6 +722,23 @@ class TestLegislationTracker:
         assert any("HB 496" in i or "SB 553" in i for i in ids)  # Virginia
         assert any("HF 16" in i for i in ids)  # Minnesota
 
+    def test_september_2026_refresh_is_pinned(self):
+        by_id = {b["bill_id"]: b for b in self._bills()}
+        for bill_id in (
+            "CA AB 1577",
+            "CA AB 2619",
+            "CA SB 887",
+            "NV EO 2026-005",
+            "OR 2026 state-land data center pause",
+            "Gilroy CA data center moratorium",
+        ):
+            assert by_id[bill_id]["status"] == "enacted", bill_id
+            assert by_id[bill_id]["last_verified"] == "2026-09-21", bill_id
+        texas = by_id["TX PUC Energy and Water Use Survey (data centers)"]
+        assert texas["status"] == "introduced"
+        assert "separate" in texas["status_detail"].lower()
+        assert "remains voluntary" in texas["status_detail"].lower()
+
     def test_rows_match_bill_count(self):
         bills = self._bills()
         rows = _legislation_rows(bills)

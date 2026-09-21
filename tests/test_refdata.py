@@ -25,7 +25,7 @@ from refdata import graph, integrity, loaders, registry, taxonomies
 class TestLoaders:
     """The loaders moved out of dashboard.py must behave identically."""
 
-    def test_all_eight_datasets_load_non_empty(self):
+    def test_all_datasets_load_non_empty(self):
         assert loaders.load_legislation()["bills"]
         assert loaders.load_company_water_claims()["claims"]
         assert loaders.load_cwa_investigations()["cases"]
@@ -34,6 +34,7 @@ class TestLoaders:
         assert loaders.load_water_news()["items"]
         assert loaders.load_water_solutions()["categories"]
         assert loaders.load_local_actions()["actions"]
+        assert loaders.load_water_security()["threats"]
 
     def test_missing_file_returns_empty_payload(self, tmp_path):
         """A missing dataset renders an empty section, never a crash."""
@@ -41,6 +42,7 @@ class TestLoaders:
         assert loaders.load_legislation(absent) == {"last_updated": None, "bills": []}
         assert loaders.load_cwa_investigations(absent)["cases"] == []
         assert loaders.load_water_authorities(absent)["statutes"] == {}
+        assert loaders.load_water_security(absent)["proposal"] == {}
 
     def test_signature_busts_cache_on_change(self, tmp_path):
         """Caching is keyed on (mtime_ns, size), not a clock — an edit must be
@@ -366,6 +368,112 @@ class TestNewsTags:
         assert set(taxonomies.NEWS_TAG_LABELS) == used, (
             f"unused: {sorted(set(taxonomies.NEWS_TAG_LABELS) - used)}"
         )
+
+    def test_september_2026_refresh_items_present(self):
+        ids = {item["id"] for item in self._items()}
+        assert {
+            "california-data-center-laws-signed-2026-09",
+            "nevada-responsible-data-center-eo-2026-09",
+            "oregon-state-land-data-center-pause-2026-09",
+            "texas-water-survey-enforcement-2026-09",
+            "meta-newton-county-lawsuit-2026-09",
+            "gilroy-data-center-moratorium-2026-09",
+        } <= ids
+
+
+class TestWaterSecurity:
+    """Security research is cited and typed, but deliberately not graphed in v1."""
+
+    @staticmethod
+    def _payload():
+        return loaders.load_water_security()
+
+    def test_sections_and_unique_ids(self):
+        payload = self._payload()
+        sections = (
+            "threats",
+            "capabilities",
+            "companies",
+            "public_players",
+            "investments",
+            "precedents",
+        )
+        ids = []
+        for section in sections:
+            assert payload[section], section
+            ids.extend(item["id"] for item in payload[section])
+        assert len(ids) == len(set(ids))
+
+    def test_every_research_record_has_real_sources(self):
+        payload = self._payload()
+        for section in (
+            "threats",
+            "capabilities",
+            "companies",
+            "public_players",
+            "investments",
+            "precedents",
+        ):
+            for item in payload[section]:
+                assert item["sources"], (section, item["id"])
+                for source in item["sources"]:
+                    assert source.get("label"), (section, item["id"])
+                    assert source.get("url", "").startswith("https://"), (
+                        section,
+                        item["id"],
+                    )
+
+    def test_closed_values_and_funding_semantics(self):
+        payload = self._payload()
+        assert {x["domain"] for x in payload["threats"]} <= {
+            "cyber",
+            "physical",
+            "hybrid",
+        }
+        assert {x["category"] for x in payload["capabilities"]} <= {
+            "assess",
+            "prevent",
+            "detect-respond",
+            "respond-recover",
+        }
+        for item in payload["investments"]:
+            assert item["funding_status"]
+            assert item["anti_double_count_note"]
+            if "amount_usd" in item:
+                assert item["amount_usd"] > 0
+
+    def test_project_confluence_is_operational_not_aspirational_copy(self):
+        proposal = self._payload()["proposal"]
+        assert proposal["name"] == "Project Confluence"
+        assert [x["name"] for x in proposal["service_lines"]] == [
+            "Assess",
+            "Test",
+            "Exercise",
+            "Fix",
+            "Share",
+        ]
+        assert [x["horizon"] for x in proposal["milestones"]] == [
+            "12 months",
+            "36 months",
+            "60 months",
+        ]
+        assert len(proposal["guardrails"]) >= 6
+
+    def test_security_records_stay_out_of_graph_v1(self):
+        security_ids = {
+            item["id"]
+            for section in (
+                "threats",
+                "capabilities",
+                "companies",
+                "public_players",
+                "investments",
+                "precedents",
+            )
+            for item in self._payload()[section]
+        }
+        node_ids = {node["id"] for node in graph.build_graph()["nodes"]}
+        assert security_ids.isdisjoint(node_ids)
 
 
 class TestIssueTypes:

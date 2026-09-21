@@ -14,6 +14,13 @@ Format:
 
 ---
 
+### [2026-09-21] URL spot-check loop used zsh's read-only `status` name
+- **Module**: source-URL verification command
+- **Error**: `zsh: read-only variable: status`
+- **Context**: Expected one HTTP code per newly added source; the loop stopped before fetching any URL.
+- **Root cause**: Verification-command bug — `status` is a reserved zsh parameter, not a project-code or data failure.
+- **Resolution**: Fixed in the next command by using the task-specific name `http_code`; use that pattern in future zsh loops.
+
 ### [2026-08-24] Incoming research records violated three legislation.json schema gates
 - **Module**: tests/test_dashboard.py::TestLegislationTracker, data/reference/legislation.json
 - **Error**: `test_enacted_bills_are_verified` (US NDAA FY2026 Sec. 1531, VA DEQ Eastern Virginia groundwater study — `status: enacted` with `verified: false`), `test_timeline_entries_dated_and_labeled` (WRDA 2026 timeline used month-only `2026-07` dates), `test_public_sentiment_is_nontrivial_paragraph` (NDAA Sec. 1531, US H.R. 2940, SC S. 724 under the 80-character floor).

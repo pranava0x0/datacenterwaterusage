@@ -512,6 +512,34 @@ the correction yield is what paid for it.**
   input (the AWS suit's state-law theory forced the `SL` authority family) —
   keep that clause in every research-agent prompt for this repo.
 
+**2026-09-21 — three parallel research agents (news refresh, security
+landscape, federal program design). Verdict: all three justified and used;
+the bounded split kept discovery, market mapping and program design distinct.**
+
+- *News refresh:* six search angles returned six new news items, three new
+  policy records and four material updates. Primary-source re-checks preserved
+  the Texas distinction between the mandatory TWDB survey and voluntary PUCT
+  survey, and excluded weak/pending items instead of padding the feed.
+- *Security landscape:* produced the threat/capability/player/investment map
+  that became `water_security.json`. The useful constraint was explicit
+  evidence limits: the four companies are a selected capability map, not an
+  unsupported market-share ranking; the $50B water-infrastructure headline is
+  not misreported as security funding.
+- *Federal program:* corrected the seed premise that CyTRICS was an LLNL-only
+  water program; it is a DOE CESER multi-lab energy-sector model. Its verified
+  precedents and role boundaries became Project Confluence's EPA-led,
+  DOE-lab-supported service loop, milestones and guardrails.
+- *Efficiency:* the platform did not expose per-agent token totals. Useful
+  yield was 10 refresh actions, 20 cited security-map records and 8 program
+  precedents, with bounded stop rules and structured outputs. Inline work
+  would have required dozens of serialized source checks while blocking the
+  schema/UI implementation.
+- *Necessity:* yes. All three were open-ended, multi-source discovery tracks;
+  the main session still rechecked official URLs, integrated records and ran
+  schema/render/browser gates. Future refreshes can be cheaper: re-verify the
+  now-seeded security roster inline unless the user requests a new landscape
+  sweep.
+
 ---
 
 ## What NOT to do

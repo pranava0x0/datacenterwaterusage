@@ -1,7 +1,161 @@
 {
-  "last_updated": "2026-08-24",
+  "last_updated": "2026-09-21",
   "note": "State + federal data center water/energy legislation, plus selected regulatory actions and major local zoning decisions. Verified entries had their status confirmed against a primary source (state legislature page, Congress.gov / GovInfo, official sponsor press release) on the listed last_verified date; unverified entries should be re-checked before being relied upon. July 5, 2026 addition: FL SB 484 — enacted (signed May 7, 2026, effective July 1, 2026), ratepayer cost-allocation protections, a 100,000 gal/day reclaimed-water cooling requirement, and preserved local zoning authority; resolves the 'Florida hyperscale data-center regulatory framework' backlog candidate with a confirmed bill number. June 27, 2026 additions: IA HF 2690 (water + energy reporting and a separate data-center electric tariff; introduced) and CT SB 245 (would have repealed Connecticut's data-center tax incentives and added clean-energy/sustainability conditions; failed — died on the Senate calendar). Each bill is enriched with recent_news (up to 3 dated items with source URLs), public_sentiment (a paragraph naming supporters/opponents), general_principles (tagged policy concepts), and a procedural timeline. These fields are best-effort as of last_updated and should be re-verified before being cited. Scope expanded 2026-05-28 to include regulatory rulemakings (OH EPA OHD000001) and major local ordinances (Loudoun ZOAM) that function as de facto data-center policy. August 24, 2026 additions (state/local + federal sweep): TX EO 2026-08 (data center audit) — Abbott's directive gating the ERCOT interconnection queue on a water-and-power audit of ~250-300 projects; VA DEQ Eastern Virginia groundwater study — the delayed Potomac Aquifer report finding no headroom for new industrial withdrawals east of I-95; ME EO 2026-04 (data center advisory council) — the alternative Gov. Mills chose the day the LD 307 veto was sustained; SC S. 724 — annual water-consumption reporting for data centers over 100 MW and 3 MGal/month; and three federal items (WRDA 2026 H.R. 9497, NDAA FY2026 Sec. 1531, H.R. 2940 Advancing Water Reuse Act). The House companion H.R. 9825 was merged into the existing US S. 4213 record rather than entered twice. County and city measures below the first-of-kind threshold live in local_actions.json and render on the States & Localities tab.",
   "bills": [
+    {
+      "bill_id": "NV EO 2026-005",
+      "instrument_type": "executive-order",
+      "jurisdiction": "Nevada",
+      "level": "state",
+      "title": "Nevada Standard for Responsible Data Center Development",
+      "sponsor": "Gov. Joe Lombardo",
+      "summary": "Conditions partial data-center tax abatements on full payment of the Local School Support Tax and a binding Community Support Commitment developed with state and local officials. At minimum, developers must comply with local water standards, pay the service costs their projects cause, and avoid straining the grid or community during emergencies.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Governor Lombardo signed Executive Order 2026-005 on 2026-09-18. It applies when a data-center developer seeks a partial tax abatement; it is a condition on subsidy approval, not a statewide construction permit or stand-alone water-use limit.",
+      "source_url": "https://www.gov.nv.gov/siteassets/content/newsroom/prs/2026/eo-2026-005.pdf",
+      "last_verified": "2026-09-21",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-09-18",
+          "title": "Governor signs guardrails on data center development",
+          "source": "Office of Governor Joe Lombardo",
+          "url": "https://www.gov.nv.gov/press-releases/governor-joe-lombardo-signs-executive-order-placing-guardrails-on-data-center-development-restoring-education-funding/",
+          "takeaway": "Tax-abatement applicants must accept water, service-cost, grid, school-tax, and community commitments before GOED Board review."
+        }
+      ],
+      "public_sentiment": "The governor frames the order as a bargain: Nevada remains open to data-center investment only when developers pay school taxes and infrastructure costs and protect water and grid resources. The official materials document the administration's position; no comparably specific industry or community response was found in this bounded pass.",
+      "general_principles": [
+        {
+          "tag": "Anti-corporate-welfare",
+          "note": "Conditions partial tax abatements on tax payment and a binding Community Support Commitment."
+        },
+        {
+          "tag": "Cost allocation",
+          "note": "Requires developers to cover service costs rather than shift them to ratepayers."
+        },
+        {
+          "tag": "Permit oversight",
+          "note": "Requires compliance with local water standards before an abatement application reaches the GOED Board."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-09-18",
+          "milestone": "Signed",
+          "detail": "Executive Order 2026-005 establishes the Nevada Standard for Responsible Data Center Development."
+        }
+      ]
+    },
+    {
+      "bill_id": "OR 2026 state-land data center pause",
+      "instrument_type": "executive-order",
+      "jurisdiction": "Oregon",
+      "level": "state",
+      "title": "Pause on state-property approvals supporting new data centers",
+      "sponsor": "Gov. Tina Kotek",
+      "summary": "Directs every state agency to pause unapproved data-center requests involving state easements, rights-of-way, leases, rentals, land-use permits, and property sales or transfers while Oregon evaluates water use, infrastructure capacity, environmental sustainability, jobs, and community effects.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Effective 2026-09-08 through 2027-07-01 unless superseded by statewide executive or legislative action. Oregon expressly says it lacks authority for a statewide development moratorium; this narrower directive reaches only approvals and property interests controlled by state agencies.",
+      "source_url": "https://apps.oregon.gov/oregon-newsroom/OR/GOV/Posts/Post/governor-kotek-pauses-work-on-requests-for-state-land-to-support-new-data-centers",
+      "last_verified": "2026-09-21",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-09-08",
+          "title": "Governor pauses state-property requests for data centers",
+          "source": "Oregon Governor's Office",
+          "url": "https://apps.oregon.gov/oregon-newsroom/OR/GOV/Posts/Post/governor-kotek-pauses-work-on-requests-for-state-land-to-support-new-data-centers",
+          "takeaway": "The state uses its own property and permitting authority to pause approvals while a statewide framework is developed."
+        }
+      ],
+      "public_sentiment": "Governor Kotek says public land should not advance projects before Oregon understands water, power, infrastructure, natural-resource, and community effects. The action follows the stopped Mill Creek state-land sale and the governor's advisory committee; the official release does not establish how developers or affected local governments responded.",
+      "general_principles": [
+        {
+          "tag": "Moratorium",
+          "note": "Temporarily pauses state-controlled property and approval actions, not all data-center development."
+        },
+        {
+          "tag": "Preemptive review",
+          "note": "Keeps state assets from enabling projects before water and infrastructure impacts are evaluated."
+        },
+        {
+          "tag": "Permit oversight",
+          "note": "Uses state land-use permits, easements, leases, and transfers as the approval lever."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-09-08",
+          "milestone": "State-agency pause begins"
+        },
+        {
+          "date": "2027-07-01",
+          "milestone": "Scheduled end",
+          "detail": "Ends earlier if superseded by statewide action."
+        }
+      ]
+    },
+    {
+      "bill_id": "Gilroy CA data center moratorium",
+      "instrument_type": "local-ordinance",
+      "jurisdiction": "Gilroy, California",
+      "level": "local",
+      "title": "Temporary citywide data-center moratorium",
+      "sponsor": "Gilroy City Council",
+      "summary": "Immediately pauses new data-center applications and entitlements for 45 days while the city studies water use, cooling technology, electricity demand, noise, aesthetics, and backup-generator emissions. The pause covers a possible second Amazon project at pre-application stage but not Amazon's already approved facility.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Adopted unanimously and effective 2026-09-14 for 45 days. California law permits extensions up to a two-year total, but no extension is recorded yet.",
+      "source_url": "https://www.cityofgilroy.org/m/newsflash/Home/Detail/1331",
+      "last_verified": "2026-09-21",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-09-14",
+          "title": "Gilroy adopts temporary data-center moratorium",
+          "source": "City of Gilroy",
+          "url": "https://www.cityofgilroy.org/m/newsflash/Home/Detail/1331",
+          "takeaway": "The unanimous urgency action pauses new applications while citywide siting standards are written."
+        }
+      ],
+      "public_sentiment": "The unanimous council vote reflects a shared demand for citywide standards before another data-center application advances. The city's notice names water, cooling, electricity, noise, aesthetics, and emissions as study topics while preserving the entitlement of Amazon's already approved facility; no referendum or broader public-opinion measure was found.",
+      "general_principles": [
+        {
+          "tag": "Moratorium",
+          "note": "Creates a 45-day pause on new applications, with extensions possible under state law."
+        },
+        {
+          "tag": "Preemptive review",
+          "note": "Studies water, cooling, energy, noise, aesthetics, and emissions before new entitlements."
+        },
+        {
+          "tag": "Best-practice guidance",
+          "note": "The pause exists to produce permanent citywide development standards."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-09-14",
+          "milestone": "Moratorium adopted",
+          "detail": "Unanimous council vote; effective immediately for 45 days."
+        }
+      ]
+    },
     {
       "bill_id": "VA HB 496 / SB 553",
       "jurisdiction": "Virginia",
@@ -547,13 +701,20 @@
         "water",
         "energy"
       ],
-      "status": "introduced",
-      "status_detail": "Amended in Assembly 2026-05-18 (prior amendments 2026-01-12, -03-26, -04-13); still pending in the Assembly.",
+      "status": "enacted",
+      "status_detail": "Signed by Governor Newsom and chaptered 2026-09-21. The final measure requires data-center energy and water reporting to the California Energy Commission and an annual aggregated public release.",
       "source_url": "https://leginfo.legislature.ca.gov/faces/billNavClient.xhtml?bill_id=202520260AB1577",
-      "last_verified": "2026-05-25",
+      "last_verified": "2026-09-21",
       "verified": true,
       "confidence": "high",
       "recent_news": [
+        {
+          "date": "2026-09-21",
+          "title": "Governor Newsom signs AB 1577",
+          "source": "Office of Governor Gavin Newsom / California Legislative Information",
+          "url": "https://www.gov.ca.gov/2026/09/21/governor-newsom-signs-most-comprehensive-data-center-laws-in-the-nation-providing-communities-more-control-on-water-electricity-and-land-use/",
+          "takeaway": "The statewide reporting measure is enacted, replacing the prior committee-stage status."
+        },
         {
           "date": "2026-05-18",
           "title": "AB 1577 amended on Assembly floor; ordered to third reading",
@@ -576,7 +737,7 @@
           "takeaway": "Bauer-Kahan's prior bill AB 222 was gutted under Big Tech pressure (Silicon Valley Leadership Group, Data Center Coalition) and a related water-reporting bill was vetoed by Newsom, setting hostile precedent for AB 1577."
         }
       ],
-      "public_sentiment": "Sponsor Bauer-Kahan frames AB 1577 as consumer protection ('powering data centers can't come at the cost of powering homes'), echoing The Utility Reform Network and ratepayer advocates. Big Tech and the Data Center Coalition successfully gutted her prior AB 222 and Sen. Padilla's water bill in 2025, and similar opposition is expected. Governor Newsom's 2025 veto of AB 93 (water reporting) is a warning sign even if the legislature passes AB 1577. The 11-4 and 9-4 committee splits suggest party-line dynamics.",
+      "public_sentiment": "Sponsor Bauer-Kahan and ratepayer advocates framed AB 1577 as consumer protection and transparency; technology and data-center trade groups had weakened or opposed earlier California reporting bills. Newsom's signature on 2026-09-21 reverses the state's 2025 veto outcome and makes statewide reporting the final policy rather than a pending proposal.",
       "general_principles": [
         {
           "tag": "Transparency",
@@ -627,6 +788,11 @@
           "date": "2026-05-18",
           "milestone": "Amended; second reading",
           "detail": "Floor vote pending on Assembly 3rd Reading File."
+        },
+        {
+          "date": "2026-09-21",
+          "milestone": "Signed and chaptered",
+          "detail": "Governor Newsom signs AB 1577 into law."
         }
       ],
       "instrument_type": "bill"
@@ -2735,13 +2901,20 @@
       "scope": [
         "water"
       ],
-      "status": "introduced",
-      "status_detail": "Passed Assembly Water, Parks, and Wildlife Committee April 2026; advancing through Assembly/Senate committees as of June 2026. Paired with SB 887 (Padilla). Preceded by CA AB 93 (same author, vetoed by Newsom Oct 2025).",
+      "status": "enacted",
+      "status_detail": "Signed by Governor Newsom and chaptered 2026-09-21. Before initial local licensing, operators must disclose projected water demand and source; renewals require prior-year total and direct water use, source categories, and cooling-system type. Urban water suppliers must include data-center demand in annual supply-demand assessments.",
       "source_url": "https://leginfo.legislature.ca.gov/faces/billTextClient.xhtml?bill_id=202520260AB2619",
-      "last_verified": "2026-06-24",
+      "last_verified": "2026-09-21",
       "verified": true,
       "confidence": "high",
       "recent_news": [
+        {
+          "date": "2026-09-21",
+          "title": "Governor Newsom signs AB 2619",
+          "source": "Office of Governor Gavin Newsom / California Legislative Information",
+          "url": "https://www.gov.ca.gov/2026/09/21/governor-newsom-signs-most-comprehensive-data-center-laws-in-the-nation-providing-communities-more-control-on-water-electricity-and-land-use/",
+          "takeaway": "The successor to vetoed AB 93 becomes law with facility-level projected and actual water disclosures tied to licensing and water-supply planning."
+        },
         {
           "date": "2026-05-01",
           "title": "California data centers face water transparency push after Newsom veto",
@@ -2750,7 +2923,7 @@
           "takeaway": "AB 2619 is the successor to vetoed AB 93; similar industry opposition expected but Papan pressing again."
         }
       ],
-      "public_sentiment": "Environmental groups, water agencies, and local governments supportive. Tech industry opposing mandatory disclosure provisions; similar objections led to Newsom's 2025 AB 93 veto.",
+      "public_sentiment": "Environmental groups, water agencies, and local governments supported facility-level disclosure, while technology-industry opponents raised the same concerns that helped produce the 2025 AB 93 veto. Newsom's 2026 signature resolves that fight in favor of mandatory disclosures tied to licensing and urban-water planning.",
       "general_principles": [
         {
           "tag": "Transparency",
@@ -2774,6 +2947,11 @@
         {
           "date": "2026-06-24",
           "milestone": "Advancing in Assembly/Senate committees"
+        },
+        {
+          "date": "2026-09-21",
+          "milestone": "Signed and chaptered",
+          "detail": "Governor Newsom signs AB 2619 into law."
         }
       ],
       "instrument_type": "bill"
@@ -2789,13 +2967,20 @@
         "water",
         "energy"
       ],
-      "status": "introduced",
-      "status_detail": "Passed Senate 29-9; heard in Assembly Natural Resources Committee June 22, 2026. Companion to AB 2619.",
-      "source_url": "https://calmatters.digitaldemocracy.org/bills/ca_202520260sb887",
-      "last_verified": "2026-06-24",
+      "status": "enacted",
+      "status_detail": "Signed by Governor Newsom and chaptered 2026-09-21. The final measure changes CEQA treatment for data-center projects and operates alongside enacted AB 2619's water-disclosure requirements.",
+      "source_url": "https://leginfo.legislature.ca.gov/faces/billStatusClient.xhtml?bill_id=202520260SB887",
+      "last_verified": "2026-09-21",
       "verified": true,
       "confidence": "high",
       "recent_news": [
+        {
+          "date": "2026-09-21",
+          "title": "Governor Newsom signs SB 887",
+          "source": "Office of Governor Gavin Newsom / California Legislative Information",
+          "url": "https://www.gov.ca.gov/2026/09/21/governor-newsom-signs-most-comprehensive-data-center-laws-in-the-nation-providing-communities-more-control-on-water-electricity-and-land-use/",
+          "takeaway": "The CEQA measure becomes law as part of California's three-bill data-center package."
+        },
         {
           "date": "2026-06-22",
           "title": "SB 887 heard in Assembly Natural Resources Committee",
@@ -2804,7 +2989,7 @@
           "takeaway": "Paired with AB 2619 as twin data center environmental accountability measures advancing through CA legislature."
         }
       ],
-      "public_sentiment": "Environmental coalition strongly supportive. Tech industry opposes CEQA de-exemption; developers argue ELDP pathway offsets the change.",
+      "public_sentiment": "Environmental advocates supported fuller review of data-center water, energy, and land impacts; developers and technology-industry groups opposed removal or narrowing of CEQA exemptions and pointed to the expedited leadership-project pathway. Newsom's signature makes the revised CEQA treatment final policy.",
       "general_principles": [
         {
           "tag": "Preemptive review",
@@ -2827,6 +3012,11 @@
         {
           "date": "2026-06-22",
           "milestone": "Assembly Natural Resources Committee hearing"
+        },
+        {
+          "date": "2026-09-21",
+          "milestone": "Signed and chaptered",
+          "detail": "Governor Newsom signs SB 887 into law."
         }
       ],
       "instrument_type": "bill"
@@ -3958,9 +4148,9 @@
         "energy"
       ],
       "status": "introduced",
-      "status_detail": "Open and voluntary, with response rates the Legislature has called inadequate: about a third of surveyed data centers responded in 2024 and 17% in 2025; the most recent round drew 28 companies covering 92 facilities. PUCT reopened the survey 2026-07-01 with responses due 2026-07-10. The Texas Water Development Board's own water-consumption surveys have been mandatory since 2023. Watch for a mandatory PUCT/ERCOT registration requirement replacing the voluntary survey.",
+      "status_detail": "PUCT's survey remains voluntary. A separate Texas Water Development Board water-use survey is mandatory: on 2026-09-14 Governor Abbott directed TWDB to penalize major users, including data centers, for nonresponse, with possible criminal referral and ineligibility for certain TCEQ Chapter 11 water permits, amendments, or renewals. TWDB must coordinate with PUCT and ERCOT on an audit of consumption, sources, and efficiency technology and report progress by 2026-10-14. Do not describe the voluntary PUCT survey itself as mandatory.",
       "source_url": "https://www.puc.texas.gov/industry/water/utilities/energy-and-water-use-survey/faq/",
-      "last_verified": "2026-07-25",
+      "last_verified": "2026-09-21",
       "verified": true,
       "confidence": "high",
       "general_principles": [
@@ -3988,9 +4178,21 @@
           "date": "2026-07-01",
           "milestone": "Survey reopened",
           "detail": "Responses due 2026-07-10"
+        },
+        {
+          "date": "2026-09-14",
+          "milestone": "Mandatory TWDB survey enforcement ordered",
+          "detail": "Governor directs penalties, permit consequences, and a TWDB/PUCT/ERCOT audit; the separate PUCT survey remains voluntary."
         }
       ],
       "recent_news": [
+        {
+          "date": "2026-09-14",
+          "title": "Governor directs penalties for mandatory water-use reporting failures",
+          "source": "Office of Governor Greg Abbott",
+          "url": "https://gov.texas.gov/news/post/governor-abbott-directs-twdb-to-penalize-data-center-reporting-failures",
+          "takeaway": "The enforcement escalation applies to TWDB's mandatory statutory survey and adds permit consequences plus a joint audit; it does not convert PUCT's voluntary survey into a mandate."
+        },
         {
           "date": "2026-06-23",
           "title": "Most data centers ignore Texas surveys about their water use",

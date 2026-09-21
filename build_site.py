@@ -1430,6 +1430,22 @@ def build_sources_tab() -> str:
 
 
 # --------------------------------------------------------------------------
+# Water infrastructure security tab
+# --------------------------------------------------------------------------
+
+
+def build_security_tab() -> str:
+    """Cited cyber/physical landscape plus the Project Confluence proposal."""
+    return f"""
+<section class="panel">
+  <h2>Water Infrastructure Security</h2>
+  <p class="lead">{esc(dash.SECURITY_LEAD)}</p>
+{dash._build_water_security_html()}
+</section>
+"""
+
+
+# --------------------------------------------------------------------------
 # Explore tab
 # --------------------------------------------------------------------------
 
@@ -2176,6 +2192,7 @@ def build_llms_txt() -> str:
     readings_by_id = dash._readings_by_id(authorities)
     conflicts = dash.load_dc_water_conflicts()
     conflict_sites = conflicts.get("sites", [])
+    security = dash.load_water_security()
     built = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     lines = [
@@ -2312,6 +2329,32 @@ def build_llms_txt() -> str:
 
     lines += [
         "",
+        "## Water infrastructure security",
+        "",
+        security.get("scope_note", ""),
+        "",
+        f"Project Confluence: {security.get('proposal', {}).get('mission', '')}",
+        "",
+        "### Demonstrated threats",
+        "",
+    ]
+    for item in security.get("threats", []):
+        lines.append(
+            f"- {item['title']} ({item['domain']}): {item['evidence']} "
+            f"Operational meaning: {item['why_it_matters']} "
+            f"Source: {item['sources'][0]['url']}"
+        )
+    lines += ["", "### Security investment", "", security.get("funding_note", "")]
+    for item in security.get("investments", []):
+        lines.append(
+            f"- {item['program']} ({item['level']}, {item['funding_status']}): "
+            f"{dash._format_security_amount(item)}. {item['scope']} "
+            f"Counting rule: {item['anti_double_count_note']} "
+            f"Source: {item['sources'][0]['url']}"
+        )
+
+    lines += [
+        "",
         "## Explore tab (connection graph + text search)",
         "",
         "The dashboard's Explore tab renders every record above as one graph and "
@@ -2333,6 +2376,7 @@ def build_llms_txt() -> str:
         f"- DC water-conflict sites: {REPO_URL}/blob/main/data/reference/dc_water_conflicts.json",
         f"- Company water claims: {REPO_URL}/blob/main/data/reference/company_water_claims.json",
         f"- County & city actions: {REPO_URL}/blob/main/data/reference/local_actions.json",
+        f"- Water infrastructure security: {REPO_URL}/blob/main/data/reference/water_security.json",
         "",
     ]
     return "\n".join(lines)
@@ -2372,6 +2416,7 @@ def build_html() -> str:
     issues = build_issues_claims_tab()
     news = build_news_tab()
     solutions = build_solutions_tab()
+    security = build_security_tab()
     sources_html = build_sources_tab()
     explore = build_explore_tab()
     js = build_js()
@@ -2413,6 +2458,7 @@ def build_html() -> str:
       <button class="tab" role="tab" data-tab="issues" aria-selected="false">Issues &amp; Claims</button>
       <button class="tab" role="tab" data-tab="news" aria-selected="false">News</button>
       <button class="tab" role="tab" data-tab="solutions" aria-selected="false">Solutions</button>
+      <button class="tab" role="tab" data-tab="security" aria-selected="false">Security</button>
       <button class="tab" role="tab" data-tab="sources" aria-selected="false">Sources</button>
       <button class="tab" role="tab" data-tab="explore" aria-selected="false">Explore</button>
     </div>
@@ -2424,6 +2470,7 @@ def build_html() -> str:
   <div class="tabpanel" id="panel-issues" role="tabpanel" hidden>{issues}</div>
   <div class="tabpanel" id="panel-news" role="tabpanel" hidden>{news}</div>
   <div class="tabpanel" id="panel-solutions" role="tabpanel" hidden>{solutions}</div>
+  <div class="tabpanel" id="panel-security" role="tabpanel" hidden>{security}</div>
   <div class="tabpanel" id="panel-sources" role="tabpanel" hidden>{sources_html}</div>
   <div class="tabpanel" id="panel-explore" role="tabpanel" hidden>{explore}</div>
 

@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-08-24",
+  "last_updated": "2026-09-21",
   "note": "Named data-center sites with documented water issues or community pushback, each mapped to the federal statutory readings (reading_ids from water_authorities.json) that could reach the fact pattern, with the historical cases (case_ids from cwa_investigations.json) that show each reading in use. Mappings deliberately overlap — one site can trigger several readings. Sites verified against news/government sources July 2026; status_2026 reflects the latest reporting found at that pass. August 24, 2026: three supply-side mappings added with the federal-statute families — Microsoft Mount Pleasant WI to the Great Lakes Compact's straddling-community diversion it inherited from Foxconn, QTS Fayette County GA to the Corps' authorized-purposes ceiling in the ACF basin, and Project Blue Tucson to Reclamation contract law behind its Central Arizona Project offsets.",
   "sites": [
     {
@@ -135,8 +135,8 @@
       "operator": "Meta",
       "location": "Social Circle / Mansfield area, Newton County, Georgia",
       "issue_summary": "After Meta broke ground on its $750M campus, nearby well-dependent households — the closest about 1,000 feet away — reported taps running dry, sediment, and pressure loss. The facility uses ~500,000 gal/day (~10% of county water use), and Mansfield's mayor cited 33% water-rate increases over two years. Meta's commissioned study called its impact 'unlikely.'",
-      "pushback_summary": "The July 2025 New York Times investigation made this the national reference case for data-center groundwater impacts; EPA has pledged investigation of the well complaints in adjoining Morgan County.",
-      "status_2026": "Ongoing dispute; no formal enforcement yet.",
+      "pushback_summary": "The July 2025 New York Times investigation made this the national reference case for data-center groundwater impacts; EPA pledged investigation of adjoining Morgan County complaints. In September 2026, several Newton County homeowners filed a civil suit against Meta and the four-county development authority alleging construction-related aquifer disturbance, turbidity, sediment, clogged lines, and appliance damage. These are allegations, not adjudicated findings. Meta denies causation, says commissioned analysis found groundwater flowing away from plaintiffs' properties, and says the campus uses local-utility water.",
+      "status_2026": "Active civil litigation filed September 2026; allegations contested and not adjudicated. No formal environmental enforcement identified.",
       "applicable_readings": [
         {
           "reading_id": "sdwa-1431-emergency",
@@ -182,6 +182,14 @@
         "Meta-MorganCo-GA-investigation-2026"
       ],
       "sources": [
+        {
+          "title": "AJC: Georgia families sue Meta, accuse data center of tainting their water",
+          "url": "https://feeds.ajc.com/news/2026/09/georgia-families-sue-meta-accuse-its-data-center-of-tainting-their-water/"
+        },
+        {
+          "title": "Meta: Operating responsibly at the Stanton Springs Data Center",
+          "url": "https://datacenters.atmeta.com/2026/04/operating-responsibly-at-the-stanton-springs-data-center/"
+        },
         {
           "title": "NYT (syndicated): Their Water Taps Ran Dry When Meta Built Next Door",
           "url": "https://www.sanjuandailystar.com/post/their-water-taps-ran-dry-when-meta-built-next-door"

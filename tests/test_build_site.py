@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import re
+import html as html_lib
 
 import build_site
 import dashboard
@@ -440,6 +441,58 @@ class TestNoDanglingAnchors:
             assert present, f"no {kind} anchor reaches the page (of {len(anchors)})"
 
 
+class TestWaterSecurityTab:
+    def test_tab_and_shared_research_surface_present(self):
+        html = _html()
+        assert 'data-tab="security"' in html
+        assert 'id="panel-security"' in html
+        assert 'id="water-security"' in html
+        assert dashboard._build_water_security_html() in build_site.build_security_tab()
+
+    def test_all_security_records_and_sources_render(self):
+        html = build_site.build_security_tab()
+        payload = dashboard.load_water_security()
+        for section in (
+            "threats",
+            "capabilities",
+            "companies",
+            "public_players",
+            "investments",
+            "precedents",
+        ):
+            for item in payload[section]:
+                assert item["id"] in html
+                for source in item["sources"]:
+                    assert html_lib.escape(source["url"]) in html
+
+    def test_confluence_has_delivery_loop_milestones_and_guardrails(self):
+        html = build_site.build_security_tab()
+        for phrase in (
+            "Project Confluence",
+            "Assess",
+            "Test",
+            "Exercise",
+            "Fix",
+            "Share",
+            "12 months",
+            "36 months",
+            "60 months",
+            "Guardrails",
+        ):
+            assert phrase in html
+
+    def test_security_tab_is_mobile_contained(self):
+        html = build_site.build_security_tab()
+        assert "overflow-x:auto" in html
+        assert "@media (max-width:800px)" in html
+
+    def test_llms_txt_carries_security_summary_and_dataset(self):
+        txt = build_site.build_llms_txt()
+        assert "## Water infrastructure security" in txt
+        assert "Project Confluence" in txt
+        assert "water_security.json" in txt
+
+
 class TestExploreTab:
     """Spec B — the graph and the similarity search reach the page intact."""
 
@@ -535,9 +588,11 @@ class TestExploreTab:
         assert 'id="explore-q"' in html          # paste-text box
         assert 'id="explore-family"' in html     # statute-family select
         assert 'id="explore-depth"' in html      # 1-2 hop toggle
+        assert '<option value="1" selected>1</option>' in html
         assert 'id="explore-scope"' in html      # restrict to neighbourhood
         assert 'id="explore-canvas"' in html
         assert 'id="explore-results"' in html
+        assert 'id="explore-neighbours"' in html # readable direct-edge list
         # One kind checkbox per record kind that actually has records.
         kinds = {n["kind"] for n in graph.build_graph()["nodes"] if n["kind"] != "hub"}
         assert len(re.findall(r'class="explore-kind"', html)) == len(kinds)
@@ -572,6 +627,12 @@ class TestExploreTab:
 
     def test_reduced_motion_is_honored(self):
         assert "prefers-reduced-motion" in dashboard._explore_js()
+
+    def test_focus_renders_direct_connections_as_text(self):
+        js = dashboard._explore_js()
+        assert "function renderDirectConnections(idx)" in js
+        assert "D.edge_kind_labels[row.kind]" in js
+        assert "rows.slice(0, 12)" in js
 
     def test_no_third_party_assets(self):
         """Standing security rule: this page loads nothing from a third party.

@@ -119,12 +119,12 @@ Python-based scraping and data extraction pipeline that finds documents related 
 
 ### Curated-data layer (`refdata/`, added 2026-07-25)
 
-The eight curated datasets are loaded, typed and cross-checked in one **pure**
+The nine curated datasets are loaded, typed and cross-checked in one **pure**
 package — no `streamlit` import anywhere in it, enforced by test — so
 `dashboard.py`, `build_site.py`, `scripts/annotate_*.py` and the tests all
 share one definition:
 
-- `loaders.py` — the eight loaders. `functools.lru_cache(maxsize=2)` keyed on
+- `loaders.py` — the nine loaders. `functools.lru_cache(maxsize=2)` keyed on
   `(path, mtime_ns, size)`; same cache-busting as the old `@st.cache_data`,
   bounded so a long-running app doesn't retain every refresh. **Payloads are
   shared and must be treated read-only.**
@@ -138,12 +138,15 @@ share one definition:
 - `integrity.py` — walks every cross-reference edge; one test asserts the whole
   graph resolves and points at the right *kind* of record.
 
-**Seven of the eight are in the registry; `local_actions.json` is not** (Spec D
-v1, 2026-08-24). It is a *mirrored table*, not adjudicated records: nothing
+**Seven of the nine are in the registry; `local_actions.json` and
+`water_security.json` are not.** The former (Spec D v1, 2026-08-24) is a
+*mirrored table*, not adjudicated records: nothing
 cross-references it, so it gets no anchors, no cross_ref edges and no graph
 nodes — tests assert all three. That is also what keeps it cheap: 89 rows cost
-table markup only and nothing in the Explore blob. Promoting it to a registry
-kind (anchors + cross-refs + llms.txt coverage) is a backlog item, not a
+table markup only and nothing in the Explore blob. The security dataset is a
+cited research brief with its own stable ids, schema tests and llms.txt mirror;
+it stays out of the graph until cross-dataset links justify a registry kind.
+Promoting either dataset to the registry is a deliberate schema change, not a
 default.
 
 **Anchors:** `bill-<slug>`, `cwa-<case_id>`, `reading-<id>`, `site-<id>`,
@@ -265,7 +268,7 @@ wastewater treatment plants via EPA ECHO DMR data. Target permits are configured
 
 ### Reference datasets (curated JSON, served by the dashboard)
 
-The dashboard reads eight curated reference files independent of the scraper pipeline. Two were added July 2, 2026 to turn the CWA tab (now the **"Water Cases"** tab) into a full federal water-law mapping:
+The dashboard reads nine curated reference files independent of the scraper pipeline. Two were added July 2, 2026 to turn the CWA tab (now the **"Water Cases"** tab) into a full federal water-law mapping:
 - `data/reference/water_authorities.json` — the **statutory-readings registry**: 51 "readings" (specific statutory hooks) across 25 authority families — the federal discharge statutes (CWA, SDWA, TSCA, RCRA, RHA, ESA), the supply-side federal statutes added 2026-08-24 (NEPA, CERCLA, the Water Supply Act with 33 U.S.C. §408 folded in, the Wild & Scenic Rivers Act, the Federal Power Act, Reclamation law, EPCRA), the interstate layer (EQAP, and BASIN for the ratified Great Lakes / Delaware / Susquehanna compacts), and the state-doctrine and common-law families — each with `reading_id`, section/agency, what it historically covered, `dc_applicability` (how it could reach a data-center fact pattern), and `example_case_ids`. Every case in `cwa_investigations.json` carries an `authorities` list of reading_ids (overlap intentional — one fact pattern can trigger several readings); a case's statute pills are **derived** from those ids at render time (`_case_statutes`), never stored, so they can't drift. Rendered as the tab's Part 1 toolkit (anchors `#reading-<id>`); statute filter + pills in both apps. Migration script: `scripts/annotate_water_authorities.py` (historical, 2026-07-02) — new cases ship `authorities` inline. Schema/referential integrity is test-enforced (`TestWaterAuthoritiesSchema`). **Part 1 toolkit UX (2026-07-07):** 20 readings across 5 statutes was a long scroll to reach e.g. RHA at the bottom — each statute is now a collapsed-by-default `<details>` accordion (`.statute-group`), with a jump-nav row of statute pills above them (`.statute-jumpnav`/`.statute-jump`) that opens the target statute via `onclick` before the browser's native anchor-scroll lands on it, so any single act is one click away regardless of scroll position (`_build_authorities_html`). **Family growth check (2026-08-24):** at 25 families the jump-nav wraps to exactly 3 lines at the 1000px content width (2 lines at ≥1240px viewport), so the pills stay ungrouped — group them by `kind` if a later batch pushes it past 3 lines (`AUTHORITY_KIND_LABELS` exists for this and is currently re-exported but rendered nowhere). A family enters `WATER_STATUTE_ORDER`/`WATER_STATUTE_COLORS` in the same commit as its readings **and** its anchor cases: `TestAuthorityFamilies` asserts every `kind: federal-statute` family has ≥1 reading and ≥1 resolvable example case, and every non-federal family additionally reaches a tracked conflict site (`TestSiteDoctrineMappings`, which derives "doctrine" from the declared `kind` rather than a hardcoded federal list).
 - `data/reference/dc_water_conflicts.json` — **19 named data-center sites with documented water issues or community pushback** (The Dalles secrecy fight, xAI Memphis, Meta Newton County wells, Tucson Project Blue rejection, PW Digital Gateway (voided 2026), AWS Lake Anna, Amazon Boardman, Bessemer, Charlotte moratorium, …), each mapping the fact pattern to `applicable_readings` (reading_id + per-site "how" + analogous historical case_ids) plus `related_case_ids` and sources. Rendered as Part 4 of the Water Cases tab (anchors `#site-<site_id>`); web-verified July 2026 (`TestDcWaterConflictsSchema`).
 
@@ -276,6 +279,7 @@ The original three:
 - `data/reference/water_news.json` — 51 curated headlines on data center water use, regulation, enforcement, and solutions (News tab), each with `date`/`outlet`/`summary`/`tags` (closed 6-value taxonomy: regulation, enforcement, solutions, research, data, policy) and an optional `cross_ref_tab`/`cross_ref_note` linking to a bill/case/site already tracked elsewhere. July 6, 2026 additions: Amazon's first-ever aggregate DC water-use disclosure (2.5B gal/yr, 2025), an ITIF report on direct-vs-indirect DC water consumption, Indiana's county-level moratorium wave, and the Spartanburg County SC and NY DEC-permit-moratorium stories. August 24, 2026 additions (17, covering May–August 2026): the AWS Lake Anna final VPDES permit, the delayed VA DEQ Potomac Aquifer study, Abbott's Texas audit directive, the Fort Worth and Indianapolis moratoriums, Tucson's post-Project-Blue zoning rules, Monterey Park's ballot ban (86.4%, June 2), the nine-jurisdiction Colorado wave, Google's 10.9 B gal/yr disclosure, and the CRS report finding no federal agency tracks data-center water use. **A news item may not cross-ref another news item** — `news.cross_ref_targets` resolves to instruments, cases, sites, claims and solutions only (`refdata.integrity.EDGE_TARGET_KINDS`), so a story continuing an earlier story takes the legacy `cross_ref_tab`/`cross_ref_note` prose path.
 - `data/reference/water_solutions.json` — 18 solutions to data-center water challenges (Solutions tab) grouped into three categories — `policy` (state/federal mandates), `utility` (utility/infrastructure programs), `technology` (industry cooling/operational practice) — each with `status` (deployed/pilot/proposed) and `actor_type` (state/federal/utility/industry). July 6, 2026 additions: Nvidia's Vera Rubin DSX near-zero-water cooling reference design (technology) and the AWS/Greater Western Water recycled-water connection in Melbourne (utility) — the first data-center recycled-water utility contract of its kind in Victoria, Australia.
 - `data/reference/local_actions.json` (added 2026-08-24, Spec D/F) — 89 county, city and town measures (58 water-related) across 35 states, mirrored from `pranava0x0/datacentercommunitybenefits`'s `docs/data/moratoriums.json` and rendered as the **States & Localities** tab's third section. Two closed taxonomies: `action_type` (`moratorium`, `ordinance`, `resolution` — Spec D also names `zoning-amendment` and `permit-denial`, held back until a record uses them) and `status` (`active`, `proposed`, `expired`, `superseded`, `rejected`). **Not in the registry** — see the curated-data layer above. `action_id` is the upsert key (`dccb-` mirrored, `direct-` verified here); `scripts/sync_community_benefits.py` holds the merge and REFRESH.md §4b the procedure. Eight corrections to the mirror (plus a 13-summary trailing-status-artifact sweep) are documented in the file's own `note` and must be re-applied after a sync that reverts them — **the mirror is a lead list, not a source of truth**: two verification passes found wrong statuses, wrong vote lengths, wrong dates, and one wrong vote share in it, so verify against primary coverage before shipping any mirrored record.
+- `data/reference/water_security.json` (added 2026-09-21) — cited physical/cyber threat, capability, public-player, company and investment maps plus the **Project Confluence** DOE+EPA program proposal. Rendered as the Security tab and mirrored in `llms.txt`. It is intentionally outside the registry/Explore graph: its source relationships are not yet cross-dataset edges, and adding unlabeled co-membership would create graph noise rather than evidence.
 
 ### Legislative pressure to watch (not yet enacted)
 

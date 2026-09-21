@@ -1,4 +1,4 @@
-"""Loaders for the eight curated reference datasets.
+"""Loaders for the curated reference datasets.
 
 Moved verbatim out of ``dashboard.py`` (2026-07-25) so both surfaces — the
 Streamlit app and ``build_site.py`` — share one loading layer, and so the
@@ -37,6 +37,7 @@ DC_WATER_CONFLICTS_PATH = REFERENCE_DIR / "dc_water_conflicts.json"
 WATER_NEWS_PATH = REFERENCE_DIR / "water_news.json"
 WATER_SOLUTIONS_PATH = REFERENCE_DIR / "water_solutions.json"
 LOCAL_ACTIONS_PATH = REFERENCE_DIR / "local_actions.json"
+WATER_SECURITY_PATH = REFERENCE_DIR / "water_security.json"
 
 
 def file_signature(path) -> tuple:
@@ -181,6 +182,32 @@ def load_local_actions(path: Path = LOCAL_ACTIONS_PATH) -> dict:
     return _load_local_actions_cached(str(path), file_signature(path))
 
 
+@lru_cache(maxsize=2)
+def _load_water_security_cached(path_str: str, signature: tuple) -> dict:
+    return _read_json(
+        path_str,
+        {
+            "threats": list,
+            "capabilities": list,
+            "companies": list,
+            "public_players": list,
+            "investments": list,
+            "precedents": list,
+            "proposal": dict,
+        },
+    )
+
+
+def load_water_security(path: Path = WATER_SECURITY_PATH) -> dict:
+    """Load the water-infrastructure physical/cyber security research map.
+
+    V1 stays outside the registry: its records do not yet expose stable
+    cross-reference fields, so adding them to Explore would enlarge the graph
+    without adding evidence-bearing edges.
+    """
+    return _load_water_security_cached(str(path), file_signature(path))
+
+
 def clear_caches() -> None:
     """Drop every loader cache. Used by tests that write temp fixtures."""
     for fn in (
@@ -192,5 +219,6 @@ def clear_caches() -> None:
         _load_water_news_cached,
         _load_water_solutions_cached,
         _load_local_actions_cached,
+        _load_water_security_cached,
     ):
         fn.cache_clear()
