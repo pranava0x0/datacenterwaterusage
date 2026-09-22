@@ -293,6 +293,13 @@ See `backlog.md` for detailed scraper plans, sample prompts for each source, and
 
 ## Universal lessons learned here (mirrored to coding-best-practices/CLAUDE.md)
 
+### 2026-09-21
+- **A skill's agent recipe never overrides this repo's fan-out rules.** `/code-review` prescribes ten finder agents; launching them burned the session limit and every one died with zero yield, while the inline pass (read the diff, grep callers, one-command checks) had already found every confirmed bug. Run review angles inline; agents are for open-ended multi-source research, at most two per session.
+- **Revive-to-report salvages a limit-killed agent for almost nothing.** A resumed agent told "no more tool calls, report what you have" answered in ~10 s with zero tool uses and returned three usable findings. Try that before writing a dead agent off; never respawn.
+- **Check build determinism build-to-build, not build-to-index.** `git diff` after a rebuild measures against HEAD, so it reports the intended change as drift (or hides real drift once staged). Commit or copy the first output aside, rebuild, then diff.
+- **A shared HTML fragment must carry or share every class it uses.** `.jumpnav` lived only in `build_site.py`'s CSS, so the Streamlit surface rendered the Security nav as one run-together string. `TestWaterSecurityTab` now asserts every class in the fragment is defined in its own `<style>` or `assets/components.css`.
+- **A graph's text view counts records, not edges.** Pairs carry several edge kinds (a reading and its example case point at each other), so a per-edge list showed 147 of 280 nodes twice and disagreed with the focus count. Group by neighbour first.
+
 ### 2026-08-24
 - **A build that emits N files needs its deploy step derived from the emitter, or tested against it.** `build_site.py` grew from one output to three; the Pages workflow still copied `index.html` by name, so `llms.txt` 404ed in production for two months and nothing noticed — the site "worked". The fix ships the whole output set and a test walks emitter outputs vs deploy manifest.
 - **Resume limit-killed background agents with SendMessage; never respawn.** Two usage-limit walls killed 5 agents mid-flight this session; every one resumed with full context intact, zero re-research. Pair it with: research agents write their deliverable file incrementally, so a death can't strand findings in a transcript.
