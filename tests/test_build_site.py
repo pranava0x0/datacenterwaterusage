@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import re
+import html as html_lib
 
 import build_site
 import dashboard
@@ -440,6 +441,100 @@ class TestNoDanglingAnchors:
             assert present, f"no {kind} anchor reaches the page (of {len(anchors)})"
 
 
+class TestWaterSecurityTab:
+    def test_tab_and_shared_research_surface_present(self):
+        html = _html()
+        assert 'data-tab="security"' in html
+        assert 'id="panel-security"' in html
+        assert 'id="water-security"' in html
+        assert dashboard._build_water_security_html() in build_site.build_security_tab()
+
+    def test_all_security_records_and_sources_render(self):
+        html = build_site.build_security_tab()
+        payload = dashboard.load_water_security()
+        for section in (
+            "threats",
+            "capabilities",
+            "companies",
+            "public_players",
+            "investments",
+            "precedents",
+        ):
+            for item in payload[section]:
+                assert item["id"] in html
+                for source in item["sources"]:
+                    assert html_lib.escape(source["url"]) in html
+
+    def test_confluence_has_delivery_loop_milestones_and_guardrails(self):
+        html = build_site.build_security_tab()
+        for phrase in (
+            "Project Confluence",
+            "Assess",
+            "Test",
+            "Exercise",
+            "Fix",
+            "Share",
+            "12 months",
+            "36 months",
+            "60 months",
+            "Guardrails",
+        ):
+            assert phrase in html
+
+    def test_fragment_styles_every_class_it_uses_on_both_surfaces(self):
+        """The fragment renders through st.markdown (page CSS = assets/
+        components.css) and inside the static page (build_site CSS). Every
+        class it uses must be defined in its own <style> or in components.css,
+        or the Streamlit surface silently loses layout — the .jumpnav row
+        rendered as one run-together string before the PR #28 review."""
+        from refdata.loaders import BASE_DIR
+
+        fragment = dashboard._build_water_security_html()
+        shared = (BASE_DIR / "assets" / "components.css").read_text()
+        style = fragment.split("<style>", 1)[1].split("</style>", 1)[0]
+        body = fragment.split("</style>", 1)[1]
+        used = {c for attr in re.findall(r'class="([^"]+)"', body) for c in attr.split()}
+        undefined = sorted(c for c in used if f".{c}" not in style and f".{c}" not in shared)
+        assert not undefined, undefined
+
+    def test_security_tab_is_mobile_contained(self):
+        html = build_site.build_security_tab()
+        assert "overflow-x:auto" in html
+        assert "@media (max-width:800px)" in html
+
+    def test_llms_txt_carries_security_summary_and_dataset(self):
+        txt = build_site.build_llms_txt()
+        payload = dashboard.load_water_security()
+        assert "## Water infrastructure security" in txt
+        # Every record in every section reaches the mirror, not just threats
+        # and investments (Codex review, PR #28).
+        for section in (
+            "threats",
+            "capabilities",
+            "companies",
+            "public_players",
+            "investments",
+            "precedents",
+        ):
+            for item in payload[section]:
+                assert item["id"] in txt, (section, item["id"])
+        proposal = payload["proposal"]
+        assert proposal["name"] in txt
+        for step in proposal["service_lines"]:
+            assert step["name"] in txt
+        for milestone in proposal["milestones"]:
+            assert milestone["horizon"] in txt
+        for role in proposal["roles"]:
+            assert f"- {role['actor']}: {role['role']}" in txt
+        for measure in proposal["measures"]:
+            assert f"- {measure}" in txt
+        for path in proposal["funding_paths"]:
+            assert f"- {path}" in txt
+        for guardrail in proposal["guardrails"]:
+            assert f"- {guardrail}" in txt
+        assert "water_security.json" in txt
+
+
 class TestExploreTab:
     """Spec B — the graph and the similarity search reach the page intact."""
 
@@ -535,9 +630,11 @@ class TestExploreTab:
         assert 'id="explore-q"' in html          # paste-text box
         assert 'id="explore-family"' in html     # statute-family select
         assert 'id="explore-depth"' in html      # 1-2 hop toggle
+        assert '<option value="1" selected>1</option>' in html
         assert 'id="explore-scope"' in html      # restrict to neighbourhood
         assert 'id="explore-canvas"' in html
         assert 'id="explore-results"' in html
+        assert 'id="explore-neighbours"' in html # readable direct-edge list
         # One kind checkbox per record kind that actually has records.
         kinds = {n["kind"] for n in graph.build_graph()["nodes"] if n["kind"] != "hub"}
         assert len(re.findall(r'class="explore-kind"', html)) == len(kinds)
@@ -572,6 +669,23 @@ class TestExploreTab:
 
     def test_reduced_motion_is_honored(self):
         assert "prefers-reduced-motion" in dashboard._explore_js()
+
+    def test_superseded_layout_stops_animating(self):
+        js = dashboard._explore_js()
+        assert "var epoch = ++layoutEpoch" in js
+        assert "if (epoch !== layoutEpoch) return" in js
+        assert "t < ITERATIONS && epoch === layoutEpoch" in js
+
+    def test_focus_renders_direct_connections_as_text(self):
+        js = dashboard._explore_js()
+        assert "function renderDirectConnections(idx)" in js
+        # One row per connected record with every relationship on it (a pair
+        # can carry two edge kinds), and the tail behind a native disclosure
+        # instead of a hard cut — both from the PR #28 review.
+        assert "byNode[other].indexOf(edge[2]) < 0" in js
+        assert "join(' \u00b7 ')" in js
+        assert "createElement('details')" in js
+        assert "rows.slice(0, 12)" not in js
 
     def test_no_third_party_assets(self):
         """Standing security rule: this page loads nothing from a third party.

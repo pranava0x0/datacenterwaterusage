@@ -387,6 +387,10 @@ CSS in `assets/components.css`:
 
 Emit via `st.markdown('<h3 class="solution-cat-header">…</h3>', unsafe_allow_html=True)`.
 
+The Security tab uses the same header treatment for Threats, Capabilities,
+Players, Investment, and operating-model precedents. Domain labels are text in
+one neutral outline style; color is reserved for status, not threat category.
+
 Do **not** use `#### Heading` markdown — that renders as h4, which is smaller
 and carries no pipe accent. Do **not** use `st.subheader` for section headers;
 that's reserved for the one tab-level title.

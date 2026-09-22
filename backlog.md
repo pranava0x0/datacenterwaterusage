@@ -808,3 +808,18 @@ These are large data-center water stories with no formal CWA enforcement action 
 - **Priority**: low
 - **What**: `refdata/graph.tokenize` is deliberately ASCII-only (`[^A-Za-z0-9]+` split) for byte-identical Python/JS parity. A full-corpus scan (2026-08-24 verification pass) found zero non-ASCII letters in any record, so nothing is mangled today — but a future record with an accented name ("Piñon Ridge", "Río Grande") would tokenize into disconnected fragments instead of erroring. Either extend both tokenizers to a shared Unicode-letter class (and re-prove parity against Node) or add a corpus test that fails loudly when the first non-ASCII record arrives so the decision is made consciously.
 - **Sample prompt**: "Add a test asserting every Explore-indexed text field is ASCII, with a message pointing at refdata/graph.tokenize's parity constraint; if it ever fails, extend the Python and JS tokenizers to a shared Unicode letter class and re-verify byte parity against Node."
+
+## Promote water_security.json into the registry
+- **Priority**: low
+- **What**: The Security tab's records carry stable ids and page anchors (`security-<id>`) but live outside `refdata/registry.py`, so nothing can cross-reference them and llms.txt coverage is enforced by a tab-specific test rather than the registry walk. Promotion means a `security` kind in KIND_TABS, cross_ref edge kinds from news/sites/solutions, integrity coverage, and moving the closed value sets (threat domain, capability category, funding status, player type) into `refdata/taxonomies.py` with label maps.
+- **Sample prompt**: "Promote data/reference/water_security.json into refdata's registry as kind 'security' with anchors on the Security tab, move its closed value sets into refdata/taxonomies.py, add news/site cross-ref edges to integrity.EDGE_TARGET_KINDS, and fold the security llms.txt check into test_llms_txt_contains_everything."
+
+## Validate the Explore direct-connections list before adding graph nodes
+- **Priority**: low
+- **What**: PR #28 made one hop the default and added a grouped, expandable direct-connections list. Before another dataset joins the graph, check the list in real reading sessions (is the record count matching the focus line enough? do derived/hub kinds belong in it?) and record the answer in DESIGN.md.
+- **Sample prompt**: "Run a UAT pass on the Explore tab's direct-connections list with five focused records (a reading, a case, a site, a bill, a news item), note what is unclear, and propose whether derived kinds should appear in the list."
+
+## Static page size and DOM watch
+- **Priority**: medium when the next data batch grows the page
+- **What**: The 2026-09-21 build is 1,554,005 uncompressed bytes (347,330 bytes gzipped locally) with about 14,933 DOM elements on initial load. The graph is a separate 649,503-byte file and loads only on Explore activation. The page remains under the 1.6 MB build gate, but has only about 46 KB of room. A future batch should measure cold-load and mobile main-thread cost before raising the gate. If it crosses the gate or becomes slow, split optional tab content into same-origin fragments while keeping no-JS access, anchors, and the LLM mirror intact; do not simply lift the limit.
+- **Sample prompt**: "Measure the generated page and 390px mobile cold load after the new data batch. If it exceeds the 1.6 MB gate or shows a long main-thread task, propose and test a same-origin lazy-tab split that preserves no-JS content and cross-tab anchors."

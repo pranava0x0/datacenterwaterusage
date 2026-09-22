@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-08-24",
+  "last_updated": "2026-09-21",
   "note": "Clean Water Act enforcement actions and landmark precedent cases relevant to data center water use and cooling discharge. Four categories: 'datacenter' = direct CWA actions against named hyperscale operators or their contractors, including state permit enforcement and §404 permit applications with significant wetland/stream impacts (e.g. Amazon Boardman nitrate settlement, Google §404 applications in VA and AR); 'adjacent' = water-relevant actions at data-center sites where the binding or active enforcement sits OUTSIDE the CWA — a Clean Air Act suit, a local well-permitting action, a §404 citizen suit over data-center power infrastructure, or a permitted-but-paused voluntary water commitment; 'industrial' = enforcement against large industrial water users that are the closest practical analogs (cooling water §316(a)/(b), pretreatment, sewer-system consent decrees, PFAS, CAFO discharges); 'precedent' = Supreme Court and federal appellate rulings that set the legal scope of the CWA, including Loper Bright (2024) ending Chevron deference and Lewis v. US (5th Cir. 2023) applying Sackett. Comprehensive coverage for 2020-present, with foundational earlier cases retained as benchmarks (Smithfield 1997, Tyson 2003, Brayton Point 2003-2007). Direct hyperscaler enforcement remains thin because operators usually sit behind contractor-permittee structures and discharge to municipal sewers — the industrial cases show what enforcement looks like once that shield slips. The Amazon Boardman 2026 $20.5M nitrate settlement is the first eight-figure direct-hyperscaler water settlement. The Port of Morrow OR DEQ enforcement ($727K, 2024) is the largest state-level penalty at a WWTP explicitly identified as receiving data center wastewater. Google's concurrent §404 applications in VA (Project Raspberry, Project Loch) and AR (Port of Little Rock, 16.8 ac wetlands) mark a new wave of federal permitting scrutiny on data center construction in sensitive watersheds. July 2, 2026 expansion: the dataset now spans federal water authorities beyond the CWA — 10 historical SDWA / TSCA / RCRA / Rivers-and-Harbors-Act cases and rulemakings (DuPont Washington Works PFOA, 3M TSCA 8(e), Flint and Trinity American SDWA 1431, Alisal receivership, Edwards sole-source-aquifer designation, the 1999 UIC Class V rule, Interfaith v. Honeywell RCRA 7002, US v. Republic Steel RHA 10/13, and the TSCA 8(a)(7) PFAS reporting rule) — and every case carries an 'authorities' list of reading_ids from data/reference/water_authorities.json mapping it to the statutory readings it used or could trigger (overlap intentional). August 24, 2026 additions: 14 cases anchoring the supply-side federal and interstate families — NEPA (Hughes River Watershed Conservancy v. Glickman; the Crane Clean Energy Center restart bundle behind Constellation's Microsoft power deal), CERCLA (Bestfoods, CTS Corp. v. Waldburger), the Water Supply Act's authorized-purposes ceiling on Lake Lanier (Southeastern Federal Power Customers v. Geren; In re MDL-1824 Tri-State Water Rights), interstate basin compacts (the Foxconn/Racine Great Lakes diversion at the site Microsoft now occupies, the SRBC Panda Power withdrawal penalty, the DRBC fracking ban), the Wild and Scenic Rivers Act (the Blue Ridge Project), the Federal Power Act (California v. FERC), Reclamation contract law (United States v. Klamath Drainage District) and EPCRA (Steel Co.; Nidec Elesys). Most are typed 'water-supply': those statutes govern allocation, storage and licensing rather than discharge. Prior count was 109.",
   "cases": [
     {
@@ -2664,20 +2664,30 @@
       "case_id": "Meta-NewtonCountyGA-well-failures-2018-2025",
       "category": "adjacent",
       "respondent": "Meta Platforms (Stanton Springs data center campus), Newton County, GA",
-      "year": "2018-2025",
-      "cwa_section": "No CWA action — no formal legal vehicle; resident complaints to county officials and media, county water-supply planning response.",
+      "year": "2018-2026",
+      "cwa_section": "No CWA action — September 2026 civil suit by neighboring homeowners alleges construction-related aquifer and property damage; no CWA claim or environmental enforcement identified.",
       "violation_summary": "Residents living adjacent to Meta's $750M+ Stanton Springs data center campus in Newton County, GA (bordering Morgan County) reported private wells failing and water turning to sediment-laden sludge after construction began in 2018, with one couple ~1,000 feet from the site spending ~$5,000 on damaged plumbing and appliances. By 2025 reporting, the facility was drawing roughly 500,000 gallons/day — about 10% of Newton County's daily water use — in a county projected to face a total water deficit by 2030, and residents faced a ~33% water rate increase. Meta commissioned a consultant study concluding its operations did not harm local groundwater; no regulatory enforcement followed.",
-      "outcome": "No enforcement or litigation as of June 2026; affected residents bore repair costs themselves. The dispute fed into the May 2026 congressional scrutiny of the same campus (the Morgan County turbid-water EPA inquiry, tracked separately) and into Georgia legislative debates on data-center water reporting.",
-      "takeaway": "Construction-phase dewatering and ground disturbance can damage neighboring private wells with zero permit trigger, because private well impacts fall outside NPDES and most state groundwater programs. Reputational and legislative exposure arrives years before any regulator does.",
+      "outcome": "Several homeowners filed civil litigation against Meta and the four-county development authority in September 2026. They allege that clearing, blasting, and excavation disturbed the aquifer and caused turbidity, sediment, clogged lines, and appliance damage. The allegations are not adjudicated. Meta denies causation, says its consultant found groundwater flowing away from plaintiffs' properties, and says the facility uses local-utility water. No formal environmental enforcement was identified.",
+      "takeaway": "Private well claims can mature into civil litigation even when no NPDES or groundwater-enforcement action exists. The legal record now has concrete plaintiffs and alleged property damage, but it remains contested and does not establish that Meta caused the reported well problems.",
       "case_type": "groundwater",
       "cwa_applied": "not-applied",
-      "cwa_instrument": "No formal action — resident complaints + county planning",
+      "cwa_instrument": "No CWA action — contested civil litigation over alleged well and aquifer damage",
       "cwa_pathway": "Construction sediment reaching streams or wetlands would implicate the §402 construction general permit (the lever EPA pledged to examine next door in Morgan County); pollutants moving via groundwater to navigable waters could trigger Maui's functional-equivalent test. Pure well-yield loss from withdrawal stays outside the CWA.",
       "analogous_cases": [
         "Meta-MorganCo-GA-investigation-2026",
         "County-of-Maui-v-Hawaii-Wildlife-Fund-2020"
       ],
       "sources": [
+        {
+          "title": "AJC: Georgia families sue Meta, accuse data center of tainting their water",
+          "url": "https://feeds.ajc.com/news/2026/09/georgia-families-sue-meta-accuse-its-data-center-of-tainting-their-water/",
+          "type": "news"
+        },
+        {
+          "title": "Meta: Operating responsibly at the Stanton Springs Data Center",
+          "url": "https://datacenters.atmeta.com/2026/04/operating-responsibly-at-the-stanton-springs-data-center/",
+          "type": "company"
+        },
         {
           "title": "What it's like living next to one of Meta's largest data centers",
           "url": "https://www.fastcompany.com/91396678/meta-georgia-data-center-stanton-springs",

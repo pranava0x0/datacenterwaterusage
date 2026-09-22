@@ -8,9 +8,11 @@ main way a refresh goes wrong:
 
 - **Scraped data** (`data/output/results.csv`) — 22 scrapers, append-only,
   re-runs skip already-fetched documents automatically.
-- **Curated reference data** (`data/reference/*.json`) — eight datasets: seven
+- **Curated reference data** (`data/reference/*.json`) — nine datasets: eight
   hand-adjudicated, plus `local_actions.json`, a mirrored county/city table
-  (see §4b). **Nothing writes to these automatically.** Monitors and research
+  (see §4b). `water_security.json` is the cited security research brief and
+  must be refreshed from primary government/program sources. **Nothing writes
+  to these automatically.** Monitors and research
   propose; a person decides. That is the whole reason these records are worth
   more than a scrape, so don't automate it away.
 

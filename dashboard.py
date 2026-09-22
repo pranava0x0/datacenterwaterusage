@@ -40,6 +40,7 @@ from refdata.loaders import (  # noqa: F401
     WATER_AUTHORITIES_PATH,
     WATER_NEWS_PATH,
     WATER_SOLUTIONS_PATH,
+    WATER_SECURITY_PATH,
     file_signature as _file_signature,
     load_company_water_claims,
     load_cwa_investigations,
@@ -49,6 +50,7 @@ from refdata.loaders import (  # noqa: F401
     load_water_authorities,
     load_water_news,
     load_water_solutions,
+    load_water_security,
 )
 from refdata.graph import (  # noqa: F401
     EDGE_KIND_LABELS,
@@ -4647,6 +4649,182 @@ def render_sources_tab():
     st.caption("Reference dataset — updated as new sources come online.")
 
 
+# --- Water Infrastructure Security tab ---
+
+SECURITY_LEAD = (
+    "A cited map of water-sector cyber and physical threats, the capabilities "
+    "that reduce them, the public and private actors doing the work, what is "
+    "actually funded, and a concrete EPA–DOE operating model."
+)
+
+
+def _security_sources_html(sources: list[dict]) -> str:
+    links = " · ".join(
+        f'<a href="{html.escape(source["url"])}" target="_blank" rel="noopener">'
+        f'{html.escape(source["label"])}</a>'
+        for source in sources
+    )
+    return f'<div class="security-sources">Sources: {links}</div>'
+
+
+def _format_security_amount(item: dict) -> str:
+    amount = item.get("amount_usd")
+    if amount is None:
+        return "Amount not public"
+    if amount >= 1_000_000:
+        value = f"${amount / 1_000_000:g}M"
+    else:
+        value = f"${amount:,.0f}"
+    return value
+
+
+def _build_water_security_html() -> str:
+    """Build the cited security research used by Streamlit and static pages."""
+    payload = load_water_security()
+    proposal = payload.get("proposal", {})
+
+    threat_cards = "".join(
+        f'<article class="security-card" id="security-{html.escape(item["id"])}">'
+        f'<span class="security-pill">'
+        f'{html.escape(item["domain"])}</span>'
+        f'<h4>{html.escape(item["title"])}</h4>'
+        f'<p>{html.escape(item["evidence"])}</p>'
+        f'<p class="security-why"><strong>Operational meaning:</strong> '
+        f'{html.escape(item["why_it_matters"])}</p>'
+        f'{_security_sources_html(item["sources"])}</article>'
+        for item in payload.get("threats", [])
+    )
+
+    capability_cards = "".join(
+        f'<article class="security-card" id="security-{html.escape(item["id"])}">'
+        f'<span class="security-pill">{html.escape(item["category"])}</span>'
+        f'<h4>{html.escape(item["title"])}</h4>'
+        f'<p>{html.escape(item["description"])}</p>'
+        f'<p class="security-limit"><strong>Limit:</strong> {html.escape(item["limit"])}</p>'
+        f'{_security_sources_html(item["sources"])}</article>'
+        for item in payload.get("capabilities", [])
+    )
+
+    public_rows = "".join(
+        f'<tr id="security-{html.escape(item["id"])}"><th scope="row">{html.escape(item["name"])}</th>'
+        f'<td>{html.escape(item["type"])}</td><td>{html.escape(item["role"])}</td>'
+        f'<td>{html.escape(item["boundary"])}{_security_sources_html(item["sources"])}</td></tr>'
+        for item in payload.get("public_players", [])
+    )
+    company_cards = "".join(
+        f'<article class="security-card" id="security-{html.escape(item["id"])}">'
+        f'<h4>{html.escape(item["name"])}</h4>'
+        f'<p class="security-kicker">{html.escape(item["category"])}</p>'
+        f'<p>{html.escape(item["evidence"])}</p>'
+        f'<p class="security-limit"><strong>Evidence limit:</strong> '
+        f'{html.escape(item["evidence_limit"])}</p>'
+        f'{_security_sources_html(item["sources"])}</article>'
+        for item in payload.get("companies", [])
+    )
+
+    investment_rows = "".join(
+        f'<tr id="security-{html.escape(item["id"])}"><th scope="row">{html.escape(item["program"])}</th>'
+        f'<td>{html.escape(item["level"])}</td>'
+        f'<td><strong>{html.escape(_format_security_amount(item))}</strong><br>'
+        f'{html.escape(item["funding_status"])}</td>'
+        f'<td>{html.escape(item["scope"])}<br><span class="security-limit">'
+        f'{html.escape(item["anti_double_count_note"])}</span>'
+        f'{_security_sources_html(item["sources"])}</td></tr>'
+        for item in payload.get("investments", [])
+    )
+
+    precedent_cards = "".join(
+        f'<article class="security-card" id="security-{html.escape(item["id"])}">'
+        f'<h4>{html.escape(item["name"])}</h4><p>{html.escape(item["lesson"])}</p>'
+        f'{_security_sources_html(item["sources"])}</article>'
+        for item in payload.get("precedents", [])
+    )
+    service_steps = "".join(
+        f'<li><strong>{html.escape(item["name"])}</strong><span>{html.escape(item["description"])}</span></li>'
+        for item in proposal.get("service_lines", [])
+    )
+    role_rows = "".join(
+        f'<tr><th scope="row">{html.escape(item["actor"])}</th><td>{html.escape(item["role"])}</td></tr>'
+        for item in proposal.get("roles", [])
+    )
+    milestone_cards = "".join(
+        f'<article class="security-milestone"><strong>{html.escape(item["horizon"])}</strong>'
+        f'<p>{html.escape(item["targets"])}</p></article>'
+        for item in proposal.get("milestones", [])
+    )
+    measures = "".join(f"<li>{html.escape(item)}</li>" for item in proposal.get("measures", []))
+    guardrails = "".join(f"<li>{html.escape(item)}</li>" for item in proposal.get("guardrails", []))
+    funding = "".join(f"<li>{html.escape(item)}</li>" for item in proposal.get("funding_paths", []))
+
+    return f"""
+<div class="water-security" id="water-security">
+  <style>
+  .water-security{{color:#1a1a2e}}
+  .water-security .jumpnav{{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0 .9rem}}
+  .water-security .src-note{{color:#888;font-size:.82rem;margin-top:.6rem}}
+  .security-callout{{border-left:4px solid #08519c;background:#eff6ff;padding:.8rem 1rem;border-radius:0 .5rem .5rem 0;margin:.7rem 0 1rem}}
+  .security-grid{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem;margin:.6rem 0 1rem}}
+  .security-grid-3{{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  .security-card,.security-milestone{{border:1px solid #d6e4f0;border-radius:.55rem;background:#fff;padding:.8rem .9rem;box-shadow:0 1px 2px rgba(15,23,42,.04)}}
+  .security-card h4{{margin:.25rem 0 .35rem;font-size:.98rem}}
+  .security-card p,.security-milestone p{{margin:.3rem 0;font-size:.87rem;line-height:1.5}}
+  .security-pill{{display:inline-block;border-radius:999px;background:#eff3ff;border:1px solid #bdd7e7;padding:.08rem .45rem;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em}}
+  .security-why{{border-top:1px solid #eef2f7;padding-top:.35rem}} .security-limit{{color:#4b5563;font-style:italic}} .security-kicker{{font-weight:600;color:#08519c}}
+  .security-sources{{font-size:.73rem;color:#6b7280;margin-top:.45rem;overflow-wrap:anywhere}} .security-sources a{{color:#08519c}}
+  .security-table-wrap{{overflow-x:auto;margin:.6rem 0 1rem}} .security-table{{width:100%;border-collapse:collapse;font-size:.82rem;background:#fff}}
+  .security-table th,.security-table td{{border:1px solid #dce6ef;padding:.5rem .6rem;text-align:left;vertical-align:top}} .security-table thead th{{background:#eff6ff;color:#08519c}}
+  .confluence{{border:2px solid #08519c;border-radius:.7rem;background:linear-gradient(135deg,#eff6ff,#f8fffd);padding:1rem;margin:.7rem 0}}
+  .confluence h3{{margin:0 0 .15rem;color:#08519c}} .confluence-tagline{{font-weight:600;color:#315d78;margin:.1rem 0 .7rem}}
+  .security-loop{{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.4rem;list-style:none;padding:0;margin:.8rem 0}}
+  .security-loop li{{position:relative;background:#fff;border:1px solid #9ecae1;border-radius:.45rem;padding:.55rem;text-align:center;font-size:.78rem}}
+  .security-loop strong,.security-loop span{{display:block}} .security-loop span{{margin-top:.25rem;color:#4b5563}}
+  .security-list{{columns:2;column-gap:2rem;font-size:.84rem}} .security-list li{{break-inside:avoid;margin-bottom:.35rem}}
+  @media (max-width:800px){{.security-grid,.security-grid-3{{grid-template-columns:1fr}}.security-loop{{grid-template-columns:1fr}}.security-list{{columns:1}}}}
+  </style>
+  <nav class="jumpnav" aria-label="Water security sections">
+    <a href="#security-threats">Threats</a><a href="#security-capabilities">Capabilities</a>
+    <a href="#security-players">Players</a><a href="#security-investment">Investment</a>
+    <a href="#security-confluence">Project Confluence</a>
+  </nav>
+  <div class="security-callout"><strong>Funding reality:</strong> {html.escape(payload.get("funding_note", ""))}</div>
+  <h3 class="solution-cat-header" id="security-threats">What can go wrong</h3>
+  <div class="security-grid">{threat_cards}</div>
+  <h3 class="solution-cat-header" id="security-capabilities">What defense requires</h3>
+  <div class="security-grid">{capability_cards}</div>
+  <h3 class="solution-cat-header" id="security-players">Who is in the field</h3>
+  <p>Public roles below are authorities and delivery functions. The company list is a selected capability map with explicit evidence limits — not a market-share ranking or endorsement.</p>
+  <div class="security-table-wrap"><table class="security-table"><thead><tr><th>Public player</th><th>Type</th><th>Role</th><th>Boundary</th></tr></thead><tbody>{public_rows}</tbody></table></div>
+  <div class="security-grid">{company_cards}</div>
+  <h3 class="solution-cat-header" id="security-investment">What is actually funded</h3>
+  <div class="security-table-wrap"><table class="security-table"><thead><tr><th>Program</th><th>Level</th><th>Amount/status</th><th>Scope and counting rule</th></tr></thead><tbody>{investment_rows}</tbody></table></div>
+  <h3 class="solution-cat-header">Operating models worth reusing</h3>
+  <div class="security-grid">{precedent_cards}</div>
+  <section class="confluence" id="security-confluence">
+    <h3>{html.escape(proposal.get("name", "Project Confluence"))}</h3>
+    <p class="confluence-tagline">{html.escape(proposal.get("tagline", ""))}</p>
+    <p><strong>Mission:</strong> {html.escape(proposal.get("mission", ""))}</p>
+    <p><strong>Leadership:</strong> {html.escape(proposal.get("leadership", ""))}</p>
+    <p><strong>Governance:</strong> {html.escape(proposal.get("governance", ""))}</p>
+    <ol class="security-loop">{service_steps}</ol>
+    <p><strong>Regional delivery:</strong> {html.escape(proposal.get("regional_model", ""))}</p>
+    <div class="security-table-wrap"><table class="security-table"><thead><tr><th>Actor</th><th>Job</th></tr></thead><tbody>{role_rows}</tbody></table></div>
+    <div class="security-grid security-grid-3">{milestone_cards}</div>
+    <details><summary><strong>Measures</strong></summary><ul class="security-list">{measures}</ul></details>
+    <details><summary><strong>Funding paths</strong></summary><ul class="security-list">{funding}</ul></details>
+    <details open><summary><strong>Guardrails</strong></summary><ul class="security-list">{guardrails}</ul></details>
+  </section>
+  <p class="src-note">Dataset last updated {html.escape(payload.get("last_updated", "unknown"))}. {html.escape(payload.get("scope_note", ""))}</p>
+</div>
+"""
+
+
+def render_water_security():
+    """Render the shared water-security research surface in Streamlit."""
+    st.subheader("Water Infrastructure Security")
+    st.markdown(SECURITY_LEAD)
+    st.markdown(_build_water_security_html(), unsafe_allow_html=True)
+
+
 # --- Explore tab (connection graph + text similarity) ---
 #
 # One builder, two surfaces: build_site.py drops the fragment straight into the
@@ -4720,6 +4898,17 @@ def _explore_css() -> str:
   margin:0 0 .4rem}
 .explore-focus{font-size:.84rem;color:#1a1a2e;min-width:0}
 .explore-focus a{color:#08519c}
+.explore-neighbours{border:1px solid #cbd5e1;border-radius:.5rem;background:#fff;
+  margin:0 0 .55rem;padding:.55rem .7rem;font-size:.8rem}
+.explore-neighbours[hidden]{display:none}
+.explore-neighbours-head{font-weight:700;margin-bottom:.3rem}
+.explore-neighbour{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.35rem;
+  align-items:baseline;padding:.2rem 0;border-top:1px solid #eef2f7}
+.explore-neighbour:first-of-type{border-top:0}
+.explore-neighbour a{color:#08519c;text-decoration:none;font-weight:600}
+.explore-neighbour a:hover{text-decoration:underline}
+.explore-neighbour-kind{color:#6b7280;font-size:.73rem;text-align:right}
+.explore-neighbours-more summary{cursor:pointer;color:#08519c;font-weight:600;padding:.25rem 0}
 .explore-tools{display:flex;gap:.35rem;align-items:center;font-size:.8rem;color:#4b5563}
 .explore-canvas{width:100%;height:520px;display:block;background:#fff;border:1px solid #cbd5e1;
   border-radius:.5rem;touch-action:none;cursor:grab}
@@ -4860,14 +5049,15 @@ def _build_explore_html(payload_src: str | None = None) -> str:
       <span class="explore-tools">
         <label for="explore-depth">Hops</label>
         <select id="explore-depth">
-          <option value="1">1</option>
-          <option value="2" selected>2</option>
+          <option value="1" selected>1</option>
+          <option value="2">2</option>
         </select>
         <button type="button" class="explore-btn" id="explore-zoom-in" aria-label="Zoom in">+</button>
         <button type="button" class="explore-btn" id="explore-zoom-out" aria-label="Zoom out">&minus;</button>
         <button type="button" class="explore-btn" id="explore-reset">Reset</button>
       </span>
     </div>
+    <div class="explore-neighbours" id="explore-neighbours" hidden></div>
     <canvas class="explore-canvas" id="explore-canvas" role="img" aria-label="Connection graph of every tracked record. The results list carries the same records as text."></canvas>
     <p class="explore-hint">Drag to pan, scroll to zoom, click a dot to focus its
     neighbourhood. Lines are connections the datasets declare.</p>
@@ -5013,7 +5203,11 @@ def _explore_js() -> str:
   }
 
   var ITERATIONS = 120;
+  var layoutEpoch = 0;
   function runLayout(){
+    // A fast series of edge-kind changes can start several animation loops.
+    // Only the newest layout may keep spending frames on this canvas.
+    var epoch = ++layoutEpoch;
     var t = 0, temp0 = W / 12;
     if (reduceMotion){
       for (t = 0; t < ITERATIONS; t++) step(temp0 * (1 - t / ITERATIONS));
@@ -5023,9 +5217,10 @@ def _explore_js() -> str:
     // Animated: chunks per frame so a slow phone stays responsive instead of
     // freezing for the whole simulation.
     (function frame(){
+      if (epoch !== layoutEpoch) return;
       for (var c = 0; c < 6 && t < ITERATIONS; c++, t++) step(temp0 * (1 - t / ITERATIONS));
       draw();
-      if (t < ITERATIONS) requestAnimationFrame(frame);
+      if (t < ITERATIONS && epoch === layoutEpoch) requestAnimationFrame(frame);
     })();
   }
 
@@ -5134,6 +5329,63 @@ def _explore_js() -> str:
   }, {passive: false});
 
   // --- Focus ---
+  var neighbourBox = root.querySelector('#explore-neighbours');
+  function renderDirectConnections(idx){
+    neighbourBox.replaceChildren();
+    if (idx < 0){ neighbourBox.hidden = true; return; }
+    // One row per connected RECORD. A pair can carry several edge kinds (a
+    // reading and its example case each point at the other), so group by
+    // neighbour, list every relationship on that row, and count records —
+    // the same number the focus line above reports.
+    var byNode = {}, order = [];
+    for (var e = 0; e < D.edges.length; e++){
+      var edge = D.edges[e];
+      if (!activeKinds[edge[2]]) continue;
+      var other = edge[0] === idx ? edge[1] : (edge[1] === idx ? edge[0] : -1);
+      if (other < 0) continue;
+      if (!byNode[other]){ byNode[other] = []; order.push(other); }
+      if (byNode[other].indexOf(edge[2]) < 0) byNode[other].push(edge[2]);
+    }
+    order.sort(function(a, b){
+      return nodes[a].label.localeCompare(nodes[b].label);
+    });
+    var head = document.createElement('div');
+    head.className = 'explore-neighbours-head';
+    head.textContent = 'Direct connections (' + order.length + ')';
+    neighbourBox.appendChild(head);
+    // Every record stays in the DOM and reachable by keyboard; a long tail
+    // folds behind a native disclosure instead of being cut off.
+    var VISIBLE = 12, rest = null;
+    if (order.length > VISIBLE){
+      rest = document.createElement('details');
+      rest.className = 'explore-neighbours-more';
+      var sum = document.createElement('summary');
+      sum.textContent = 'Show ' + (order.length - VISIBLE) + ' more';
+      rest.appendChild(sum);
+    }
+    order.forEach(function(other, i){
+      var node = nodes[other];
+      var line = document.createElement('div');
+      line.className = 'explore-neighbour';
+      var label;
+      if (node.anchor){
+        label = document.createElement('a');
+        label.href = '#' + node.anchor;
+      } else {
+        label = document.createElement('span');
+      }
+      label.textContent = node.label;
+      line.appendChild(label);
+      var kind = document.createElement('span');
+      kind.className = 'explore-neighbour-kind';
+      kind.textContent = byNode[other].map(function(k){ return D.edge_kind_labels[k]; }).join(' · ');
+      line.appendChild(kind);
+      (rest && i >= VISIBLE ? rest : neighbourBox).appendChild(line);
+    });
+    if (rest) neighbourBox.appendChild(rest);
+    neighbourBox.hidden = false;
+  }
+
   function setFocus(idx){
     focused = idx;
     var box = root.querySelector('#explore-focus');
@@ -5161,6 +5413,7 @@ def _explore_js() -> str:
         box.appendChild(link);
       }
     }
+    renderDirectConnections(idx);
     draw();
     runSearch();
   }
@@ -5461,6 +5714,7 @@ def main():
         tab_issues,
         tab_news,
         tab_solutions,
+        tab_security,
         tab_sources,
         tab_explore,
     ) = st.tabs(
@@ -5471,6 +5725,7 @@ def main():
             "Issues & Claims",
             "News",
             "Solutions",
+            "Security",
             "Sources",
             "Explore",
         ]
@@ -5495,6 +5750,10 @@ def main():
     # --- Solutions tab ---
     with tab_solutions:
         render_water_solutions()
+
+    # --- Water infrastructure security tab ---
+    with tab_security:
+        render_water_security()
 
     # --- Legislation tab (homepage) ---
     with tab_legislation:

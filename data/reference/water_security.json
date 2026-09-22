@@ -1,0 +1,546 @@
+{
+  "last_updated": "2026-09-21",
+  "title": "Water Infrastructure Security",
+  "scope_note": "US drinking-water and wastewater cyber-physical security. This is a research map, not a live threat feed, compliance certification, or procurement ranking.",
+  "funding_note": "No defensible national total exists. Published federal, state, and local spending mixes security with broader resilience and infrastructure. Amounts below keep selected awards, available programs, and purchases separate and never count a broad eligibility pool as security spending.",
+  "threats": [
+    {
+      "id": "internet-exposed-plcs",
+      "title": "Internet-exposed PLC compromise",
+      "domain": "cyber",
+      "evidence": "IRGC-affiliated CyberAv3ngers compromised Unitronics PLCs used by US water and wastewater systems, focusing on internet-exposed devices with default or absent passwords. Investigators observed operational manipulation, including deleted ladder logic.",
+      "why_it_matters": "One exposed controller can bridge an internet intrusion into pumps, valves, alarms, or chemical processes.",
+      "sources": [
+        {
+          "label": "CISA/FBI/EPA advisory AA23-335A",
+          "url": "https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-335a"
+        }
+      ]
+    },
+    {
+      "id": "insider-remote-access",
+      "title": "Insider and former-contractor access",
+      "domain": "hybrid",
+      "evidence": "A former instrumentation and control technician was federally charged after allegedly retaining remote access to Discovery Bay, California, uninstalling the main operational and monitoring system, and shutting down supporting servers.",
+      "why_it_matters": "Offboarding, named accounts, privilege limits, and monitored remote access are operational controls, not paperwork.",
+      "sources": [
+        {
+          "label": "US Attorney, Northern District of California",
+          "url": "https://www.justice.gov/usao-ndca/pr/tracy-resident-charged-computer-attack-discovery-bay-water-treatment-facility"
+        }
+      ]
+    },
+    {
+      "id": "ransomware-it-ot",
+      "title": "Ransomware and IT-to-OT propagation",
+      "domain": "cyber",
+      "evidence": "GAO found that attacks have disrupted water operations and that legacy equipment, workforce gaps, and limited voluntary investment constrain defenses where business IT connects to operational technology.",
+      "why_it_matters": "Segmentation, tested recovery, and safe manual operation matter as much as detecting malware.",
+      "sources": [
+        {
+          "label": "GAO-24-106744",
+          "url": "https://www.gao.gov/products/gao-24-106744"
+        },
+        {
+          "label": "GAO-26-109159",
+          "url": "https://www.gao.gov/products/gao-26-109159"
+        }
+      ]
+    },
+    {
+      "id": "physical-contamination",
+      "title": "Physical intrusion and intentional contamination",
+      "domain": "physical",
+      "evidence": "Credible physical pathways include breached fences and hatches, access to finished water, sabotage of remote facilities, and theft or forced release of dangerous treatment chemicals.",
+      "why_it_matters": "Cameras alone do not close the loop; detection must connect to staffed response, water-quality monitoring, and practiced investigation procedures.",
+      "sources": [
+        {
+          "label": "CISA ChemLock water and wastewater fact sheet",
+          "url": "https://www.cisa.gov/sites/default/files/2024-03/fs-chemlock-water-wastewater-508.pdf"
+        },
+        {
+          "label": "EPA physical security monitoring resources",
+          "url": "https://www.epa.gov/waterresilience/resources-design-and-implement-physical-security-monitoring-surveillance-and"
+        }
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "baseline-ot-hygiene",
+      "title": "Baseline OT hygiene",
+      "category": "prevent",
+      "description": "Remove unnecessary public exposure; inventory IT and OT; replace defaults; use strong authentication; patch or compensate; segment networks; maintain tested backups; and exercise response and recovery.",
+      "limit": "Passive monitoring tools do not replace architecture, identity, recovery, or operator practice.",
+      "sources": [
+        {
+          "label": "CISA/EPA/FBI top cyber actions",
+          "url": "https://www.cisa.gov/news-events/alerts/2024/02/21/cisa-epa-and-fbi-release-top-cyber-actions-securing-water-systems"
+        }
+      ]
+    },
+    {
+      "id": "assess-and-plan",
+      "title": "Utility assessment and mitigation planning",
+      "category": "assess",
+      "description": "EPA offers free drinking-water, wastewater, and combined-system cybersecurity evaluations covering IT and OT, followed by a gap report and risk-mitigation-plan template.",
+      "limit": "Assessment and planning are not implementation funding or continuous defense. EPA says it receives anonymized aggregate results, not utility-specific findings.",
+      "sources": [
+        {
+          "label": "EPA Water Sector Cybersecurity Evaluation Program",
+          "url": "https://www.epa.gov/cyberwater/forms/epas-water-sector-cybersecurity-evaluation-program"
+        }
+      ]
+    },
+    {
+      "id": "secure-remote-access",
+      "title": "Secure OT remote access",
+      "category": "prevent",
+      "description": "NIST SP 1800-45 gives utilities a replicable reference architecture for remote access to water and wastewater operational technology.",
+      "limit": "A reference implementation is not proof that utilities or participating vendors have deployed every control.",
+      "sources": [
+        {
+          "label": "NIST NCCoE SP 1800-45",
+          "url": "https://www.nccoe.nist.gov/publications/practice-guide/cybersecurity-water-and-wastewater-sector-build-architecture-nist-sp"
+        }
+      ]
+    },
+    {
+      "id": "physical-monitoring-response",
+      "title": "Physical monitoring and contamination response",
+      "category": "detect-respond",
+      "description": "Layer facility hardening, door and hatch sensors, alarms, cameras, secure communications, water-quality sensors, complaint surveillance, public-health notification, and practiced investigation procedures.",
+      "limit": "Sensors must be commissioned, maintained, and tied to humans with authority to respond.",
+      "sources": [
+        {
+          "label": "EPA water infrastructure resilience research",
+          "url": "https://www.epa.gov/emergency-response-research/water-infrastructure-resilience"
+        }
+      ]
+    },
+    {
+      "id": "trusted-sharing-mutual-aid",
+      "title": "Threat sharing and mutual aid",
+      "category": "respond-recover",
+      "description": "WaterISAC distributes sector intelligence; state WARN networks move personnel, equipment, materials, and services between utilities during emergencies.",
+      "limit": "These networks do not amount to a uniform national security operations center or mandatory telemetry from every utility.",
+      "sources": [
+        {
+          "label": "WaterISAC",
+          "url": "https://www.waterisac.org/about-us"
+        },
+        {
+          "label": "EPA mutual aid and assistance",
+          "url": "https://www.epa.gov/waterutilityresponse/mutual-aid-and-assistance-drinking-water-and-wastewater-utilities"
+        }
+      ]
+    }
+  ],
+  "companies": [
+    {
+      "id": "dragos",
+      "name": "Dragos",
+      "category": "OT asset discovery, monitoring, threat detection, incident response, training",
+      "evidence": "Placer County Water Agency authorized a sole-source Dragos OT platform purchase up to $87,590 in August 2025 for asset discovery, network visibility, and threat correlation; Dragos was already under contract for incident response.",
+      "evidence_limit": "Named public procurement proves one deployment, not national market share or comparative superiority.",
+      "sources": [
+        {
+          "label": "Placer County Water Agency board item",
+          "url": "https://d3n9y02raazwpg.cloudfront.net/pcwa/7d82895a-2384-11ef-81ef-005056a89546-c49fde75-8254-43c9-976f-b50af100c536-1755190106.pdf"
+        }
+      ]
+    },
+    {
+      "id": "claroty",
+      "name": "Claroty",
+      "category": "Cyber-physical asset inventory, exposure management, secure access, monitoring",
+      "evidence": "Claroty reports a deployment at an unnamed US water supplier serving more than two million people, covering asset, session, process, and risk visibility.",
+      "evidence_limit": "Customer identity and outcomes are vendor-reported and not independently verifiable from the cited case study.",
+      "sources": [
+        {
+          "label": "Claroty water utility case study",
+          "url": "https://www.claroty.com/resources/case-studies/water-utilities"
+        }
+      ]
+    },
+    {
+      "id": "nozomi-networks",
+      "name": "Nozomi Networks",
+      "category": "OT/IoT inventory, anomaly detection, risk scoring, vulnerability prioritization",
+      "evidence": "Nozomi publishes a water-specific platform and an anonymous large-US-utility deployment.",
+      "evidence_limit": "No fetched public procurement or named US water deployment established adoption scale; treat it as a candidate supplier, not proven nationwide coverage.",
+      "sources": [
+        {
+          "label": "Nozomi water and wastewater security",
+          "url": "https://www.nozominetworks.com/industries/water-wastewater-cybersecurity"
+        }
+      ]
+    },
+    {
+      "id": "waterfall-security",
+      "name": "Waterfall Security Solutions",
+      "category": "Unidirectional gateways and physically enforced IT-OT data flow",
+      "evidence": "Waterfall offers one-way gateways for water-treatment SCADA, remote monitoring, and external data access, physically constraining inbound connectivity rather than only detecting it.",
+      "evidence_limit": "Fetched evidence is vendor-authored; no named US municipal deployment, price, or measured outcome was verified.",
+      "sources": [
+        {
+          "label": "Waterfall water treatment security",
+          "url": "https://waterfall-security.com/solutions/by-industry/water-treatment/"
+        }
+      ]
+    }
+  ],
+  "public_players": [
+    {
+      "id": "epa-water-security",
+      "name": "EPA Office of Water and Office of Research and Development",
+      "type": "federal-agency",
+      "role": "Water-sector risk-management lead: assessments, technical assistance, AWIA resilience requirements, contamination-response tools, physical-security guidance, financing alignment, and research.",
+      "boundary": "Wastewater systems and drinking-water systems serving 3,300 or fewer people generally lack equivalent mandatory cyber risk-assessment requirements.",
+      "sources": [
+        {
+          "label": "EPA Water Cybersecurity",
+          "url": "https://www.epa.gov/cyberwater"
+        },
+        {
+          "label": "GAO-26-109159",
+          "url": "https://www.gao.gov/products/gao-26-109159"
+        }
+      ]
+    },
+    {
+      "id": "cisa-fbi",
+      "name": "CISA and FBI",
+      "type": "federal-agency",
+      "role": "Cross-sector threat intelligence, advisories, external vulnerability scanning, incident support, investigation, and law-enforcement response.",
+      "boundary": "They are not water regulators and do not continuously defend every utility.",
+      "sources": [
+        {
+          "label": "CISA Cyber Hygiene Services",
+          "url": "https://www.cisa.gov/cyber-hygiene-services"
+        }
+      ]
+    },
+    {
+      "id": "nist-nccoe",
+      "name": "NIST National Cybersecurity Center of Excellence",
+      "type": "federal-lab",
+      "role": "Turns standards into reproducible laboratory architectures; its 2026 water guide focuses on secure OT remote access.",
+      "boundary": "NIST validates architectures; it does not certify products or fund deployment.",
+      "sources": [
+        {
+          "label": "NIST water and wastewater operations project",
+          "url": "https://www.nist.gov/news-events/news/2024/04/nist-begins-cybersecurity-project-water-and-wastewater-operations"
+        }
+      ]
+    },
+    {
+      "id": "inl-wstb",
+      "name": "EPA Water Security Test Bed at Idaho National Laboratory",
+      "type": "national-lab",
+      "role": "Full-scale, reconfigurable drinking-water distribution test bed for controlled contamination, decontamination, disaster-response, and emerging cyber-physical experiments.",
+      "boundary": "The existing public record emphasizes contamination and recovery; a broader OT product-testing mission is proposed, not current coverage.",
+      "sources": [
+        {
+          "label": "INL Water Security Test Bed",
+          "url": "https://inl.gov/content/uploads/2023/07/Water-Security-Test-Bed.pdf"
+        }
+      ]
+    },
+    {
+      "id": "doe-cytrics",
+      "name": "DOE CyTRICS national-laboratory network",
+      "type": "national-lab-network",
+      "role": "Standardized testing of priority OT product software and firmware, component enumeration, shared findings, vendor agreements, and managed vulnerability disclosure.",
+      "boundary": "CyTRICS currently serves the energy sector. It is a transferable model, not an existing water program, and it is not an LLNL-only facility.",
+      "sources": [
+        {
+          "label": "DOE Cyber Testing for Resilient Industrial Control Systems",
+          "url": "https://www.energy.gov/ceser/cybersecurity-testing-resilient-industrial-control-systems"
+        }
+      ]
+    },
+    {
+      "id": "waterisac-warn",
+      "name": "WaterISAC and state WARN networks",
+      "type": "sector-network",
+      "role": "Trusted intelligence exchange plus established utility-to-utility mutual aid for personnel, equipment, materials, and services.",
+      "boundary": "Participation and capacity vary; neither network replaces agency authority or product testing.",
+      "sources": [
+        {
+          "label": "WaterISAC",
+          "url": "https://www.waterisac.org/about-us"
+        }
+      ]
+    },
+    {
+      "id": "state-regional-delivery",
+      "name": "State primacy agencies, CIOs, homeland-security offices, and SRF administrators",
+      "type": "state-local",
+      "role": "Translate national capability into utility cohorts, financing, operator training, exercises, incident coordination, and local implementation.",
+      "boundary": "Capacity is uneven; a national program must fund delivery rather than assume every state has water-OT specialists.",
+      "sources": [
+        {
+          "label": "Water Sector Cybersecurity Task Force recommendations",
+          "url": "https://www.epa.gov/system/files/documents/2025-08/water-cybersecurity-recommendations_water-sector-cybersecurity-task-force_apr25-072525.pdf"
+        }
+      ]
+    }
+  ],
+  "investments": [
+    {
+      "id": "epa-fy2025-resilience-selections",
+      "level": "federal",
+      "program": "EPA Midsize and Large Drinking Water System Infrastructure Resilience and Sustainability",
+      "amount_usd": 11750000,
+      "funding_status": "selected-awards",
+      "period": "FY2025",
+      "scope": "Ten resilience projects. At least $2,564,875 is clearly cyber-focused: Lake City, Florida SCADA/pump controls ($189,875) and San Diego PLC replacement ($2.375 million). Other mixed projects may include cyber work, but their security share is not separable.",
+      "anti_double_count_note": "The $2.564875 million subset sits inside, not on top of, the $11.75 million total.",
+      "sources": [
+        {
+          "label": "EPA selected applications",
+          "url": "https://www.epa.gov/dwcapacity/midsize-and-large-drinking-water-system-infrastructure-resilience-and-sustainability"
+        }
+      ]
+    },
+    {
+      "id": "ny-secure-2026",
+      "level": "state",
+      "program": "New York SECURE water and wastewater cybersecurity grants",
+      "amount_usd": 2500000,
+      "funding_status": "available-program",
+      "period": "2026",
+      "scope": "Assessment grants up to $50,000 with no match and implementation awards up to $100,000, paired with tiered state cyber standards and technical assistance.",
+      "anti_double_count_note": "Available program funding; the amount awarded by 2026-09-21 was not verified.",
+      "sources": [
+        {
+          "label": "New York Governor announcement",
+          "url": "https://www.governor.ny.gov/news/governor-hochul-announces-first-nation-cybersecurity-regulations-and-grants-protect-new-york"
+        }
+      ]
+    },
+    {
+      "id": "pcwa-dragos-2025",
+      "level": "local",
+      "program": "Placer County Water Agency Dragos procurement",
+      "amount_usd": 87590,
+      "funding_status": "authorized-purchase-ceiling",
+      "period": "2025",
+      "scope": "Agency-wide operations funding for a named OT-security platform.",
+      "anti_double_count_note": "Do not add to federal or state grant totals unless reimbursement is later documented.",
+      "sources": [
+        {
+          "label": "Placer County Water Agency board item",
+          "url": "https://d3n9y02raazwpg.cloudfront.net/pcwa/7d82895a-2384-11ef-81ef-005056a89546-c49fde75-8254-43c9-976f-b50af100c536-1755190106.pdf"
+        }
+      ]
+    },
+    {
+      "id": "watershed-250-2026",
+      "level": "multi-level",
+      "program": "Project Watershed 250",
+      "funding_status": "operating-pilot-no-public-total",
+      "period": "2026",
+      "scope": "Texas, the White House Office of the National Cyber Director, EPA, CISA, and private partners launched a pilot providing assessments, remediation, and defensive tools to participating utilities at no cost.",
+      "anti_double_count_note": "Useful operating-model evidence, not quantified investment evidence; the official page gives no public budget, utility count, vendor roster, or measured result.",
+      "sources": [
+        {
+          "label": "Texas Cyber Command Project Watershed 250",
+          "url": "https://www.txcc.texas.gov/project-watershed-250"
+        }
+      ]
+    }
+  ],
+  "precedents": [
+    {
+      "id": "precedent-wstb",
+      "name": "EPA/INL Water Security Test Bed",
+      "lesson": "Start with a real cyber-physical proving ground where destructive testing is safe; add representative PLCs, pumps, telemetry, remote access, vendor firmware, and physical intrusion scenarios.",
+      "sources": [
+        {
+          "label": "INL Water Security Test Bed",
+          "url": "https://inl.gov/content/uploads/2023/07/Water-Security-Test-Bed.pdf"
+        }
+      ]
+    },
+    {
+      "id": "precedent-cytrics",
+      "name": "DOE CyTRICS",
+      "lesson": "Reuse standardized intake, test protocols, vendor agreements, findings formats, component taxonomy, protected analytics, and managed disclosure for a Water-CyTRICS track.",
+      "sources": [
+        {
+          "label": "DOE CyTRICS",
+          "url": "https://www.energy.gov/ceser/cybersecurity-testing-resilient-industrial-control-systems"
+        }
+      ]
+    },
+    {
+      "id": "precedent-llnl-skyfall",
+      "name": "LLNL Skyfall and CyTRICS analytics",
+      "lesson": "Pair INL's water loop with hardware-in-the-loop simulation and cross-product software, firmware, and bill-of-materials analysis; never connect research systems to utility production.",
+      "sources": [
+        {
+          "label": "LLNL Skyfall",
+          "url": "https://www.llnl.gov/article/54361/big-ideas-lab-podcast-spotlights-how-skyfall-defends-power-grid-cyberattacks"
+        },
+        {
+          "label": "LLNL CyTRICS work",
+          "url": "https://gs.llnl.gov/cybersecurity/keeping-adversaries-out"
+        }
+      ]
+    },
+    {
+      "id": "precedent-ornl-goal",
+      "name": "ORNL Grid Operations and Analytics Laboratory",
+      "lesson": "Use governed operational feeds or replayable derived datasets from willing utilities instead of relying only on synthetic networks.",
+      "sources": [
+        {
+          "label": "ORNL GOAL",
+          "url": "https://www.ornl.gov/content/grid-operations-and-analytics-laboratory-goal"
+        }
+      ]
+    },
+    {
+      "id": "precedent-epa-evaluation",
+      "name": "EPA evaluation and technical-assistance programs",
+      "lesson": "Use EPA as the front door; preserve utility control of detailed findings and use de-identified aggregates for national prioritization.",
+      "sources": [
+        {
+          "label": "EPA cybersecurity evaluation program",
+          "url": "https://www.epa.gov/cyberwater/forms/epas-water-sector-cybersecurity-evaluation-program"
+        }
+      ]
+    },
+    {
+      "id": "precedent-glasswing",
+      "name": "Anthropic Project Glasswing",
+      "lesson": "Begin with a screened cohort, require remediation capacity before testing, coordinate disclosure, measure fixed vulnerabilities rather than findings alone, then expand.",
+      "sources": [
+        {
+          "label": "Project Glasswing",
+          "url": "https://www.anthropic.com/glasswing"
+        }
+      ]
+    },
+    {
+      "id": "precedent-daybreak",
+      "name": "OpenAI Daybreak",
+      "lesson": "Separate routine defensive support from higher-risk validation, deliver through trusted partners and workflows, and subsidize access for public and small critical-infrastructure operators.",
+      "sources": [
+        {
+          "label": "OpenAI Daybreak",
+          "url": "https://openai.com/daybreak/"
+        }
+      ]
+    },
+    {
+      "id": "precedent-watershed-250",
+      "name": "Texas Project Watershed 250",
+      "lesson": "A state can convene federal and private capabilities into a no-cost utility pilot, but publish participation, spending, remediation, and outcome measures if the model is to be evaluated.",
+      "sources": [
+        {
+          "label": "Project Watershed 250",
+          "url": "https://www.txcc.texas.gov/project-watershed-250"
+        }
+      ]
+    }
+  ],
+  "proposal": {
+    "name": "Project Confluence",
+    "long_name": "National Water Security Confluence",
+    "tagline": "Where water operations, national laboratories, states, and defenders meet.",
+    "mission": "Reduce the likelihood and public-health consequences of cyber, physical, supply-chain, and compound attacks on drinking-water and wastewater systems by joining EPA's utility relationships and financing channels with DOE laboratory testing, CISA threat and incident capabilities, state delivery networks, vendor remediation, and utility operations.",
+    "leadership": "EPA is accountable lead because water is its sector responsibility. DOE co-leads laboratory testing and cyber-physical research. CISA owns cross-sector threat support and incident coordination, not water regulation.",
+    "governance": "Begin with a five-year EPA-DOE interagency agreement and a CISA operating annex. Use the existing Water Government Coordinating Council and Water Sector Coordinating Council for oversight, with a technical steering committee representing states, tribes, utilities of every size and ownership model, WaterISAC, WARNs, public health, labs, vendors, integrators, and independent researchers.",
+    "service_lines": [
+      {
+        "name": "Assess",
+        "description": "EPA cyber and physical evaluation, asset inventory, external exposure review, dependency mapping, and recovery baseline."
+      },
+      {
+        "name": "Test",
+        "description": "Water-CyTRICS component testing, firmware and software composition analysis, hardware-in-the-loop simulation, contamination trials, and patch validation."
+      },
+      {
+        "name": "Exercise",
+        "description": "Operator and executive exercises combining cyber intrusion, physical access, contamination, power and communications loss, manual operation, and WARN mobilization."
+      },
+      {
+        "name": "Fix",
+        "description": "Prioritized implementation, vendor remediation sprints, segmentation, secure remote access, backup restoration, procurement clauses, and financing support."
+      },
+      {
+        "name": "Share",
+        "description": "Protected WaterISAC advisories, component exposure notices, de-identified trends, state briefings, and public post-remediation lessons."
+      }
+    ],
+    "regional_model": "Launch four nodes, then scale toward one delivery partnership in every EPA region. Each pairs a state lead, national-lab team, utility or university training site, WaterISAC, and WARN. Nodes bring mobile assessment and test kits, exercises, operator training, vendor remediation clinics, and small-system implementation support.",
+    "roles": [
+      {
+        "actor": "EPA",
+        "role": "Utility intake, eligibility, assessments, water-quality scenarios, state coordination, technical assistance, financing alignment, and translation of findings into operator guidance."
+      },
+      {
+        "actor": "DOE and national laboratories",
+        "role": "Common test protocols; product, firmware, and supply-chain analysis; cyber-physical experiments; digital twins; safe validation; research-to-deployment transition."
+      },
+      {
+        "actor": "CISA and FBI",
+        "role": "Threat intelligence, vulnerability coordination, scanning, incident escalation, investigation, and cross-sector dependency support."
+      },
+      {
+        "actor": "States, tribes, WaterISAC, WARNs, and utilities",
+        "role": "Set priorities, select representative cohorts, validate operational practicality, train operators, finance upgrades, share lessons, and provide mutual aid."
+      },
+      {
+        "actor": "Vendors and integrators",
+        "role": "Provide products, firmware, bills of materials, documentation, engineering support, mitigations, customer notices, secure configurations, and end-of-support dates under standard agreements."
+      }
+    ],
+    "milestones": [
+      {
+        "horizon": "12 months",
+        "targets": "Agreement and disclosure rules; four regional nodes; five states and 50 utilities; 25 high-prevalence product families inventoried; 15 tested; 10 combined exercises; first anonymized baseline."
+      },
+      {
+        "horizon": "36 months",
+        "targets": "Delivery presence in every EPA region; 500 utilities served; 100 product families tested; 75% of confirmed high-severity findings mitigated within agreed windows; 2,500 people trained."
+      },
+      {
+        "horizon": "60 months",
+        "targets": "2,000 utilities served; protected national component-exposure map; shorter remediation and restoration times; mature protocols moved into procurement, curricula, vendor practice, and repeatable state programs; independent evaluation before permanent funding."
+      }
+    ],
+    "measures": [
+      "Days from validated finding to vendor mitigation",
+      "Days from advisory to utility mitigation or compensating control",
+      "Critical OT inventory completeness",
+      "Removal of internet-exposed administration and default credentials",
+      "Tested backup restoration and safe manual-operation capability",
+      "Exercise time to detect, isolate, communicate, and restore",
+      "Product-family coverage and market prevalence",
+      "Repeat component exposures found across utilities",
+      "Small, rural, tribal, and disadvantaged-system participation",
+      "Reduction in repeat assessment findings"
+    ],
+    "guardrails": [
+      "Never connect offensive research systems to live water operations.",
+      "Use coordinated disclosure and emergency exceptions; measure remediation, not raw vulnerability counts.",
+      "Do not treat voluntary assessments as certifications or publicly rank utilities by vulnerability.",
+      "Minimize collected data; keep raw captures, credentials, and detailed diagrams with the utility unless it opts in.",
+      "No participant data for unrelated enforcement, commercial model training, or vendor marketing without separate authority.",
+      "Require human authorization for AI-assisted exploit validation and every operational change.",
+      "Give small, rural, tribal, and disadvantaged systems governance seats, not only services.",
+      "Vendor contributions cannot control test selection, findings, disclosure, or procurement."
+    ],
+    "funding_paths": [
+      "Dedicated EPA-DOE appropriation for laboratories, regional delivery, mobile equipment, small-system support, and independent evaluation.",
+      "DWSRF/CWSRF and set-asides for eligible assessments, technical assistance, equipment, workforce, and resilience upgrades; these are eligibility paths, not security-only totals.",
+      "CISA state/local cyber grants where ownership and eligibility rules permit.",
+      "DOE CESER and laboratory research funding for reusable testing, analytics, and technology transition.",
+      "State/local appropriations, rates, bonds, and capital plans for sustained field implementation.",
+      "Vendor or philanthropic equipment and engineering support with strict conflict controls."
+    ]
+  }
+}

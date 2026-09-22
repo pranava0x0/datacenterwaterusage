@@ -1,7 +1,110 @@
 {
-  "last_updated": "2026-08-24",
+  "last_updated": "2026-09-21",
   "description": "Curated headlines about data center water use, regulation, enforcement, and solutions — linked to the tracker's datasets where possible.",
   "items": [
+    {
+      "id": "california-data-center-laws-signed-2026-09",
+      "date": "2026-09-21",
+      "title": "California Signs Three Data Center Water, Energy, and CEQA Laws",
+      "outlet": "Office of Governor Gavin Newsom / California Legislative Information",
+      "summary": "Governor Newsom signed AB 1577, AB 2619, and SB 887. Together they create statewide data-center energy and water reporting, facility-level projected and actual water disclosure tied to local licensing and urban-water planning, and revised CEQA treatment for data-center projects. The signature converts all three tracked bills from proposals into enacted law.",
+      "tags": [
+        "regulation",
+        "policy",
+        "data"
+      ],
+      "source_url": "https://www.gov.ca.gov/2026/09/21/governor-newsom-signs-most-comprehensive-data-center-laws-in-the-nation-providing-communities-more-control-on-water-electricity-and-land-use/",
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "Final status for the three California measures tracked since committee stage",
+      "cross_ref_targets": [
+        "CA AB 1577",
+        "CA AB 2619",
+        "CA SB 887"
+      ]
+    },
+    {
+      "id": "nevada-responsible-data-center-eo-2026-09",
+      "date": "2026-09-18",
+      "title": "Nevada Conditions Data Center Tax Abatements on Water and Community Commitments",
+      "outlet": "Office of Governor Joe Lombardo",
+      "summary": "Executive Order 2026-005 creates the Nevada Standard for Responsible Data Center Development. Applicants seeking partial tax abatements must pay the Local School Support Tax in full and execute a binding Community Support Commitment before GOED Board consideration; at minimum, the commitment requires local water-standard compliance, developer-paid service costs, and protections against grid or community strain.",
+      "tags": [
+        "regulation",
+        "policy"
+      ],
+      "source_url": "https://www.gov.nv.gov/press-releases/governor-joe-lombardo-signs-executive-order-placing-guardrails-on-data-center-development-restoring-education-funding/",
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "New statewide executive-order instrument",
+      "cross_ref_targets": [
+        "NV EO 2026-005"
+      ]
+    },
+    {
+      "id": "oregon-state-land-data-center-pause-2026-09",
+      "date": "2026-09-08",
+      "title": "Oregon Pauses State-Property Approvals for New Data Centers",
+      "outlet": "Office of Governor Tina Kotek",
+      "summary": "Governor Kotek directed state agencies to pause unapproved data-center requests involving state easements, rights-of-way, leases, rentals, land-use permits, and property sales or transfers through July 1, 2027. The order is not a statewide development moratorium; it creates time to evaluate water use, infrastructure capacity, environmental sustainability, jobs, and community effects within the state's existing property authority.",
+      "tags": [
+        "regulation",
+        "policy"
+      ],
+      "source_url": "https://apps.oregon.gov/oregon-newsroom/OR/GOV/Posts/Post/governor-kotek-pauses-work-on-requests-for-state-land-to-support-new-data-centers",
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "Separate from Oregon's electricity cost-allocation law",
+      "cross_ref_targets": [
+        "OR 2026 state-land data center pause"
+      ]
+    },
+    {
+      "id": "texas-water-survey-enforcement-2026-09",
+      "date": "2026-09-14",
+      "title": "Texas Orders Penalties for Mandatory Water-Use Reporting Failures",
+      "outlet": "Office of Governor Greg Abbott",
+      "summary": "Governor Abbott directed the Texas Water Development Board to penalize major water users, including data centers, that fail to return mandatory statutory water-use surveys. Noncompliance can trigger criminal referral and ineligibility for certain TCEQ Chapter 11 water permits, amendments, or renewals. TWDB must also coordinate with PUCT and ERCOT to audit consumption, supply sources, and efficiency technology. The action does not make PUCT's separate voluntary survey mandatory.",
+      "tags": [
+        "regulation",
+        "enforcement",
+        "data"
+      ],
+      "source_url": "https://gov.texas.gov/news/post/governor-abbott-directs-twdb-to-penalize-data-center-reporting-failures",
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "Enforcement escalation related to the tracked PUCT/TWDB survey record",
+      "cross_ref_targets": [
+        "TX PUC Energy and Water Use Survey (data centers)"
+      ]
+    },
+    {
+      "id": "meta-newton-county-lawsuit-2026-09",
+      "date": "2026-09-01",
+      "title": "Newton County Homeowners Sue Meta Over Alleged Well and Aquifer Damage",
+      "outlet": "Atlanta Journal-Constitution / Meta",
+      "summary": "Several homeowners sued Meta and the four-county Joint Development Authority, alleging that construction clearing, blasting, and excavation disturbed the aquifer and caused turbidity, sediment, clogged water lines, and appliance damage. The claims are allegations, not adjudicated findings. Meta denies causation, says commissioned analysis found groundwater flows away from plaintiffs' properties, and says the facility uses local-utility water.",
+      "tags": [
+        "enforcement",
+        "data"
+      ],
+      "source_url": "https://feeds.ajc.com/news/2026/09/georgia-families-sue-meta-accuse-its-data-center-of-tainting-their-water/",
+      "cross_ref_tab": "issues",
+      "cross_ref_note": "Civil-litigation update to the existing Newton County site",
+      "cross_ref_targets": [
+        "meta-newton-county-ga"
+      ]
+    },
+    {
+      "id": "gilroy-data-center-moratorium-2026-09",
+      "date": "2026-09-14",
+      "title": "Gilroy Adopts 45-Day Data Center Moratorium",
+      "outlet": "City of Gilroy",
+      "summary": "Gilroy City Council unanimously adopted an immediately effective 45-day moratorium on new data-center applications and entitlements while staff develops standards for water use, cooling technology, electricity demand, noise, aesthetics, and backup-generator emissions. The pause does not affect Amazon's approved facility but covers a possible second Amazon project still at pre-application stage; state law permits extensions up to two years total.",
+      "tags": [
+        "regulation",
+        "policy"
+      ],
+      "source_url": "https://www.cityofgilroy.org/m/newsflash/Home/Detail/1331",
+      "cross_ref_tab": "states",
+      "cross_ref_note": "Tracked as a county & city action (direct-gilroy-ca-2026-09) on the States & Localities tab — a local measure below the first-of-kind threshold, so it is not a legislation.json instrument"
+    },
     {
       "id": "aws-lake-anna-permit-issued-2026-08",
       "date": "2026-08",
