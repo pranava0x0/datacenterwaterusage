@@ -2393,6 +2393,14 @@ def build_llms_txt() -> str:
             "",
         ]
         lines += [f"- {m['horizon']}: {m['targets']}" for m in proposal.get("milestones", [])]
+        lines += ["", "Roles:"]
+        lines += [
+            f"- {role['actor']}: {role['role']}" for role in proposal.get("roles", [])
+        ]
+        lines += ["", "Measures:"]
+        lines += [f"- {measure}" for measure in proposal.get("measures", [])]
+        lines += ["", "Funding paths:"]
+        lines += [f"- {path}" for path in proposal.get("funding_paths", [])]
         lines += ["", "Guardrails:"]
         lines += [f"- {g}" for g in proposal.get("guardrails", [])]
 

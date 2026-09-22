@@ -524,6 +524,14 @@ class TestWaterSecurityTab:
             assert step["name"] in txt
         for milestone in proposal["milestones"]:
             assert milestone["horizon"] in txt
+        for role in proposal["roles"]:
+            assert f"- {role['actor']}: {role['role']}" in txt
+        for measure in proposal["measures"]:
+            assert f"- {measure}" in txt
+        for path in proposal["funding_paths"]:
+            assert f"- {path}" in txt
+        for guardrail in proposal["guardrails"]:
+            assert f"- {guardrail}" in txt
         assert "water_security.json" in txt
 
 

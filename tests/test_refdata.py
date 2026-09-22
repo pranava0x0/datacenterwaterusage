@@ -1249,6 +1249,7 @@ class TestLocalActions:
     def test_dataset_loads_with_its_provenance(self):
         payload = self._payload()
         assert payload["last_updated"]
+        assert payload["last_updated"] >= max(action["date"] for action in payload["actions"])
         assert payload["source_repo"] == "pranava0x0/datacentercommunitybenefits"
         assert payload["source_path"]
         # The note carries the refresh contract; a mirror without one is a

@@ -404,6 +404,33 @@ Regional delivery: Launch four nodes, then scale toward one delivery partnership
 - 36 months: Delivery presence in every EPA region; 500 utilities served; 100 product families tested; 75% of confirmed high-severity findings mitigated within agreed windows; 2,500 people trained.
 - 60 months: 2,000 utilities served; protected national component-exposure map; shorter remediation and restoration times; mature protocols moved into procurement, curricula, vendor practice, and repeatable state programs; independent evaluation before permanent funding.
 
+Roles:
+- EPA: Utility intake, eligibility, assessments, water-quality scenarios, state coordination, technical assistance, financing alignment, and translation of findings into operator guidance.
+- DOE and national laboratories: Common test protocols; product, firmware, and supply-chain analysis; cyber-physical experiments; digital twins; safe validation; research-to-deployment transition.
+- CISA and FBI: Threat intelligence, vulnerability coordination, scanning, incident escalation, investigation, and cross-sector dependency support.
+- States, tribes, WaterISAC, WARNs, and utilities: Set priorities, select representative cohorts, validate operational practicality, train operators, finance upgrades, share lessons, and provide mutual aid.
+- Vendors and integrators: Provide products, firmware, bills of materials, documentation, engineering support, mitigations, customer notices, secure configurations, and end-of-support dates under standard agreements.
+
+Measures:
+- Days from validated finding to vendor mitigation
+- Days from advisory to utility mitigation or compensating control
+- Critical OT inventory completeness
+- Removal of internet-exposed administration and default credentials
+- Tested backup restoration and safe manual-operation capability
+- Exercise time to detect, isolate, communicate, and restore
+- Product-family coverage and market prevalence
+- Repeat component exposures found across utilities
+- Small, rural, tribal, and disadvantaged-system participation
+- Reduction in repeat assessment findings
+
+Funding paths:
+- Dedicated EPA-DOE appropriation for laboratories, regional delivery, mobile equipment, small-system support, and independent evaluation.
+- DWSRF/CWSRF and set-asides for eligible assessments, technical assistance, equipment, workforce, and resilience upgrades; these are eligibility paths, not security-only totals.
+- CISA state/local cyber grants where ownership and eligibility rules permit.
+- DOE CESER and laboratory research funding for reusable testing, analytics, and technology transition.
+- State/local appropriations, rates, bonds, and capital plans for sustained field implementation.
+- Vendor or philanthropic equipment and engineering support with strict conflict controls.
+
 Guardrails:
 - Never connect offensive research systems to live water operations.
 - Use coordinated disclosure and emergency exceptions; measure remediation, not raw vulnerability counts.
