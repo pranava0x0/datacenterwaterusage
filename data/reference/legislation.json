@@ -107,56 +107,6 @@
       ]
     },
     {
-      "bill_id": "Gilroy CA data center moratorium",
-      "instrument_type": "local-ordinance",
-      "jurisdiction": "Gilroy, California",
-      "level": "local",
-      "title": "Temporary citywide data-center moratorium",
-      "sponsor": "Gilroy City Council",
-      "summary": "Immediately pauses new data-center applications and entitlements for 45 days while the city studies water use, cooling technology, electricity demand, noise, aesthetics, and backup-generator emissions. The pause covers a possible second Amazon project at pre-application stage but not Amazon's already approved facility.",
-      "scope": [
-        "water",
-        "energy"
-      ],
-      "status": "enacted",
-      "status_detail": "Adopted unanimously and effective 2026-09-14 for 45 days. California law permits extensions up to a two-year total, but no extension is recorded yet.",
-      "source_url": "https://www.cityofgilroy.org/m/newsflash/Home/Detail/1331",
-      "last_verified": "2026-09-21",
-      "verified": true,
-      "confidence": "high",
-      "recent_news": [
-        {
-          "date": "2026-09-14",
-          "title": "Gilroy adopts temporary data-center moratorium",
-          "source": "City of Gilroy",
-          "url": "https://www.cityofgilroy.org/m/newsflash/Home/Detail/1331",
-          "takeaway": "The unanimous urgency action pauses new applications while citywide siting standards are written."
-        }
-      ],
-      "public_sentiment": "The unanimous council vote reflects a shared demand for citywide standards before another data-center application advances. The city's notice names water, cooling, electricity, noise, aesthetics, and emissions as study topics while preserving the entitlement of Amazon's already approved facility; no referendum or broader public-opinion measure was found.",
-      "general_principles": [
-        {
-          "tag": "Moratorium",
-          "note": "Creates a 45-day pause on new applications, with extensions possible under state law."
-        },
-        {
-          "tag": "Preemptive review",
-          "note": "Studies water, cooling, energy, noise, aesthetics, and emissions before new entitlements."
-        },
-        {
-          "tag": "Best-practice guidance",
-          "note": "The pause exists to produce permanent citywide development standards."
-        }
-      ],
-      "timeline": [
-        {
-          "date": "2026-09-14",
-          "milestone": "Moratorium adopted",
-          "detail": "Unanimous council vote; effective immediately for 45 days."
-        }
-      ]
-    },
-    {
       "bill_id": "VA HB 496 / SB 553",
       "jurisdiction": "Virginia",
       "level": "state",
@@ -737,7 +687,7 @@
           "takeaway": "Bauer-Kahan's prior bill AB 222 was gutted under Big Tech pressure (Silicon Valley Leadership Group, Data Center Coalition) and a related water-reporting bill was vetoed by Newsom, setting hostile precedent for AB 1577."
         }
       ],
-      "public_sentiment": "Sponsor Bauer-Kahan and ratepayer advocates framed AB 1577 as consumer protection and transparency; technology and data-center trade groups had weakened or opposed earlier California reporting bills. Newsom's signature on 2026-09-21 reverses the state's 2025 veto outcome and makes statewide reporting the final policy rather than a pending proposal.",
+      "public_sentiment": "Sponsor Bauer-Kahan ('powering data centers can't come at the cost of powering homes') and ratepayer advocates such as The Utility Reform Network framed AB 1577 as consumer protection and transparency; technology and data-center trade groups had weakened or opposed earlier California reporting bills. Newsom's signature on 2026-09-21 reverses the state's 2025 veto outcome and makes statewide reporting the final policy rather than a pending proposal.",
       "general_principles": [
         {
           "tag": "Transparency",

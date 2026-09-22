@@ -2327,31 +2327,74 @@ def build_llms_txt() -> str:
             line += f" Source: {src}"
         lines.append(line)
 
+    proposal = security.get("proposal", {})
+    name = proposal.get("name", "Project Confluence")
     lines += [
         "",
         "## Water infrastructure security",
         "",
         security.get("scope_note", ""),
         "",
-        f"Project Confluence: {security.get('proposal', {}).get('mission', '')}",
+        f"{name}: {proposal.get('mission', '')}",
         "",
         "### Demonstrated threats",
         "",
     ]
+    # Every section mirrors every record (id first, so coverage is testable),
+    # not just threats and investments — Codex review, PR #28.
     for item in security.get("threats", []):
         lines.append(
-            f"- {item['title']} ({item['domain']}): {item['evidence']} "
+            f"- {item['id']} — {item['title']} ({item['domain']}): {item['evidence']} "
             f"Operational meaning: {item['why_it_matters']} "
             f"Source: {item['sources'][0]['url']}"
+        )
+    lines += ["", "### Capabilities that reduce them", ""]
+    for item in security.get("capabilities", []):
+        lines.append(
+            f"- {item['id']} — {item['title']} ({item['category']}): {item['description']} "
+            f"Limit: {item['limit']} Source: {item['sources'][0]['url']}"
+        )
+    lines += ["", "### Public players", ""]
+    for item in security.get("public_players", []):
+        lines.append(
+            f"- {item['id']} — {item['name']} ({item['type']}): {item['role']} "
+            f"Boundary: {item['boundary']} Source: {item['sources'][0]['url']}"
+        )
+    lines += ["", "### Selected companies (a capability map, not a ranking)", ""]
+    for item in security.get("companies", []):
+        lines.append(
+            f"- {item['id']} — {item['name']}: {item['category']}. {item['evidence']} "
+            f"Evidence limit: {item['evidence_limit']} Source: {item['sources'][0]['url']}"
         )
     lines += ["", "### Security investment", "", security.get("funding_note", "")]
     for item in security.get("investments", []):
         lines.append(
-            f"- {item['program']} ({item['level']}, {item['funding_status']}): "
+            f"- {item['id']} — {item['program']} ({item['level']}, {item['funding_status']}): "
             f"{dash._format_security_amount(item)}. {item['scope']} "
             f"Counting rule: {item['anti_double_count_note']} "
             f"Source: {item['sources'][0]['url']}"
         )
+    lines += ["", "### Operating models worth reusing", ""]
+    for item in security.get("precedents", []):
+        lines.append(
+            f"- {item['id']} — {item['name']}: {item['lesson']} "
+            f"Source: {item['sources'][0]['url']}"
+        )
+    if proposal:
+        lines += [
+            "",
+            f"### {name}",
+            "",
+            f"Leadership: {proposal.get('leadership', '')}",
+            f"Governance: {proposal.get('governance', '')}",
+            "Service loop: "
+            + " → ".join(s["name"] for s in proposal.get("service_lines", [])),
+            f"Regional delivery: {proposal.get('regional_model', '')}",
+            "",
+        ]
+        lines += [f"- {m['horizon']}: {m['targets']}" for m in proposal.get("milestones", [])]
+        lines += ["", "Guardrails:"]
+        lines += [f"- {g}" for g in proposal.get("guardrails", [])]
 
     lines += [
         "",

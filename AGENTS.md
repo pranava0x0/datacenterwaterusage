@@ -540,6 +540,24 @@ the bounded split kept discovery, market mapping and program design distinct.**
   now-seeded security roster inline unless the user requests a new landscape
   sweep.
 
+**2026-09-21 (review session) — ten parallel `sonnet` finder agents for the
+/code-review of PR #28. Verdict: NOT justified; zero yield.**
+
+- All ten were killed by the account session limit before returning a single
+  candidate. Every confirmed finding (missing `refdata` export, `.jumpnav`
+  undefined on the Streamlit surface, edge-rows-vs-records mismatch in the
+  Explore neighbours list, date-pinned test) came from ~15 direct grep/python
+  checks run before the agents launched.
+- Lesson: a skill recipe that says "run N angles via the Agent tool" does not
+  override this repo's fan-out rules. Review angles run inline; agents are for
+  open-ended multi-source research only, at most two per session.
+- Recovery: two of the ten (angles A and B, the most-progressed transcripts)
+  were revived with a "report what you have, no more tool calls" message.
+  Each answered in ~10 s with zero tool uses for ~155-175k cached tokens and
+  yielded three usable items (a copy-paste class miss, a latent `None > 0`
+  test crash, two dropped prose facts). Revive-to-report is cheap; the
+  other eight overlapped the inline pass and were left dead.
+
 ---
 
 ## What NOT to do

@@ -481,6 +481,22 @@ class TestWaterSecurityTab:
         ):
             assert phrase in html
 
+    def test_fragment_styles_every_class_it_uses_on_both_surfaces(self):
+        """The fragment renders through st.markdown (page CSS = assets/
+        components.css) and inside the static page (build_site CSS). Every
+        class it uses must be defined in its own <style> or in components.css,
+        or the Streamlit surface silently loses layout — the .jumpnav row
+        rendered as one run-together string before the PR #28 review."""
+        from refdata.loaders import BASE_DIR
+
+        fragment = dashboard._build_water_security_html()
+        shared = (BASE_DIR / "assets" / "components.css").read_text()
+        style = fragment.split("<style>", 1)[1].split("</style>", 1)[0]
+        body = fragment.split("</style>", 1)[1]
+        used = {c for attr in re.findall(r'class="([^"]+)"', body) for c in attr.split()}
+        undefined = sorted(c for c in used if f".{c}" not in style and f".{c}" not in shared)
+        assert not undefined, undefined
+
     def test_security_tab_is_mobile_contained(self):
         html = build_site.build_security_tab()
         assert "overflow-x:auto" in html
@@ -488,8 +504,26 @@ class TestWaterSecurityTab:
 
     def test_llms_txt_carries_security_summary_and_dataset(self):
         txt = build_site.build_llms_txt()
+        payload = dashboard.load_water_security()
         assert "## Water infrastructure security" in txt
-        assert "Project Confluence" in txt
+        # Every record in every section reaches the mirror, not just threats
+        # and investments (Codex review, PR #28).
+        for section in (
+            "threats",
+            "capabilities",
+            "companies",
+            "public_players",
+            "investments",
+            "precedents",
+        ):
+            for item in payload[section]:
+                assert item["id"] in txt, (section, item["id"])
+        proposal = payload["proposal"]
+        assert proposal["name"] in txt
+        for step in proposal["service_lines"]:
+            assert step["name"] in txt
+        for milestone in proposal["milestones"]:
+            assert milestone["horizon"] in txt
         assert "water_security.json" in txt
 
 
@@ -631,8 +665,13 @@ class TestExploreTab:
     def test_focus_renders_direct_connections_as_text(self):
         js = dashboard._explore_js()
         assert "function renderDirectConnections(idx)" in js
-        assert "D.edge_kind_labels[row.kind]" in js
-        assert "rows.slice(0, 12)" in js
+        # One row per connected record with every relationship on it (a pair
+        # can carry two edge kinds), and the tail behind a native disclosure
+        # instead of a hard cut — both from the PR #28 review.
+        assert "byNode[other].indexOf(edge[2]) < 0" in js
+        assert "join(' \u00b7 ')" in js
+        assert "createElement('details')" in js
+        assert "rows.slice(0, 12)" not in js
 
     def test_no_third_party_assets(self):
         """Standing security rule: this page loads nothing from a third party.

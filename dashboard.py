@@ -4760,6 +4760,8 @@ def _build_water_security_html() -> str:
 <div class="water-security" id="water-security">
   <style>
   .water-security{{color:#1a1a2e}}
+  .water-security .jumpnav{{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0 .9rem}}
+  .water-security .src-note{{color:#888;font-size:.82rem;margin-top:.6rem}}
   .security-callout{{border-left:4px solid #08519c;background:#eff6ff;padding:.8rem 1rem;border-radius:0 .5rem .5rem 0;margin:.7rem 0 1rem}}
   .security-grid{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem;margin:.6rem 0 1rem}}
   .security-grid-3{{grid-template-columns:repeat(3,minmax(0,1fr))}}
@@ -4808,7 +4810,7 @@ def _build_water_security_html() -> str:
     <div class="security-table-wrap"><table class="security-table"><thead><tr><th>Actor</th><th>Job</th></tr></thead><tbody>{role_rows}</tbody></table></div>
     <div class="security-grid security-grid-3">{milestone_cards}</div>
     <details><summary><strong>Measures</strong></summary><ul class="security-list">{measures}</ul></details>
-    <details><summary><strong>Funding paths</strong></summary><ul>{funding}</ul></details>
+    <details><summary><strong>Funding paths</strong></summary><ul class="security-list">{funding}</ul></details>
     <details open><summary><strong>Guardrails</strong></summary><ul class="security-list">{guardrails}</ul></details>
   </section>
   <p class="src-note">Dataset last updated {html.escape(payload.get("last_updated", "unknown"))}. {html.escape(payload.get("scope_note", ""))}</p>
@@ -4906,7 +4908,7 @@ def _explore_css() -> str:
 .explore-neighbour a{color:#08519c;text-decoration:none;font-weight:600}
 .explore-neighbour a:hover{text-decoration:underline}
 .explore-neighbour-kind{color:#6b7280;font-size:.73rem;text-align:right}
-.explore-neighbours-more{color:#4b5563;margin-top:.25rem}
+.explore-neighbours-more summary{cursor:pointer;color:#08519c;font-weight:600;padding:.25rem 0}
 .explore-tools{display:flex;gap:.35rem;align-items:center;font-size:.8rem;color:#4b5563}
 .explore-canvas{width:100%;height:520px;display:block;background:#fff;border:1px solid #cbd5e1;
   border-radius:.5rem;touch-action:none;cursor:grab}
@@ -5326,22 +5328,38 @@ def _explore_js() -> str:
   function renderDirectConnections(idx){
     neighbourBox.replaceChildren();
     if (idx < 0){ neighbourBox.hidden = true; return; }
-    var rows = [];
+    // One row per connected RECORD. A pair can carry several edge kinds (a
+    // reading and its example case each point at the other), so group by
+    // neighbour, list every relationship on that row, and count records —
+    // the same number the focus line above reports.
+    var byNode = {}, order = [];
     for (var e = 0; e < D.edges.length; e++){
       var edge = D.edges[e];
       if (!activeKinds[edge[2]]) continue;
       var other = edge[0] === idx ? edge[1] : (edge[1] === idx ? edge[0] : -1);
-      if (other >= 0) rows.push({node: other, kind: edge[2]});
+      if (other < 0) continue;
+      if (!byNode[other]){ byNode[other] = []; order.push(other); }
+      if (byNode[other].indexOf(edge[2]) < 0) byNode[other].push(edge[2]);
     }
-    rows.sort(function(a, b){
-      return nodes[a.node].label.localeCompare(nodes[b.node].label);
+    order.sort(function(a, b){
+      return nodes[a].label.localeCompare(nodes[b].label);
     });
     var head = document.createElement('div');
     head.className = 'explore-neighbours-head';
-    head.textContent = 'Direct connections (' + rows.length + ')';
+    head.textContent = 'Direct connections (' + order.length + ')';
     neighbourBox.appendChild(head);
-    rows.slice(0, 12).forEach(function(row){
-      var node = nodes[row.node];
+    // Every record stays in the DOM and reachable by keyboard; a long tail
+    // folds behind a native disclosure instead of being cut off.
+    var VISIBLE = 12, rest = null;
+    if (order.length > VISIBLE){
+      rest = document.createElement('details');
+      rest.className = 'explore-neighbours-more';
+      var sum = document.createElement('summary');
+      sum.textContent = 'Show ' + (order.length - VISIBLE) + ' more';
+      rest.appendChild(sum);
+    }
+    order.forEach(function(other, i){
+      var node = nodes[other];
       var line = document.createElement('div');
       line.className = 'explore-neighbour';
       var label;
@@ -5355,16 +5373,11 @@ def _explore_js() -> str:
       line.appendChild(label);
       var kind = document.createElement('span');
       kind.className = 'explore-neighbour-kind';
-      kind.textContent = D.edge_kind_labels[row.kind];
+      kind.textContent = byNode[other].map(function(k){ return D.edge_kind_labels[k]; }).join(' · ');
       line.appendChild(kind);
-      neighbourBox.appendChild(line);
+      (rest && i >= VISIBLE ? rest : neighbourBox).appendChild(line);
     });
-    if (rows.length > 12){
-      var more = document.createElement('div');
-      more.className = 'explore-neighbours-more';
-      more.textContent = '+' + (rows.length - 12) + ' more direct connections; use the canvas or filters to inspect them.';
-      neighbourBox.appendChild(more);
-    }
+    if (rest) neighbourBox.appendChild(rest);
     neighbourBox.hidden = false;
   }
 

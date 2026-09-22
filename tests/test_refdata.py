@@ -36,6 +36,16 @@ class TestLoaders:
         assert loaders.load_local_actions()["actions"]
         assert loaders.load_water_security()["threats"]
 
+    def test_package_exports_every_loader(self):
+        """refdata/__init__.py must re-export every loader and path constant —
+        otherwise `from refdata import load_x` works for eight datasets and
+        silently not the ninth (caught in the PR #28 review)."""
+        import refdata
+
+        for name in dir(loaders):
+            if name.startswith("load_") or name.endswith("_PATH"):
+                assert hasattr(refdata, name), name
+
     def test_missing_file_returns_empty_payload(self, tmp_path):
         """A missing dataset renders an empty section, never a crash."""
         absent = tmp_path / "nope.json"
@@ -439,7 +449,7 @@ class TestWaterSecurity:
         for item in payload["investments"]:
             assert item["funding_status"]
             assert item["anti_double_count_note"]
-            if "amount_usd" in item:
+            if item.get("amount_usd") is not None:  # absent and null both mean "not public"
                 assert item["amount_usd"] > 0
 
     def test_project_confluence_is_operational_not_aspirational_copy(self):

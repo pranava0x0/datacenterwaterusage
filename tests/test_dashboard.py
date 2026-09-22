@@ -730,10 +730,16 @@ class TestLegislationTracker:
             "CA SB 887",
             "NV EO 2026-005",
             "OR 2026 state-land data center pause",
-            "Gilroy CA data center moratorium",
         ):
             assert by_id[bill_id]["status"] == "enacted", bill_id
-            assert by_id[bill_id]["last_verified"] == "2026-09-21", bill_id
+            assert by_id[bill_id]["last_verified"] >= "2026-09-21", bill_id
+        # The Gilroy city moratorium is a local measure below the first-of-kind
+        # threshold, so it lives in local_actions.json (CLAUDE.md rule).
+        from refdata.loaders import load_local_actions
+
+        assert "Gilroy CA data center moratorium" not in by_id
+        actions = {a["action_id"] for a in load_local_actions()["actions"]}
+        assert "direct-gilroy-ca-2026-09" in actions
         texas = by_id["TX PUC Energy and Water Use Survey (data centers)"]
         assert texas["status"] == "introduced"
         assert "separate" in texas["status_detail"].lower()

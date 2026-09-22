@@ -102,11 +102,8 @@
         "policy"
       ],
       "source_url": "https://www.cityofgilroy.org/m/newsflash/Home/Detail/1331",
-      "cross_ref_tab": "legislation",
-      "cross_ref_note": "New local moratorium instrument",
-      "cross_ref_targets": [
-        "Gilroy CA data center moratorium"
-      ]
+      "cross_ref_tab": "states",
+      "cross_ref_note": "Tracked as a county & city action (direct-gilroy-ca-2026-09) on the States & Localities tab — a local measure below the first-of-kind threshold, so it is not a legislation.json instrument"
     },
     {
       "id": "aws-lake-anna-permit-issued-2026-08",

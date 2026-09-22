@@ -1071,6 +1071,18 @@
       "water_angle": "",
       "summary": "City council rejected a proposed 12-month moratorium on data center facility permits 8-1 on May 26, 2026; sponsor Mark Moody cast the lone yes vote. The proposal would have paused permits pending an infrastructure assessment.",
       "source_url": "https://wyofile.com/cheyenne-rejects-moratorium-on-data-centers/"
+    },
+    {
+      "action_id": "direct-gilroy-ca-2026-09",
+      "jurisdiction": "Gilroy",
+      "state": "CA",
+      "action_type": "moratorium",
+      "status": "active",
+      "date": "2026-09",
+      "water_related": true,
+      "water_angle": "The council's stated study topics for the pause lead with water use and cooling technology, alongside electricity demand, noise, aesthetics and backup-generator emissions.",
+      "summary": "Gilroy City Council unanimously adopted an immediately effective 45-day urgency moratorium on new data-center applications and entitlements on September 14, 2026, while staff write citywide siting standards. It covers a possible second Amazon project still at pre-application stage but not Amazon's already approved facility; California law allows extensions up to a two-year total, none recorded yet. Added directly from the city's notice (not present in the DCCB moratoriums.json mirror).",
+      "source_url": "https://www.cityofgilroy.org/m/newsflash/Home/Detail/1331"
     }
   ]
 }
