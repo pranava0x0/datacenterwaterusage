@@ -670,6 +670,12 @@ class TestExploreTab:
     def test_reduced_motion_is_honored(self):
         assert "prefers-reduced-motion" in dashboard._explore_js()
 
+    def test_superseded_layout_stops_animating(self):
+        js = dashboard._explore_js()
+        assert "var epoch = ++layoutEpoch" in js
+        assert "if (epoch !== layoutEpoch) return" in js
+        assert "t < ITERATIONS && epoch === layoutEpoch" in js
+
     def test_focus_renders_direct_connections_as_text(self):
         js = dashboard._explore_js()
         assert "function renderDirectConnections(idx)" in js

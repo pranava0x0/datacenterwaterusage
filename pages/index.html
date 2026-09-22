@@ -2123,7 +2123,11 @@ back to the river.</desc>
   }
 
   var ITERATIONS = 120;
+  var layoutEpoch = 0;
   function runLayout(){
+    // A fast series of edge-kind changes can start several animation loops.
+    // Only the newest layout may keep spending frames on this canvas.
+    var epoch = ++layoutEpoch;
     var t = 0, temp0 = W / 12;
     if (reduceMotion){
       for (t = 0; t < ITERATIONS; t++) step(temp0 * (1 - t / ITERATIONS));
@@ -2133,9 +2137,10 @@ back to the river.</desc>
     // Animated: chunks per frame so a slow phone stays responsive instead of
     // freezing for the whole simulation.
     (function frame(){
+      if (epoch !== layoutEpoch) return;
       for (var c = 0; c < 6 && t < ITERATIONS; c++, t++) step(temp0 * (1 - t / ITERATIONS));
       draw();
-      if (t < ITERATIONS) requestAnimationFrame(frame);
+      if (t < ITERATIONS && epoch === layoutEpoch) requestAnimationFrame(frame);
     })();
   }
 

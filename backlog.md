@@ -818,3 +818,8 @@ These are large data-center water stories with no formal CWA enforcement action 
 - **Priority**: low
 - **What**: PR #28 made one hop the default and added a grouped, expandable direct-connections list. Before another dataset joins the graph, check the list in real reading sessions (is the record count matching the focus line enough? do derived/hub kinds belong in it?) and record the answer in DESIGN.md.
 - **Sample prompt**: "Run a UAT pass on the Explore tab's direct-connections list with five focused records (a reading, a case, a site, a bill, a news item), note what is unclear, and propose whether derived kinds should appear in the list."
+
+## Static page size and DOM watch
+- **Priority**: medium when the next data batch grows the page
+- **What**: The 2026-09-21 build is 1,554,005 uncompressed bytes (347,330 bytes gzipped locally) with about 14,933 DOM elements on initial load. The graph is a separate 649,503-byte file and loads only on Explore activation. The page remains under the 1.6 MB build gate, but has only about 46 KB of room. A future batch should measure cold-load and mobile main-thread cost before raising the gate. If it crosses the gate or becomes slow, split optional tab content into same-origin fragments while keeping no-JS access, anchors, and the LLM mirror intact; do not simply lift the limit.
+- **Sample prompt**: "Measure the generated page and 390px mobile cold load after the new data batch. If it exceeds the 1.6 MB gate or shows a long main-thread task, propose and test a same-origin lazy-tab split that preserves no-JS content and cross-tab anchors."
