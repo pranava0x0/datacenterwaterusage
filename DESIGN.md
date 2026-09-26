@@ -237,6 +237,15 @@ and every card is visible. Emitting them closed instead would have hidden
 ~150 cards from a no-JS reader, and **no CSS can force a closed
 `<details>` open** — that is the whole reason for the inversion.
 
+**Tabs load on first open (2026-09-26).** Only the default tab ships in
+index.html; the rest are standalone pages fetched when a reader opens them —
+or hovers, focuses or touches their button, so the fetch is usually finished
+before the click. While a tab loads its panel shows a plain "Loading …" line
+(`.tab-loading`, hidden when scripting is off); a failed fetch says so and
+links to the standalone page. Nothing about a tab's look changes when it
+arrives late — the same CSS is already on the page — and a reader with
+JavaScript off gets one link per tab to a styled page of its own.
+
 **Back to top** — `#to-top`, a fixed outline chip bottom-right carrying a
 drawn caret and the word "Top" (no emoji, §12). It gets `.is-visible`
 past two viewport heights and fades with a *transition*, not an

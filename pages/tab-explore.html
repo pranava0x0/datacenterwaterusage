@@ -1,0 +1,1014 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explore — Data Center Water Use Tracker</title>
+<meta name="description" content="Tracking how US data centers draw, discharge, and disclose cooling water — permits, enforcement, statutes, and state and local policy, from public records.">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div class="wrap">
+  <p class="tab-page-nav"><a href="index.html#panel-explore">Data Center Water Use Tracker</a>
+  — this is one section of the tracker, on a page of its own.</p>
+  <div class="tabpanel" id="panel-explore" role="tabpanel">
+<section class="panel">
+  <h2>Explore — Connections and Text Search</h2>
+  <p class="lead">Every curated record in one graph, plus a text search across all of them. Click a dot to see what a record connects to — or switch the layout to Legal paths to read it as activity → statute → reading → case → site — or paste a paragraph (a news story, a permit notice, a draft ordinance) to find the records that use the same language.</p>
+  <div class="explore" id="explore">
+<noscript><div class="explore-noscript"><p><strong>The graph and the text search need JavaScript.</strong> Both run entirely in your browser — there is no server to fall back on — so with scripting off this tab can only point you at the records themselves, which are all on the page already:</p><ul><li><a href="index.html#panel-legislation">Policy instruments</a> — 75 records</li><li><a href="tab-cwa.html#panel-cwa">Statutory readings</a> — 51 records</li><li><a href="tab-cwa.html#panel-cwa">Water cases</a> — 123 records</li><li><a href="tab-issues.html#panel-issues">Conflict sites</a> — 19 records</li><li><a href="tab-issues.html#panel-issues">Operator claims</a> — 45 records</li><li><a href="tab-news.html#panel-news">News items</a> — 57 records</li><li><a href="tab-solutions.html#panel-solutions">Solutions</a> — 18 records</li></ul></div></noscript>
+<div class="explore-grid">
+  <div class="explore-side">
+    <label class="explore-label" for="explore-q">Paste any text — a news story, a
+    permit notice, a bill summary</label>
+    <textarea id="explore-q" rows="5" placeholder="Paste a paragraph here to rank every tracked record by how much of its language it shares."></textarea>
+    <div class="explore-controls">
+      <span class="explore-controls-label">Kinds:</span><label class="explore-chip"><input type="checkbox" class="explore-kind" value="instrument" checked> Policy instruments (75)</label><label class="explore-chip"><input type="checkbox" class="explore-kind" value="reading" checked> Statutory readings (51)</label><label class="explore-chip"><input type="checkbox" class="explore-kind" value="case" checked> Water cases (123)</label><label class="explore-chip"><input type="checkbox" class="explore-kind" value="site" checked> Conflict sites (19)</label><label class="explore-chip"><input type="checkbox" class="explore-kind" value="claim" checked> Operator claims (45)</label><label class="explore-chip"><input type="checkbox" class="explore-kind" value="news" checked> News items (57)</label><label class="explore-chip"><input type="checkbox" class="explore-kind" value="solution" checked> Solutions (18)</label>
+    </div>
+    <div class="explore-controls">
+      <label class="explore-controls-label" for="explore-family">Statute family:</label>
+      <select id="explore-family">
+        <option value="">Any</option><option value="CWA">CWA — Clean Water Act</option><option value="SDWA">SDWA — Safe Drinking Water Act</option><option value="TSCA">TSCA — Toxic Substances Control Act</option><option value="RCRA">RCRA — Resource Conservation and Recovery Act</option><option value="RHA">RHA — Rivers and Harbors Act</option><option value="NEPA">NEPA — National Environmental Policy Act</option><option value="CERCLA">CERCLA — Comprehensive Environmental Response, Compensation, and Liability Act</option><option value="WSA">WSA — Water Supply Act / Corps reallocation and alteration authority</option><option value="WSR">WSR — Wild and Scenic Rivers Act</option><option value="FPA">FPA — Federal Power Act (hydropower licensing)</option><option value="RECL">RECL — Federal Reclamation law</option><option value="EPCRA">EPCRA — Emergency Planning and Community Right-to-Know Act</option><option value="EQAP">EQAP — Interstate apportionment &amp; compacts</option><option value="BASIN">BASIN — Interstate basin compacts and commissions</option><option value="PTD">PTD — Public trust doctrine</option><option value="GW">GW — Groundwater property &amp; allocation doctrines</option><option value="WELL">WELL — High-capacity well &amp; withdrawal-permit review</option><option value="GWMGMT">GWMGMT — Statutory groundwater-management regimes</option><option value="XFER">XFER — Water sourcing &amp; inter-basin transfer law</option><option value="ESA">ESA — Endangered Species Act as a water constraint</option><option value="TRIBAL">TRIBAL — Federal &amp; tribal reserved water rights</option><option value="SEPA">SEPA — State environmental review &amp; water-supply adequacy</option><option value="CL">CL — Common-law interference, nuisance &amp; standing</option><option value="UTIL">UTIL — Municipal utility service &amp; shortage law</option><option value="SL">SL — State consumer-protection &amp; claims law</option>
+      </select>
+      <label class="explore-controls-label" for="explore-activity">Activity:</label>
+      <select id="explore-activity">
+        <option value="">Any</option><option value="build">Building the campus</option><option value="withdraw">Pumping or diverting water</option><option value="supply">Buying water from a utility</option><option value="discharge">Discharging cooling water</option><option value="chemicals">Storing fuel &amp; chemicals</option><option value="power">Powering the campus</option><option value="disclose">Claims &amp; disclosures</option>
+      </select>
+      <label class="explore-chip"><input type="checkbox" id="explore-scope">
+      Only near the focused record</label>
+    </div>
+    <p class="explore-count" id="explore-count"></p>
+    <div class="explore-results" id="explore-results">
+      <div class="explore-empty" id="explore-status">Nothing searched yet. Paste a paragraph above to find the records that use the same language, click any dot to see what a record connects to, or combine the two by narrowing results to a record kind, a statute family, or the neighbourhood around the record you clicked.</div>
+    </div>
+  </div>
+  <div class="explore-main">
+    <div class="explore-toolbar">
+      <span class="explore-focus" id="explore-focus">No record focused — click a dot,
+      or use <em>Show connections</em> on a result.</span>
+      <span class="explore-tools">
+        <label for="explore-layout">Layout</label>
+        <select id="explore-layout">
+          <option value="network" selected>Network</option>
+          <option value="paths">Legal paths</option>
+        </select>
+        <label for="explore-depth">Hops</label>
+        <select id="explore-depth">
+          <option value="1" selected>1</option>
+          <option value="2">2</option>
+        </select>
+        <button type="button" class="explore-btn" id="explore-zoom-in" aria-label="Zoom in">+</button>
+        <button type="button" class="explore-btn" id="explore-zoom-out" aria-label="Zoom out">&minus;</button>
+        <button type="button" class="explore-btn" id="explore-reset">Reset</button>
+      </span>
+    </div>
+    <div class="explore-neighbours" id="explore-neighbours" hidden></div>
+    <canvas class="explore-canvas" id="explore-canvas" role="img" aria-label="Connection graph of every tracked record. The results list carries the same records as text."></canvas>
+    <p class="explore-hint">Drag to pan, scroll to zoom, click a dot to focus its
+    neighbourhood. <strong>Legal paths</strong> lays the focused record out in
+    columns — activity → statute → reading → case → site — so you can read how a
+    law reaches a data center; try it on an activity or statute hub with 2 hops.
+    Records with no drawn connection sit on the outer ring.</p>
+    <div class="explore-legend"><span><span class="explore-dot" style="background:#08519c"></span>Policy instruments</span><span><span class="explore-dot" style="background:#7c3aed"></span>Statutory readings</span><span><span class="explore-dot" style="background:#b45309"></span>Water cases</span><span><span class="explore-dot" style="background:#c41e3a"></span>Conflict sites</span><span><span class="explore-dot" style="background:#2e8b57"></span>Operator claims</span><span><span class="explore-dot" style="background:#3182bd"></span>News items</span><span><span class="explore-dot" style="background:#6b7f2a"></span>Solutions</span><span><span class="explore-dot" style="background:#6b7280;border-radius:2px"></span>Taxonomy hub (activity, statute, project type, principle)</span></div>
+    <details class="explore-edges">
+      <summary>Connection types</summary>
+      <div class="explore-edgelist" id="explore-edgelist"></div>
+    </details>
+  </div>
+</div>
+<script type="application/json" id="graph-data" data-src="graph-data.json?v=1bb0d9edb5"></script>
+<style>
+.explore{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color:#1a1a2e;line-height:1.5;font-size:.92rem}
+.explore-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:1rem;align-items:start}
+@media (max-width:900px){.explore-grid{grid-template-columns:minmax(0,1fr)}}
+.explore-side,.explore-main{min-width:0}
+.explore-label{display:block;font-weight:600;font-size:.88rem;margin:0 0 .3rem}
+.explore textarea{width:100%;font:inherit;font-size:.88rem;padding:.55rem .7rem;border:1px solid #cbd5e1;
+  border-radius:.4rem;background:#fff;resize:vertical}
+.explore select{font:inherit;font-size:.84rem;padding:.25rem .4rem;border:1px solid #bdd7e7;
+  border-radius:.4rem;background:#fff;color:#1a1a2e}
+.explore-controls{display:flex;flex-wrap:wrap;gap:.4rem .7rem;align-items:center;margin:.6rem 0}
+/* A select's minimum width is its widest option — the statute-family names
+   are long enough to drag the whole page sideways on phones without this. */
+.explore-controls select{max-width:100%;min-width:0}
+.explore-controls-label{font-weight:600;font-size:.84rem}
+.explore-chip{display:inline-flex;align-items:center;gap:.35rem;font-size:.82rem;background:#eff3ff;
+  border:1px solid #bdd7e7;border-radius:999px;padding:.2rem .6rem;cursor:pointer}
+.explore-chip input{accent-color:#08519c;margin:0}
+.explore-btn{appearance:none;font:inherit;font-size:.8rem;font-weight:600;color:#08519c;background:#eff3ff;
+  border:1px solid #bdd7e7;border-radius:.35rem;padding:.25rem .55rem;cursor:pointer;min-height:32px}
+.explore-btn:hover{background:#dfeafb}
+.explore-count{font-size:.84rem;color:#4b5563;margin:.5rem 0 .4rem}
+.explore-results{max-height:26rem;overflow-y:auto;padding-right:.2rem}
+.explore-empty{border:1px solid #cbd5e1;border-radius:.5rem;background:#fff;padding:.75rem .9rem;
+  font-size:.86rem;color:#333}
+.explore-result{border:1px solid #e2e8f0;border-radius:.5rem;background:#fff;padding:.55rem .7rem;margin:0 0 .45rem;
+  box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.explore-result-head{display:flex;align-items:baseline;gap:.4rem;flex-wrap:wrap}
+.explore-dot{width:.6rem;height:.6rem;border-radius:50%;display:inline-block;flex:none}
+.explore-result a{color:#08519c;font-weight:600;text-decoration:none;font-size:.88rem}
+.explore-result a:hover{text-decoration:underline}
+.explore-kindtag{font-size:.72rem;font-weight:600;color:#4b5563;border:1px solid #e2e8f0;
+  border-radius:999px;padding:.02rem .45rem;background:#f8fafc}
+.explore-bar{height:.35rem;border-radius:999px;background:#eff3ff;margin:.35rem 0 .3rem;overflow:hidden}
+.explore-bar span{display:block;height:100%;background:#3182bd}
+.explore-terms{font-size:.76rem;color:#4b5563}
+.explore-term{background:#eff3ff;border:1px solid #bdd7e7;border-radius:999px;padding:.02rem .4rem;margin-right:.25rem}
+.explore-toolbar{display:flex;flex-wrap:wrap;gap:.4rem .6rem;align-items:center;justify-content:space-between;
+  margin:0 0 .4rem}
+.explore-focus{font-size:.84rem;color:#1a1a2e;min-width:0}
+.explore-focus a{color:#08519c}
+.explore-neighbours{border:1px solid #cbd5e1;border-radius:.5rem;background:#fff;
+  margin:0 0 .55rem;padding:.55rem .7rem;font-size:.8rem}
+.explore-neighbours[hidden]{display:none}
+.explore-neighbours-head{font-weight:700;margin-bottom:.3rem}
+.explore-neighbour{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.35rem;
+  align-items:baseline;padding:.2rem 0;border-top:1px solid #eef2f7}
+.explore-neighbour:first-of-type{border-top:0}
+.explore-neighbour a{color:#08519c;text-decoration:none;font-weight:600}
+.explore-neighbour a:hover{text-decoration:underline}
+.explore-neighbour-kind{color:#6b7280;font-size:.73rem;text-align:right}
+.explore-neighbours-more summary{cursor:pointer;color:#08519c;font-weight:600;padding:.25rem 0}
+.explore-tools{display:flex;gap:.35rem;align-items:center;font-size:.8rem;color:#4b5563}
+.explore-canvas{width:100%;height:520px;display:block;background:#fff;border:1px solid #cbd5e1;
+  border-radius:.5rem;touch-action:none;cursor:grab}
+.explore-canvas:active{cursor:grabbing}
+@media (max-width:900px){.explore-canvas{height:380px}}
+.explore-hint{font-size:.76rem;color:#6b7280;margin:.3rem 0 .5rem}
+.explore-legend{display:flex;flex-wrap:wrap;gap:.3rem .7rem;font-size:.76rem;color:#4b5563;margin-bottom:.5rem}
+.explore-legend span.explore-dot{margin-right:.25rem}
+.explore-edges{border:1px solid #cbd5e1;border-radius:.5rem;background:#fff}
+.explore-edges>summary{cursor:pointer;font-weight:600;color:#08519c;padding:.5rem .7rem;font-size:.85rem;
+  list-style:none;min-height:36px;display:flex;align-items:center}
+.explore-edges>summary::-webkit-details-marker{display:none}
+.explore-edges>summary::before{content:"\25B8";margin-right:.4rem}
+.explore-edges[open]>summary::before{content:"\25BE"}
+.explore-edgelist{display:flex;flex-wrap:wrap;gap:.3rem .5rem;padding:0 .7rem .7rem}
+.explore-noscript{border-left:3px solid #b45309;background:#fffbeb;padding:.65rem .9rem;
+  border-radius:0 .4rem .4rem 0;margin-bottom:.8rem}
+.explore-noscript ul{margin:.4rem 0 0;padding-left:1.1rem;font-size:.86rem}
+</style>
+<script>
+(function(){
+  var root = document.getElementById('explore');
+  var blob = root && root.querySelector('#graph-data');
+  var canvas = root && root.querySelector('#explore-canvas');
+  if (!root || !blob || !canvas) return;
+
+  // Everything below runs once the blob is in hand — inline on the Streamlit
+  // surface, fetched on first tab activation on the static one. See init().
+  function boot(D){
+
+  // --- Tokenizer: mirrors refdata.graph.tokenize, constants from the blob ---
+  var STOP = {}, i;
+  for (i = 0; i < D.stopwords.length; i++) STOP[D.stopwords[i]] = 1;
+  function tokenize(text){
+    var raw = String(text == null ? '' : text)
+      .replace(/[^A-Za-z0-9]+/g, ' ').toLowerCase().split(' ');
+    var words = [];
+    for (var j = 0; j < raw.length; j++){
+      if (raw[j].length >= D.min_token_len && !STOP[raw[j]]) words.push(raw[j]);
+    }
+    var out = words.slice();
+    for (var k = 0; k + 1 < words.length; k++) out.push(words[k] + ' ' + words[k + 1]);
+    return out;
+  }
+
+  // --- Index lookup tables ---
+  var vocabPos = {};
+  for (i = 0; i < D.vocab.length; i++) vocabPos[D.vocab[i]] = i;
+  var idf = D.df.map(function(d){ return Math.log(D.n_docs / d); });
+  var docs = [];
+  for (var key in D.docs){
+    if (!Object.prototype.hasOwnProperty.call(D.docs, key)) continue;
+    docs.push({node: parseInt(key, 10), t: D.docs[key].t, w: D.docs[key].w});
+  }
+
+  var nodes = D.nodes;
+  var derived = {};
+  for (i = 0; i < D.derived_edge_kinds.length; i++) derived[D.derived_edge_kinds[i]] = 1;
+  // Curated cross-references are on by default; taxonomy membership is a
+  // different claim about the data and the reader opts into it.
+  var activeKinds = D.edge_kinds.map(function(k){ return !derived[k]; });
+
+  // --- Adjacency, rebuilt whenever the edge-kind toggles change ---
+  var adj = [];
+  function rebuildAdjacency(){
+    adj = nodes.map(function(){ return []; });
+    for (var e = 0; e < D.edges.length; e++){
+      var edge = D.edges[e];
+      if (!activeKinds[edge[2]]) continue;
+      // Walked undirected: "what connects to this" does not care which record
+      // wrote the id down.
+      adj[edge[0]].push(edge[1]);
+      adj[edge[1]].push(edge[0]);
+    }
+  }
+
+  function neighbourhood(start, depth){
+    var seen = {}, frontier = [start], d;
+    seen[start] = 0;
+    for (d = 1; d <= depth; d++){
+      var next = [];
+      for (var f = 0; f < frontier.length; f++){
+        var list = adj[frontier[f]];
+        for (var n = 0; n < list.length; n++){
+          if (seen[list[n]] === undefined){ seen[list[n]] = d; next.push(list[n]); }
+        }
+      }
+      frontier = next;
+    }
+    return seen;
+  }
+
+  // --- Force-directed layout (Fruchterman-Reingold, no library) ---
+  // Constants mirror refdata.graph.compute_layout, which runs this same loop at
+  // build time for the default view. The two must agree, or the picture would
+  // jump the first time a reader toggled an edge kind.
+  var W = 900, H = 700, GRAVITY = 0.05, CUTOFF = 3, RING_GAP = 60;
+  var pos = nodes.map(function(_, idx){
+    // Deterministic ring start: same input data always settles the same way,
+    // so a rebuild does not reshuffle the picture for no reason.
+    var a = idx * 2.399963229728653;  // golden angle
+    var r = 40 + 300 * Math.sqrt(idx / nodes.length);
+    return {x: W / 2 + r * Math.cos(a), y: H / 2 + r * Math.sin(a), dx: 0, dy: 0};
+  });
+  // The default view (curated edges only) ships settled in the blob, so first
+  // open costs a draw, not a simulation. Only a toggle change re-runs the loop.
+  var precomputed = !!(D.layout && D.layout.length === nodes.length);
+  if (precomputed){
+    for (i = 0; i < nodes.length; i++){ pos[i].x = D.layout[i][0]; pos[i].y = D.layout[i][1]; }
+  }
+  var reduceMotion = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Records with no drawn connection take no part in the simulation. Nothing
+  // pulls them in, so repulsion alone used to fling them thousands of units
+  // off the canvas — 167 of 445 records no reader could see or click. They sit
+  // on an outer ring instead, in kind order so the ring reads as bands.
+  var KIND_ORDER = Object.keys(D.kind_labels);
+  var sim = [];
+  function partition(){
+    var deg = nodes.map(function(){ return 0; });
+    for (var e = 0; e < D.edges.length; e++){
+      if (!activeKinds[D.edges[e][2]]) continue;
+      deg[D.edges[e][0]]++; deg[D.edges[e][1]]++;
+    }
+    sim = [];
+    var lone = [];
+    for (var n = 0; n < nodes.length; n++) (deg[n] ? sim : lone).push(n);
+    lone.sort(function(a, b){
+      return (KIND_ORDER.indexOf(nodes[a].kind) - KIND_ORDER.indexOf(nodes[b].kind)) || (a - b);
+    });
+    return lone;
+  }
+
+  function step(temperature){
+    var m = sim.length || 1;
+    var k = Math.sqrt((W * H) / m), cut = CUTOFF * k;
+    var a, b, i2, j2, dx, dy, dist, force;
+    for (i2 = 0; i2 < sim.length; i2++){ pos[sim[i2]].dx = 0; pos[sim[i2]].dy = 0; }
+    for (i2 = 0; i2 < sim.length; i2++){
+      a = sim[i2];
+      for (j2 = i2 + 1; j2 < sim.length; j2++){
+        b = sim[j2];
+        dx = pos[a].x - pos[b].x; dy = pos[a].y - pos[b].y;
+        dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
+        // Repulsion only within reach: summed over every node it swamps
+        // gravity and inflates the layout ten-fold for no legibility gain.
+        if (dist > cut) continue;
+        force = (k * k) / dist;
+        dx = (dx / dist) * force; dy = (dy / dist) * force;
+        pos[a].dx += dx; pos[a].dy += dy;
+        pos[b].dx -= dx; pos[b].dy -= dy;
+      }
+    }
+    for (var e = 0; e < D.edges.length; e++){
+      if (!activeKinds[D.edges[e][2]]) continue;
+      a = D.edges[e][0]; b = D.edges[e][1];
+      dx = pos[a].x - pos[b].x; dy = pos[a].y - pos[b].y;
+      dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
+      force = (dist * dist) / k;
+      dx = (dx / dist) * force; dy = (dy / dist) * force;
+      pos[a].dx -= dx; pos[a].dy -= dy;
+      pos[b].dx += dx; pos[b].dy += dy;
+    }
+    for (i2 = 0; i2 < sim.length; i2++){
+      a = sim[i2];
+      pos[a].dx += (W / 2 - pos[a].x) * GRAVITY;
+      pos[a].dy += (H / 2 - pos[a].y) * GRAVITY;
+      var mag = Math.sqrt(pos[a].dx * pos[a].dx + pos[a].dy * pos[a].dy) || 0.01;
+      var move = Math.min(mag, temperature);
+      pos[a].x += (pos[a].dx / mag) * move;
+      pos[a].y += (pos[a].dy / mag) * move;
+    }
+  }
+
+  function ringLone(lone){
+    var rmax = 0;
+    for (var i3 = 0; i3 < sim.length; i3++){
+      var dx = pos[sim[i3]].x - W / 2, dy = pos[sim[i3]].y - H / 2;
+      rmax = Math.max(rmax, Math.sqrt(dx * dx + dy * dy));
+    }
+    var R = Math.max(200, rmax + RING_GAP);
+    for (var j3 = 0; j3 < lone.length; j3++){
+      var t = (j3 / lone.length) * Math.PI * 2 - Math.PI / 2;
+      pos[lone[j3]].x = W / 2 + R * Math.cos(t);
+      pos[lone[j3]].y = H / 2 + R * Math.sin(t);
+    }
+  }
+
+  var ITERATIONS = 120;
+  var layoutEpoch = 0;
+  function runLayout(){
+    // A fast series of edge-kind changes can start several animation loops.
+    // Only the newest layout may keep spending frames on this canvas.
+    var epoch = ++layoutEpoch;
+    var lone = partition();
+    var t = 0, temp0 = W / 12;
+    if (reduceMotion){
+      for (t = 0; t < ITERATIONS; t++) step(temp0 * (1 - t / ITERATIONS));
+      ringLone(lone);
+      fitView();
+      draw();
+      return;
+    }
+    // Animated: chunks per frame so a slow phone stays responsive instead of
+    // freezing for the whole simulation.
+    (function frame(){
+      if (epoch !== layoutEpoch) return;
+      for (var c = 0; c < 6 && t < ITERATIONS; c++, t++) step(temp0 * (1 - t / ITERATIONS));
+      ringLone(lone);
+      fitView();
+      draw();
+      if (t < ITERATIONS && epoch === layoutEpoch) requestAnimationFrame(frame);
+    })();
+  }
+
+  // --- Canvas ---
+  var ctx = canvas.getContext('2d');
+  var view = {scale: 0.62, ox: 0, oy: 0};
+  var focused = -1, near = null;
+
+  function sizeCanvas(){
+    var ratio = window.devicePixelRatio || 1;
+    // clientWidth is 0 when the page is opened over file:// — fall back so the
+    // canvas is still drawn rather than collapsing to nothing.
+    var cw = canvas.clientWidth || 640;
+    var ch = canvas.clientHeight || 520;
+    canvas.width = cw * ratio;
+    canvas.height = ch * ratio;
+    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+  }
+
+  // Frame every node — the connected core and the outer ring — so Reset and a
+  // finished re-layout always show the whole graph rather than a fixed zoom
+  // that left the ring off-canvas.
+  function fitView(){
+    var cw = canvas.clientWidth || 640, ch = canvas.clientHeight || 520;
+    var minx = Infinity, maxx = -Infinity, miny = Infinity, maxy = -Infinity;
+    for (var f = 0; f < pos.length; f++){
+      if (pos[f].x < minx) minx = pos[f].x;
+      if (pos[f].x > maxx) maxx = pos[f].x;
+      if (pos[f].y < miny) miny = pos[f].y;
+      if (pos[f].y > maxy) maxy = pos[f].y;
+    }
+    if (!isFinite(minx)) return;
+    var s2 = Math.min((cw - 30) / Math.max(1, maxx - minx), (ch - 30) / Math.max(1, maxy - miny));
+    view.scale = Math.max(0.1, Math.min(2, s2));
+    view.ox = -((minx + maxx) / 2 - W / 2) * view.scale;
+    view.oy = -((miny + maxy) / 2 - H / 2) * view.scale;
+  }
+
+  function toScreen(p){
+    var cw = canvas.clientWidth || 640, ch = canvas.clientHeight || 520;
+    return {
+      x: (p.x - W / 2) * view.scale + cw / 2 + view.ox,
+      y: (p.y - H / 2) * view.scale + ch / 2 + view.oy
+    };
+  }
+
+  function nodeRadius(idx){
+    return nodes[idx].kind === 'hub' ? 4.5 : 3.6;
+  }
+
+  // --- Legal-paths layout ---
+  // The network answers "what is near this?"; it cannot answer "how does this
+  // law reach a data center?", because a force layout puts a reading's
+  // activity, statute, precedents and sites wherever the physics settles.
+  // Paths mode lays the focused neighbourhood out as columns in the order a
+  // legal argument runs — activity → statute → reading → case → site → the
+  // records that mention them — so the chain reads left to right.
+  var mode = 'network';
+  var pathView = {scale: 1, ox: 0, oy: 0};
+  var pathPos = null, pathOverflow = [], pathCols = [];
+  var PATH_COLUMN = {activity: 0, statute: 1, reading: 2, case: 3, 'case-type': 3,
+    site: 4, claim: 5, instrument: 6, principle: 6, news: 7, solution: 7};
+  var PATH_HEADS = ['Activity', 'Statute', 'Reading', 'Case', 'Site', 'Claim',
+    'Policy', 'News & solutions'];
+  function pathColumn(idx){
+    var node = nodes[idx];
+    var col = node.kind === 'hub' ? PATH_COLUMN[node.attrs.hub_group] : PATH_COLUMN[node.kind];
+    return col === undefined ? 7 : col;
+  }
+  var ROW = 17, TOP = 34;
+
+  function layoutPaths(){
+    pathPos = {}; pathOverflow = []; pathCols = [];
+    if (focused < 0 || !near) return;
+    var cw = canvas.clientWidth || 640, ch = canvas.clientHeight || 520;
+    var byCol = {};
+    for (var key in near){
+      if (!Object.prototype.hasOwnProperty.call(near, key)) continue;
+      var idx = parseInt(key, 10), col = pathColumn(idx);
+      (byCol[col] = byCol[col] || []).push(idx);
+    }
+    var cols = Object.keys(byCol).map(Number).sort(function(a, b){ return a - b; });
+    var colW = (cw - 16) / Math.max(1, cols.length);
+    var maxRows = Math.max(3, Math.floor((ch - TOP - 12) / ROW));
+    cols.forEach(function(col, c){
+      var members = byCol[col].sort(function(a, b){
+        return (a === focused ? -1 : b === focused ? 1 : 0) ||
+          (near[a] - near[b]) || nodes[a].label.localeCompare(nodes[b].label);
+      });
+      var shown = members.length > maxRows ? members.slice(0, maxRows - 1) : members;
+      var x = 12 + c * colW;
+      pathCols.push({x: x, w: colW, head: PATH_HEADS[col], n: members.length});
+      var h = shown.length * ROW;
+      var y0 = TOP + Math.max(0, (ch - TOP - 12 - h) / 2);
+      shown.forEach(function(idx, r){ pathPos[idx] = {x: x + 6, y: y0 + r * ROW + ROW / 2, w: colW - 14}; });
+      if (members.length > shown.length){
+        pathOverflow.push({x: x + 6, y: y0 + shown.length * ROW + ROW / 2,
+          text: '+' + (members.length - shown.length) + ' more'});
+      }
+    });
+  }
+
+  function pathScreen(p){
+    var cw = canvas.clientWidth || 640, ch = canvas.clientHeight || 520;
+    return {
+      x: (p.x - cw / 2) * pathView.scale + cw / 2 + pathView.ox,
+      y: (p.y - ch / 2) * pathView.scale + ch / 2 + pathView.oy
+    };
+  }
+
+  function fitText(text, width){
+    if (ctx.measureText(text).width <= width) return text;
+    var lo = 0, hi = text.length;
+    while (lo < hi){
+      var mid = (lo + hi + 1) >> 1;
+      if (ctx.measureText(text.slice(0, mid) + '…').width <= width) lo = mid; else hi = mid - 1;
+    }
+    return lo ? text.slice(0, lo) + '…' : '';
+  }
+
+  function drawPaths(){
+    var cw = canvas.clientWidth || 640, ch = canvas.clientHeight || 520;
+    ctx.clearRect(0, 0, cw, ch);
+    ctx.font = '600 11px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';
+    ctx.fillStyle = '#4b5563';
+    pathCols.forEach(function(col){
+      var p = pathScreen({x: col.x + 6, y: 16});
+      ctx.fillText(fitText(col.head.toUpperCase() + ' (' + col.n + ')', col.w * pathView.scale - 8), p.x, p.y);
+    });
+    for (var e = 0; e < D.edges.length; e++){
+      if (!activeKinds[D.edges[e][2]]) continue;
+      var pa = pathPos[D.edges[e][0]], pb = pathPos[D.edges[e][1]];
+      if (!pa || !pb) continue;
+      var sa = pathScreen(pa), sb = pathScreen(pb);
+      var touches = D.edges[e][0] === focused || D.edges[e][1] === focused;
+      ctx.strokeStyle = touches ? 'rgba(8,81,156,0.55)' : 'rgba(49,130,189,0.22)';
+      ctx.lineWidth = touches ? 1.3 : 0.8;
+      ctx.beginPath();
+      if (Math.abs(sa.x - sb.x) < 2){
+        // Same column (a case citing an analogous case): bow out to the right.
+        var bow = Math.min(60, 12 + Math.abs(sa.y - sb.y) / 3);
+        ctx.moveTo(sa.x, sa.y);
+        ctx.bezierCurveTo(sa.x + bow, sa.y, sb.x + bow, sb.y, sb.x, sb.y);
+      } else {
+        var mx = (sa.x + sb.x) / 2;
+        ctx.moveTo(sa.x, sa.y);
+        ctx.bezierCurveTo(mx, sa.y, mx, sb.y, sb.x, sb.y);
+      }
+      ctx.stroke();
+    }
+    ctx.font = '11px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';
+    for (var key in pathPos){
+      if (!Object.prototype.hasOwnProperty.call(pathPos, key)) continue;
+      var idx = parseInt(key, 10), sp = pathScreen(pathPos[key]);
+      var node = nodes[idx], r = idx === focused ? 5.5 : 3.8;
+      ctx.fillStyle = D.kind_colors[node.kind] || '#6b7280';
+      if (node.kind === 'hub') ctx.fillRect(sp.x - r, sp.y - r, r * 2, r * 2);
+      else { ctx.beginPath(); ctx.arc(sp.x, sp.y, r, 0, Math.PI * 2); ctx.fill(); }
+      if (idx === focused){
+        ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(sp.x, sp.y, r + 3, 0, Math.PI * 2); ctx.stroke();
+      }
+      var limit = node.attrs && node.attrs.role === 'limit';
+      ctx.fillStyle = limit ? '#b45309' : '#1a1a2e';
+      ctx.font = (idx === focused ? '700 ' : '') + '11px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';
+      ctx.fillText(fitText((limit ? '[Limit] ' : '') + node.label, pathPos[key].w * pathView.scale - 4), sp.x + 8, sp.y + 4);
+    }
+    ctx.fillStyle = '#6b7280';
+    ctx.font = 'italic 11px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';
+    pathOverflow.forEach(function(o){
+      var sp = pathScreen(o);
+      ctx.fillText(o.text + ' — see the list above', sp.x + 8, sp.y + 4);
+    });
+  }
+
+  function draw(){
+    if (mode === 'paths' && focused >= 0){
+      if (!pathPos) layoutPaths();
+      drawPaths();
+      return;
+    }
+    var cw = canvas.clientWidth || 640, ch = canvas.clientHeight || 520;
+    ctx.clearRect(0, 0, cw, ch);
+    var dim = focused >= 0;
+    var e, a, b, pa, pb;
+    for (e = 0; e < D.edges.length; e++){
+      if (!activeKinds[D.edges[e][2]]) continue;
+      a = D.edges[e][0]; b = D.edges[e][1];
+      var lit = !dim || (near[a] !== undefined && near[b] !== undefined);
+      ctx.strokeStyle = lit ? 'rgba(49,130,189,0.45)' : 'rgba(148,163,184,0.10)';
+      ctx.lineWidth = lit ? 1 : 0.6;
+      pa = toScreen(pos[a]); pb = toScreen(pos[b]);
+      ctx.beginPath(); ctx.moveTo(pa.x, pa.y); ctx.lineTo(pb.x, pb.y); ctx.stroke();
+    }
+    var labelled = [];
+    for (a = 0; a < nodes.length; a++){
+      var p = toScreen(pos[a]);
+      var inFocus = !dim || near[a] !== undefined;
+      ctx.globalAlpha = inFocus ? 1 : 0.18;
+      ctx.fillStyle = D.kind_colors[nodes[a].kind] || '#6b7280';
+      var r = nodeRadius(a) * (a === focused ? 2 : 1);
+      if (nodes[a].kind === 'hub'){
+        ctx.fillRect(p.x - r, p.y - r, r * 2, r * 2);
+      } else {
+        ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
+      }
+      if (a === focused){
+        ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(p.x, p.y, r + 3, 0, Math.PI * 2); ctx.stroke();
+      }
+      // Labelling every node is unreadable; label the focused neighbourhood
+      // only, and cap it so a hub with 100 members does not turn to mud.
+      if (dim && near[a] !== undefined && labelled.length < 26) labelled.push([a, p]);
+      ctx.globalAlpha = 1;
+    }
+    ctx.font = '11px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';
+    ctx.fillStyle = '#1a1a2e';
+    for (var m = 0; m < labelled.length; m++){
+      var text = nodes[labelled[m][0]].label;
+      if (text.length > 34) text = text.slice(0, 33) + '…';
+      ctx.fillText(text, labelled[m][1].x + 7, labelled[m][1].y + 3);
+    }
+    if (mode === 'paths'){
+      ctx.fillStyle = '#08519c';
+      ctx.font = '600 12px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';
+      ctx.fillText('Click any dot to lay out its legal paths', 12, 20);
+    }
+  }
+
+  // --- Pan / zoom ---
+  // One set of handlers for both layouts; each keeps its own camera so
+  // switching between them does not lose your place in either.
+  function cam(){ return mode === 'paths' && focused >= 0 ? pathView : view; }
+  var dragging = false, dragged = false, lastX = 0, lastY = 0;
+  function pointerDown(x, y){ dragging = true; dragged = false; lastX = x; lastY = y; }
+  function pointerMove(x, y){
+    if (!dragging) return;
+    if (Math.abs(x - lastX) + Math.abs(y - lastY) > 3) dragged = true;
+    var c2 = cam();
+    c2.ox += x - lastX; c2.oy += y - lastY;
+    lastX = x; lastY = y;
+    draw();
+  }
+  function zoom(factor){
+    var c2 = cam();
+    c2.scale = Math.min(4, Math.max(0.1, c2.scale * factor));
+    draw();
+  }
+  canvas.addEventListener('mousedown', function(e){ pointerDown(e.clientX, e.clientY); });
+  window.addEventListener('mousemove', function(e){ pointerMove(e.clientX, e.clientY); });
+  window.addEventListener('mouseup', function(){ dragging = false; });
+  canvas.addEventListener('touchstart', function(e){
+    if (e.touches.length === 1) pointerDown(e.touches[0].clientX, e.touches[0].clientY);
+  }, {passive: true});
+  canvas.addEventListener('touchmove', function(e){
+    if (e.touches.length === 1){
+      e.preventDefault();
+      pointerMove(e.touches[0].clientX, e.touches[0].clientY);
+    }
+  }, {passive: false});
+  canvas.addEventListener('touchend', function(){ dragging = false; });
+  canvas.addEventListener('wheel', function(e){
+    e.preventDefault();
+    zoom(e.deltaY < 0 ? 1.12 : 1 / 1.12);
+  }, {passive: false});
+
+  // --- Focus ---
+  var neighbourBox = root.querySelector('#explore-neighbours');
+  function renderDirectConnections(idx){
+    neighbourBox.replaceChildren();
+    if (idx < 0){ neighbourBox.hidden = true; return; }
+    // One row per connected RECORD. A pair can carry several edge kinds (a
+    // reading and its example case each point at the other), so group by
+    // neighbour, list every relationship on that row, and count records —
+    // the same number the focus line above reports.
+    var byNode = {}, order = [];
+    for (var e = 0; e < D.edges.length; e++){
+      var edge = D.edges[e];
+      if (!activeKinds[edge[2]]) continue;
+      var other = edge[0] === idx ? edge[1] : (edge[1] === idx ? edge[0] : -1);
+      if (other < 0) continue;
+      if (!byNode[other]){ byNode[other] = []; order.push(other); }
+      if (byNode[other].indexOf(edge[2]) < 0) byNode[other].push(edge[2]);
+    }
+    order.sort(function(a, b){
+      return nodes[a].label.localeCompare(nodes[b].label);
+    });
+    var head = document.createElement('div');
+    head.className = 'explore-neighbours-head';
+    head.textContent = 'Direct connections (' + order.length + ')';
+    neighbourBox.appendChild(head);
+    // Every record stays in the DOM and reachable by keyboard; a long tail
+    // folds behind a native disclosure instead of being cut off.
+    var VISIBLE = 12, rest = null;
+    if (order.length > VISIBLE){
+      rest = document.createElement('details');
+      rest.className = 'explore-neighbours-more';
+      var sum = document.createElement('summary');
+      sum.textContent = 'Show ' + (order.length - VISIBLE) + ' more';
+      rest.appendChild(sum);
+    }
+    order.forEach(function(other, i){
+      var node = nodes[other];
+      var line = document.createElement('div');
+      line.className = 'explore-neighbour';
+      var label;
+      if (node.anchor){
+        label = document.createElement('a');
+        label.href = '#' + node.anchor;
+      } else {
+        label = document.createElement('span');
+      }
+      label.textContent = node.label;
+      line.appendChild(label);
+      var kind = document.createElement('span');
+      kind.className = 'explore-neighbour-kind';
+      kind.textContent = byNode[other].map(function(k){ return D.edge_kind_labels[k]; }).join(' · ');
+      line.appendChild(kind);
+      (rest && i >= VISIBLE ? rest : neighbourBox).appendChild(line);
+    });
+    if (rest) neighbourBox.appendChild(rest);
+    neighbourBox.hidden = false;
+  }
+
+  function setFocus(idx){
+    focused = idx;
+    var box = root.querySelector('#explore-focus');
+    if (idx < 0){
+      near = null;
+      box.textContent = 'No record focused — click a dot, or use Show connections on a result.';
+    } else {
+      var depth = parseInt(root.querySelector('#explore-depth').value, 10) || 1;
+      near = neighbourhood(idx, depth);
+      var count = 0;
+      for (var key2 in near){ if (near[key2] > 0) count++; }
+      var node = nodes[idx];
+      box.replaceChildren();
+      var strong = document.createElement('strong');
+      strong.textContent = node.label;
+      box.appendChild(strong);
+      box.appendChild(document.createTextNode(
+        ' · ' + (D.kind_labels[node.kind] || node.kind) +
+        ' · ' + count + ' connected within ' + depth + (depth === 1 ? ' hop' : ' hops')));
+      if (node.anchor){
+        box.appendChild(document.createTextNode(' · '));
+        var link = document.createElement('a');
+        link.href = '#' + node.anchor;
+        link.textContent = 'open card';
+        box.appendChild(link);
+      }
+    }
+    renderDirectConnections(idx);
+    pathView = {scale: 1, ox: 0, oy: 0};
+    if (mode === 'paths') layoutPaths();
+    draw();
+    runSearch();
+  }
+
+  canvas.addEventListener('click', function(ev){
+    if (dragged) return;
+    var rect = canvas.getBoundingClientRect();
+    var mx = ev.clientX - rect.left, my = ev.clientY - rect.top;
+    var best = -1, bestDist = 12 * 12, a, p, d2;
+    if (mode === 'paths' && focused >= 0){
+      // In paths mode the label is part of the target: a row is clickable
+      // along its text, not only on its 4px dot.
+      for (var key in pathPos){
+        if (!Object.prototype.hasOwnProperty.call(pathPos, key)) continue;
+        p = pathScreen(pathPos[key]);
+        if (mx >= p.x - 8 && mx <= p.x + pathPos[key].w * pathView.scale &&
+            Math.abs(my - p.y) <= ROW / 2 * pathView.scale){
+          best = parseInt(key, 10);
+          break;
+        }
+      }
+      if (best >= 0) setFocus(best);
+      return;
+    }
+    for (a = 0; a < nodes.length; a++){
+      p = toScreen(pos[a]);
+      d2 = (p.x - mx) * (p.x - mx) + (p.y - my) * (p.y - my);
+      if (d2 < bestDist){ bestDist = d2; best = a; }
+    }
+    setFocus(best);
+  });
+
+  root.querySelector('#explore-zoom-in').addEventListener('click', function(){ zoom(1.2); });
+  root.querySelector('#explore-zoom-out').addEventListener('click', function(){ zoom(1 / 1.2); });
+  root.querySelector('#explore-reset').addEventListener('click', function(){
+    fitView();
+    setFocus(-1);
+  });
+
+  // --- Layout mode ---
+  // Paths mode needs the two taxonomy links that make its first columns —
+  // reading → activity and reading → statute — so switching to it turns them
+  // on, visibly, in the connection-type list rather than behind the reader's
+  // back.
+  var layoutSel = root.querySelector('#explore-layout');
+  var PATH_KINDS = ['reading.activity', 'reading.family'];
+  if (layoutSel) layoutSel.addEventListener('change', function(){
+    mode = layoutSel.value === 'paths' ? 'paths' : 'network';
+    if (mode === 'paths'){
+      var changed = false;
+      PATH_KINDS.forEach(function(kind){
+        var k2 = D.edge_kinds.indexOf(kind);
+        if (k2 >= 0 && !activeKinds[k2]){
+          activeKinds[k2] = true;
+          changed = true;
+          if (kindBoxesByIndex[k2]) kindBoxesByIndex[k2].checked = true;
+        }
+      });
+      if (changed) rebuildAdjacency();
+      // Focus first, so the neighbourhood is recomputed over the new edges
+      // before anything draws; the network re-layout then runs underneath.
+      if (focused >= 0) setFocus(focused); else draw();
+      if (changed) runLayout();
+      return;
+    }
+    if (focused >= 0) setFocus(focused); else draw();
+  });
+  root.querySelector('#explore-depth').addEventListener('change', function(){
+    if (focused >= 0) setFocus(focused);
+  });
+
+  // --- Edge-kind toggles ---
+  var edgeList = root.querySelector('#explore-edgelist');
+  var kindBoxesByIndex = [];
+  D.edge_kinds.forEach(function(kind, idx){
+    var label = document.createElement('label');
+    label.className = 'explore-chip';
+    var box2 = document.createElement('input');
+    box2.type = 'checkbox';
+    box2.checked = activeKinds[idx];
+    kindBoxesByIndex[idx] = box2;
+    box2.addEventListener('change', function(){
+      activeKinds[idx] = box2.checked;
+      rebuildAdjacency();
+      runLayout();
+      if (focused >= 0) setFocus(focused); else draw();
+    });
+    label.appendChild(box2);
+    label.appendChild(document.createTextNode(
+      ' ' + D.edge_kind_labels[idx] + (derived[kind] ? ' (derived)' : '')));
+    edgeList.appendChild(label);
+  });
+
+  // --- Search ---
+  var qBox = root.querySelector('#explore-q');
+  var resultsBox = root.querySelector('#explore-results');
+  var countLine = root.querySelector('#explore-count');
+  var familySel = root.querySelector('#explore-family');
+  var activitySel = root.querySelector('#explore-activity');
+  var scopeBox = root.querySelector('#explore-scope');
+  var kindBoxes = [].slice.call(root.querySelectorAll('.explore-kind'));
+  var TOP_N = 12;
+  var emptyCopy = resultsBox.textContent.trim();
+
+  function passesFilters(nodeIdx){
+    var node = nodes[nodeIdx];
+    var kinds = {};
+    kindBoxes.forEach(function(c){ if (c.checked) kinds[c.value] = 1; });
+    if (!kinds[node.kind]) return false;
+    var family = familySel.value;
+    if (family){
+      var list = (node.attrs && node.attrs.statutes) || [];
+      if (list.indexOf(family) < 0) return false;
+    }
+    var activity = activitySel ? activitySel.value : '';
+    if (activity){
+      var acts = (node.attrs && node.attrs.activities) || [];
+      if (acts.indexOf(activity) < 0) return false;
+    }
+    if (scopeBox.checked && focused >= 0 && (!near || near[nodeIdx] === undefined)) return false;
+    return true;
+  }
+
+  function runSearch(){
+    var text = qBox.value;
+    var counts = {}, any = false;
+    tokenize(text).forEach(function(tok){
+      var p = vocabPos[tok];
+      if (p === undefined) return;
+      counts[p] = (counts[p] || 0) + 1;
+      any = true;
+    });
+    if (!any){
+      countLine.textContent = '';
+      resultsBox.replaceChildren(emptyState(text));
+      return;
+    }
+    var qw = {}, norm = 0;
+    for (var p in counts){
+      var w = counts[p] * idf[p];
+      qw[p] = w; norm += w * w;
+    }
+    norm = Math.sqrt(norm) || 1;
+    var scored = [];
+    for (var d = 0; d < docs.length; d++){
+      var doc = docs[d];
+      if (!passesFilters(doc.node)) continue;
+      var total = 0, hits = [];
+      for (var j = 0; j < doc.t.length; j++){
+        var q = qw[doc.t[j]];
+        if (q === undefined) continue;
+        var part = (q / norm) * (doc.w[j] / D.weight_scale);
+        total += part;
+        hits.push([part, D.vocab[doc.t[j]]]);
+      }
+      if (total > 0){
+        hits.sort(function(x, y){ return y[0] - x[0]; });
+        scored.push({node: doc.node, score: total, terms: hits.slice(0, 3)});
+      }
+    }
+    scored.sort(function(x, y){ return y.score - x.score; });
+    render(scored.slice(0, TOP_N), scored.length);
+  }
+
+  function emptyState(text){
+    var div = document.createElement('div');
+    div.className = 'explore-empty';
+    div.textContent = text && text.trim()
+      ? 'No tracked record shares any term with that text. Try a longer passage, or ' +
+        'widen the kind and statute-family filters.'
+      : emptyCopy;
+    return div;
+  }
+
+  function render(rows, totalMatched){
+    if (!rows.length){
+      countLine.textContent = '';
+      resultsBox.replaceChildren(emptyState(qBox.value));
+      return;
+    }
+    countLine.textContent = 'Showing the closest ' + rows.length + ' of ' +
+      totalMatched + ' records that share language with this text.';
+    var top = rows[0].score || 1;
+    var frag = document.createDocumentFragment();
+    rows.forEach(function(row){
+      var node = nodes[row.node];
+      var card = document.createElement('div');
+      card.className = 'explore-result';
+
+      var head = document.createElement('div');
+      head.className = 'explore-result-head';
+      var dot = document.createElement('span');
+      dot.className = 'explore-dot';
+      dot.style.background = D.kind_colors[node.kind] || '#6b7280';
+      head.appendChild(dot);
+      if (node.anchor){
+        var a = document.createElement('a');
+        a.href = '#' + node.anchor;
+        a.textContent = node.label;
+        head.appendChild(a);
+      } else {
+        var strong2 = document.createElement('strong');
+        strong2.textContent = node.label;
+        head.appendChild(strong2);
+      }
+      var tag = document.createElement('span');
+      tag.className = 'explore-kindtag';
+      tag.textContent = D.kind_labels[node.kind] || node.kind;
+      head.appendChild(tag);
+      card.appendChild(head);
+
+      var bar = document.createElement('div');
+      bar.className = 'explore-bar';
+      var fill = document.createElement('span');
+      fill.style.width = Math.max(3, Math.round((row.score / top) * 100)) + '%';
+      bar.appendChild(fill);
+      card.appendChild(bar);
+
+      var terms = document.createElement('div');
+      terms.className = 'explore-terms';
+      terms.appendChild(document.createTextNode('matched '));
+      row.terms.forEach(function(t){
+        var chip = document.createElement('span');
+        chip.className = 'explore-term';
+        chip.textContent = t[1];
+        terms.appendChild(chip);
+      });
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'explore-btn';
+      btn.textContent = 'Show connections';
+      btn.addEventListener('click', function(){ setFocus(row.node); });
+      terms.appendChild(btn);
+      card.appendChild(terms);
+      frag.appendChild(card);
+    });
+    resultsBox.replaceChildren(frag);
+  }
+
+  var debounce;
+  qBox.addEventListener('input', function(){
+    clearTimeout(debounce);
+    debounce = setTimeout(runSearch, 180);
+  });
+  kindBoxes.forEach(function(c){ c.addEventListener('change', runSearch); });
+  familySel.addEventListener('change', runSearch);
+  if (activitySel) activitySel.addEventListener('change', runSearch);
+  scopeBox.addEventListener('change', runSearch);
+
+  // --- Boot ---
+  var started = false;
+  function start(){
+    if (started) return;
+    started = true;
+    sizeCanvas();
+    rebuildAdjacency();
+    if (precomputed){ fitView(); draw(); }
+    else runLayout();
+  }
+  window.addEventListener('resize', function(){
+    if (!started) return;
+    sizeCanvas();
+    if (mode === 'paths') layoutPaths();
+    draw();
+  });
+  start();
+
+  }  // end boot()
+
+  // --- Entry point ---
+  // The blob is ~620 KB. On the static site it is a separate file that is
+  // fetched the first time the tab is opened, so a reader who never opens
+  // Explore never downloads it — and the layout, which is ~7M force
+  // computations, still cannot run against a hidden (zero-sized) canvas.
+  // Inside the Streamlit iframe there is no origin to fetch from, so the blob
+  // is inline and this runs immediately.
+  var src = blob.getAttribute('data-src');
+  var status = root.querySelector('#explore-status');
+  var idle = status ? status.textContent : '';
+  var kicked = false;
+  function init(){
+    if (kicked) return;
+    kicked = true;
+    if (!src){ boot(JSON.parse(blob.textContent)); return; }
+    if (status) status.textContent = 'Loading the connection graph…';
+    fetch(src).then(function(r){
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function(D){
+      if (status) status.textContent = idle;
+      boot(D);
+    }).catch(function(){
+      // Leave it retryable: switching away and back re-runs the fetch.
+      kicked = false;
+      if (status) status.textContent =
+        'The connection graph could not be loaded. Reload the page to try again — ' +
+        'every record it indexes is also on the other tabs.';
+    });
+  }
+  window.exploreInit = init;
+  var panel = root.closest ? root.closest('.tabpanel') : null;
+  if (!src || !panel || !panel.hidden) init();
+})();
+</script>
+</div>
+  <p class="src-note">Lines are the cross-references the datasets declare, walked
+  in both directions; taxonomy-membership lines (shared statute family, project
+  type, or principle) are derived and off until you switch them on. Similarity is
+  TF-IDF over each record's own text — it matches wording, not meaning, which is
+  why the terms it matched on are shown. Everything runs in your browser.</p>
+</section>
+</div>
+</div>
+</body>
+</html>
