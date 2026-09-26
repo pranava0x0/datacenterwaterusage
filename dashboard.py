@@ -51,6 +51,7 @@ from refdata.loaders import (  # noqa: F401
     load_water_news,
     load_water_solutions,
     load_water_security,
+    load_water_commitments,
 )
 from refdata.graph import (  # noqa: F401
     EDGE_KIND_LABELS,
@@ -75,6 +76,11 @@ from refdata.taxonomies import (  # noqa: F401
     AUTHORITY_KIND_LABELS,
     CLAIM_TYPE_LABELS,
     COLOR_SEQUENCE,
+    COMMITMENT_BINDING_LABELS,
+    COMMITMENT_LEVEL_LABELS,
+    COMMITMENT_STATUS_COLORS,
+    COMMITMENT_STATUS_LABELS,
+    COMMITMENT_TERM_LABELS,
     COLORS,
     CWA_CASE_TYPE_LABELS,
     CWA_CATEGORY_LABELS,
@@ -106,6 +112,7 @@ from refdata.taxonomies import (  # noqa: F401
     SOLUTION_ACTOR_LABELS,
     SOLUTION_STATUS_COLORS,
     SOLUTION_STATUS_LABELS,
+    STATE_COMMITMENT_COLUMNS,
     US_STATE_NAMES,
     WATER_STATUTE_COLORS,
     WATER_STATUTE_ORDER,
@@ -4815,6 +4822,282 @@ def render_sources_tab():
 
 # --- Water Infrastructure Security tab ---
 
+# --- Water commitments ------------------------------------------------------
+#
+# One view over three sources. Only the national/international layer and the
+# local agreements live in water_commitments.json; state commitments are read
+# off the principle tags of enacted state instruments in legislation.json, and
+# company pledges off company_water_claims.json. A record exists once.
+
+COMMITMENTS_LEAD = (
+    "Who has committed to what on data-center water, and how binding it is. "
+    "The United States has no national water strategy that addresses data "
+    "centers; the commitments with force behind them are being made by states, "
+    "by localities in deals with developers, and by the companies themselves."
+)
+
+# Claim types that are commitments rather than descriptions of one site.
+PLEDGE_CLAIM_TYPES = (
+    "water-positive-pledge",
+    "replenishment-milestone",
+    "efficiency-wue",
+    "zero-water-design",
+    "disclosure-transparency",
+)
+
+
+def _state_commitment_matrix(bills: list[dict] | None = None) -> list[dict]:
+    """Rows of the state-commitments matrix, strongest state first.
+
+    A row is a state with at least one ENACTED state-level instrument whose
+    scope includes water; each column lists the instruments whose principle
+    tags express that commitment (``STATE_COMMITMENT_COLUMNS``). Proposals and
+    failures are counted beside the row rather than placed in it — a
+    commitment is something in force.
+    """
+    bills = bills if bills is not None else load_legislation().get("bills", [])
+    rows: dict[str, dict] = {}
+    for b in bills:
+        if b.get("level") != "state" or "water" not in (b.get("scope") or []):
+            continue
+        state = b.get("jurisdiction", "")
+        row = rows.setdefault(
+            state,
+            {"state": state, "cells": {k: [] for k in STATE_COMMITMENT_COLUMNS}, "pending": 0, "failed": 0},
+        )
+        if b.get("status") != "enacted":
+            if b.get("status") == "failed":
+                row["failed"] += 1
+            else:
+                row["pending"] += 1
+            continue
+        tags = {p.get("tag") for p in b.get("general_principles") or []}
+        for key, (_label, principle_tags) in STATE_COMMITMENT_COLUMNS.items():
+            if tags & set(principle_tags):
+                row["cells"][key].append(b["bill_id"])
+    enacted = [r for r in rows.values() if any(r["cells"].values())]
+    for r in enacted:
+        r["n_columns"] = sum(1 for v in r["cells"].values() if v)
+    return sorted(enacted, key=lambda r: (-r["n_columns"], r["state"]))
+
+
+def _company_pledges(payload: dict | None = None) -> list[dict]:
+    """``[{slug, name, pledges: [claim, ...]}]``, most pledges first."""
+    payload = payload or load_company_water_claims()
+    companies = payload.get("companies", {})
+    grouped: dict[str, list[dict]] = {}
+    for c in payload.get("claims", []):
+        if c.get("claim_type") in PLEDGE_CLAIM_TYPES:
+            grouped.setdefault(c.get("company_slug", ""), []).append(c)
+    rows = [
+        {"slug": slug, "name": companies.get(slug, slug), "pledges": pledges}
+        for slug, pledges in grouped.items()
+    ]
+    return sorted(rows, key=lambda r: (-len(r["pledges"]), r["name"]))
+
+
+def _commitment_card_html(rec: dict, reg: dict) -> str:
+    esc = html.escape
+    status = rec.get("status", "")
+    pill = (
+        f'<span class="cwa-status-pill" style="background:{COMMITMENT_STATUS_COLORS.get(status, COLORS["secondary"])}">'
+        f"{esc(COMMITMENT_STATUS_LABELS.get(status, status))}</span>"
+    )
+    binding = (
+        f'<span class="commit-binding">{esc(COMMITMENT_BINDING_LABELS.get(rec.get("binding", ""), rec.get("binding", "")))}</span>'
+    )
+    terms = "".join(
+        f'<li><span class="commit-term">{esc(COMMITMENT_TERM_LABELS.get(t.get("type", ""), t.get("type", "")))}</span> '
+        f'{esc(t.get("text", ""))}</li>'
+        for t in rec.get("terms") or []
+    )
+    links = []
+    for target in rec.get("cross_ref_targets") or []:
+        ref = reg.get(target)
+        if ref:
+            links.append(f'<a href="#{esc(ref.anchor)}">{esc(ref.label)}</a>')
+    related = f'<div class="commit-related">Related: {" · ".join(links)}</div>' if links else ""
+    sources = " · ".join(
+        f'<a href="{esc(src.get("url", ""))}" target="_blank" rel="noopener">{esc(src.get("title", "source"))}</a>'
+        for src in rec.get("sources") or []
+        if src.get("url")
+    )
+    note = f'<p class="commit-note">{esc(rec["note"])}</p>' if rec.get("note") else ""
+    return (
+        f'<div class="commit-card" id="commitment-{esc(rec.get("id", ""))}">'
+        f'<div class="commit-head"><span class="commit-actor">{esc(rec.get("jurisdiction", ""))}</span> '
+        f"{pill} {binding}</div>"
+        f'<div class="commit-instrument">{esc(rec.get("instrument", ""))} · {esc(rec.get("date", ""))}</div>'
+        f'<p class="commit-summary">{esc(rec.get("summary", ""))}</p>'
+        f'<ul class="commit-terms">{terms}</ul>{related}{note}'
+        f'<div class="commit-sources">Sources: {sources}</div></div>'
+    )
+
+
+def _build_commitments_html() -> str:
+    """The Commitments tab body — shared by the static page and Streamlit.
+
+    Every class it uses is defined in assets/components.css (a test enforces
+    it), because st.markdown renders it against that stylesheet alone.
+    """
+    esc = html.escape
+    reg = build_registry()
+    bills = load_legislation().get("bills", [])
+    commitments = load_water_commitments().get("commitments", [])
+    matrix = _state_commitment_matrix(bills)
+    pledges = _company_pledges()
+    local = [c for c in commitments if c.get("level") == "local"]
+    federal = [c for c in commitments if c.get("level") == "federal"]
+    international = [c for c in commitments if c.get("level") == "international"]
+    n_pledges = sum(len(r["pledges"]) for r in pledges)
+    n_assessed = sum(1 for r in pledges for c in r["pledges"] if c.get("delivered"))
+    in_force_local = sum(1 for c in local if c.get("status") == "in-force")
+
+    def bill_link(bill_id: str) -> str:
+        ref = reg.get(bill_id)
+        if not ref:
+            return esc(bill_id)
+        return f'<a href="#{esc(ref.anchor)}">{esc(bill_id)}</a>'
+
+    metrics = (
+        '<div class="commit-metrics">'
+        '<div class="commit-metric"><span class="commit-metric-n">None</span>'
+        '<span class="commit-metric-l">U.S. national water strategy that addresses data centers</span></div>'
+        f'<div class="commit-metric"><span class="commit-metric-n">{len(matrix)}</span>'
+        '<span class="commit-metric-l">states with an enacted data-center water commitment</span></div>'
+        f'<div class="commit-metric"><span class="commit-metric-n">{in_force_local}</span>'
+        '<span class="commit-metric-l">local agreements in force with water terms</span></div>'
+        f'<div class="commit-metric"><span class="commit-metric-n">{n_pledges}</span>'
+        f'<span class="commit-metric-l">company water pledges tracked ({n_assessed} assessed)</span></div>'
+        "</div>"
+    )
+    nav = (
+        '<nav class="paths-jumpnav" aria-label="Commitment levels">'
+        '<a class="paths-jump" href="#commitments-national">National strategy</a>'
+        '<a class="paths-jump" href="#commitments-states">States</a>'
+        '<a class="paths-jump" href="#commitments-local">Local agreements</a>'
+        '<a class="paths-jump" href="#commitments-companies">Companies</a>'
+        "</nav>"
+    )
+
+    # --- National ---------------------------------------------------------
+    federal_bills = sorted(
+        (b for b in bills if b.get("level") == "federal"),
+        key=lambda b: (LEGISLATION_STATUS_ORDER.get(b.get("status"), 9), b["bill_id"]),
+    )
+    federal_rows = "".join(
+        '<li class="commit-fed-row">'
+        f'<span class="cwa-status-pill" style="background:{LEGISLATION_STATUS_BADGE_COLORS.get(b.get("status"), COLORS["secondary"])}">'
+        f'{esc(LEGISLATION_STATUS_LABELS.get(b.get("status"), b.get("status", "")))}</span> '
+        f'{bill_link(b["bill_id"])} — {esc(b.get("title", ""))}</li>'
+        for b in federal_bills
+    )
+    national = (
+        '<section id="commitments-national">'
+        '<h3 class="solution-cat-header">National strategy</h3>'
+        '<div class="commit-finding"><strong>No U.S. national water strategy addresses data centers.</strong> '
+        "The federal water assessment does not name them as a demand; EPA's reuse plan names data-center "
+        "cooling but is voluntary; the executive orders speed permitting up rather than set a water standard; "
+        "and the disclosure bills are pending. The countries that do have a national instrument — the EU and "
+        "Singapore — show what one looks like.</div>"
+        f'<div class="commit-grid">{"".join(_commitment_card_html(c, reg) for c in federal)}</div>'
+        '<details class="commit-fold"><summary>Federal bills and orders in this tracker '
+        f'({len(federal_bills)})</summary><ul class="commit-fed">{federal_rows}</ul></details>'
+        '<h4 class="commit-subhead">Other countries — the benchmark</h4>'
+        f'<div class="commit-grid">{"".join(_commitment_card_html(c, reg) for c in international)}</div>'
+        "</section>"
+    )
+
+    # --- States -----------------------------------------------------------
+    head = "".join(
+        f'<th scope="col">{esc(label)}</th>' for label, _tags in STATE_COMMITMENT_COLUMNS.values()
+    )
+    body_rows = []
+    for r in matrix:
+        cells = "".join(
+            "<td>" + ("<br>".join(bill_link(b) for b in r["cells"][k]) or '<span class="commit-empty">—</span>') + "</td>"
+            for k in STATE_COMMITMENT_COLUMNS
+        )
+        extra = []
+        if r["pending"]:
+            extra.append(f'{r["pending"]} pending')
+        if r["failed"]:
+            extra.append(f'{r["failed"]} failed')
+        note = f'<span class="commit-state-note">{esc(", ".join(extra))}</span>' if extra else ""
+        body_rows.append(f'<tr><th scope="row">{esc(r["state"])}{note}</th>{cells}</tr>')
+    col_help = "".join(
+        f"<li><strong>{esc(label)}</strong> — {esc(', '.join(tags))}</li>"
+        for label, tags in STATE_COMMITMENT_COLUMNS.values()
+    )
+    states = (
+        '<section id="commitments-states">'
+        '<h3 class="solution-cat-header">State commitments</h3>'
+        f"<p>{len(matrix)} states have at least one enacted law or executive order that commits them on "
+        "data-center water. Read across a row for what a state has committed to; each entry opens the "
+        "instrument on the Legislation tab. Executive orders count — several of the newest commitments are "
+        "orders, not statutes.</p>"
+        f'<div class="table-wrap"><table class="commit-matrix"><thead><tr><th scope="col">State</th>{head}</tr></thead>'
+        f'<tbody>{"".join(body_rows)}</tbody></table></div>'
+        f'<details class="commit-fold"><summary>How the columns are read</summary>'
+        f'<p>Each column is the set of principle tags that express it:</p><ul>{col_help}</ul></details>'
+        "</section>"
+    )
+
+    # --- Local ------------------------------------------------------------
+    local_sorted = sorted(local, key=lambda c: (c.get("status") != "in-force", c.get("jurisdiction", "")))
+    local_html = (
+        '<section id="commitments-local">'
+        '<h3 class="solution-cat-header">Local agreements</h3>'
+        "<p>The most specific water commitments in this record are in deals between a locality and a "
+        "developer: gallon-a-day caps, cooling-technology bans, restoration money. They bind only the one "
+        "project, which is exactly why they can be precise.</p>"
+        f'<div class="commit-grid">{"".join(_commitment_card_html(c, reg) for c in local_sorted)}</div>'
+        "</section>"
+    )
+
+    # --- Companies ----------------------------------------------------------
+    company_rows = []
+    for r in pledges:
+        items = []
+        for c in r["pledges"]:
+            delivered = c.get("delivered") or {}
+            status = delivered.get("status", "")
+            if status:
+                color = COLORS.get(DELIVERED_STATUS_COLORS.get(status, "secondary"), COLORS["secondary"])
+                pill = (
+                    f'<span class="cwa-status-pill" style="background:{color}">'
+                    f"{esc(DELIVERED_STATUS_LABELS.get(status, status))}</span>"
+                )
+            else:
+                pill = '<span class="commit-unassessed">Not yet assessed</span>'
+            statement = c.get("statement", "")
+            if len(statement) > 170:
+                statement = statement[:167].rsplit(" ", 1)[0] + "…"
+            items.append(
+                '<li class="commit-pledge">'
+                f'<span class="commit-term">{esc(CLAIM_TYPE_LABELS.get(c.get("claim_type", ""), ""))}</span> '
+                f'{pill} <a href="#claim-{esc(c.get("id", ""))}">“{esc(statement)}”</a></li>'
+            )
+        company_rows.append(
+            f'<div class="commit-company"><h4>{esc(r["name"])}</h4><ul>{"".join(items)}</ul></div>'
+        )
+    companies_html = (
+        '<section id="commitments-companies">'
+        '<h3 class="solution-cat-header">Company pledges</h3>'
+        f"<p>{n_pledges} company-wide water pledges from {len(pledges)} operators — water-positive and "
+        "replenishment targets, efficiency goals, zero-water designs and disclosure promises. Each links to the "
+        "verbatim claim and its assessment on the Issues &amp; Claims tab; site-specific promises stay there.</p>"
+        f'<div class="commit-companies">{"".join(company_rows)}</div>'
+        "</section>"
+    )
+
+    return (
+        '<div class="commitments" id="commitments">'
+        f'{metrics}{nav}{national}{states}{local_html}{companies_html}'
+        "</div>"
+    )
+
+
 SECURITY_LEAD = (
     "A cited map of water-sector cyber and physical threats, the capabilities "
     "that reduce them, the public and private actors doing the work, what is "
@@ -4980,6 +5263,14 @@ def _build_water_security_html() -> str:
   <p class="src-note">Dataset last updated {html.escape(payload.get("last_updated", "unknown"))}. {html.escape(payload.get("scope_note", ""))}</p>
 </div>
 """
+
+
+def render_commitments():
+    """Streamlit surface for the Commitments tab — the same fragment the static
+    page renders, against assets/components.css."""
+    st.subheader("Water Commitments")
+    st.markdown(COMMITMENTS_LEAD)
+    st.markdown(_build_commitments_html(), unsafe_allow_html=True)
 
 
 def render_water_security():
@@ -6162,6 +6453,7 @@ def main():
     (
         tab_legislation,
         tab_states,
+        tab_commitments,
         tab_cwa,
         tab_issues,
         tab_news,
@@ -6173,6 +6465,7 @@ def main():
         [
             "Legislation",
             "States & Localities",
+            "Commitments",
             "Water Cases",
             "Issues & Claims",
             "News",
@@ -6186,6 +6479,10 @@ def main():
     # --- States & Localities tab ---
     with tab_states:
         render_states_tab()
+
+    # --- Commitments tab ---
+    with tab_commitments:
+        render_commitments()
 
     # --- CWA Cases tab ---
     with tab_cwa:

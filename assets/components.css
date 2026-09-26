@@ -1266,3 +1266,208 @@ h4.solution-cat-header::before {
         left: -6px;
     }
 }
+
+/* Water commitments — the Commitments tab (shared: static page + Streamlit via
+   dashboard._build_commitments_html). Cards follow the DESIGN.md §7 card
+   system; the finding is a §10 warning callout, because "no national
+   strategy" is a policy gap, not a status. */
+.commitments {
+    margin: 0.2rem 0 0.6rem;
+}
+.commit-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.6rem;
+    margin: 0.4rem 0 0.8rem;
+}
+.commit-metric {
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    background: #fff;
+    padding: 0.6rem 0.8rem;
+}
+.commit-metric-n {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #08519c;
+    line-height: 1.2;
+}
+.commit-metric-l {
+    display: block;
+    font-size: 0.8rem;
+    color: #4b5563;
+}
+.commit-finding {
+    border-left: 3px solid #b45309;
+    background: #fffbeb;
+    border-radius: 0 0.4rem 0.4rem 0;
+    padding: 0.65rem 0.9rem;
+    margin: 0.4rem 0 0.8rem;
+    font-size: 0.9rem;
+    color: #1a1a2e;
+}
+.commit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 0.7rem;
+    margin: 0.4rem 0 0.8rem;
+}
+.commit-card {
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    background: #fff;
+    padding: 0.8rem 0.95rem;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+.commit-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+}
+.commit-actor {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #1a1a2e;
+    margin-right: 0.2rem;
+}
+.commit-binding,
+.commit-term,
+.commit-unassessed {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #08519c;
+    background: #eff3ff;
+    border: 1px solid #bdd7e7;
+    border-radius: 999px;
+    padding: 0.02rem 0.5rem;
+    white-space: nowrap;
+}
+.commit-unassessed {
+    color: #6b7280;
+    background: #f9fafb;
+    border-color: #e5e7eb;
+}
+.commit-instrument {
+    font-size: 0.82rem;
+    color: #4b5563;
+    margin: 0.3rem 0 0.2rem;
+}
+.commit-summary {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    margin: 0.3rem 0;
+}
+.commit-terms {
+    list-style: none;
+    padding: 0;
+    margin: 0.3rem 0;
+    font-size: 0.85rem;
+}
+.commit-terms li {
+    margin: 0 0 0.35rem;
+}
+.commit-related,
+.commit-sources,
+.commit-note {
+    font-size: 0.8rem;
+    color: #4b5563;
+    margin: 0.3rem 0 0;
+}
+.commit-related a,
+.commit-sources a,
+.commit-fed a,
+.commit-matrix a,
+.commit-pledge a {
+    color: #08519c;
+}
+.commit-subhead {
+    font-size: 0.95rem;
+    color: #1a1a2e;
+    margin: 1rem 0 0.2rem;
+}
+.commit-fold {
+    margin: 0.3rem 0 0.8rem;
+}
+.commit-fold > summary {
+    cursor: pointer;
+    color: #08519c;
+    font-weight: 600;
+    font-size: 0.88rem;
+    min-height: 32px;
+}
+.commit-fed {
+    list-style: none;
+    padding: 0;
+    margin: 0.4rem 0;
+    font-size: 0.85rem;
+}
+.commit-fed-row {
+    margin: 0 0 0.35rem;
+}
+.commit-matrix {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.82rem;
+    background: #fff;
+}
+.commit-matrix th,
+.commit-matrix td {
+    border: 1px solid #e2e8f0;
+    padding: 0.35rem 0.5rem;
+    text-align: left;
+    vertical-align: top;
+}
+.commit-matrix thead th {
+    background: #eff3ff;
+    color: #08519c;
+    font-weight: 700;
+}
+.commit-matrix tbody th {
+    white-space: nowrap;
+}
+/* Wide enough that a short id ("CA AB 2469") never breaks mid-name; the
+   table scrolls inside .table-wrap on a phone instead. */
+.commit-matrix td {
+    min-width: 7rem;
+}
+.commit-empty {
+    color: #cbd5e1;
+}
+.commit-state-note {
+    display: block;
+    font-weight: 400;
+    font-size: 0.74rem;
+    color: #6b7280;
+}
+.commit-companies {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 0.7rem;
+}
+.commit-company {
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    background: #fff;
+    padding: 0.7rem 0.9rem;
+    min-width: 0;
+}
+.commit-company h4 {
+    margin: 0 0 0.4rem;
+    font-size: 0.95rem;
+    color: #1a1a2e;
+}
+.commit-company ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.commit-pledge {
+    font-size: 0.84rem;
+    line-height: 1.45;
+    margin: 0 0 0.45rem;
+}

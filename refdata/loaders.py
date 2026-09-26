@@ -38,6 +38,7 @@ WATER_NEWS_PATH = REFERENCE_DIR / "water_news.json"
 WATER_SOLUTIONS_PATH = REFERENCE_DIR / "water_solutions.json"
 LOCAL_ACTIONS_PATH = REFERENCE_DIR / "local_actions.json"
 WATER_SECURITY_PATH = REFERENCE_DIR / "water_security.json"
+WATER_COMMITMENTS_PATH = REFERENCE_DIR / "water_commitments.json"
 
 
 def file_signature(path) -> tuple:
@@ -208,6 +209,24 @@ def load_water_security(path: Path = WATER_SECURITY_PATH) -> dict:
     return _load_water_security_cached(str(path), file_signature(path))
 
 
+@lru_cache(maxsize=2)
+def _load_water_commitments_cached(path_str: str, signature: tuple) -> dict:
+    return _read_json(path_str, {"commitments": list})
+
+
+def load_water_commitments(path: Path = WATER_COMMITMENTS_PATH) -> dict:
+    """Load the national, international and local-agreement water commitments.
+
+    Only the commitments no other dataset holds live here. State commitments
+    are derived from ``legislation.json`` (principle tags on enacted state
+    instruments) and company pledges from ``company_water_claims.json``, so the
+    Commitments view never keeps a second copy of a record. Outside the
+    registry, like the security map: its records link out to instruments,
+    sites and claims, but nothing links in yet.
+    """
+    return _load_water_commitments_cached(str(path), file_signature(path))
+
+
 def clear_caches() -> None:
     """Drop every loader cache. Used by tests that write temp fixtures."""
     for fn in (
@@ -220,5 +239,6 @@ def clear_caches() -> None:
         _load_water_solutions_cached,
         _load_local_actions_cached,
         _load_water_security_cached,
+        _load_water_commitments_cached,
     ):
         fn.cache_clear()

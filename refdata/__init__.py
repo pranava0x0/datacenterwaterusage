@@ -1,11 +1,13 @@
 """Curated-reference data layer: loaders, taxonomies, id registry, integrity.
 
-Nine datasets. Seven are curated records that cross-reference each other by
-id and therefore live in the registry. Two deliberately stay out of the
+Ten datasets. Seven are curated records that cross-reference each other by
+id and therefore live in the registry. Three deliberately stay out of the
 registry and the integrity graph: ``local_actions.json``, a mirrored
-county/city table that nothing points at (Spec D v1, 2026-08-24), and
+county/city table that nothing points at (Spec D v1, 2026-08-24),
 ``water_security.json``, a cited research brief whose records carry no
-cross-dataset edges yet (2026-09-21).
+cross-dataset edges yet (2026-09-21), and ``water_commitments.json``, the
+national, international and local-agreement commitments whose links run
+outward only (2026-09-26).
 
 Extracted from ``dashboard.py`` on 2026-07-25 (plan Spec 0.3). Everything here
 is **pure** — no ``streamlit`` import anywhere in the package — so the
@@ -29,6 +31,7 @@ from refdata.loaders import (  # noqa: F401
     WATER_NEWS_PATH,
     WATER_SOLUTIONS_PATH,
     WATER_SECURITY_PATH,
+    WATER_COMMITMENTS_PATH,
     clear_caches,
     file_signature,
     load_company_water_claims,
@@ -40,6 +43,7 @@ from refdata.loaders import (  # noqa: F401
     load_water_news,
     load_water_solutions,
     load_water_security,
+    load_water_commitments,
 )
 from refdata.registry import (  # noqa: F401
     KIND_TABS,

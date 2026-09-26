@@ -424,6 +424,66 @@ DC_ROLE_LABELS = {
 }
 
 
+# --- Water commitments (water_commitments.json) ------------------------------
+
+# What a commitment actually obliges, one value per term. Typed so the view
+# can say "three local agreements cap water use" instead of paraphrasing
+# eleven documents, and closed so a new kind of promise is a decision.
+COMMITMENT_TERM_LABELS = {
+    "disclosure": "Disclosure & reporting",
+    "efficiency": "Efficiency target",
+    "reclaimed-source": "Reclaimed or non-potable water",
+    "closed-loop": "Closed-loop or dry cooling",
+    "use-cap": "Water-use cap",
+    "infrastructure-funding": "Developer-funded water infrastructure",
+    "restoration": "Restoration & replenishment",
+    "permit-condition": "Approval condition",
+    "study": "Study or assessment",
+}
+
+# Where the commitment sits. State commitments are not a level here — they
+# are derived from legislation.json, which already holds every state order.
+COMMITMENT_LEVEL_LABELS = {
+    "federal": "U.S. federal",
+    "international": "Other countries",
+    "local": "Local agreements",
+}
+
+# How hard the promise is. A reader comparing a Singapore target to a county
+# memorandum needs this before anything else.
+COMMITMENT_BINDING_LABELS = {
+    "binding": "Binding",
+    "reporting": "Reporting duty",
+    "voluntary": "Voluntary",
+    "strategy": "Strategy",
+    "study": "Study only",
+}
+
+COMMITMENT_STATUS_LABELS = {
+    "in-force": "In force",
+    "rejected": "Rejected",
+}
+COMMITMENT_STATUS_COLORS = {
+    "in-force": COLORS["success"],
+    "rejected": COLORS["danger"],
+}
+
+# How the state-commitments matrix reads legislation.json. Each column is a
+# plain-language commitment; each maps to the principle tags that express it.
+# Every principle a state instrument can carry lands in exactly one column or
+# is deliberately left out (Federal coordination and Permitting acceleration
+# are federal-layer ideas; Strict liability has no state instrument yet).
+STATE_COMMITMENT_COLUMNS = {
+    "disclose": ("Disclose water use", ("Disclosure", "Transparency", "NDA prohibition")),
+    "review": ("Review before building", ("Preemptive review", "Permit oversight")),
+    "pay": ("Pay its own way", ("Cost allocation",)),
+    "conserve": ("Use less water", ("Conservation", "Closed-loop cooling")),
+    "incentives": ("Condition incentives", ("Anti-corporate-welfare",)),
+    "pause": ("Pause development", ("Moratorium",)),
+    "guidance": ("Guidance only", ("Best-practice guidance",)),
+}
+
+
 # --- Conflict sites (dc_water_conflicts.json) --------------------------------
 
 # What KIND of water problem a site represents. 1–3 per site. Answers "show me

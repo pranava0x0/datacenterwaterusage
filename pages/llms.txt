@@ -146,6 +146,81 @@ State activity, newest first: Texas (2026-09-24), California (2026-09-21), Virgi
 - 2026-08-14 — Texas — TX EO 2026-08 (data center audit) — Enacted — Texas Tribune reports audit scope: ~250-300 projects
 - 2026-08 — Oneida County, WI — Oneida County — Proposed — Concerns cited: water and electricity consumption, noise, and potential pollution.
 
+## Water commitments
+
+Who has committed to what on data-center water, and how binding it is. The United States has no national water strategy that addresses data centers; the commitments with force behind them are being made by states, by localities in deals with developers, and by the companies themselves.
+
+### National and international
+
+- us-epa-wrap-2 — United States: Water Reuse Action Plan 2.0 (WRAP 2.0) (2026-04-16; Voluntary). A collaborative, explicitly non-regulatory framework under existing Clean Water Act and Safe Drinking Water Act authority. Data-center cooling is one of the named priority reuse sectors, and Action 3.10 is the closest thing the federal government has to a data-center water commitment: helping states permit reclaimed water for cooling. Terms: Compile and share best practices for industrial cooling so states can more readily permit recycled or reclaimed water for data-center cooling (Action 3.10).; Identify, and propose fixes to, the regulatory hurdles that block reuse for data-center cooling. Source: https://www.epa.gov/waterreuse/water-reuse-action-plan-20
+- us-usgs-national-water-availability-2025 — United States: National Water Availability Assessment (water years 2010-2020) (2025-01-16; Study only). The federal government's national picture of water supply and demand, which finds about 30 million people live in areas of high water limitation. Data centers do not appear in it as a water-use category or a demand driver — the assessment that would anchor a national strategy does not see them. Terms: National supply-and-demand assessment for water years 2010-2020; demand drivers discussed are agriculture, energy production, ecosystems and population growth, not data centers. Source: https://www.usgs.gov/special-topics/integrated-water-availability-assessments
+- eu-data-centre-rating-scheme-2024 — European Union: Delegated Regulation (EU) 2024/1364 — common Union rating scheme for data centres (2024-03-14; Reporting duty). Under the recast Energy Efficiency Directive, every data centre with 500 kW or more of installed IT load must measure and report its total water input and its potable water input, and the Commission computes water usage effectiveness as one of four official sustainability indicators. The EU already has, in binding law, the facility-level water reporting US bills are still proposing — though individual figures stay confidential and only aggregates are published. Terms: Mandatory reporting of total water input and potable water input (Annex II) for data centres of 500 kW or more; aggregate WUE published in the European database on data centres. Source: https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=OJ:L_202401364
+- eu-water-resilience-strategy-2025 — European Union: European Water Resilience Strategy (COM(2025) 280) (2025-06-04; Strategy). A national-scale water strategy that names data centres explicitly, among the strategic sectors that 'consume large volumes of often ultra-pure water'. It commits the Commission to put water usage in the data-centre sustainability rating and to propose minimum water-consumption performance standards for data centres — a move from reporting to an efficiency floor, with no numeric target yet. Terms: Include water usage among the parameters of the common Union scheme rating data-centre sustainability.; Propose minimum water-consumption performance standards for data centres (no number set yet). Source: https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=celex:52025DC0280
+- sg-green-data-centre-roadmap-2024 — Singapore: Green Data Centre Roadmap (2024-05-30; Strategy). Sets a national water-use-effectiveness goal: bring data centres from a 2021 median of 2.2 m³/MWh to 2.0 m³/MWh or lower within ten years, mainly by optimizing cooling towers, which are up to 97% of a data centre's water use. Separately and already binding, any site using 60,000 m³ a year or more must meter privately and file a Water Efficiency Plan with PUB. Terms: National WUE target of 2.0 m³/MWh or lower within ten years (from a 2.2 m³/MWh median in 2021).; Sites using 60,000 m³ a year or more: private water meters and a Water Efficiency Plan filed with PUB (binding). Source: https://www.imda.gov.sg/-/media/imda/files/how-we-can-help/green-dc-roadmap/green-dc-roadmap.pdf
+
+### State commitments (enacted instruments, by principle)
+
+- California — Disclose water use: CA AB 1577, CA AB 2619, CA SB 887, CA AB 2469; Review before building: CA AB 1577, CA AB 2619, CA SB 887, CA AB 2469; Pay its own way: CA AB 2469; Use less water: CA AB 2469
+- Virginia — Disclose water use: VA HB 496 / SB 553, VA DEQ waterworks data-center reporting regulations, VA DEQ Eastern Virginia groundwater study, VA EO 22 (2026); Review before building: VA HB 496 / SB 553, VA DEQ Eastern Virginia groundwater study, VA EO 22 (2026); Use less water: VA EO 22 (2026); Guidance only: VA EO 22 (2026)
+- Florida — Review before building: FL SB 484; Pay its own way: FL SB 484; Use less water: FL SB 484
+- Louisiana — Pay its own way: LA EO 26-058; Use less water: LA EO 26-058; Condition incentives: LA EO 26-058
+- Massachusetts — Review before building: MA EO 658; Pay its own way: MA EO 658; Guidance only: MA EO 658
+- Minnesota — Review before building: MN HF 16; Pay its own way: MN HF 16; Use less water: MN HF 16
+- Nevada — Review before building: NV EO 2026-005; Pay its own way: NV EO 2026-005; Condition incentives: NV EO 2026-005
+- South Dakota — Review before building: SD SB 135; Pay its own way: SD SB 135; Use less water: SD SB 135
+- Utah — Disclose water use: UT HB 76, UT EO 2026-03; Review before building: UT HB 76; Pay its own way: UT EO 2026-03
+- Wyoming — Pay its own way: WY EO 2026-03; Use less water: WY EO 2026-03; Guidance only: WY EO 2026-03
+- Idaho — Review before building: ID H 895; Use less water: ID H 895
+- Kansas — Use less water: KS SB 98; Condition incentives: KS SB 98
+- Kentucky — Review before building: KY EO 2026-494; Pay its own way: KY EO 2026-494
+- Maryland — Disclose water use: MD HB 270 / SB 116; Review before building: MD HB 270 / SB 116
+- Nebraska — Review before building: NE EO 26-17; Condition incentives: NE EO 26-17
+- New York — Review before building: NY EO 62; Pause development: NY EO 62
+- Oregon — Review before building: OR 2026 state-land data center pause; Pause development: OR 2026 state-land data center pause
+- Pennsylvania — Disclose water use: PA EO 2026-05; Review before building: PA EO 2026-05
+- Texas — Disclose water use: TX EO 2026-08 (data center audit); Review before building: TX EO 2026-08 (data center audit)
+- West Virginia — Disclose water use: WV HB 4983; Review before building: WV HB 4983
+
+### Local agreements
+
+- pima-county-project-blue-moa-2025 — Pima County, AZ: Memorandum of Agreement (Project Blue), approved 3-2 (2025-12-16, In force). Terms: A closed-loop air-cooling system keeps the facility from overheating.; Water consumption limited to domestic necessities such as bathrooms and kitchens.; Water sources must be approved by the Arizona Department of Water Resources. Source: https://azluminaria.org/2025/12/16/pima-county-supervisors-approve-agreement-outlining-beales-commitments-on-project-blue/
+- lancaster-pa-coreweave-cba-2025 — Lancaster, PA: Community benefits agreement (2025-11, In force). Terms: Water use restricted to 20,000 gallons a day. Source: https://www.brookings.edu/articles/why-community-benefit-agreements-are-necessary-for-data-centers/
+- mount-pleasant-wi-microsoft-agreement-2023 — Mount Pleasant, WI: Development agreement (former Foxconn land) (2023-11-27, In force). Terms: $4.2 million to restore 1.5 miles of Lamparek Creek (about 100 acres of prairie, forest and degraded stream buffer).; $100,000 for water-restoration work across Racine County with the Root-Pike Watershed Initiative Network. Source: https://www.wpr.org/politics/mount-pleasant-approves-microsoft-deal-data-centers-foxconn-land
+- dona-ana-nm-project-jupiter-2025 — Doña Ana County, NM: Industrial revenue bond and PILOT agreement (Ordinance 367-2025) (2025-09-15, In force). Terms: $50 million for public water and wastewater infrastructure in Doña Ana County.; $10 million of it routed to Sunland Park as a metrics-driven water-quality grant program.; $250,000 to evaluate a desalination plant as a long-term drinking-water source. Source: https://www.stackinfra.com/about/news-press/press-releases/stack-infrastructure-and-borderplex-digital-announce-cumulative-56-9-million-in-water-and-community-commitments-for-dona-ana-county-through-project-jupiter/
+- saline-township-mi-consent-judgment-2025 — Saline Township, MI: Consent judgment, Washtenaw County Circuit Court (2025-10, In force). Terms: No design containing high-water-use evaporative cooling (Section 3(g)).; Water use limited to restrooms and domestic uses, humidity, landscaping, fire protection and maintenance; about 20,000 gallons a day anticipated.; 47.5 acres of wetlands protected by a conservation easement. Source: https://salinetownship.org/go.php?id=731&table=page_uploads
+- frederick-county-md-quantum-cba-2026 — Frederick County, MD: Community benefits agreement ($110 million, never executed) (2026-09-15, Rejected). Terms: Cut potable water use 80% once a reclaimed-water system came online (offered, not adopted). Source: https://www.wypr.org/wypr-news/2026-09-15/frederick-county-rejects-agreement-with-data-center-developer-amidst-public-outcry
+
+### Company pledges
+
+- Microsoft (ms-water-positive-2030, Water-positive pledge, partial): By 2030, Microsoft will be water positive — replenishing more water than we consume across our global operations.
+- Microsoft (ms-mt-pleasant-wi-water-modest, Efficiency / WUE, not yet assessed): annual water use is modest, requiring roughly the amount of water a typical restaurant uses annually.
+- Microsoft (ms-water-replenish-2026, Water-positive pledge, partial): We'll minimize our water use and replenish more of your water than we use.
+- Microsoft (ms-water-wue-90-percent-2026, Efficiency / WUE, partial): Through continuous innovation and advancements in cooling technologies, Microsoft has improved its water use effectiveness by nearly 90% since its first generation of datacenters in the early 2000s.
+- Microsoft (microsoft-water-intensity-40pct-2026, Efficiency / WUE, partial): Microsoft will achieve a 40 percent improvement in datacenter water-use intensity by 2030.
+- Microsoft (ms-el-mirage-water-2024, Water-positive pledge, not yet assessed): We'll minimize our water use and replenish more of your water than we use.
+- Microsoft (ms-san-antonio-water-2024, Water-positive pledge, not yet assessed): We'll minimize our water use and replenish more of your water than we use.
+- Meta (meta-water-positive-2030, Water-positive pledge, partial): We are committed to restoring more water than we consume by 2030, focusing our efforts in regions of high and medium water stress.
+- Meta (meta-newton-ga-water-onsite-efficiency, Efficiency / WUE, not yet assessed): The Stanton Springs Data Center prioritizes on-site water efficiency by: Using cooling technology that is significantly more water efficient than the industry standard. Reusing water numerous times before discharging it as wastewater.
+- Meta (meta-temple-water-davis-2026, Zero-water design, not yet assessed): We use a water-efficient, closed-loop liquid-cooling system that will use zero water for a majority of the year.
+- Google (google-water-replenish-120, Water-positive pledge, partial): By 2030, we aim to replenish 120% of the freshwater we consume across our offices and data centers.
+- Google (google-new-florence-water-air-cooling-2026, Zero-water design, not yet assessed): The Montgomery County data center will use advanced air-cooling technology, limiting water consumption to uses like kitchens.
+- Oracle (oracle-water-closed-loop-2026, Zero-water design, not yet assessed): Water is valuable, and we should engineer accordingly.
+- Oracle (oracle-abilene-water-magouyrk-2025, Zero-water design, not yet assessed): These data centers are designed to not use water. All of the data centers that we're building (in) this part of Stargate are designed to not use water. The reason we do that is because it turns out that's harmful for the environment and this is a better solution.
+- Switch (switch-water-net-positive-2x, Water-positive pledge, not yet assessed): Switch will replenish and restore up to two times more water than it uses operationally.
+- Switch (switch-water-100-percent-recycled, Replenishment milestone, not yet assessed): Switch identifies and leads water improvement projects in the communities where we operate to allow us to run our campuses on 100% recycled water.
+- Wonder Valley (wonder-valley-water-oleary-salt-lake-2026, Disclosure & transparency, not yet assessed): There's lots of rumors that we're going to suck the Great Salt Lake dry. That's ridiculous. Of course that's not gonna happen. In fact, if anything, we'll be adding to the Great Salt Lake because the water rights on that land will be used.
+- Wonder Valley (wonder-valley-water-oleary-env-studies-2026, Disclosure & transparency, not yet assessed): I'm the only developer of data centers on Earth that graduated from environmental studies. I'm pretty aware of what these concerns are. They are around air, water use, heat, noise pollution. So sustainability is at the heart of what we do in terms of all these proposals.
+- Amazon (AWS) (aws-water-positive-2030, Water-positive pledge, litigated): AWS is committed to being water positive by 2030, returning more water to communities than we use in our direct operations.
+- Anthropic (anthropic-water-cooling-framework, Zero-water design, not yet assessed): deploying water-efficient cooling technologies
+- Compass Data Centers (compass-water-zero-airside-mandate, Zero-water design, not yet assessed): Since day one, Compass saw a zero-water solution as a mandate.
+- CoreWeave (coreweave-water-uk-closedloop-intrator, Zero-water design, not yet assessed): It allows us to deliver unparalleled AI performance with the lowest possible environmental impact, setting a new global standard.
+- Crusoe (crusoe-water-abilene-closed-loop, Zero-water design, not yet assessed): We are building this project with closed-loop, non-evaporative liquid cooling systems, which are designed to significantly reduce our water footprint.
+- EdgeConneX (edgeconnex-water-neutral-2030, Water-positive pledge, not yet assessed): Become a carbon-, waste-, and water-neutral data center provider by the year 2030.
+- Nebius (nebius-water-closed-loop, Zero-water design, not yet assessed): Due to the innovative closed-loop water cooling design, the facility will require minimal annual water needs.
+- OpenAI (openai-water-stargate-community-2026, Zero-water design, not yet assessed): minimize water use by prioritizing closed-loop or low-water cooling systems
+- QTS (qts-water-water-free-design, Zero-water design, shortfall): Our innovative standard data center design uses no water for cooling, saving billions of gallons of water per year.
+- Vantage Data Centers (vantage-water-positivity-near-zero, Water-positive pledge, not yet assessed): Vantage is also committing to water positivity for new data centers, which is just one of several sustainability goals we have to ensure responsible growth around the world.
+
 ## How statutes apply — by data-center activity
 
 Start from what the data center is doing. Each row traces one legal path: the statutory reading, the fact that triggers it, the precedent that shows it working, and the tracked sites where it is in play — or where it was checked and ruled out. Rows marked Limit are dead ends worth knowing: readings that say where a theory fails.

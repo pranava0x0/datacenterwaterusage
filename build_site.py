@@ -1459,6 +1459,31 @@ def build_security_tab() -> str:
 
 
 # --------------------------------------------------------------------------
+# Commitments tab
+# --------------------------------------------------------------------------
+
+
+def build_commitments_tab() -> str:
+    """National strategy, state commitments, local agreements, company pledges.
+
+    The body is dashboard._build_commitments_html so Streamlit renders the same
+    thing; this adds the tab chrome every tab carries.
+    """
+    payload = dash.load_water_commitments()
+    return f"""
+<section class="panel">
+  <h2>Water Commitments</h2>
+  <p class="lead">{esc(dash.COMMITMENTS_LEAD)}</p>
+  {dash._build_commitments_html()}
+  <p class="src-note">National, international and local-agreement records last updated
+  {esc(payload.get("last_updated") or "unknown")}; state commitments are read from the
+  Legislation tab's enacted instruments and company pledges from Issues &amp; Claims,
+  so each record exists once.</p>
+</section>
+"""
+
+
+# --------------------------------------------------------------------------
 # Explore tab
 # --------------------------------------------------------------------------
 
@@ -2442,6 +2467,53 @@ def build_llms_txt() -> str:
             f"{r['status_label']} — {r['detail']}"
         )
 
+    commitments = dash.load_water_commitments().get("commitments", [])
+    lines += [
+        "",
+        "## Water commitments",
+        "",
+        dash.COMMITMENTS_LEAD,
+        "",
+        "### National and international",
+        "",
+    ]
+    for c in commitments:
+        if c.get("level") == "local":
+            continue
+        terms = "; ".join(t.get("text", "") for t in c.get("terms") or [])
+        lines.append(
+            f"- {c['id']} — {c.get('jurisdiction')}: {c.get('instrument')} ({c.get('date')};"
+            f" {dash.COMMITMENT_BINDING_LABELS.get(c.get('binding'), c.get('binding'))})."
+            f" {c.get('summary', '')} Terms: {terms}"
+            + (f" Source: {c['sources'][0]['url']}" if c.get("sources") else "")
+        )
+    lines += ["", "### State commitments (enacted instruments, by principle)", ""]
+    for row in dash._state_commitment_matrix():
+        parts = [
+            f"{dash.STATE_COMMITMENT_COLUMNS[k][0]}: {', '.join(ids)}"
+            for k, ids in row["cells"].items()
+            if ids
+        ]
+        lines.append(f"- {row['state']} — " + "; ".join(parts))
+    lines += ["", "### Local agreements", ""]
+    for c in commitments:
+        if c.get("level") != "local":
+            continue
+        terms = "; ".join(t.get("text", "") for t in c.get("terms") or [])
+        lines.append(
+            f"- {c['id']} — {c.get('jurisdiction')}: {c.get('instrument')} ({c.get('date')},"
+            f" {dash.COMMITMENT_STATUS_LABELS.get(c.get('status'), c.get('status'))}). Terms: {terms}"
+            + (f" Source: {c['sources'][0]['url']}" if c.get("sources") else "")
+        )
+    lines += ["", "### Company pledges", ""]
+    for row in dash._company_pledges():
+        for claim in row["pledges"]:
+            delivered = (claim.get("delivered") or {}).get("status", "not yet assessed")
+            lines.append(
+                f"- {row['name']} ({claim['id']}, {dash.CLAIM_TYPE_LABELS.get(claim.get('claim_type'), '')},"
+                f" {delivered}): {claim.get('statement', '')}"
+            )
+
     # The paths come first because they answer the question readers arrive
     # with ("the campus is doing X — which laws reach it?"); the toolkit below
     # is the by-statute reference the paths point into.
@@ -2667,6 +2739,7 @@ def _tab_specs() -> list[tuple[str, str, object]]:
     return [
         ("legislation", "Legislation", build_legislation_tab),
         ("states", "States &amp; Localities", build_states_tab),
+        ("commitments", "Commitments", build_commitments_tab),
         ("cwa", "Water Cases", build_cwa_tab),
         ("issues", "Issues &amp; Claims", build_issues_claims_tab),
         ("news", "News", build_news_tab),

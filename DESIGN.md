@@ -313,6 +313,7 @@ before the user scrolls into the card list. Panel shape varies by data type:
 | States & Localities | 3-metric row: States active / Local actions tracked / Newest action |
 | CWA Cases | Datacenter insights callout + application-theories table |
 | News | 3-metric row: Headlines / Topics / Most recent date |
+| Commitments | 4-metric row (national strategy: None / states with an enacted commitment / local agreements in force / company pledges) + the no-national-strategy finding as a §10 warning callout |
 | Solutions | 6-metric row (Deployed/Pilot/Proposed × Mandate/Utility/Industry) + key-patterns callout |
 | Sources | 4-metric scorecard: Accessible / Blocked / Unlocking / Queue |
 
