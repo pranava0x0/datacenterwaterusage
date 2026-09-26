@@ -858,8 +858,11 @@ class TestInfrastructureVisuals:
         the statute paths. On 2026-09-26 every tab but the default moved to
         its own page fetched on first open, and index.html fell from 1.65 MB
         to ~0.4 MB. The ceiling tracks the shell, so re-inlining a tab has to
-        fail here rather than quietly costing every reader a megabyte again."""
-        assert len(_index().encode("utf-8")) < 500_000
+        fail here rather than quietly costing every reader a megabyte again.
+
+        The same day the default tab became the small Overview (was the 320 KB
+        Legislation list), taking index.html to ~130 KB: ceiling 250 KB."""
+        assert len(_index().encode("utf-8")) < 250_000
 
     def test_no_tab_page_is_a_second_monolith(self):
         """Water Cases is the heaviest tab (~750 KB); a tab page twice that size

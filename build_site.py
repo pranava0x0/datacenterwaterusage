@@ -1459,6 +1459,23 @@ def build_security_tab() -> str:
 
 
 # --------------------------------------------------------------------------
+# Overview tab (the default)
+# --------------------------------------------------------------------------
+
+
+def build_overview_tab(today: datetime | None = None) -> str:
+    """The landing tab. Small on purpose: it is what index.html ships inline,
+    so it is the whole first load for a reader who never opens another tab."""
+    return f"""
+<section class="panel">
+  <h2>Overview</h2>
+  <p class="lead">{esc(dash.OVERVIEW_LEAD)}</p>
+  {dash._build_overview_html(today)}
+</section>
+"""
+
+
+# --------------------------------------------------------------------------
 # Commitments tab
 # --------------------------------------------------------------------------
 
@@ -2728,7 +2745,9 @@ FOOTER_MOTIF = """
 # --------------------------------------------------------------------------
 
 # The tab that ships inside index.html; every other tab is fetched on demand.
-DEFAULT_TAB = "legislation"
+# The landing tab since 2026-09-26: a small overview, so first load is the
+# shell plus ~20 KB instead of the 320 KB Legislation card list.
+DEFAULT_TAB = "overview"
 SITE_CSS_FILE = "site.css"
 ANCHOR_ID_RE = re.compile(r'\bid="([^"]+)"')
 INTERNAL_HREF_RE = re.compile(r'href="#([^"]+)"')
@@ -2737,6 +2756,7 @@ INTERNAL_HREF_RE = re.compile(r'href="#([^"]+)"')
 def _tab_specs() -> list[tuple[str, str, object]]:
     """``(data-tab key, button label, builder)`` in tab-strip order."""
     return [
+        ("overview", "Overview", build_overview_tab),
         ("legislation", "Legislation", build_legislation_tab),
         ("states", "States &amp; Localities", build_states_tab),
         ("commitments", "Commitments", build_commitments_tab),

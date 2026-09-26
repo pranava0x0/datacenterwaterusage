@@ -1940,7 +1940,13 @@ def _instrument_movement_date(bill: dict, today: datetime) -> str:
         for ev in bill.get("timeline", [])
         if ev.get("date") and ev["date"] <= stamp
     ]
-    return max(dates) if dates else bill.get("last_verified", "")
+    if dates:
+        return max(dates)
+    # The fallback obeys the same rule as the timeline: a re-verification dated
+    # after ``today`` has not happened yet as of ``today``. Without this a
+    # build (or test) run for an earlier date reported future "movement".
+    verified = bill.get("last_verified", "")
+    return verified if verified and verified <= stamp else ""
 
 
 def _state_code_for(jurisdiction: str) -> str | None:
@@ -4822,6 +4828,252 @@ def render_sources_tab():
 
 # --- Water Infrastructure Security tab ---
 
+# --- Overview (the landing tab) -------------------------------------------
+#
+# The site opened on the Legislation tab: a dense card list, with nine tabs
+# whose boundaries a first-time reader had to guess. The overview answers the
+# three questions a newcomer arrives with — what is this, what just happened,
+# where do I start — and routes each to the tab that owns the answer. It is
+# also the smallest tab, which is what the lazily loaded site ships first.
+
+OVERVIEW_LEAD = (
+    "A public-record tracker of how US data centers draw, discharge and disclose "
+    "cooling water — and of the laws, cases, local fights and commitments that "
+    "govern it. Start with a question below, or with what moved this month."
+)
+OVERVIEW_WINDOW_DAYS = 30
+OVERVIEW_FEED_LIMIT = 10
+
+# (question, what you get, link target, link text). Targets are tab panels or
+# anchors inside a tab; the static page loads the owning tab on click.
+OVERVIEW_QUESTIONS = (
+    ("Which laws reach a data center?",
+     "Pick what the campus is doing — building, pumping, discharging — and follow each law to its precedents and live sites.",
+     "statute-paths", "How statutes apply"),
+    ("What has my state or county done?",
+     "Every state with tracked activity, plus county and city moratoriums and ordinances, filterable by state.",
+     "panel-states", "States & Localities"),
+    ("Who has committed to what?",
+     "National strategy (there is none), state commitments by type, local agreements and company pledges.",
+     "panel-commitments", "Commitments"),
+    ("Where are communities fighting over water?",
+     "Named sites with documented water conflicts, and what operators claimed about them.",
+     "panel-issues", "Issues & Claims"),
+    ("What is working?",
+     "Deployed and piloted fixes: reclaimed water, closed-loop and dry cooling, reporting mandates.",
+     "panel-solutions", "Solutions"),
+    ("I have a document — what does it match?",
+     "Paste a news story, permit notice or draft ordinance to find the records that use the same language.",
+     "panel-explore", "Explore"),
+)
+
+
+def _overview_feed(
+    today: datetime,
+    window_days: int = OVERVIEW_WINDOW_DAYS,
+    limit: int = OVERVIEW_FEED_LIMIT,
+) -> list[dict]:
+    """What moved in the last ``window_days``: instruments, local actions, news.
+
+    Pure — ``today`` comes from the caller (DESIGN.md §5). State and local
+    movement reuses ``_states_whats_new``; federal instruments and news items
+    are added here, because a landing page's "what's new" should not stop at
+    state lines the way the States tab's does.
+    """
+    bills = load_legislation().get("bills", [])
+    # County and city actions carry month-precision dates, so in a ten-row
+    # feed sorted by date they would always sink below the day-precise news of
+    # the same month. They get their own block (_overview_local_wave).
+    rows = _states_whats_new(bills, [], today, window_days=window_days)
+    midnight = datetime.combine(today.date(), datetime.min.time())
+    cutoff = midnight - timedelta(days=window_days)
+    for bill in bills:
+        if bill.get("level") != "federal":
+            continue
+        moved = _instrument_movement_date(bill, midnight)
+        when = _month_start(moved)
+        if when is None or when < cutoff:
+            continue
+        status = bill.get("status", "unknown")
+        milestones = [ev for ev in bill.get("timeline", []) if ev.get("date") == moved]
+        rows.append({
+            "kind": "instrument", "date": moved, "sort_date": when, "state": "US",
+            "jurisdiction": "Federal", "label": bill.get("bill_id", ""),
+            "title": bill.get("title", ""), "status": status,
+            "status_label": LEGISLATION_STATUS_LABELS.get(status, status),
+            "status_color": LEGISLATION_STATUS_BADGE_COLORS.get(status, COLORS["secondary"]),
+            "detail": (milestones[-1].get("milestone", "") if milestones else "") or bill.get("title", ""),
+            "anchor": _bill_anchor(bill.get("bill_id", "")), "url": "",
+        })
+    for item in load_water_news().get("items", []):
+        when = _month_start(item.get("date", ""))
+        if when is None or when < cutoff or when > midnight:
+            continue
+        rows.append({
+            "kind": "news", "date": item.get("date", ""), "sort_date": when, "state": "",
+            "jurisdiction": item.get("outlet", ""), "label": item.get("title", ""),
+            "title": "", "status": "news", "status_label": "News",
+            "status_color": COLORS["secondary"], "detail": "",
+            "anchor": f"news-{item.get('id', '')}", "url": "",
+            "targets": list(item.get("cross_ref_targets") or []),
+        })
+    # One row per event, not per record: a governor signing four bills in an
+    # afternoon is one thing that happened, and four rows of it pushed
+    # everything else off a ten-row feed.
+    grouped: dict[tuple, dict] = {}
+    for r in rows:
+        link = (r["label"], r["anchor"], r["url"])
+        if r["kind"] != "instrument":
+            grouped[(r["kind"], r["date"], r["label"], r["jurisdiction"])] = {**r, "links": [link]}
+            continue
+        key = ("instrument", r["date"], r["jurisdiction"], r["status_label"])
+        if key in grouped:
+            grouped[key]["links"].append(link)
+        else:
+            grouped[key] = {**r, "links": [link]}
+    # A same-day headline that cites the instrument already says what moved;
+    # the instrument rides on that headline's row instead of repeating it.
+    # Matched on the headline's own cross-references, never just the date:
+    # two governors can sign orders on the same day.
+    news_rows = [r for r in grouped.values() if r["kind"] == "news"]
+    for key in [k for k, r in grouped.items() if r["kind"] == "instrument"]:
+        r = grouped[key]
+        labels = {label for label, _a, _u in r["links"]}
+        host = next(
+            (n for n in news_rows if n["date"] == r["date"] and labels <= set(n.get("targets", []))),
+            None,
+        )
+        if host is not None:
+            host.setdefault("related", []).extend(r["links"])
+            del grouped[key]
+    out = list(grouped.values())
+    for r in out:
+        r["links"].sort()
+        r.setdefault("related", [])
+        r["related"].sort()
+    # Newest first by the most precise date available: a news item dated
+    # 2026-09-24 must outrank a local action known only as 2026-09.
+    out.sort(key=lambda r: (r["date"], r["links"][0][0]), reverse=True)
+    return out[:limit]
+
+
+def _overview_local_wave(today: datetime, window_days: int = OVERVIEW_WINDOW_DAYS) -> list[dict]:
+    """County and city actions dated within the window, newest month first.
+
+    Month precision: an action dated 2026-09 counts for a window that reaches
+    back into September, the same rule ``_states_whats_new`` applies.
+    """
+    midnight = datetime.combine(today.date(), datetime.min.time())
+    cutoff = midnight - timedelta(days=window_days)
+    rows = []
+    for action in load_local_actions().get("actions", []):
+        when = _month_start(action.get("date", ""))
+        if when is None or when < cutoff.replace(day=1) or when > midnight:
+            continue
+        rows.append(action)
+    return sorted(rows, key=lambda a: (a.get("date", ""), a.get("state", ""), a.get("jurisdiction", "")), reverse=True)
+
+
+def _build_overview_html(today: datetime | None = None) -> str:
+    """The landing tab — shared by the static page and Streamlit.
+
+    In Streamlit the tab links cannot switch ``st.tabs`` (an anchor cannot
+    press a Streamlit tab), so there the cards read as a map rather than as
+    navigation; on the static page every link opens its tab.
+    """
+    esc = html.escape
+    today = today or datetime.now()
+    bills = load_legislation().get("bills", [])
+    actions = load_local_actions().get("actions", [])
+    cases = load_cwa_investigations().get("cases", [])
+    sites = load_dc_water_conflicts().get("sites", [])
+    paths = build_statute_paths()
+    n_paths = sum(len(g["paths"]) for g in paths)
+    enacted = sum(1 for b in bills if b.get("status") == "enacted")
+    water_actions = sum(1 for a in actions if a.get("water_related"))
+    committed_states = len(_state_commitment_matrix(bills))
+
+    tiles = (
+        (f"{len(bills)}", f"laws, orders and bills — {enacted} enacted", "panel-legislation"),
+        (f"{len(actions)}", f"county and city actions — {water_actions} cite water", "panel-states"),
+        (f"{committed_states}", "states with an enacted water commitment", "panel-commitments"),
+        (f"{n_paths}", f"legal paths from {len(paths)} data-center activities", "statute-paths"),
+        (f"{len(cases)}", "water cases, penalties and precedents", "panel-cwa"),
+        (f"{len(sites)}", "named sites with a documented water conflict", "panel-issues"),
+    )
+    tile_html = "".join(
+        f'<a class="ov-tile" href="#{esc(target)}"><span class="ov-tile-n">{esc(n)}</span>'
+        f'<span class="ov-tile-l">{esc(label)}</span></a>'
+        for n, label, target in tiles
+    )
+    cards = "".join(
+        f'<a class="ov-card" href="#{esc(target)}"><span class="ov-q">{esc(q)}</span>'
+        f'<span class="ov-a">{esc(a)}</span><span class="ov-go">{esc(link)} &rarr;</span></a>'
+        for q, a, target, link in OVERVIEW_QUESTIONS
+    )
+    feed = _overview_feed(today)
+    feed_rows = []
+    for r in feed:
+        names = []
+        for label, anchor, url in r["links"]:
+            if anchor:
+                names.append(f'<a href="#{esc(anchor)}">{esc(label)}</a>')
+            elif url:
+                names.append(f'<a href="{esc(url)}" target="_blank" rel="noopener">{esc(label)}</a>')
+            else:
+                names.append(esc(label))
+        name = ", ".join(names)
+        if r["related"]:
+            name += ' <span class="ov-feed-related">(' + ", ".join(
+                f'<a href="#{esc(anchor)}">{esc(label)}</a>' if anchor else esc(label)
+                for label, anchor, _url in r["related"]
+            ) + ")</span>"
+        detail = r["detail"] or (r["title"] if len(r["links"]) == 1 else "")
+        if len(detail) > 150:
+            detail = detail[:147].rsplit(" ", 1)[0] + "…"
+        feed_rows.append(
+            '<li class="ov-feed-row">'
+            f'<span class="ov-feed-date">{esc(r["date"])}</span>'
+            f'<span class="ov-feed-body"><span class="cwa-status-pill" style="background:{r["status_color"]}">'
+            f'{esc(r["status_label"])}</span> {name}'
+            f'<span class="ov-feed-where"> · {esc(r["jurisdiction"])}</span>'
+            + (f'<span class="ov-feed-detail">{esc(detail)}</span>' if detail else "")
+            + "</span></li>"
+        )
+    feed_html = (
+        f'<ul class="ov-feed">{"".join(feed_rows)}</ul>'
+        if feed_rows
+        else '<p class="ov-empty">Nothing tracked moved in the last 30 days.</p>'
+    )
+    wave = _overview_local_wave(today)
+    if wave:
+        n_water = sum(1 for a in wave if a.get("water_related"))
+        chips = "".join(
+            f'<span class="ov-chip{" is-water" if a.get("water_related") else ""}">'
+            f'{esc(a.get("jurisdiction", ""))}, {esc(a.get("state", ""))}</span>'
+            for a in wave
+        )
+        feed_html += (
+            '<div class="ov-wave">'
+            f'<p><strong>{len(wave)} county and city actions</strong> dated this month or last — '
+            f'{n_water} cite water. <a href="#states-local">See them on States &amp; Localities</a>.</p>'
+            f'<div class="ov-chips">{chips}</div></div>'
+        )
+    return (
+        '<div class="overview" id="overview">'
+        f'<div class="ov-tiles">{tile_html}</div>'
+        '<h3 class="solution-cat-header">Start with a question</h3>'
+        f'<div class="ov-cards">{cards}</div>'
+        f'<h3 class="solution-cat-header">What moved in the last {OVERVIEW_WINDOW_DAYS} days</h3>'
+        f'{feed_html}'
+        '<p class="ov-more">More: the <a href="#panel-news">News</a> tab carries every headline, and '
+        'the <a href="#panel-states">States &amp; Localities</a> tab the last 120 days of state and local '
+        'movement. How the data is gathered, and what cannot be measured, is on the '
+        '<a href="#panel-sources">Sources</a> tab.</p>'
+        "</div>"
+    )
+
+
 # --- Water commitments ------------------------------------------------------
 #
 # One view over three sources. Only the national/international layer and the
@@ -5263,6 +5515,14 @@ def _build_water_security_html() -> str:
   <p class="src-note">Dataset last updated {html.escape(payload.get("last_updated", "unknown"))}. {html.escape(payload.get("scope_note", ""))}</p>
 </div>
 """
+
+
+def render_overview():
+    """Streamlit surface for the landing tab (links read as a map here; the
+    static page is where they switch tabs — see _build_overview_html)."""
+    st.subheader("Overview")
+    st.markdown(OVERVIEW_LEAD)
+    st.markdown(_build_overview_html(), unsafe_allow_html=True)
 
 
 def render_commitments():
@@ -6451,6 +6711,7 @@ def main():
     st.markdown(_build_water_loop_svg(), unsafe_allow_html=True)
 
     (
+        tab_overview,
         tab_legislation,
         tab_states,
         tab_commitments,
@@ -6463,6 +6724,7 @@ def main():
         tab_explore,
     ) = st.tabs(
         [
+            "Overview",
             "Legislation",
             "States & Localities",
             "Commitments",
@@ -6475,6 +6737,10 @@ def main():
             "Explore",
         ]
     )
+
+    # --- Overview tab (landing) ---
+    with tab_overview:
+        render_overview()
 
     # --- States & Localities tab ---
     with tab_states:

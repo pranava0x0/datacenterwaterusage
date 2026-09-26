@@ -1471,3 +1471,162 @@ h4.solution-cat-header::before {
     line-height: 1.45;
     margin: 0 0 0.45rem;
 }
+
+/* Overview — the landing tab (shared: static default tab + Streamlit via
+   dashboard._build_overview_html). Tiles and question cards are links: each
+   opens the tab that owns the answer. Outline-chip borders (DESIGN.md §8),
+   §7 card surfaces, no decorative colour — the one tint marks water-related
+   local actions, the same meaning the States tab's water filter carries. */
+.overview {
+    margin: 0.2rem 0 0.6rem;
+}
+.ov-tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.6rem;
+    margin: 0.5rem 0 0.4rem;
+}
+.ov-tile {
+    display: block;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    background: #fff;
+    padding: 0.6rem 0.75rem;
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+.ov-tile:hover,
+.ov-card:hover {
+    border-color: #08519c;
+    background: #f5f9ff;
+}
+.ov-tile-n {
+    display: block;
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: #08519c;
+    line-height: 1.15;
+}
+.ov-tile-l {
+    display: block;
+    font-size: 0.8rem;
+    color: #4b5563;
+    margin-top: 0.15rem;
+}
+.ov-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 0.6rem;
+    margin: 0.4rem 0 0.6rem;
+}
+.ov-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    background: #fff;
+    padding: 0.75rem 0.9rem;
+    text-decoration: none;
+    color: #1a1a2e;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+.ov-q {
+    font-weight: 700;
+    font-size: 0.98rem;
+    color: #1a1a2e;
+}
+.ov-a {
+    font-size: 0.85rem;
+    color: #4b5563;
+    line-height: 1.45;
+}
+.ov-go {
+    margin-top: auto;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: #08519c;
+}
+.ov-feed {
+    list-style: none;
+    padding: 0;
+    margin: 0.4rem 0 0.6rem;
+}
+.ov-feed-row {
+    display: grid;
+    grid-template-columns: 6.2rem minmax(0, 1fr);
+    gap: 0.6rem;
+    padding: 0.45rem 0;
+    border-top: 1px solid #e2e8f0;
+    font-size: 0.88rem;
+}
+.ov-feed-row:first-child {
+    border-top: 0;
+}
+.ov-feed-date {
+    color: #4b5563;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.82rem;
+}
+.ov-feed-body a {
+    color: #08519c;
+    font-weight: 600;
+}
+.ov-feed-where,
+.ov-feed-related {
+    color: #4b5563;
+    font-size: 0.8rem;
+}
+.ov-feed-related a {
+    font-weight: 400;
+}
+.ov-feed-detail {
+    display: block;
+    color: #4b5563;
+    font-size: 0.82rem;
+    margin-top: 0.15rem;
+}
+.ov-empty,
+.ov-more {
+    font-size: 0.85rem;
+    color: #4b5563;
+}
+.ov-more a,
+.ov-wave a {
+    color: #08519c;
+}
+.ov-wave {
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    background: #fff;
+    padding: 0.6rem 0.8rem;
+    margin: 0.2rem 0 0.8rem;
+    font-size: 0.88rem;
+}
+.ov-wave p {
+    margin: 0 0 0.4rem;
+}
+.ov-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+}
+.ov-chip {
+    font-size: 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 999px;
+    padding: 0.05rem 0.5rem;
+    color: #4b5563;
+    background: #f9fafb;
+}
+.ov-chip.is-water {
+    border-color: #bdd7e7;
+    background: #eff3ff;
+    color: #08519c;
+}
+@media (max-width: 760px) {
+    .ov-feed-row {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.1rem;
+    }
+}
