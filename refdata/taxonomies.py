@@ -357,6 +357,73 @@ WATER_STATUTE_COLORS = {
 }
 
 
+# --- Data-center activities (water_authorities.json readings) ----------------
+
+# What a data center is DOING when a reading reaches it. The toolkit is
+# organized by statute — the lawyer's axis — but a resident, a local official
+# or an operator arrives with "the campus is about to do X; which laws touch
+# that?". Every reading carries 1-3 of these in ``dc_activities``; the "How
+# statutes apply" paths and the Explore activity hubs are both derived from
+# that one field, so the two can never disagree about what triggers a law.
+#
+# The split between ``withdraw`` and ``supply`` is the self-supplied vs.
+# utility-supplied fork every conflict site in this dataset sits on one side
+# of: a campus with its own wells answers to groundwater doctrine directly; a
+# campus on city water reaches it only through the utility's entitlements.
+# Keys are in path order (build → water in → water out → site risk → power →
+# public record) — the order the view presents them in.
+DC_ACTIVITY_LABELS = {
+    "build": "Building the campus",
+    "withdraw": "Pumping or diverting water",
+    "supply": "Buying water from a utility",
+    "discharge": "Discharging cooling water",
+    "chemicals": "Storing fuel & chemicals",
+    "power": "Powering the campus",
+    "disclose": "Claims & disclosures",
+}
+DC_ACTIVITY_DESCRIPTIONS = {
+    "build": (
+        "Grading, wetland and stream crossings, construction runoff, structures "
+        "in navigable water, and the federal permits or financing that trigger "
+        "environmental review."
+    ),
+    "withdraw": (
+        "On-site wells and surface intakes — and the water rights, compacts and "
+        "doctrines that decide who may take how much, and who can object."
+    ),
+    "supply": (
+        "Service from a public water system: capacity, drinking-water "
+        "compliance, reservoir storage and the entitlements behind the tap."
+    ),
+    "discharge": (
+        "Cooling-tower blowdown and wastewater sent to a sewer, a stream or the "
+        "ground, plus heat and stormwater from an operating campus."
+    ),
+    "chemicals": (
+        "Backup-generator diesel, cooling-treatment biocides, PFAS in coolants "
+        "and fire suppression, and legacy contamination on or under the site."
+    ),
+    "power": (
+        "Generation built or restarted to serve the load — power-plant cooling, "
+        "hydropower licences and the federal approvals behind a restart."
+    ),
+    "disclose": (
+        "What an operator publishes or must file — water pledges, efficiency "
+        "figures and chemical inventories — and when a claim becomes a liability."
+    ),
+}
+
+# Whether a reading opens a door or marks where one closes. Most readings are
+# hooks; a handful exist to say where a theory fails (the ESA take limit, the
+# standing trap, dormant-Commerce-Clause limits on keeping water in-state).
+# ``dc_role`` is omitted on hooks — only "limit" is ever written — and the
+# paths view flags limits so a reader does not mistake a dead end for a route.
+DC_ROLE_LABELS = {
+    "hook": "Hook",
+    "limit": "Limit",
+}
+
+
 # --- Conflict sites (dc_water_conflicts.json) --------------------------------
 
 # What KIND of water problem a site represents. 1–3 per site. Answers "show me
