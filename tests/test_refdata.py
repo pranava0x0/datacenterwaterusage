@@ -1370,6 +1370,21 @@ class TestLocalActions:
         for action in self._actions():
             assert action["action_id"] not in node_ids, action["action_id"]
 
+    def test_september_26_mirror_corrections_hold(self):
+        """The 2026-09-26 mirror pass re-verified 35 upstream records; three
+        corrections must survive any later re-sync (the upsert has no
+        field-level protection)."""
+        by_id = {a["action_id"]: a for a in self._actions()}
+        augusta = by_id["dccb-augusta-ga-2026-06"]
+        assert augusta["status"] == "superseded"
+        assert "closed-loop" in augusta["summary"]
+        for action_id in ("dccb-mercer-county-ky-2026-08", "dccb-westover-al-2026-08"):
+            assert by_id[action_id]["water_related"] is False, action_id
+        # Upstream ids that duplicate a direct- record must not come back.
+        assert "dccb-fort-worth-tx-2026-08" not in by_id
+        assert "dccb-athens-clarke-county-ga-2025-12" not in by_id
+        assert "Skip" in self._payload()["note"]
+
     def test_state_names_cover_every_state_the_data_uses(self):
         assert len(taxonomies.US_STATE_NAMES) == 51  # 50 states + DC
         assert taxonomies.US_STATE_NAMES["VA"] == "Virginia"

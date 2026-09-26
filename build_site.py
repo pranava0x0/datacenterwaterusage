@@ -27,6 +27,7 @@ lazily the first time that tab is opened) and ``llms.txt``.
 
 from __future__ import annotations
 
+import hashlib
 import html
 import json
 import re
@@ -41,7 +42,8 @@ from refdata.graph import payload_json as graph_payload_json
 from utils.device import _RESPONSIVE_CSS
 
 BASE_DIR = Path(__file__).parent
-OUT_PATH = BASE_DIR / "pages" / "index.html"
+PAGES_DIR = BASE_DIR / "pages"
+OUT_PATH = PAGES_DIR / "index.html"
 # The Explore graph + TF-IDF index, split out of index.html in August 2026: it
 # was ~620 KB of a ~2.1 MB page that only the Explore tab reads. Same-origin,
 # committed alongside index.html, fetched on first activation of that tab.
@@ -666,6 +668,10 @@ def build_cwa_tab() -> str:
         for c in sorted_pot
     )
 
+    # The front door (2026-09-26): activity → law → precedent → live site.
+    paths = dash._build_statute_paths_html()
+    n_paths = sum(len(g["paths"]) for g in dash.build_statute_paths())
+
     # Part 1: the statutory toolkit (reading cards grouped by statute).
     toolkit = dash._build_authorities_html(authorities_payload, all_ids)
     n_readings = len(authorities_payload.get("readings", []))
@@ -677,13 +683,14 @@ def build_cwa_tab() -> str:
     return f"""
 <section class="panel">
   <h2>Federal Water Law &amp; Data Centers — Authorities, Record, Exposure</h2>
-  <p class="lead">Three views on federal water law and data centers: the <strong>statutory
+  <p class="lead">Start with <strong>how statutes apply</strong>: pick what a data
+  center is doing and follow each legal path from the law to the precedent to the
+  sites where it is in play. Behind it sit the <strong>statutory
   toolkit</strong> ({n_families} authority families — federal discharge and supply
-  statutes, interstate compacts, state doctrine — and how each could reach a
-  data center), the
+  statutes, interstate compacts, state doctrine), the
   <strong>historical record</strong> built under those authorities (penalties,
-  settlements, court rulings), and the <strong>named sites</strong> where water
-  conflicts are live. The mappings overlap by design — one fact pattern can trigger
+  settlements, court rulings), and the <strong>active exposure</strong> at named
+  sites. The mappings overlap by design — one fact pattern can trigger
   several readings.</p>
   {insights}
   <details class="lazy">
@@ -703,9 +710,15 @@ def build_cwa_tab() -> str:
   </details>
 
   <div class="subtabs" role="tablist" aria-label="Water Cases sections">
+    <button class="subtab" role="tab" data-subtab="cwa-paths" aria-selected="true">How statutes apply ({n_paths})</button>
     <button class="subtab" role="tab" data-subtab="cwa-p1" aria-selected="false">Part 1 · Toolkit ({n_readings})</button>
-    <button class="subtab" role="tab" data-subtab="cwa-p2" aria-selected="true">Part 2 · Historical Record ({len(historical)})</button>
+    <button class="subtab" role="tab" data-subtab="cwa-p2" aria-selected="false">Part 2 · Historical Record ({len(historical)})</button>
     <button class="subtab" role="tab" data-subtab="cwa-p3" aria-selected="false">Part 3 · Active/Potential Exposure ({len(potential)})</button>
+  </div>
+
+  <div class="subtabpanel" id="panel-cwa-paths">
+    <h3>How statutes apply — start from what the data center is doing</h3>
+    {paths}
   </div>
 
   <div class="subtabpanel" id="panel-cwa-p1" hidden>
@@ -719,7 +732,7 @@ def build_cwa_tab() -> str:
     <div id="water-toolkit">{toolkit}</div>
   </div>
 
-  <div class="subtabpanel" id="panel-cwa-p2">
+  <div class="subtabpanel" id="panel-cwa-p2" hidden>
     <h3>Part 2 — Historical Enforcement Record ({len(historical)} cases)</h3>
     <p><strong>{len(historical)} cases</strong> — enforcement actions, penalties, settlements,
     landmark court rulings, and standing rulemakings that have <strong>actually
@@ -1446,6 +1459,48 @@ def build_security_tab() -> str:
 
 
 # --------------------------------------------------------------------------
+# Overview tab (the default)
+# --------------------------------------------------------------------------
+
+
+def build_overview_tab(today: datetime | None = None) -> str:
+    """The landing tab. Small on purpose: it is what index.html ships inline,
+    so it is the whole first load for a reader who never opens another tab."""
+    return f"""
+<section class="panel">
+  <h2>Overview</h2>
+  <p class="lead">{esc(dash.OVERVIEW_LEAD)}</p>
+  {dash._build_overview_html(today)}
+</section>
+"""
+
+
+# --------------------------------------------------------------------------
+# Commitments tab
+# --------------------------------------------------------------------------
+
+
+def build_commitments_tab() -> str:
+    """National strategy, state commitments, local agreements, company pledges.
+
+    The body is dashboard._build_commitments_html so Streamlit renders the same
+    thing; this adds the tab chrome every tab carries.
+    """
+    payload = dash.load_water_commitments()
+    return f"""
+<section class="panel">
+  <h2>Water Commitments</h2>
+  <p class="lead">{esc(dash.COMMITMENTS_LEAD)}</p>
+  {dash._build_commitments_html()}
+  <p class="src-note">National, international and local-agreement records last updated
+  {esc(payload.get("last_updated") or "unknown")}; state commitments are read from the
+  Legislation tab's enacted instruments and company pledges from Issues &amp; Claims,
+  so each record exists once.</p>
+</section>
+"""
+
+
+# --------------------------------------------------------------------------
 # Explore tab
 # --------------------------------------------------------------------------
 
@@ -1461,7 +1516,7 @@ def build_explore_tab() -> str:
 <section class="panel">
   <h2>Explore — Connections and Text Search</h2>
   <p class="lead">{esc(dash.EXPLORE_LEAD)}</p>
-  {dash._build_explore_html(GRAPH_DATA_URL)}
+  {dash._build_explore_html(versioned(GRAPH_DATA_URL, build_graph_data_json()))}
   <p class="src-note">Lines are the cross-references the datasets declare, walked
   in both directions; taxonomy-membership lines (shared statute family, project
   type, or principle) are derived and off until you switch them on. Similarity is
@@ -1821,33 +1876,130 @@ a.news-title{color:var(--blue)}
   .leg-bill,.cwa-case,.cwa-potential-case,#dc-conflicts .dc-site,
   #news-cards .news-card,.claim-card{content-visibility:visible}
 }
+/* Lazily loaded tabs. The loading line only means something while a script
+   is fetching; with scripting off the <noscript> link says what to do. */
+.tab-loading{color:var(--muted);font-size:.92rem;padding:1.2rem 0}
+html:not(.js) .tab-loading{display:none}
+.tab-failed{color:#c41e3a}
+.tab-failed a,.tab-noscript a{color:#08519c;font-weight:600}
+.tab-noscript{font-size:.92rem;padding:.4rem 0}
+.tab-page-nav{font-size:.86rem;color:var(--muted);margin:.2rem 0 1rem}
+.tab-page-nav a{color:#08519c;font-weight:700;text-decoration:none}
 """
 
 
 def build_js() -> str:
     return """
-// --- Collapsed-by-default groups and folds ---
-// They are in the markup as <details open data-collapsed="1"> so a reader with
-// no JavaScript gets every card; the CSS keeps their bodies hidden from first
-// paint (html.js is stamped in <head>), and this closes them for real.
-document.querySelectorAll('details[data-collapsed]').forEach(d => {
-  d.open = false;
-  d.removeAttribute('data-collapsed');
-});
+// ===== Lazily loaded tabs =====
+// Only the default tab ships inside index.html. Every other tab is its own
+// small page (tab-NAME.html?v=HASH) fetched the first time it is opened — or
+// as soon as a reader hovers, focuses or touches its button, so the fetch is
+// usually done before the click lands. The page used to parse ~1.5 MB and
+// ~15,000 elements up front for tabs most visits never open.
+const TAB_ANCHORS = (() => {
+  const el = document.getElementById('tab-anchors');
+  try { return el ? JSON.parse(el.textContent) : {}; } catch (e) { return {}; }
+})();
+// Which lazy tab owns an element id — so a link, a shared URL or the Back
+// button can reach a card whose tab has not been fetched yet.
+const ANCHOR_TAB = {};
+Object.keys(TAB_ANCHORS).forEach(tab => TAB_ANCHORS[tab].forEach(id => { ANCHOR_TAB[id] = tab; }));
+
+const panelFetches = {};
+function fetchPanel(name){
+  const panel = document.getElementById('panel-' + name);
+  const src = panel && panel.dataset.src;
+  if (!src) return Promise.resolve(null);
+  if (!panelFetches[name]){
+    panelFetches[name] = fetch(src)
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+      .then(text => new DOMParser().parseFromString(text, 'text/html'))
+      .catch(err => { delete panelFetches[name]; throw err; });
+  }
+  return panelFetches[name];
+}
+
+const panelReady = {};
+function loadPanel(name){
+  const panel = document.getElementById('panel-' + name);
+  if (!panel) return Promise.reject(new Error('no such tab: ' + name));
+  if (!panel.dataset.src) return Promise.resolve(panel);
+  if (panelReady[name]) return panelReady[name];
+  panel.setAttribute('aria-busy', 'true');
+  panelReady[name] = fetchPanel(name).then(doc => {
+    const body = doc && doc.getElementById('panel-' + name);
+    if (!body) throw new Error('tab page is missing its panel');
+    // The standalone page points cross-tab links at sibling files
+    // (tab-cwa.html#x) so they work with JavaScript off. In here every tab
+    // is one document again, so they go back to plain fragments.
+    body.querySelectorAll('a[href]').forEach(a => {
+      const m = /^(?:tab-[a-z]+|index)[.]html(#.+)$/.exec(a.getAttribute('href'));
+      if (m) a.setAttribute('href', m[1]);
+    });
+    panel.replaceChildren(...[...body.childNodes].map(n => document.importNode(n, true)));
+    delete panel.dataset.src;
+    // The parsed page has been copied in; keeping it would hold a second
+    // full DOM of the tab for the life of the page. panelReady remembers.
+    delete panelFetches[name];
+    panel.removeAttribute('aria-busy');
+    // Parsed-then-moved scripts never run. Re-create each one so the tab's
+    // own inline scripts (its totals, the Explore client) execute in order.
+    panel.querySelectorAll('script').forEach(old => {
+      if (old.type && old.type !== 'text/javascript') return;
+      const fresh = document.createElement('script');
+      fresh.textContent = old.textContent;
+      old.replaceWith(fresh);
+    });
+    initPanel(panel);
+    return panel;
+  }).catch(err => {
+    delete panelReady[name];
+    panel.removeAttribute('aria-busy');
+    const note = document.createElement('p');
+    note.className = 'tab-loading tab-failed';
+    note.append('This section could not be loaded. ');
+    const a = document.createElement('a');
+    a.href = 'tab-' + name + '.html';
+    a.textContent = 'Open it as its own page';
+    note.append(a, ', or reload to try again.');
+    panel.replaceChildren(note);
+    throw err;
+  });
+  return panelReady[name];
+}
 
 // --- Tabs ---
 const tabsBar = document.querySelector('.tabs-bar');
 const tabsRow = document.querySelector('.tabs');
 const tabs = document.querySelectorAll('.tab');
 const panels = document.querySelectorAll('.tabpanel');
-function activateTab(name){
+// The tab that ships inline; Back to the hashless first entry returns here.
+const DEFAULT_TAB = ([...tabs].find(t => t.getAttribute('aria-selected') === 'true') || tabs[0] || {dataset: {}}).dataset.tab;
+function activateTab(name, fromLink){
   tabs.forEach(x => x.setAttribute('aria-selected', x.dataset.tab === name ? 'true' : 'false'));
   panels.forEach(p => p.hidden = (p.id !== 'panel-' + name));
-  // The graph blob is a separate file fetched on first activation.
-  if (name === 'explore' && window.exploreInit) window.exploreInit();
   scrollTabIntoView(name);
+  // A tab is shareable: the address bar names it. Tab-to-tab switches
+  // replace the entry, so they do not bury the page under Back-button
+  // entries; but leaving a card a link pushed must not overwrite it, or Back
+  // would skip the card the reader just visited.
+  if (!fromLink){
+    const onPanel = !location.hash || location.hash.startsWith('#panel-');
+    history[onPanel ? 'replaceState' : 'pushState'](null, '', '#panel-' + name);
+  }
+  return loadPanel(name).then(panel => {
+    // The graph blob is a separate file fetched on first activation.
+    if (name === 'explore' && window.exploreInit) window.exploreInit();
+    return panel;
+  });
 }
-tabs.forEach(t => t.addEventListener('click', () => activateTab(t.dataset.tab)));
+tabs.forEach(t => {
+  t.addEventListener('click', () => { activateTab(t.dataset.tab).catch(() => {}); });
+  const warm = () => { fetchPanel(t.dataset.tab).catch(() => {}); };
+  t.addEventListener('pointerenter', warm, {once: true});
+  t.addEventListener('focus', warm, {once: true});
+  t.addEventListener('touchstart', warm, {once: true, passive: true});
+});
 
 // The row is one non-wrapping scroller, so the selected chip can be off-screen
 // after a cross-tab link. Nudge the scroller itself rather than calling
@@ -1922,150 +2074,251 @@ function syncCardGroups(scopeSel, cardSel){
   });
 }
 
-// --- Sub-tabs (Water Cases Part 1-4) ---
-const subtabs = document.querySelectorAll('.subtab');
-const subpanels = document.querySelectorAll('.subtabpanel');
+// --- Sub-tabs (Water Cases) ---
+// Delegated, so sub-tabs inside a tab that arrives later work without being
+// wired up one by one.
 function activateSubtab(name){
-  subtabs.forEach(x => x.setAttribute('aria-selected', x.dataset.subtab === name ? 'true' : 'false'));
-  subpanels.forEach(p => p.hidden = (p.id !== 'panel-' + name));
+  const panel = document.getElementById('panel-' + name);
+  if (!panel || !panel.parentElement) return;
+  const group = panel.parentElement;
+  group.querySelectorAll('.subtab').forEach(x =>
+    x.setAttribute('aria-selected', x.dataset.subtab === name ? 'true' : 'false'));
+  group.querySelectorAll(':scope > .subtabpanel').forEach(p => p.hidden = (p.id !== 'panel-' + name));
 }
-subtabs.forEach(t => t.addEventListener('click', () => activateSubtab(t.dataset.subtab)));
-
-// --- Legislation filtering ---
-// Node lists are cached once at load: the cards are static, and re-querying
-// the DOM on every checkbox change triggers needless reflow work on
-// low-end mobile as the dataset grows.
-const legCount = document.getElementById('leg-count');
-const legBills = [...document.querySelectorAll('.leg-bill')];
-const legChecks = [...document.querySelectorAll('.leg-status, .leg-level, .leg-scope, .leg-principle, .leg-instrument')];
-function applyLegFilter(){
-  const statuses = new Set(), levels = new Set(), scopes = new Set(),
-        prins = new Set(), instruments = new Set();
-  legChecks.forEach(c => {
-    if (!c.checked) return;
-    if (c.classList.contains('leg-status')) statuses.add(c.value);
-    else if (c.classList.contains('leg-level')) levels.add(c.value);
-    else if (c.classList.contains('leg-scope')) scopes.add(c.value);
-    else if (c.classList.contains('leg-instrument')) instruments.add(c.value);
-    else prins.add(c.value);
-  });
-  const counts = {};
-  let shown = 0;
-  legBills.forEach(el => {
-    const sc = (el.dataset.scope || '').split(' ').filter(Boolean);
-    const pr = (el.dataset.principles || '').split(' ').filter(Boolean);
-    const ok = statuses.has(el.dataset.status) && levels.has(el.dataset.level) &&
-      sc.some(s => scopes.has(s)) && pr.some(p => prins.has(p)) &&
-      instruments.has(el.dataset.instrument || 'bill');
-    el.hidden = !ok;
-    if (ok){ shown++; counts[el.dataset.status] = (counts[el.dataset.status]||0)+1; }
-  });
-  const lOrder = window.LEG_STATUS_ORDER || {}, lLabels = window.LEG_STATUS_LABELS || {};
-  const lSummary = Object.keys(counts).sort((a,b)=>(lOrder[a]??9)-(lOrder[b]??9))
-    .map(k => counts[k] + ' ' + (lLabels[k]||k)).join(' · ');
-  // "instruments", not "bills": 15 of these are executive orders, agency
-  // rules, commission dockets and local ordinances.
-  const legStrong = document.createElement('strong');
-  legStrong.textContent = 'Showing ' + shown + ' of ' + window.LEG_TOTAL + ' instruments';
-  legCount.replaceChildren(legStrong);
-  if (lSummary) legCount.append(' — ' + lSummary);
-  syncCardGroups('#leg-bills .card-group', '.leg-bill');
-}
-legChecks.forEach(c => c.addEventListener('change', applyLegFilter));
-if (legCount) applyLegFilter();
-
-// --- Part 4 conflict-site filtering by issue type ---
-const conflictCount = document.getElementById('conflict-count');
-const dcSites = [...document.querySelectorAll('.dc-site')];
-const issueChecks = [...document.querySelectorAll('.dc-issue')];
-function applyIssueFilter(){
-  const picked = new Set(issueChecks.filter(c => c.checked).map(c => c.value));
-  // Matches can sit behind the "remaining sites" fold; a filter that appears
-  // to match nothing is worse than a long list. Only once the reader has
-  // actually narrowed something — this also runs on load, with everything on.
-  const sitesFold = document.getElementById('sites-fold');
-  if (sitesFold && picked.size < issueChecks.length) sitesFold.open = true;
-  let shown = 0;
-  dcSites.forEach(el => {
-    // A site carries 1-3 tags and matches if ANY is picked — the tags are
-    // facets of one conflict, not alternatives, so requiring all of them
-    // would hide a site the moment you narrowed to one of its own problems.
-    const tags = (el.dataset.issues || '').split(' ').filter(Boolean);
-    const ok = tags.some(t => picked.has(t));
-    el.hidden = !ok;
-    if (ok) shown++;
-  });
-  if (conflictCount){
-    const strong = document.createElement('strong');
-    strong.textContent = 'Showing ' + shown + ' of ' + dcSites.length + ' sites';
-    conflictCount.replaceChildren(strong);
-  }
-}
-issueChecks.forEach(c => c.addEventListener('change', applyIssueFilter));
-if (conflictCount) applyIssueFilter();
-
-// --- CWA filtering ---
-const cwaCount = document.getElementById('cwa-count');
-const cwaCases = [...document.querySelectorAll('.cwa-case')];
-const cwaCatChecks = [...document.querySelectorAll('.cwa-cat')];
-const cwaTypeChecks = [...document.querySelectorAll('.cwa-type')];
-const cwaStatuteChecks = [...document.querySelectorAll('.cwa-statute')];
-function applyCwaFilter(){
-  const cats = new Set(cwaCatChecks.filter(c => c.checked).map(c => c.value));
-  const types = new Set(cwaTypeChecks.filter(c => c.checked).map(c => c.value));
-  const statutes = new Set(cwaStatuteChecks.filter(c => c.checked).map(c => c.value));
-  const recent = document.getElementById('cwa-recent').checked;
-  const counts = {};
-  let shown = 0;
-  cwaCases.forEach(el => {
-    const cat = el.dataset.category;
-    const ye = parseInt(el.dataset.yearend, 10) || 0;
-    const caseStatutes = (el.dataset.statutes || '').split(' ');
-    const ok = cats.has(cat) && types.has(el.dataset.casetype)
-      && caseStatutes.some(s => statutes.has(s))
-      && (!recent || ye >= 2020);
-    el.hidden = !ok;
-    if (ok){ shown++; counts[cat] = (counts[cat]||0)+1; }
-  });
-  const order = window.CWA_CAT_ORDER || {};
-  const labels = window.CWA_CAT_LABELS || {};
-  const summary = Object.keys(counts)
-    .sort((a,b)=>(order[a]??9)-(order[b]??9))
-    .map(k => counts[k] + ' ' + (labels[k]||k)).join(' · ');
-  cwaCount.innerHTML = '<strong>Showing ' + shown + ' of ' + window.CWA_TOTAL +
-    ' cases</strong>' + (summary ? ' — ' + summary : '');
-  syncCardGroups('#cwa-cases .card-group', '.cwa-case');
-}
-[...cwaCatChecks, ...cwaTypeChecks, ...cwaStatuteChecks,
- document.getElementById('cwa-recent')].forEach(c =>
-  c.addEventListener('change', applyCwaFilter));
-if (cwaCount) applyCwaFilter();
-
-// --- In-page anchor links: cross-tab deep links ---
-// Bill / case / reading / site anchors can live on ANOTHER tab (e.g. a
-// Solutions-card quote citing "SD SB 135" links into the Legislation tab),
-// in another Water Cases sub-tab (Part 1-4), inside a collapsed <details>,
-// or behind an active filter. On click: switch to the owning tab and
-// sub-tab, open ancestor <details>, reset filters that hide the target,
-// then scroll to it ourselves (the browser's default fragment jump can't
-// cross a hidden tab panel).
 document.addEventListener('click', e => {
-  // Respect modifier/middle clicks (new tab, etc.) — let the browser handle them.
-  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-  // Prefix-agnostic: any in-page anchor whose target exists gets the
-  // cross-tab treatment, so new card families deep-link without JS changes.
-  const a = e.target.closest('a[href^="#"]');
-  if (!a || a.getAttribute('href').length < 2) return;
-  const id = a.getAttribute('href').slice(1);
+  const t = e.target.closest('.subtab');
+  if (t) activateSubtab(t.dataset.subtab);
+});
+
+// ===== Per-tab behaviour, run when a tab's content arrives =====
+// Each function wires up the controls inside one tab. The default tab runs at
+// load; the rest run the moment their page has been fetched and inserted.
+// Their state lives out here because the link handler below resets a filter
+// that is hiding a link's target.
+let legChecks = [], applyLegFilter = () => {};
+let issueChecks = [], applyIssueFilter = () => {};
+let cwaCatChecks = [], cwaTypeChecks = [], cwaStatuteChecks = [], applyCwaFilter = () => {};
+
+function initLegislation(){
+  // Node lists are cached once: the cards are static, and re-querying the DOM
+  // on every checkbox change costs needless reflow work on low-end mobile.
+  const legCount = document.getElementById('leg-count');
+  const legBills = [...document.querySelectorAll('.leg-bill')];
+  legChecks = [...document.querySelectorAll('.leg-status, .leg-level, .leg-scope, .leg-principle, .leg-instrument')];
+  applyLegFilter = function(){
+    const statuses = new Set(), levels = new Set(), scopes = new Set(),
+          prins = new Set(), instruments = new Set();
+    legChecks.forEach(c => {
+      if (!c.checked) return;
+      if (c.classList.contains('leg-status')) statuses.add(c.value);
+      else if (c.classList.contains('leg-level')) levels.add(c.value);
+      else if (c.classList.contains('leg-scope')) scopes.add(c.value);
+      else if (c.classList.contains('leg-instrument')) instruments.add(c.value);
+      else prins.add(c.value);
+    });
+    const counts = {};
+    let shown = 0;
+    legBills.forEach(el => {
+      const sc = (el.dataset.scope || '').split(' ').filter(Boolean);
+      const pr = (el.dataset.principles || '').split(' ').filter(Boolean);
+      const ok = statuses.has(el.dataset.status) && levels.has(el.dataset.level) &&
+        sc.some(s => scopes.has(s)) && pr.some(p => prins.has(p)) &&
+        instruments.has(el.dataset.instrument || 'bill');
+      el.hidden = !ok;
+      if (ok){ shown++; counts[el.dataset.status] = (counts[el.dataset.status]||0)+1; }
+    });
+    const lOrder = window.LEG_STATUS_ORDER || {}, lLabels = window.LEG_STATUS_LABELS || {};
+    const lSummary = Object.keys(counts).sort((a,b)=>(lOrder[a]??9)-(lOrder[b]??9))
+      .map(k => counts[k] + ' ' + (lLabels[k]||k)).join(' · ');
+    // "instruments", not "bills": many are executive orders, agency rules,
+    // commission dockets and local ordinances.
+    const legStrong = document.createElement('strong');
+    legStrong.textContent = 'Showing ' + shown + ' of ' + window.LEG_TOTAL + ' instruments';
+    legCount.replaceChildren(legStrong);
+    if (lSummary) legCount.append(' — ' + lSummary);
+    syncCardGroups('#leg-bills .card-group', '.leg-bill');
+  };
+  legChecks.forEach(c => c.addEventListener('change', applyLegFilter));
+  if (legCount) applyLegFilter();
+}
+
+function initIssues(){
+  // Part 4 conflict-site filtering by issue type.
+  const conflictCount = document.getElementById('conflict-count');
+  const dcSites = [...document.querySelectorAll('.dc-site')];
+  issueChecks = [...document.querySelectorAll('.dc-issue')];
+  applyIssueFilter = function(){
+    const picked = new Set(issueChecks.filter(c => c.checked).map(c => c.value));
+    // Matches can sit behind the "remaining sites" fold; a filter that appears
+    // to match nothing is worse than a long list. Only once the reader has
+    // actually narrowed something — this also runs on load, with everything on.
+    const sitesFold = document.getElementById('sites-fold');
+    if (sitesFold && picked.size < issueChecks.length) sitesFold.open = true;
+    let shown = 0;
+    dcSites.forEach(el => {
+      // A site carries 1-3 tags and matches if ANY is picked — the tags are
+      // facets of one conflict, not alternatives.
+      const tags = (el.dataset.issues || '').split(' ').filter(Boolean);
+      const ok = tags.some(t => picked.has(t));
+      el.hidden = !ok;
+      if (ok) shown++;
+    });
+    if (conflictCount){
+      const strong = document.createElement('strong');
+      strong.textContent = 'Showing ' + shown + ' of ' + dcSites.length + ' sites';
+      conflictCount.replaceChildren(strong);
+    }
+  };
+  issueChecks.forEach(c => c.addEventListener('change', applyIssueFilter));
+  if (conflictCount) applyIssueFilter();
+}
+
+function initCwa(){
+  const cwaCount = document.getElementById('cwa-count');
+  const cwaCases = [...document.querySelectorAll('.cwa-case')];
+  const recent = document.getElementById('cwa-recent');
+  cwaCatChecks = [...document.querySelectorAll('.cwa-cat')];
+  cwaTypeChecks = [...document.querySelectorAll('.cwa-type')];
+  cwaStatuteChecks = [...document.querySelectorAll('.cwa-statute')];
+  applyCwaFilter = function(){
+    const cats = new Set(cwaCatChecks.filter(c => c.checked).map(c => c.value));
+    const types = new Set(cwaTypeChecks.filter(c => c.checked).map(c => c.value));
+    const statutes = new Set(cwaStatuteChecks.filter(c => c.checked).map(c => c.value));
+    const onlyRecent = recent && recent.checked;
+    const counts = {};
+    let shown = 0;
+    cwaCases.forEach(el => {
+      const cat = el.dataset.category;
+      const ye = parseInt(el.dataset.yearend, 10) || 0;
+      const caseStatutes = (el.dataset.statutes || '').split(' ');
+      const ok = cats.has(cat) && types.has(el.dataset.casetype)
+        && caseStatutes.some(s => statutes.has(s))
+        && (!onlyRecent || ye >= 2020);
+      el.hidden = !ok;
+      if (ok){ shown++; counts[cat] = (counts[cat]||0)+1; }
+    });
+    const order = window.CWA_CAT_ORDER || {};
+    const labels = window.CWA_CAT_LABELS || {};
+    const summary = Object.keys(counts)
+      .sort((a,b)=>(order[a]??9)-(order[b]??9))
+      .map(k => counts[k] + ' ' + (labels[k]||k)).join(' · ');
+    cwaCount.innerHTML = '<strong>Showing ' + shown + ' of ' + window.CWA_TOTAL +
+      ' cases</strong>' + (summary ? ' — ' + summary : '');
+    syncCardGroups('#cwa-cases .card-group', '.cwa-case');
+  };
+  [...cwaCatChecks, ...cwaTypeChecks, ...cwaStatuteChecks, recent].forEach(c =>
+    c && c.addEventListener('change', applyCwaFilter));
+  if (cwaCount) applyCwaFilter();
+}
+
+function initStates(){
+  // County & city action filters. One <select> for 35 states rather than 35
+  // chips; status and action type stay checkboxes to match every other row.
+  const laCount = document.getElementById('la-count');
+  const laRows = [...document.querySelectorAll('#local-actions-table tbody tr')];
+  const laStatusChecks = [...document.querySelectorAll('.la-status')];
+  const laTypeChecks = [...document.querySelectorAll('.la-type')];
+  const laState = document.getElementById('la-state');
+  const laWater = document.getElementById('la-water');
+  function applyLocalActionFilter(){
+    const statuses = new Set(laStatusChecks.filter(c => c.checked).map(c => c.value));
+    const types = new Set(laTypeChecks.filter(c => c.checked).map(c => c.value));
+    const state = laState ? laState.value : '';
+    const waterOnly = laWater ? laWater.checked : false;
+    let shown = 0;
+    laRows.forEach(tr => {
+      const ok = statuses.has(tr.dataset.status) && types.has(tr.dataset.type)
+        && (!state || tr.dataset.state === state)
+        && (!waterOnly || tr.dataset.water === '1');
+      tr.hidden = !ok;
+      if (ok) shown++;
+    });
+    if (laCount){
+      const strong = document.createElement('strong');
+      strong.textContent = 'Showing ' + shown + ' of ' + (window.LA_TOTAL || laRows.length) + ' actions';
+      laCount.replaceChildren(strong);
+    }
+  }
+  [...laStatusChecks, ...laTypeChecks, laState, laWater].forEach(c =>
+    c && c.addEventListener('change', applyLocalActionFilter));
+  if (laCount) applyLocalActionFilter();
+}
+
+function initNews(){
+  const newsCount = document.getElementById('news-count');
+  const newsBoxes = [...document.querySelectorAll('.news-tag-filter')];
+  function applyNewsFilter(){
+    const active = new Set(newsBoxes.filter(c => c.checked).map(c => c.value));
+    let shown = 0;
+    document.querySelectorAll('#news-cards .news-card').forEach(el => {
+      const tags = el.dataset.tags ? el.dataset.tags.split(',') : [];
+      const ok = active.size === 0 || tags.some(t => active.has(t));
+      el.hidden = !ok;
+      if (ok) shown++;
+    });
+    if (newsCount){
+      const strong = document.createElement('strong');
+      strong.textContent = shown + ' items';
+      newsCount.replaceChildren(strong);
+    }
+    // A topic filter that matches nothing in the first twelve headlines would
+    // otherwise look like it matched nothing at all.
+    const newsFold = document.getElementById('news-fold');
+    if (newsFold && active.size < newsBoxes.length) newsFold.open = true;
+  }
+  newsBoxes.forEach(c => c.addEventListener('change', applyNewsFilter));
+}
+
+const PANEL_INIT = {
+  legislation: initLegislation,
+  issues: initIssues,
+  cwa: initCwa,
+  states: initStates,
+  news: initNews,
+};
+function initPanel(panel){
+  // Collapsed-by-default groups and folds are in the markup as
+  // <details open data-collapsed="1"> so a reader with no JavaScript gets every
+  // card; the CSS hides their bodies from first paint (html.js is stamped in
+  // <head>), and this closes them for real.
+  panel.querySelectorAll('details[data-collapsed]').forEach(d => {
+    d.open = false;
+    d.removeAttribute('data-collapsed');
+  });
+  const init = PANEL_INIT[panel.id.replace('panel-', '')];
+  if (init) init(panel);
+}
+document.querySelectorAll('.tabpanel:not([data-src])').forEach(initPanel);
+
+// ===== In-page links, deep links and the Back button =====
+// Bill / case / reading / site anchors can live on ANOTHER tab — possibly one
+// not fetched yet — in another Water Cases sub-tab, inside a collapsed
+// <details>, or behind an active filter. navigateTo fetches the owning tab if
+// it has to, switches to it and its sub-tab, opens ancestor <details>, resets
+// a filter that hides the target, then scrolls to it itself (the browser's own
+// fragment jump cannot cross a hidden or not-yet-loaded tab).
+function navigateTo(id, push){
   const target = document.getElementById(id);
-  if (!target) return;
-  e.preventDefault();
+  if (!target){
+    const tab = ANCHOR_TAB[id];
+    if (!tab) return false;
+    activateTab(tab, true).then(() => navigateTo(id, push)).catch(() => {});
+    return true;
+  }
+  if (target.classList.contains('tabpanel')){
+    const name = target.id.replace('panel-', '');
+    activateTab(name, true).catch(() => {});
+    if (push) history.pushState(null, '', '#' + id);
+    (tabsBar || target).scrollIntoView({block: 'start'});
+    return true;
+  }
   const panel = target.closest('.tabpanel');
-  if (panel && panel.hidden) activateTab(panel.id.replace('panel-', ''));
+  if (panel && panel.hidden) activateTab(panel.id.replace('panel-', ''), true).catch(() => {});
   const subpanel = target.closest('.subtabpanel');
   if (subpanel && subpanel.hidden) activateSubtab(subpanel.id.replace('panel-', ''));
-  // Anchors inside a collapsed <details> (e.g. a case's statute-citation
-  // block) can't be scrolled to in all browsers — open the ancestors first.
+  // Anchors inside a collapsed <details> can't be scrolled to in all
+  // browsers — open the ancestors first, or the target itself if it is one.
+  if (target.tagName === 'DETAILS') target.open = true;
   let det = target.closest('details');
   while (det) { det.open = true; det = det.parentElement && det.parentElement.closest('details'); }
   const wrap = target.closest('.leg-bill, .cwa-case, .dc-site');
@@ -2075,26 +2328,52 @@ document.addEventListener('click', e => {
       applyLegFilter();
     } else if (wrap.classList.contains('dc-site')) {
       // Conflict cards are .bill-card.dc-site, so they fell through to the
-      // CWA branch and were never unhidden — the handler scrolled to a hidden
-      // element. Every doctrine-matrix row links here, and the matrix sits
-      // directly above the filter that hides them.
+      // CWA branch and were never unhidden — every doctrine-matrix row links
+      // here, and the matrix sits directly above the filter that hides them.
       issueChecks.forEach(c => { c.checked = true; });
       applyIssueFilter();
     } else {
-      cwaCatChecks.forEach(c => { c.checked = true; });
-      cwaTypeChecks.forEach(c => { c.checked = true; });
-      cwaStatuteChecks.forEach(c => { c.checked = true; });
-      document.getElementById('cwa-recent').checked = false;
+      [...cwaCatChecks, ...cwaTypeChecks, ...cwaStatuteChecks].forEach(c => { c.checked = true; });
+      const recent = document.getElementById('cwa-recent');
+      if (recent) recent.checked = false;
       applyCwaFilter();
     }
   }
   // Preserve fragment/history semantics the native jump would have given:
   // the URL is shareable and Back returns here.
-  history.pushState(null, '', '#' + id);
+  if (push) history.pushState(null, '', '#' + id);
   target.scrollIntoView({behavior: 'smooth', block: 'start'});
+  return true;
+}
+
+// A shared URL can carry a malformed escape (a truncated %E2 from a chat
+// app); decodeURIComponent would throw and abort the script.
+function hashId(raw){
+  try { return decodeURIComponent(raw); } catch (e) { return raw; }
+}
+
+document.addEventListener('click', e => {
+  // Respect modifier/middle clicks (new tab, etc.) — let the browser handle them.
+  if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  // Prefix-agnostic: any in-page anchor whose target exists — or will, once
+  // its tab loads — gets the cross-tab treatment.
+  const a = e.target.closest('a[href^="#"]');
+  if (!a || a.getAttribute('href').length < 2) return;
+  const id = hashId(a.getAttribute('href').slice(1));
+  if (id === 'top' || (!document.getElementById(id) && !ANCHOR_TAB[id])) return;
+  e.preventDefault();
+  navigateTo(id, true);
 });
 
-// --- Records table state filter ---
+// Back/Forward between cards visited through links, and a URL someone shared.
+window.addEventListener('popstate', () => {
+  if (location.hash.length > 1) navigateTo(hashId(location.hash.slice(1)), false);
+  // Back to the first, hashless entry: the page opened on the default tab.
+  else if (DEFAULT_TAB) activateTab(DEFAULT_TAB, true).catch(() => {});
+});
+if (location.hash.length > 1) navigateTo(hashId(location.hash.slice(1)), false);
+
+// --- Records table state filter (dormant Data tab; inert while it is off) ---
 const recCount = document.getElementById('rec-count');
 function applyRecFilter(){
   const states = new Set([...document.querySelectorAll('.rec-state:checked')].map(c => c.value));
@@ -2109,64 +2388,9 @@ function applyRecFilter(){
 }
 document.querySelectorAll('.rec-state').forEach(c => c.addEventListener('change', applyRecFilter));
 if (recCount) applyRecFilter();
-
-// --- County & city action filters (States & Localities tab) ---
-// One <select> for 35 states rather than 35 chips; status and action type
-// stay checkboxes to match every other filter row on the page.
-const laCount = document.getElementById('la-count');
-const laRows = [...document.querySelectorAll('#local-actions-table tbody tr')];
-const laStatusChecks = [...document.querySelectorAll('.la-status')];
-const laTypeChecks = [...document.querySelectorAll('.la-type')];
-const laState = document.getElementById('la-state');
-const laWater = document.getElementById('la-water');
-function applyLocalActionFilter(){
-  const statuses = new Set(laStatusChecks.filter(c => c.checked).map(c => c.value));
-  const types = new Set(laTypeChecks.filter(c => c.checked).map(c => c.value));
-  const state = laState ? laState.value : '';
-  const waterOnly = laWater ? laWater.checked : false;
-  let shown = 0;
-  laRows.forEach(tr => {
-    const ok = statuses.has(tr.dataset.status) && types.has(tr.dataset.type)
-      && (!state || tr.dataset.state === state)
-      && (!waterOnly || tr.dataset.water === '1');
-    tr.hidden = !ok;
-    if (ok) shown++;
-  });
-  if (laCount){
-    const strong = document.createElement('strong');
-    strong.textContent = 'Showing ' + shown + ' of ' + (window.LA_TOTAL || laRows.length) + ' actions';
-    laCount.replaceChildren(strong);
-  }
-}
-[...laStatusChecks, ...laTypeChecks, laState, laWater].forEach(c =>
-  c && c.addEventListener('change', applyLocalActionFilter));
-if (laCount) applyLocalActionFilter();
-
-// --- News tag filter ---
-const newsCount = document.getElementById('news-count');
-function applyNewsFilter(){
-  const active = new Set([...document.querySelectorAll('.news-tag-filter:checked')].map(c => c.value));
-  let shown = 0;
-  document.querySelectorAll('#news-cards .news-card').forEach(el => {
-    const tags = el.dataset.tags ? el.dataset.tags.split(',') : [];
-    const ok = active.size === 0 || tags.some(t => active.has(t));
-    el.hidden = !ok;
-    if (ok) shown++;
-  });
-  if (newsCount){
-    const strong = document.createElement('strong');
-    strong.textContent = shown + ' items';
-    newsCount.replaceChildren(strong);
-  }
-  // A topic filter that matches nothing in the first twelve headlines would
-  // otherwise look like it matched nothing at all.
-  const newsFold = document.getElementById('news-fold');
-  const newsBoxes = document.querySelectorAll('.news-tag-filter');
-  if (newsFold && active.size < newsBoxes.length) newsFold.open = true;
-}
-document.querySelectorAll('.news-tag-filter').forEach(c => c.addEventListener('change', applyNewsFilter));
-
 """
+
+
 # Chart initialisation (initCharts, CHART_DATA, PALETTE) lives here when
 # the live-map tab ships. Removed with the Data→Sources tab rename (2026-06-25).
 
@@ -2277,6 +2501,80 @@ def build_llms_txt() -> str:
             f"- {r['date']} — {r['jurisdiction']} — {r['label']} — "
             f"{r['status_label']} — {r['detail']}"
         )
+
+    commitments = dash.load_water_commitments().get("commitments", [])
+    lines += [
+        "",
+        "## Water commitments",
+        "",
+        dash.COMMITMENTS_LEAD,
+        "",
+        "### National and international",
+        "",
+    ]
+    for c in commitments:
+        if c.get("level") == "local":
+            continue
+        terms = "; ".join(t.get("text", "") for t in c.get("terms") or [])
+        lines.append(
+            f"- {c['id']} — {c.get('jurisdiction')}: {c.get('instrument')} ({c.get('date')};"
+            f" {dash.COMMITMENT_BINDING_LABELS.get(c.get('binding'), c.get('binding'))})."
+            f" {c.get('summary', '')} Terms: {terms}"
+            + (f" Source: {c['sources'][0]['url']}" if c.get("sources") else "")
+        )
+    lines += ["", "### State commitments (enacted instruments, by principle)", ""]
+    for row in dash._state_commitment_matrix():
+        parts = [
+            f"{dash.STATE_COMMITMENT_COLUMNS[k][0]}: {', '.join(ids)}"
+            for k, ids in row["cells"].items()
+            if ids
+        ]
+        lines.append(f"- {row['state']} — " + "; ".join(parts))
+    lines += ["", "### Local agreements", ""]
+    for c in commitments:
+        if c.get("level") != "local":
+            continue
+        terms = "; ".join(t.get("text", "") for t in c.get("terms") or [])
+        lines.append(
+            f"- {c['id']} — {c.get('jurisdiction')}: {c.get('instrument')} ({c.get('date')},"
+            f" {dash.COMMITMENT_STATUS_LABELS.get(c.get('status'), c.get('status'))}). Terms: {terms}"
+            + (f" Source: {c['sources'][0]['url']}" if c.get("sources") else "")
+        )
+    lines += ["", "### Company pledges", ""]
+    for row in dash._company_pledges():
+        for claim in row["pledges"]:
+            delivered = (claim.get("delivered") or {}).get("status", "not yet assessed")
+            lines.append(
+                f"- {row['name']} ({claim['id']}, {dash.CLAIM_TYPE_LABELS.get(claim.get('claim_type'), '')},"
+                f" {delivered}): {claim.get('statement', '')}"
+            )
+
+    # The paths come first because they answer the question readers arrive
+    # with ("the campus is doing X — which laws reach it?"); the toolkit below
+    # is the by-statute reference the paths point into.
+    lines += [
+        "",
+        "## How statutes apply — by data-center activity",
+        "",
+        dash.STATUTE_PATHS_LEAD,
+    ]
+    for group in dash.build_statute_paths():
+        lines += ["", f"### {group['label']} ({len(group['paths'])} paths)", "", group["description"], ""]
+        for path in group["paths"]:
+            precedents = ", ".join(c["case_id"] for c in path["precedents"])
+            if path["more_cases"]:
+                precedents += f" (+{path['more_cases']} more)"
+            sites = ", ".join(site["site_id"] for site in path["sites"])
+            if path["more_sites"]:
+                sites += f" (+{path['more_sites']} more)"
+            ruled_out = ", ".join(site["site_id"] for site in path["ruled_out"])
+            lines.append(
+                f"- {'[LIMIT] ' if path['role'] == 'limit' else ''}{path['statute']} "
+                f"{path['reading_id']} — triggered when {path['when']}."
+                + (f" Precedent: {precedents}." if precedents else " No precedent in this record yet.")
+                + (f" In play at: {sites}." if sites else "")
+                + (f" Ruled out at: {ruled_out}." if ruled_out else "")
+            )
 
     lines += ["", "## Federal water-law toolkit (statutory readings)", ""]
     for r in readings:
@@ -2460,20 +2758,148 @@ FOOTER_MOTIF = """
 """
 
 
-def build_html() -> str:
-    legislation = build_legislation_tab()
-    states = build_states_tab()
-    cwa = build_cwa_tab()
-    issues = build_issues_claims_tab()
-    news = build_news_tab()
-    solutions = build_solutions_tab()
-    security = build_security_tab()
-    sources_html = build_sources_tab()
-    explore = build_explore_tab()
+# --------------------------------------------------------------------------
+# Site assembly: one shell, one standalone page per lazy tab
+# --------------------------------------------------------------------------
+
+# The tab that ships inside index.html; every other tab is fetched on demand.
+# The landing tab since 2026-09-26: a small overview, so first load is the
+# shell plus ~20 KB instead of the 320 KB Legislation card list.
+DEFAULT_TAB = "overview"
+SITE_CSS_FILE = "site.css"
+# The page script as a file, for the standalone tab pages only (index.html
+# inlines it). Same-origin and relative, so the no-third-party rule holds.
+SITE_JS_FILE = "site.js"
+ANCHOR_ID_RE = re.compile(r'\bid="([^"]+)"')
+INTERNAL_HREF_RE = re.compile(r'href="#([^"]+)"')
+
+
+def _tab_specs() -> list[tuple[str, str, object]]:
+    """``(data-tab key, button label, builder)`` in tab-strip order."""
+    return [
+        ("overview", "Overview", build_overview_tab),
+        ("legislation", "Legislation", build_legislation_tab),
+        ("states", "States &amp; Localities", build_states_tab),
+        ("commitments", "Commitments", build_commitments_tab),
+        ("cwa", "Water Cases", build_cwa_tab),
+        ("issues", "Issues &amp; Claims", build_issues_claims_tab),
+        ("news", "News", build_news_tab),
+        ("solutions", "Solutions", build_solutions_tab),
+        ("security", "Security", build_security_tab),
+        ("sources", "Sources", build_sources_tab),
+        ("explore", "Explore", build_explore_tab),
+    ]
+
+
+def tab_file(name: str) -> str:
+    """Published filename of a lazily loaded tab's standalone page."""
+    return f"tab-{name}.html"
+
+
+def content_version(text: str) -> str:
+    """Short content hash for cache-busting a fetched file.
+
+    GitHub Pages serves everything with a ten-minute cache. Without a version
+    in the URL, a reader could get this build's page with the previous
+    build's tab or graph file — mismatched anchors, a missing activity hub.
+    The hash changes only when the file does, so an unchanged tab stays cached
+    across deploys.
+    """
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()[:10]
+
+
+def versioned(url: str, content: str) -> str:
+    return f"{url}?v={content_version(content)}"
+
+
+def build_tab_bodies() -> dict[str, str]:
+    """Every tab's inner HTML, keyed by data-tab name."""
+    return {name: builder() for name, _label, builder in _tab_specs()}
+
+
+def _standalone_links(body: str, name: str, owner: dict[str, str]) -> str:
+    """Point cross-tab fragment links at the tab page that holds the target.
+
+    A standalone tab page is what a reader with JavaScript off gets, so
+    ``href="#cwa-X"`` on the Issues page has to become ``tab-cwa.html#cwa-X``
+    to go anywhere. The page's script turns them back into plain fragments
+    when it inserts the tab into index.html.
+    """
+
+    def fix(match: re.Match) -> str:
+        target = match.group(1)
+        home = owner.get(target)
+        if home is None or home == name:
+            return match.group(0)
+        page = "index.html" if home == DEFAULT_TAB else tab_file(home)
+        return f'href="{page}#{target}"'
+
+    return INTERNAL_HREF_RE.sub(fix, body)
+
+
+def build_tab_page(name: str, label: str, body: str) -> str:
+    """A lazily loaded tab as a complete page of its own.
+
+    The script fetches this and lifts ``#panel-NAME`` out of it; a reader
+    without JavaScript (or a crawler) follows the index's link here and gets a
+    styled, readable page. Same stylesheet, served as site.css.
+    """
+    title = f"{html.unescape(label)} — Data Center Water Use Tracker"
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{esc(title)}</title>
+<meta name="description" content="{esc(dash.TAGLINE)}">
+<link rel="stylesheet" href="{SITE_CSS_FILE}">
+<script>document.documentElement.classList.add('js')</script>
+<!-- No script: every Water Cases part (and any other sub-panel) shows at once. -->
+<noscript><style>.subtabpanel[hidden]{{display:block}}</style></noscript>
+<script src="{SITE_JS_FILE}" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <p class="tab-page-nav"><a href="index.html#panel-{name}">Data Center Water Use Tracker</a>
+  — this is one section of the tracker, on a page of its own.</p>
+  <div class="tabpanel" id="panel-{name}" role="tabpanel">{body}</div>
+</div>
+</body>
+</html>
+"""
+
+
+def _placeholder(name: str, label: str, src: str) -> str:
+    """An empty tab panel that knows where its content lives."""
+    plain = esc(html.unescape(label))
+    return (
+        f'<div class="tabpanel" id="panel-{name}" role="tabpanel" hidden data-src="{src}">'
+        f'<p class="tab-loading">Loading {plain}…</p>'
+        f'<noscript><p class="tab-noscript">With JavaScript off, this section is a page '
+        f'of its own: <a href="{tab_file(name)}">open {plain}</a>.</p></noscript>'
+        "</div>"
+    )
+
+
+def _index_html(bodies: dict[str, str], srcs: dict[str, str], anchors: dict[str, list[str]]) -> str:
     js = build_js()
     # Shared with the Streamlit hero — one diagram, one definition.
     schematic = dash._build_water_loop_svg()
     built = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    buttons = "\n      ".join(
+        f'<button class="tab" role="tab" data-tab="{name}" '
+        f'aria-selected="{"true" if name == DEFAULT_TAB else "false"}">{label}</button>'
+        for name, label, _ in _tab_specs()
+    )
+    panels = "\n  ".join(
+        f'<div class="tabpanel" id="panel-{name}" role="tabpanel">{bodies[name]}</div>'
+        if name == DEFAULT_TAB
+        else _placeholder(name, label, srcs[name])
+        for name, label, _ in _tab_specs()
+    )
+    # Escape "</" so an id can never close the script element early.
+    anchor_json = json.dumps(anchors, separators=(",", ":")).replace("</", "<\\/")
 
     return f"""<!doctype html>
 <html lang="en">
@@ -2488,10 +2914,8 @@ def build_html() -> str:
      groups shut from the first paint. With scripting off the class never
      lands and every group renders open — see the .js rule in CSS. -->
 <script>document.documentElement.classList.add('js')</script>
-<!-- Tab switching is the one thing on this page that needs JavaScript. Without
-     it six of the eight panels were unreachable — the `hidden` attribute does
-     not care why the button never fired. Unhide everything instead, so a no-JS
-     reader gets one long document rather than a truncated one. -->
+<!-- Tab switching needs JavaScript. Without it every panel is unhidden: the
+     default tab in full, the others as links to their standalone pages. -->
 <noscript><style>.tabpanel[hidden]{{display:block}}</style></noscript>
 </head>
 <body>
@@ -2503,27 +2927,11 @@ def build_html() -> str:
 
   <div class="tabs-bar">
     <div class="tabs" role="tablist">
-      <button class="tab" role="tab" data-tab="legislation" aria-selected="true">Legislation</button>
-      <button class="tab" role="tab" data-tab="states" aria-selected="false">States &amp; Localities</button>
-      <button class="tab" role="tab" data-tab="cwa" aria-selected="false">Water Cases</button>
-      <button class="tab" role="tab" data-tab="issues" aria-selected="false">Issues &amp; Claims</button>
-      <button class="tab" role="tab" data-tab="news" aria-selected="false">News</button>
-      <button class="tab" role="tab" data-tab="solutions" aria-selected="false">Solutions</button>
-      <button class="tab" role="tab" data-tab="security" aria-selected="false">Security</button>
-      <button class="tab" role="tab" data-tab="sources" aria-selected="false">Sources</button>
-      <button class="tab" role="tab" data-tab="explore" aria-selected="false">Explore</button>
+      {buttons}
     </div>
   </div>
 
-  <div class="tabpanel" id="panel-legislation" role="tabpanel">{legislation}</div>
-  <div class="tabpanel" id="panel-states" role="tabpanel" hidden>{states}</div>
-  <div class="tabpanel" id="panel-cwa" role="tabpanel" hidden>{cwa}</div>
-  <div class="tabpanel" id="panel-issues" role="tabpanel" hidden>{issues}</div>
-  <div class="tabpanel" id="panel-news" role="tabpanel" hidden>{news}</div>
-  <div class="tabpanel" id="panel-solutions" role="tabpanel" hidden>{solutions}</div>
-  <div class="tabpanel" id="panel-security" role="tabpanel" hidden>{security}</div>
-  <div class="tabpanel" id="panel-sources" role="tabpanel" hidden>{sources_html}</div>
-  <div class="tabpanel" id="panel-explore" role="tabpanel" hidden>{explore}</div>
+  {panels}
 
   {FOOTER_MOTIF}
   <p class="src-note">Static build {built} · Sources: EPA ECHO DMR, VA DEQ, Ohio EPA,
@@ -2535,10 +2943,54 @@ def build_html() -> str:
 <svg width="11" height="11" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
 <path d="M2 7.5 L6 3.5 L10 7.5" fill="none" stroke="currentColor" stroke-width="1.8"
       stroke-linecap="round" stroke-linejoin="round"/></svg>Top</button>
+<script type="application/json" id="tab-anchors">{anchor_json}</script>
 <script>{js}</script>
 </body>
 </html>
 """
+
+
+def build_site_files(bodies: dict[str, str] | None = None) -> dict[str, str]:
+    """Every file the build publishes, ``{filename: content}``, in write order.
+
+    The single source of truth for what ``pages/`` contains: :func:`main`
+    writes exactly this, the tests read it, and the deploy step is tested
+    against it. index.html carries the shell and the default tab; each other
+    tab is a standalone page fetched on first open.
+    """
+    bodies = bodies or build_tab_bodies()
+    # The panel wrappers are ids too — "#panel-legislation" is how a tab links
+    # to another tab as a whole (the Explore no-JS list does).
+    owner: dict[str, str] = {f"panel-{name}": name for name, _label, _ in _tab_specs()}
+    for name, _label, _ in _tab_specs():
+        for anchor in ANCHOR_ID_RE.findall(bodies[name]):
+            owner.setdefault(anchor, name)
+
+    pages: dict[str, str] = {}
+    srcs: dict[str, str] = {}
+    anchors: dict[str, list[str]] = {}
+    for name, label, _ in _tab_specs():
+        if name == DEFAULT_TAB:
+            continue
+        page = build_tab_page(name, label, _standalone_links(bodies[name], name, owner))
+        pages[tab_file(name)] = page
+        srcs[name] = versioned(tab_file(name), page)
+        anchors[name] = sorted(
+            {a for a, home in owner.items() if home == name and a != f"panel-{name}"}
+        )
+
+    files = {"index.html": _index_html(bodies, srcs, anchors)}
+    files.update(pages)
+    files[SITE_CSS_FILE] = COMPONENT_CSS + CSS
+    files[SITE_JS_FILE] = build_js()
+    files[GRAPH_DATA_PATH.name] = build_graph_data_json()
+    files[LLMS_TXT_PATH.name] = build_llms_txt()
+    return files
+
+
+def build_html() -> str:
+    """index.html — the shell plus the default tab."""
+    return build_site_files()["index.html"]
 
 
 def build_graph_data_json() -> str:
@@ -2553,14 +3005,17 @@ def build_graph_data_json() -> str:
 
 
 def main() -> None:
-    OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    OUT_PATH.write_text(build_html(), encoding="utf-8")
-    size_kb = OUT_PATH.stat().st_size / 1024
-    print(f"Wrote {OUT_PATH} ({size_kb:.0f} KB)")
-    GRAPH_DATA_PATH.write_text(build_graph_data_json(), encoding="utf-8")
-    print(f"Wrote {GRAPH_DATA_PATH} ({GRAPH_DATA_PATH.stat().st_size / 1024:.0f} KB)")
-    LLMS_TXT_PATH.write_text(build_llms_txt(), encoding="utf-8")
-    print(f"Wrote {LLMS_TXT_PATH} ({LLMS_TXT_PATH.stat().st_size / 1024:.0f} KB)")
+    PAGES_DIR.mkdir(parents=True, exist_ok=True)
+    files = build_site_files()
+    # A tab that stops being lazy (or is renamed) must not leave its old page
+    # behind for the deploy to publish.
+    for stale in PAGES_DIR.glob("tab-*.html"):
+        if stale.name not in files:
+            stale.unlink()
+    for name, content in files.items():
+        path = PAGES_DIR / name
+        path.write_text(content, encoding="utf-8")
+        print(f"Wrote {path} ({path.stat().st_size / 1024:.0f} KB)")
 
 
 if __name__ == "__main__":

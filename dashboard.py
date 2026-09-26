@@ -51,12 +51,18 @@ from refdata.loaders import (  # noqa: F401
     load_water_news,
     load_water_solutions,
     load_water_security,
+    load_water_commitments,
 )
 from refdata.graph import (  # noqa: F401
     EDGE_KIND_LABELS,
     KIND_COLORS as GRAPH_KIND_COLORS,
     build_graph,
     payload_json as graph_payload_json,
+)
+from refdata.paths import (  # noqa: F401
+    activity_anchor,
+    build_statute_paths,
+    path_anchor,
 )
 from refdata.registry import (  # noqa: F401
     KIND_TABS,
@@ -70,12 +76,20 @@ from refdata.taxonomies import (  # noqa: F401
     AUTHORITY_KIND_LABELS,
     CLAIM_TYPE_LABELS,
     COLOR_SEQUENCE,
+    COMMITMENT_BINDING_LABELS,
+    COMMITMENT_LEVEL_LABELS,
+    COMMITMENT_STATUS_COLORS,
+    COMMITMENT_STATUS_LABELS,
+    COMMITMENT_TERM_LABELS,
     COLORS,
     CWA_CASE_TYPE_LABELS,
     CWA_CATEGORY_LABELS,
     CWA_CATEGORY_ORDER,
     CWA_STATUS_COLORS,
     CWA_STATUS_LABELS,
+    DC_ACTIVITY_DESCRIPTIONS,
+    DC_ACTIVITY_LABELS,
+    DC_ROLE_LABELS,
     DELIVERED_STATUS_COLORS,
     DELIVERED_STATUS_LABELS,
     INSTRUMENT_TYPE_COLORS,
@@ -98,6 +112,7 @@ from refdata.taxonomies import (  # noqa: F401
     SOLUTION_ACTOR_LABELS,
     SOLUTION_STATUS_COLORS,
     SOLUTION_STATUS_LABELS,
+    STATE_COMMITMENT_COLUMNS,
     US_STATE_NAMES,
     WATER_STATUTE_COLORS,
     WATER_STATUTE_ORDER,
@@ -1925,7 +1940,13 @@ def _instrument_movement_date(bill: dict, today: datetime) -> str:
         for ev in bill.get("timeline", [])
         if ev.get("date") and ev["date"] <= stamp
     ]
-    return max(dates) if dates else bill.get("last_verified", "")
+    if dates:
+        return max(dates)
+    # The fallback obeys the same rule as the timeline: a re-verification dated
+    # after ``today`` has not happened yet as of ``today``. Without this a
+    # build (or test) run for an earlier date reported future "movement".
+    verified = bill.get("last_verified", "")
+    return verified if verified and verified <= stamp else ""
 
 
 def _state_code_for(jurisdiction: str) -> str | None:
@@ -3302,13 +3323,14 @@ def render_cwa_tracker():
     """
     st.subheader("Federal Water Law & Data Centers — Authorities, Record, Exposure")
     st.markdown(
-        "Three views on federal water law and data centers: the **statutory "
-        "toolkit** (every EPA / Army Corps water authority — CWA, SDWA, TSCA, "
-        "RCRA, Rivers & Harbors Act — and how each could reach a data center), "
-        "the **historical record** that has actually built under those "
-        "authorities (penalties, settlements, court rulings), and the **named "
-        "sites** where water conflicts are live. The mappings overlap by "
-        "design — one fact pattern can trigger several readings."
+        "Start with **how statutes apply**: pick what a data center is doing and "
+        "follow each legal path from the law to the precedent to the sites where "
+        "it is in play. Behind it sit the **statutory toolkit** (federal "
+        "discharge and supply statutes, interstate compacts, state doctrine), "
+        "the **historical record** built under those authorities (penalties, "
+        "settlements, court rulings), and the **active exposure** at named "
+        "sites. The mappings overlap by design — one fact pattern can trigger "
+        "several readings."
     )
 
     payload = load_cwa_investigations()
@@ -3352,12 +3374,17 @@ def render_cwa_tracker():
     # .subtab/.subtabpanel pair (build_site.py). Conflict sites moved to the
     # Issues & Claims tab (Spec A3), leaving this a purely legal record.
     st.markdown("---")
+    n_paths = sum(len(g["paths"]) for g in build_statute_paths())
     tab_labels = [
+        f"How statutes apply ({n_paths})",
         f"Part 1 · Toolkit ({n_readings})",
         f"Part 2 · Historical Record ({len(historical)})",
         f"Part 3 · Active/Potential Exposure ({len(potential)})",
     ]
-    part_tabs = st.tabs(tab_labels)
+    paths_tab, *part_tabs = st.tabs(tab_labels)
+
+    with paths_tab:
+        st.markdown(_build_statute_paths_html(), unsafe_allow_html=True)
 
     with part_tabs[0]:
         st.markdown(
@@ -3629,6 +3656,26 @@ def _build_reading_card_html(
         '<div class="bill-section-label">How it could apply to a data center</div>'
         f'<p class="cwa-takeaway">{esc(reading.get("dc_applicability", ""))}</p>',
     ]
+    # Back-links into the statute paths: the toolkit is organized by statute,
+    # the paths by activity, and each should reach the other in one click.
+    activities = reading.get("dc_activities") or []
+    if activities:
+        links = " · ".join(
+            f'<a href="#{esc(path_anchor(a, reading["reading_id"]))}">'
+            f"{esc(DC_ACTIVITY_LABELS.get(a, a))}</a>"
+            for a in activities
+        )
+        role = (
+            ' <span class="path-limit">Limit</span>'
+            if reading.get("dc_role") == "limit"
+            else ""
+        )
+        sections.insert(
+            0,
+            f'<div class="reading-trigger"><strong>Triggered when</strong> '
+            f'{esc(reading.get("dc_trigger", ""))}.{role}'
+            f'<div class="reading-activities">Paths: {links}</div></div>',
+        )
     examples = reading.get("example_case_ids", [])
     if examples:
         sections.append(
@@ -3639,6 +3686,136 @@ def _build_reading_card_html(
         f'<div class="bill-card" id="reading-{esc(reading["reading_id"])}">'
         f'{head}{class_row}{"".join(sections)}</div>'
     )
+
+
+STATUTE_PATHS_LEAD = (
+    "Start from what the data center is doing. Each row traces one legal path: "
+    "the statutory reading, the fact that triggers it, the precedent that shows "
+    "it working, and the tracked sites where it is in play — or where it was "
+    "checked and ruled out. Rows marked Limit are dead ends worth knowing: "
+    "readings that say where a theory fails."
+)
+
+
+def _build_statute_paths_html() -> str:
+    """"How statutes apply": activity → reading → precedent → live site.
+
+    Pure and shared: ``build_site`` drops it into the Water Cases tab and the
+    Streamlit app renders the same string, so both surfaces show the same
+    paths. Every class it uses is defined in ``assets/components.css`` (a test
+    enforces that — see the Security-tab lesson in CLAUDE.md).
+
+    Groups are ``<details open data-collapsed>`` except the first: a reader with
+    no JavaScript sees every path, and the static page's loader closes all but
+    the first so the view opens on one activity rather than 74 rows.
+    """
+    esc = html.escape
+    groups = build_statute_paths()
+    reg = build_registry()
+
+    # No per-link tooltips: the site card one click away carries the same
+    # per-site "how", and a title attribute is unreachable on touch anyway —
+    # it cost 23 KB across the 74 rows for desktop hover alone.
+    def ref_link(record_id: str, text: str) -> str:
+        ref = reg.get(record_id)
+        if not ref:
+            return f"<span>{esc(text)}</span>"
+        return f'<a href="#{esc(ref.anchor)}">{esc(text)}</a>'
+
+    nav = "".join(
+        f'<a class="paths-jump" href="#{esc(g["anchor"])}">{esc(g["label"])} '
+        f'<span class="paths-jump-count">{len(g["paths"])}</span></a>'
+        for g in groups
+    )
+
+    blocks = [
+        '<div class="statute-paths" id="statute-paths">',
+        f'<p class="paths-lead">{esc(STATUTE_PATHS_LEAD)}</p>',
+        f'<nav class="paths-jumpnav" aria-label="Data-center activities">{nav}</nav>',
+    ]
+    for i, group in enumerate(groups):
+        rows = []
+        for p in group["paths"]:
+            limit = p["role"] == "limit"
+            limit_chip = '<span class="path-limit">Limit</span>' if limit else ""
+            law = (
+                '<div class="path-step path-law">'
+                f'{_statute_pill_html(p["statute"], css_class="cwa-status-pill")}'
+                f'{limit_chip}'
+                f'<div class="path-reading">{ref_link(p["reading_id"], p["name"])}</div>'
+                f'<div class="path-section">{esc(p["section"])}</div>'
+                "</div>"
+            )
+            when = (
+                '<div class="path-step path-when">'
+                '<span class="path-k">Triggered when</span>'
+                f'<p>{esc(p["when"])}</p></div>'
+            )
+            if p["precedents"]:
+                items = "".join(
+                    f'<li>{ref_link(c["case_id"], c["caption"])}'
+                    + (f'<span class="path-sub">{esc(c["instrument"])}</span>' if c["instrument"] else "")
+                    + "</li>"
+                    for c in p["precedents"]
+                )
+                more = (
+                    f'<span class="path-more">+{p["more_cases"]} more '
+                    f'{"case cites" if p["more_cases"] == 1 else "cases cite"} it</span>'
+                    if p["more_cases"]
+                    else ""
+                )
+                precedent_body = f'<ul class="path-list">{items}</ul>{more}'
+            else:
+                precedent_body = '<p class="path-none">No case in this record yet.</p>'
+            precedent = (
+                '<div class="path-step path-precedent">'
+                f'<span class="path-k">Precedent</span>{precedent_body}</div>'
+            )
+            if p["sites"]:
+                items = "".join(
+                    f'<li>{ref_link(s["site_id"], s["label"])}</li>'
+                    for s in p["sites"]
+                )
+                more = (
+                    f'<span class="path-more">+{p["more_sites"]} more</span>'
+                    if p["more_sites"]
+                    else ""
+                )
+                live_body = f'<ul class="path-list">{items}</ul>{more}'
+            else:
+                live_body = '<p class="path-none">No tracked site yet.</p>'
+            if p["ruled_out"]:
+                live_body += (
+                    '<p class="path-ruled-out"><span class="path-k">Ruled out at</span> '
+                    + ", ".join(ref_link(s["site_id"], s["label"]) for s in p["ruled_out"])
+                    + "</p>"
+                )
+            live = (
+                '<div class="path-step path-live">'
+                f'<span class="path-k">In play at</span>{live_body}</div>'
+            )
+            rows.append(
+                f'<div class="path-row{" is-limit" if limit else ""}" id="{esc(p["anchor"])}">'
+                f"{law}{when}{precedent}{live}</div>"
+            )
+        n = len(group["paths"])
+        summary = (
+            f'<summary><span class="path-group-name">{esc(group["label"])}</span> '
+            f'<span class="path-group-count">{n} legal {"path" if n == 1 else "paths"} · '
+            f'{group["n_families"]} {"family" if group["n_families"] == 1 else "families"} · '
+            f'in play at {group["n_sites"]} tracked '
+            f'{"site" if group["n_sites"] == 1 else "sites"}</span></summary>'
+        )
+        collapsed = ' data-collapsed="1"' if i else ""
+        blocks.append(
+            f'<details class="path-group" id="{esc(group["anchor"])}" '
+            f'data-activity="{esc(group["activity"])}" open{collapsed}>'
+            f"{summary}"
+            f'<p class="path-group-desc">{esc(group["description"])}</p>'
+            f'{"".join(rows)}</details>'
+        )
+    blocks.append("</div>")
+    return "".join(blocks)
 
 
 def _build_authorities_html(payload: dict, case_ids: set[str] | None = None) -> str:
@@ -4651,6 +4828,528 @@ def render_sources_tab():
 
 # --- Water Infrastructure Security tab ---
 
+# --- Overview (the landing tab) -------------------------------------------
+#
+# The site opened on the Legislation tab: a dense card list, with nine tabs
+# whose boundaries a first-time reader had to guess. The overview answers the
+# three questions a newcomer arrives with — what is this, what just happened,
+# where do I start — and routes each to the tab that owns the answer. It is
+# also the smallest tab, which is what the lazily loaded site ships first.
+
+OVERVIEW_LEAD = (
+    "A public-record tracker of how US data centers draw, discharge and disclose "
+    "cooling water — and of the laws, cases, local fights and commitments that "
+    "govern it. Start with a question below, or with what moved this month."
+)
+OVERVIEW_WINDOW_DAYS = 30
+OVERVIEW_FEED_LIMIT = 10
+
+# (question, what you get, link target, link text). Targets are tab panels or
+# anchors inside a tab; the static page loads the owning tab on click.
+OVERVIEW_QUESTIONS = (
+    ("Which laws reach a data center?",
+     "Pick what the campus is doing — building, pumping, discharging — and follow each law to its precedents and live sites.",
+     "statute-paths", "How statutes apply"),
+    ("What has my state or county done?",
+     "Every state with tracked activity, plus county and city moratoriums and ordinances, filterable by state.",
+     "panel-states", "States & Localities"),
+    ("Who has committed to what?",
+     "National strategy (there is none), state commitments by type, local agreements and company pledges.",
+     "panel-commitments", "Commitments"),
+    ("Where are communities fighting over water?",
+     "Named sites with documented water conflicts, and what operators claimed about them.",
+     "panel-issues", "Issues & Claims"),
+    ("What is working?",
+     "Deployed and piloted fixes: reclaimed water, closed-loop and dry cooling, reporting mandates.",
+     "panel-solutions", "Solutions"),
+    ("I have a document — what does it match?",
+     "Paste a news story, permit notice or draft ordinance to find the records that use the same language.",
+     "panel-explore", "Explore"),
+)
+
+
+def _overview_feed(
+    today: datetime,
+    window_days: int = OVERVIEW_WINDOW_DAYS,
+    limit: int = OVERVIEW_FEED_LIMIT,
+) -> list[dict]:
+    """What moved in the last ``window_days``: instruments, local actions, news.
+
+    Pure — ``today`` comes from the caller (DESIGN.md §5). State and local
+    movement reuses ``_states_whats_new``; federal instruments and news items
+    are added here, because a landing page's "what's new" should not stop at
+    state lines the way the States tab's does.
+    """
+    bills = load_legislation().get("bills", [])
+    # County and city actions carry month-precision dates, so in a ten-row
+    # feed sorted by date they would always sink below the day-precise news of
+    # the same month. They get their own block (_overview_local_wave).
+    rows = _states_whats_new(bills, [], today, window_days=window_days)
+    midnight = datetime.combine(today.date(), datetime.min.time())
+    cutoff = midnight - timedelta(days=window_days)
+    for bill in bills:
+        if bill.get("level") != "federal":
+            continue
+        moved = _instrument_movement_date(bill, midnight)
+        when = _month_start(moved)
+        if when is None or when < cutoff:
+            continue
+        status = bill.get("status", "unknown")
+        milestones = [ev for ev in bill.get("timeline", []) if ev.get("date") == moved]
+        rows.append({
+            "kind": "instrument", "date": moved, "sort_date": when, "state": "US",
+            "jurisdiction": "Federal", "label": bill.get("bill_id", ""),
+            "title": bill.get("title", ""), "status": status,
+            "status_label": LEGISLATION_STATUS_LABELS.get(status, status),
+            "status_color": LEGISLATION_STATUS_BADGE_COLORS.get(status, COLORS["secondary"]),
+            "detail": (milestones[-1].get("milestone", "") if milestones else "") or bill.get("title", ""),
+            "anchor": _bill_anchor(bill.get("bill_id", "")), "url": "",
+        })
+    for item in load_water_news().get("items", []):
+        when = _month_start(item.get("date", ""))
+        if when is None or when < cutoff or when > midnight:
+            continue
+        rows.append({
+            "kind": "news", "date": item.get("date", ""), "sort_date": when, "state": "",
+            "jurisdiction": item.get("outlet", ""), "label": item.get("title", ""),
+            "title": "", "status": "news", "status_label": "News",
+            "status_color": COLORS["secondary"], "detail": "",
+            "anchor": f"news-{item.get('id', '')}", "url": "",
+            "targets": list(item.get("cross_ref_targets") or []),
+        })
+    # One row per event, not per record: a governor signing four bills in an
+    # afternoon is one thing that happened, and four rows of it pushed
+    # everything else off a ten-row feed.
+    grouped: dict[tuple, dict] = {}
+    for r in rows:
+        link = (r["label"], r["anchor"], r["url"])
+        if r["kind"] != "instrument":
+            grouped[(r["kind"], r["date"], r["label"], r["jurisdiction"])] = {**r, "links": [link]}
+            continue
+        key = ("instrument", r["date"], r["jurisdiction"], r["status_label"])
+        if key in grouped:
+            grouped[key]["links"].append(link)
+        else:
+            grouped[key] = {**r, "links": [link]}
+    # A same-day headline that cites the instrument already says what moved;
+    # the instrument rides on that headline's row instead of repeating it.
+    # Matched on the headline's own cross-references, never just the date:
+    # two governors can sign orders on the same day.
+    news_rows = [r for r in grouped.values() if r["kind"] == "news"]
+    for key in [k for k, r in grouped.items() if r["kind"] == "instrument"]:
+        r = grouped[key]
+        labels = {label for label, _a, _u in r["links"]}
+        host = next(
+            (n for n in news_rows if n["date"] == r["date"] and labels <= set(n.get("targets", []))),
+            None,
+        )
+        if host is not None:
+            host.setdefault("related", []).extend(r["links"])
+            del grouped[key]
+    out = list(grouped.values())
+    for r in out:
+        r["links"].sort()
+        r.setdefault("related", [])
+        r["related"].sort()
+    # Newest first by the most precise date available: a news item dated
+    # 2026-09-24 must outrank a local action known only as 2026-09.
+    out.sort(key=lambda r: (r["date"], r["links"][0][0]), reverse=True)
+    return out[:limit]
+
+
+def _overview_local_wave(today: datetime, window_days: int = OVERVIEW_WINDOW_DAYS) -> list[dict]:
+    """County and city actions dated within the window, newest month first.
+
+    Month precision: an action dated 2026-09 counts for a window that reaches
+    back into September, the same rule ``_states_whats_new`` applies.
+    """
+    midnight = datetime.combine(today.date(), datetime.min.time())
+    cutoff = midnight - timedelta(days=window_days)
+    rows = []
+    for action in load_local_actions().get("actions", []):
+        when = _month_start(action.get("date", ""))
+        if when is None or when < cutoff.replace(day=1) or when > midnight:
+            continue
+        rows.append(action)
+    return sorted(rows, key=lambda a: (a.get("date", ""), a.get("state", ""), a.get("jurisdiction", "")), reverse=True)
+
+
+def _build_overview_html(today: datetime | None = None) -> str:
+    """The landing tab — shared by the static page and Streamlit.
+
+    In Streamlit the tab links cannot switch ``st.tabs`` (an anchor cannot
+    press a Streamlit tab), so there the cards read as a map rather than as
+    navigation; on the static page every link opens its tab.
+    """
+    esc = html.escape
+    today = today or datetime.now()
+    bills = load_legislation().get("bills", [])
+    actions = load_local_actions().get("actions", [])
+    cases = load_cwa_investigations().get("cases", [])
+    sites = load_dc_water_conflicts().get("sites", [])
+    paths = build_statute_paths()
+    n_paths = sum(len(g["paths"]) for g in paths)
+    enacted = sum(1 for b in bills if b.get("status") == "enacted")
+    water_actions = sum(1 for a in actions if a.get("water_related"))
+    committed_states = len(_state_commitment_matrix(bills))
+
+    tiles = (
+        (f"{len(bills)}", f"laws, orders and bills — {enacted} enacted", "panel-legislation"),
+        (f"{len(actions)}", f"county and city actions — {water_actions} cite water", "panel-states"),
+        (f"{committed_states}", "states with an enacted water commitment", "panel-commitments"),
+        (f"{n_paths}", f"legal paths from {len(paths)} data-center activities", "statute-paths"),
+        (f"{len(cases)}", "water cases, penalties and precedents", "panel-cwa"),
+        (f"{len(sites)}", "named sites with a documented water conflict", "panel-issues"),
+    )
+    tile_html = "".join(
+        f'<a class="ov-tile" href="#{esc(target)}"><span class="ov-tile-n">{esc(n)}</span>'
+        f'<span class="ov-tile-l">{esc(label)}</span></a>'
+        for n, label, target in tiles
+    )
+    cards = "".join(
+        f'<a class="ov-card" href="#{esc(target)}"><span class="ov-q">{esc(q)}</span>'
+        f'<span class="ov-a">{esc(a)}</span><span class="ov-go">{esc(link)} &rarr;</span></a>'
+        for q, a, target, link in OVERVIEW_QUESTIONS
+    )
+    feed = _overview_feed(today)
+    feed_rows = []
+    for r in feed:
+        names = []
+        for label, anchor, url in r["links"]:
+            if anchor:
+                names.append(f'<a href="#{esc(anchor)}">{esc(label)}</a>')
+            elif url:
+                names.append(f'<a href="{esc(url)}" target="_blank" rel="noopener">{esc(label)}</a>')
+            else:
+                names.append(esc(label))
+        name = ", ".join(names)
+        if r["related"]:
+            name += ' <span class="ov-feed-related">(' + ", ".join(
+                f'<a href="#{esc(anchor)}">{esc(label)}</a>' if anchor else esc(label)
+                for label, anchor, _url in r["related"]
+            ) + ")</span>"
+        detail = r["detail"] or (r["title"] if len(r["links"]) == 1 else "")
+        if len(detail) > 150:
+            detail = detail[:147].rsplit(" ", 1)[0] + "…"
+        feed_rows.append(
+            '<li class="ov-feed-row">'
+            f'<span class="ov-feed-date">{esc(r["date"])}</span>'
+            f'<span class="ov-feed-body"><span class="cwa-status-pill" style="background:{r["status_color"]}">'
+            f'{esc(r["status_label"])}</span> {name}'
+            f'<span class="ov-feed-where"> · {esc(r["jurisdiction"])}</span>'
+            + (f'<span class="ov-feed-detail">{esc(detail)}</span>' if detail else "")
+            + "</span></li>"
+        )
+    feed_html = (
+        f'<ul class="ov-feed">{"".join(feed_rows)}</ul>'
+        if feed_rows
+        else '<p class="ov-empty">Nothing tracked moved in the last 30 days.</p>'
+    )
+    wave = _overview_local_wave(today)
+    if wave:
+        n_water = sum(1 for a in wave if a.get("water_related"))
+        chips = "".join(
+            f'<span class="ov-chip{" is-water" if a.get("water_related") else ""}">'
+            f'{esc(a.get("jurisdiction", ""))}, {esc(a.get("state", ""))}</span>'
+            for a in wave
+        )
+        feed_html += (
+            '<div class="ov-wave">'
+            f'<p><strong>{len(wave)} county and city actions</strong> dated this month or last — '
+            f'{n_water} cite water. <a href="#states-local">See them on States &amp; Localities</a>.</p>'
+            f'<div class="ov-chips">{chips}</div></div>'
+        )
+    return (
+        '<div class="overview" id="overview">'
+        f'<div class="ov-tiles">{tile_html}</div>'
+        '<h3 class="solution-cat-header">Start with a question</h3>'
+        f'<div class="ov-cards">{cards}</div>'
+        f'<h3 class="solution-cat-header">What moved in the last {OVERVIEW_WINDOW_DAYS} days</h3>'
+        f'{feed_html}'
+        '<p class="ov-more">More: the <a href="#panel-news">News</a> tab carries every headline, and '
+        'the <a href="#panel-states">States &amp; Localities</a> tab the last 120 days of state and local '
+        'movement. How the data is gathered, and what cannot be measured, is on the '
+        '<a href="#panel-sources">Sources</a> tab.</p>'
+        "</div>"
+    )
+
+
+# --- Water commitments ------------------------------------------------------
+#
+# One view over three sources. Only the national/international layer and the
+# local agreements live in water_commitments.json; state commitments are read
+# off the principle tags of enacted state instruments in legislation.json, and
+# company pledges off company_water_claims.json. A record exists once.
+
+COMMITMENTS_LEAD = (
+    "Who has committed to what on data-center water, and how binding it is. "
+    "The United States has no national water strategy that addresses data "
+    "centers; the commitments with force behind them are being made by states, "
+    "by localities in deals with developers, and by the companies themselves."
+)
+
+# Claim types that are commitments rather than descriptions of one site.
+PLEDGE_CLAIM_TYPES = (
+    "water-positive-pledge",
+    "replenishment-milestone",
+    "efficiency-wue",
+    "zero-water-design",
+    "disclosure-transparency",
+)
+
+
+def _state_commitment_matrix(bills: list[dict] | None = None) -> list[dict]:
+    """Rows of the state-commitments matrix, strongest state first.
+
+    A row is a state with at least one ENACTED state-level instrument whose
+    scope includes water; each column lists the instruments whose principle
+    tags express that commitment (``STATE_COMMITMENT_COLUMNS``). Proposals and
+    failures are counted beside the row rather than placed in it — a
+    commitment is something in force.
+    """
+    bills = bills if bills is not None else load_legislation().get("bills", [])
+    rows: dict[str, dict] = {}
+    for b in bills:
+        if b.get("level") != "state" or "water" not in (b.get("scope") or []):
+            continue
+        state = b.get("jurisdiction", "")
+        row = rows.setdefault(
+            state,
+            {"state": state, "cells": {k: [] for k in STATE_COMMITMENT_COLUMNS}, "pending": 0, "failed": 0},
+        )
+        if b.get("status") != "enacted":
+            if b.get("status") == "failed":
+                row["failed"] += 1
+            else:
+                row["pending"] += 1
+            continue
+        tags = {p.get("tag") for p in b.get("general_principles") or []}
+        for key, (_label, principle_tags) in STATE_COMMITMENT_COLUMNS.items():
+            if tags & set(principle_tags):
+                row["cells"][key].append(b["bill_id"])
+    enacted = [r for r in rows.values() if any(r["cells"].values())]
+    for r in enacted:
+        r["n_columns"] = sum(1 for v in r["cells"].values() if v)
+    return sorted(enacted, key=lambda r: (-r["n_columns"], r["state"]))
+
+
+def _company_pledges(payload: dict | None = None) -> list[dict]:
+    """``[{slug, name, pledges: [claim, ...]}]``, most pledges first."""
+    payload = payload or load_company_water_claims()
+    companies = payload.get("companies", {})
+    grouped: dict[str, list[dict]] = {}
+    for c in payload.get("claims", []):
+        if c.get("claim_type") in PLEDGE_CLAIM_TYPES:
+            grouped.setdefault(c.get("company_slug", ""), []).append(c)
+    rows = [
+        {"slug": slug, "name": companies.get(slug, slug), "pledges": pledges}
+        for slug, pledges in grouped.items()
+    ]
+    return sorted(rows, key=lambda r: (-len(r["pledges"]), r["name"]))
+
+
+def _commitment_card_html(rec: dict, reg: dict) -> str:
+    esc = html.escape
+    status = rec.get("status", "")
+    pill = (
+        f'<span class="cwa-status-pill" style="background:{COMMITMENT_STATUS_COLORS.get(status, COLORS["secondary"])}">'
+        f"{esc(COMMITMENT_STATUS_LABELS.get(status, status))}</span>"
+    )
+    binding = (
+        f'<span class="commit-binding">{esc(COMMITMENT_BINDING_LABELS.get(rec.get("binding", ""), rec.get("binding", "")))}</span>'
+    )
+    terms = "".join(
+        f'<li><span class="commit-term">{esc(COMMITMENT_TERM_LABELS.get(t.get("type", ""), t.get("type", "")))}</span> '
+        f'{esc(t.get("text", ""))}</li>'
+        for t in rec.get("terms") or []
+    )
+    links = []
+    for target in rec.get("cross_ref_targets") or []:
+        ref = reg.get(target)
+        if ref:
+            links.append(f'<a href="#{esc(ref.anchor)}">{esc(ref.label)}</a>')
+    related = f'<div class="commit-related">Related: {" · ".join(links)}</div>' if links else ""
+    sources = " · ".join(
+        f'<a href="{esc(src.get("url", ""))}" target="_blank" rel="noopener">{esc(src.get("title", "source"))}</a>'
+        for src in rec.get("sources") or []
+        if src.get("url")
+    )
+    note = f'<p class="commit-note">{esc(rec["note"])}</p>' if rec.get("note") else ""
+    return (
+        f'<div class="commit-card" id="commitment-{esc(rec.get("id", ""))}">'
+        f'<div class="commit-head"><span class="commit-actor">{esc(rec.get("jurisdiction", ""))}</span> '
+        f"{pill} {binding}</div>"
+        f'<div class="commit-instrument">{esc(rec.get("instrument", ""))} · {esc(rec.get("date", ""))}</div>'
+        f'<p class="commit-summary">{esc(rec.get("summary", ""))}</p>'
+        f'<ul class="commit-terms">{terms}</ul>{related}{note}'
+        f'<div class="commit-sources">Sources: {sources}</div></div>'
+    )
+
+
+def _build_commitments_html() -> str:
+    """The Commitments tab body — shared by the static page and Streamlit.
+
+    Every class it uses is defined in assets/components.css (a test enforces
+    it), because st.markdown renders it against that stylesheet alone.
+    """
+    esc = html.escape
+    reg = build_registry()
+    bills = load_legislation().get("bills", [])
+    commitments = load_water_commitments().get("commitments", [])
+    matrix = _state_commitment_matrix(bills)
+    pledges = _company_pledges()
+    local = [c for c in commitments if c.get("level") == "local"]
+    federal = [c for c in commitments if c.get("level") == "federal"]
+    international = [c for c in commitments if c.get("level") == "international"]
+    n_pledges = sum(len(r["pledges"]) for r in pledges)
+    n_assessed = sum(1 for r in pledges for c in r["pledges"] if c.get("delivered"))
+    in_force_local = sum(1 for c in local if c.get("status") == "in-force")
+
+    def bill_link(bill_id: str) -> str:
+        ref = reg.get(bill_id)
+        if not ref:
+            return esc(bill_id)
+        return f'<a href="#{esc(ref.anchor)}">{esc(bill_id)}</a>'
+
+    metrics = (
+        '<div class="commit-metrics">'
+        '<div class="commit-metric"><span class="commit-metric-n">None</span>'
+        '<span class="commit-metric-l">U.S. national water strategy that addresses data centers</span></div>'
+        f'<div class="commit-metric"><span class="commit-metric-n">{len(matrix)}</span>'
+        '<span class="commit-metric-l">states with an enacted data-center water commitment</span></div>'
+        f'<div class="commit-metric"><span class="commit-metric-n">{in_force_local}</span>'
+        '<span class="commit-metric-l">local agreements in force with water terms</span></div>'
+        f'<div class="commit-metric"><span class="commit-metric-n">{n_pledges}</span>'
+        f'<span class="commit-metric-l">company water pledges tracked ({n_assessed} assessed)</span></div>'
+        "</div>"
+    )
+    nav = (
+        '<nav class="paths-jumpnav" aria-label="Commitment levels">'
+        '<a class="paths-jump" href="#commitments-national">National strategy</a>'
+        '<a class="paths-jump" href="#commitments-states">States</a>'
+        '<a class="paths-jump" href="#commitments-local">Local agreements</a>'
+        '<a class="paths-jump" href="#commitments-companies">Companies</a>'
+        "</nav>"
+    )
+
+    # --- National ---------------------------------------------------------
+    federal_bills = sorted(
+        (b for b in bills if b.get("level") == "federal"),
+        key=lambda b: (LEGISLATION_STATUS_ORDER.get(b.get("status"), 9), b["bill_id"]),
+    )
+    federal_rows = "".join(
+        '<li class="commit-fed-row">'
+        f'<span class="cwa-status-pill" style="background:{LEGISLATION_STATUS_BADGE_COLORS.get(b.get("status"), COLORS["secondary"])}">'
+        f'{esc(LEGISLATION_STATUS_LABELS.get(b.get("status"), b.get("status", "")))}</span> '
+        f'{bill_link(b["bill_id"])} — {esc(b.get("title", ""))}</li>'
+        for b in federal_bills
+    )
+    national = (
+        '<section id="commitments-national">'
+        '<h3 class="solution-cat-header">National strategy</h3>'
+        '<div class="commit-finding"><strong>No U.S. national water strategy addresses data centers.</strong> '
+        "The federal water assessment does not name them as a demand; EPA's reuse plan names data-center "
+        "cooling but is voluntary; the executive orders speed permitting up rather than set a water standard; "
+        "and the disclosure bills are pending. The countries that do have a national instrument — the EU and "
+        "Singapore — show what one looks like.</div>"
+        f'<div class="commit-grid">{"".join(_commitment_card_html(c, reg) for c in federal)}</div>'
+        '<details class="commit-fold"><summary>Federal bills and orders in this tracker '
+        f'({len(federal_bills)})</summary><ul class="commit-fed">{federal_rows}</ul></details>'
+        '<h4 class="commit-subhead">Other countries — the benchmark</h4>'
+        f'<div class="commit-grid">{"".join(_commitment_card_html(c, reg) for c in international)}</div>'
+        "</section>"
+    )
+
+    # --- States -----------------------------------------------------------
+    head = "".join(
+        f'<th scope="col">{esc(label)}</th>' for label, _tags in STATE_COMMITMENT_COLUMNS.values()
+    )
+    body_rows = []
+    for r in matrix:
+        cells = "".join(
+            "<td>" + ("<br>".join(bill_link(b) for b in r["cells"][k]) or '<span class="commit-empty">—</span>') + "</td>"
+            for k in STATE_COMMITMENT_COLUMNS
+        )
+        extra = []
+        if r["pending"]:
+            extra.append(f'{r["pending"]} pending')
+        if r["failed"]:
+            extra.append(f'{r["failed"]} failed')
+        note = f'<span class="commit-state-note">{esc(", ".join(extra))}</span>' if extra else ""
+        body_rows.append(f'<tr><th scope="row">{esc(r["state"])}{note}</th>{cells}</tr>')
+    col_help = "".join(
+        f"<li><strong>{esc(label)}</strong> — {esc(', '.join(tags))}</li>"
+        for label, tags in STATE_COMMITMENT_COLUMNS.values()
+    )
+    states = (
+        '<section id="commitments-states">'
+        '<h3 class="solution-cat-header">State commitments</h3>'
+        f"<p>{len(matrix)} states have at least one enacted law or executive order that commits them on "
+        "data-center water. Read across a row for what a state has committed to; each entry opens the "
+        "instrument on the Legislation tab. Executive orders count — several of the newest commitments are "
+        "orders, not statutes.</p>"
+        f'<div class="table-wrap"><table class="commit-matrix"><thead><tr><th scope="col">State</th>{head}</tr></thead>'
+        f'<tbody>{"".join(body_rows)}</tbody></table></div>'
+        f'<details class="commit-fold"><summary>How the columns are read</summary>'
+        f'<p>Each column is the set of principle tags that express it:</p><ul>{col_help}</ul></details>'
+        "</section>"
+    )
+
+    # --- Local ------------------------------------------------------------
+    local_sorted = sorted(local, key=lambda c: (c.get("status") != "in-force", c.get("jurisdiction", "")))
+    local_html = (
+        '<section id="commitments-local">'
+        '<h3 class="solution-cat-header">Local agreements</h3>'
+        "<p>The most specific water commitments in this record are in deals between a locality and a "
+        "developer: gallon-a-day caps, cooling-technology bans, restoration money. They bind only the one "
+        "project, which is exactly why they can be precise.</p>"
+        f'<div class="commit-grid">{"".join(_commitment_card_html(c, reg) for c in local_sorted)}</div>'
+        "</section>"
+    )
+
+    # --- Companies ----------------------------------------------------------
+    company_rows = []
+    for r in pledges:
+        items = []
+        for c in r["pledges"]:
+            delivered = c.get("delivered") or {}
+            status = delivered.get("status", "")
+            if status:
+                color = COLORS.get(DELIVERED_STATUS_COLORS.get(status, "secondary"), COLORS["secondary"])
+                pill = (
+                    f'<span class="cwa-status-pill" style="background:{color}">'
+                    f"{esc(DELIVERED_STATUS_LABELS.get(status, status))}</span>"
+                )
+            else:
+                pill = '<span class="commit-unassessed">Not yet assessed</span>'
+            statement = c.get("statement", "")
+            if len(statement) > 170:
+                statement = statement[:167].rsplit(" ", 1)[0] + "…"
+            items.append(
+                '<li class="commit-pledge">'
+                f'<span class="commit-term">{esc(CLAIM_TYPE_LABELS.get(c.get("claim_type", ""), ""))}</span> '
+                f'{pill} <a href="#claim-{esc(c.get("id", ""))}">“{esc(statement)}”</a></li>'
+            )
+        company_rows.append(
+            f'<div class="commit-company"><h4>{esc(r["name"])}</h4><ul>{"".join(items)}</ul></div>'
+        )
+    companies_html = (
+        '<section id="commitments-companies">'
+        '<h3 class="solution-cat-header">Company pledges</h3>'
+        f"<p>{n_pledges} company-wide water pledges from {len(pledges)} operators — water-positive and "
+        "replenishment targets, efficiency goals, zero-water designs and disclosure promises. Each links to the "
+        "verbatim claim and its assessment on the Issues &amp; Claims tab; site-specific promises stay there.</p>"
+        f'<div class="commit-companies">{"".join(company_rows)}</div>'
+        "</section>"
+    )
+
+    return (
+        '<div class="commitments" id="commitments">'
+        f'{metrics}{nav}{national}{states}{local_html}{companies_html}'
+        "</div>"
+    )
+
+
 SECURITY_LEAD = (
     "A cited map of water-sector cyber and physical threats, the capabilities "
     "that reduce them, the public and private actors doing the work, what is "
@@ -4818,6 +5517,22 @@ def _build_water_security_html() -> str:
 """
 
 
+def render_overview():
+    """Streamlit surface for the landing tab (links read as a map here; the
+    static page is where they switch tabs — see _build_overview_html)."""
+    st.subheader("Overview")
+    st.markdown(OVERVIEW_LEAD)
+    st.markdown(_build_overview_html(), unsafe_allow_html=True)
+
+
+def render_commitments():
+    """Streamlit surface for the Commitments tab — the same fragment the static
+    page renders, against assets/components.css."""
+    st.subheader("Water Commitments")
+    st.markdown(COMMITMENTS_LEAD)
+    st.markdown(_build_commitments_html(), unsafe_allow_html=True)
+
+
 def render_water_security():
     """Render the shared water-security research surface in Streamlit."""
     st.subheader("Water Infrastructure Security")
@@ -4835,9 +5550,10 @@ def render_water_security():
 
 EXPLORE_LEAD = (
     "Every curated record in one graph, plus a text search across all of them. "
-    "Click a dot to see what a record connects to, or paste a paragraph — a news "
-    "story, a permit notice, a draft ordinance — to find the records that use the "
-    "same language."
+    "Click a dot to see what a record connects to — or switch the layout to "
+    "Legal paths to read it as activity → statute → reading → case → site — or "
+    "paste a paragraph (a news story, a permit notice, a draft ordinance) to find "
+    "the records that use the same language."
 )
 
 EXPLORE_EMPTY_STATE = (
@@ -4909,7 +5625,9 @@ def _explore_css() -> str:
 .explore-neighbour a:hover{text-decoration:underline}
 .explore-neighbour-kind{color:#6b7280;font-size:.73rem;text-align:right}
 .explore-neighbours-more summary{cursor:pointer;color:#08519c;font-weight:600;padding:.25rem 0}
-.explore-tools{display:flex;gap:.35rem;align-items:center;font-size:.8rem;color:#4b5563}
+/* Wraps: the Layout selector (2026-09-26) pushed Reset 37px past a 375px
+   phone's edge when this row could not break. */
+.explore-tools{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;font-size:.8rem;color:#4b5563}
 .explore-canvas{width:100%;height:520px;display:block;background:#fff;border:1px solid #cbd5e1;
   border-radius:.5rem;touch-action:none;cursor:grab}
 .explore-canvas:active{cursor:grabbing}
@@ -5000,6 +5718,10 @@ def _build_explore_html(payload_src: str | None = None) -> str:
         for k, n in ordered_counts.items()
     )
 
+    activity_options = "".join(
+        f'<option value="{html.escape(a)}">{html.escape(label)}</option>'
+        for a, label in DC_ACTIVITY_LABELS.items()
+    )
     statutes = load_water_authorities().get("statutes", {})
     family_options = "".join(
         f'<option value="{html.escape(code)}">{html.escape(code)} — '
@@ -5016,7 +5738,7 @@ def _build_explore_html(payload_src: str | None = None) -> str:
     legend += (
         '<span><span class="explore-dot" style="background:'
         f'{GRAPH_KIND_COLORS["hub"]};border-radius:2px"></span>'
-        "Taxonomy hub (statute, project type, principle)</span>"
+        "Taxonomy hub (activity, statute, project type, principle)</span>"
     )
 
     return f"""<div class="explore" id="explore">
@@ -5034,6 +5756,10 @@ def _build_explore_html(payload_src: str | None = None) -> str:
       <select id="explore-family">
         <option value="">Any</option>{family_options}
       </select>
+      <label class="explore-controls-label" for="explore-activity">Activity:</label>
+      <select id="explore-activity">
+        <option value="">Any</option>{activity_options}
+      </select>
       <label class="explore-chip"><input type="checkbox" id="explore-scope">
       Only near the focused record</label>
     </div>
@@ -5047,6 +5773,11 @@ def _build_explore_html(payload_src: str | None = None) -> str:
       <span class="explore-focus" id="explore-focus">No record focused — click a dot,
       or use <em>Show connections</em> on a result.</span>
       <span class="explore-tools">
+        <label for="explore-layout">Layout</label>
+        <select id="explore-layout">
+          <option value="network" selected>Network</option>
+          <option value="paths">Legal paths</option>
+        </select>
         <label for="explore-depth">Hops</label>
         <select id="explore-depth">
           <option value="1" selected>1</option>
@@ -5060,7 +5791,10 @@ def _build_explore_html(payload_src: str | None = None) -> str:
     <div class="explore-neighbours" id="explore-neighbours" hidden></div>
     <canvas class="explore-canvas" id="explore-canvas" role="img" aria-label="Connection graph of every tracked record. The results list carries the same records as text."></canvas>
     <p class="explore-hint">Drag to pan, scroll to zoom, click a dot to focus its
-    neighbourhood. Lines are connections the datasets declare.</p>
+    neighbourhood. <strong>Legal paths</strong> lays the focused record out in
+    columns — activity → statute → reading → case → site — so you can read how a
+    law reaches a data center; try it on an activity or statute hub with 2 hops.
+    Records with no drawn connection sit on the outer ring.</p>
     <div class="explore-legend">{legend}</div>
     <details class="explore-edges">
       <summary>Connection types</summary>
@@ -5156,7 +5890,10 @@ def _explore_js() -> str:
   }
 
   // --- Force-directed layout (Fruchterman-Reingold, no library) ---
-  var W = 900, H = 700;
+  // Constants mirror refdata.graph.compute_layout, which runs this same loop at
+  // build time for the default view. The two must agree, or the picture would
+  // jump the first time a reader toggled an edge kind.
+  var W = 900, H = 700, GRAVITY = 0.05, CUTOFF = 3, RING_GAP = 60;
   var pos = nodes.map(function(_, idx){
     // Deterministic ring start: same input data always settles the same way,
     // so a rebuild does not reshuffle the picture for no reason.
@@ -5164,17 +5901,50 @@ def _explore_js() -> str:
     var r = 40 + 300 * Math.sqrt(idx / nodes.length);
     return {x: W / 2 + r * Math.cos(a), y: H / 2 + r * Math.sin(a), dx: 0, dy: 0};
   });
+  // The default view (curated edges only) ships settled in the blob, so first
+  // open costs a draw, not a simulation. Only a toggle change re-runs the loop.
+  var precomputed = !!(D.layout && D.layout.length === nodes.length);
+  if (precomputed){
+    for (i = 0; i < nodes.length; i++){ pos[i].x = D.layout[i][0]; pos[i].y = D.layout[i][1]; }
+  }
   var reduceMotion = window.matchMedia &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Records with no drawn connection take no part in the simulation. Nothing
+  // pulls them in, so repulsion alone used to fling them thousands of units
+  // off the canvas — 167 of 445 records no reader could see or click. They sit
+  // on an outer ring instead, in kind order so the ring reads as bands.
+  var KIND_ORDER = Object.keys(D.kind_labels);
+  var sim = [];
+  function partition(){
+    var deg = nodes.map(function(){ return 0; });
+    for (var e = 0; e < D.edges.length; e++){
+      if (!activeKinds[D.edges[e][2]]) continue;
+      deg[D.edges[e][0]]++; deg[D.edges[e][1]]++;
+    }
+    sim = [];
+    var lone = [];
+    for (var n = 0; n < nodes.length; n++) (deg[n] ? sim : lone).push(n);
+    lone.sort(function(a, b){
+      return (KIND_ORDER.indexOf(nodes[a].kind) - KIND_ORDER.indexOf(nodes[b].kind)) || (a - b);
+    });
+    return lone;
+  }
+
   function step(temperature){
-    var k = Math.sqrt((W * H) / nodes.length);
-    var a, b, dx, dy, dist, force;
-    for (a = 0; a < nodes.length; a++){ pos[a].dx = 0; pos[a].dy = 0; }
-    for (a = 0; a < nodes.length; a++){
-      for (b = a + 1; b < nodes.length; b++){
+    var m = sim.length || 1;
+    var k = Math.sqrt((W * H) / m), cut = CUTOFF * k;
+    var a, b, i2, j2, dx, dy, dist, force;
+    for (i2 = 0; i2 < sim.length; i2++){ pos[sim[i2]].dx = 0; pos[sim[i2]].dy = 0; }
+    for (i2 = 0; i2 < sim.length; i2++){
+      a = sim[i2];
+      for (j2 = i2 + 1; j2 < sim.length; j2++){
+        b = sim[j2];
         dx = pos[a].x - pos[b].x; dy = pos[a].y - pos[b].y;
         dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
+        // Repulsion only within reach: summed over every node it swamps
+        // gravity and inflates the layout ten-fold for no legibility gain.
+        if (dist > cut) continue;
         force = (k * k) / dist;
         dx = (dx / dist) * force; dy = (dy / dist) * force;
         pos[a].dx += dx; pos[a].dy += dy;
@@ -5191,10 +5961,10 @@ def _explore_js() -> str:
       pos[a].dx -= dx; pos[a].dy -= dy;
       pos[b].dx += dx; pos[b].dy += dy;
     }
-    for (a = 0; a < nodes.length; a++){
-      // Gravity keeps disconnected records from drifting off the canvas.
-      pos[a].dx += (W / 2 - pos[a].x) * 0.012;
-      pos[a].dy += (H / 2 - pos[a].y) * 0.012;
+    for (i2 = 0; i2 < sim.length; i2++){
+      a = sim[i2];
+      pos[a].dx += (W / 2 - pos[a].x) * GRAVITY;
+      pos[a].dy += (H / 2 - pos[a].y) * GRAVITY;
       var mag = Math.sqrt(pos[a].dx * pos[a].dx + pos[a].dy * pos[a].dy) || 0.01;
       var move = Math.min(mag, temperature);
       pos[a].x += (pos[a].dx / mag) * move;
@@ -5202,15 +5972,40 @@ def _explore_js() -> str:
     }
   }
 
+  function ringLone(lone){
+    var rmax = 0;
+    for (var i3 = 0; i3 < sim.length; i3++){
+      var dx = pos[sim[i3]].x - W / 2, dy = pos[sim[i3]].y - H / 2;
+      rmax = Math.max(rmax, Math.sqrt(dx * dx + dy * dy));
+    }
+    var R = Math.max(200, rmax + RING_GAP);
+    for (var j3 = 0; j3 < lone.length; j3++){
+      var t = (j3 / lone.length) * Math.PI * 2 - Math.PI / 2;
+      pos[lone[j3]].x = W / 2 + R * Math.cos(t);
+      pos[lone[j3]].y = H / 2 + R * Math.sin(t);
+    }
+  }
+
   var ITERATIONS = 120;
   var layoutEpoch = 0;
+  // Set once the reader pans or zooms: a re-layout then keeps their camera
+  // instead of snapping back to fit-all on every frame.
+  var cameraMoved = false;
+  // In Legal-paths mode the network is not on screen, so a re-layout is
+  // owed rather than run; switching back to Network pays it.
+  var layoutStale = false;
   function runLayout(){
     // A fast series of edge-kind changes can start several animation loops.
     // Only the newest layout may keep spending frames on this canvas.
     var epoch = ++layoutEpoch;
+    if (mode === 'paths'){ layoutStale = true; return; }
+    layoutStale = false;
+    var lone = partition();
     var t = 0, temp0 = W / 12;
     if (reduceMotion){
       for (t = 0; t < ITERATIONS; t++) step(temp0 * (1 - t / ITERATIONS));
+      ringLone(lone);
+      if (!cameraMoved) fitView();
       draw();
       return;
     }
@@ -5219,6 +6014,8 @@ def _explore_js() -> str:
     (function frame(){
       if (epoch !== layoutEpoch) return;
       for (var c = 0; c < 6 && t < ITERATIONS; c++, t++) step(temp0 * (1 - t / ITERATIONS));
+      ringLone(lone);
+      if (!cameraMoved) fitView();
       draw();
       if (t < ITERATIONS && epoch === layoutEpoch) requestAnimationFrame(frame);
     })();
@@ -5240,6 +6037,25 @@ def _explore_js() -> str:
     ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
   }
 
+  // Frame every node — the connected core and the outer ring — so Reset and a
+  // finished re-layout always show the whole graph rather than a fixed zoom
+  // that left the ring off-canvas.
+  function fitView(){
+    var cw = canvas.clientWidth || 640, ch = canvas.clientHeight || 520;
+    var minx = Infinity, maxx = -Infinity, miny = Infinity, maxy = -Infinity;
+    for (var f = 0; f < pos.length; f++){
+      if (pos[f].x < minx) minx = pos[f].x;
+      if (pos[f].x > maxx) maxx = pos[f].x;
+      if (pos[f].y < miny) miny = pos[f].y;
+      if (pos[f].y > maxy) maxy = pos[f].y;
+    }
+    if (!isFinite(minx)) return;
+    var s2 = Math.min((cw - 30) / Math.max(1, maxx - minx), (ch - 30) / Math.max(1, maxy - miny));
+    view.scale = Math.max(0.1, Math.min(2, s2));
+    view.ox = -((minx + maxx) / 2 - W / 2) * view.scale;
+    view.oy = -((miny + maxy) / 2 - H / 2) * view.scale;
+  }
+
   function toScreen(p){
     var cw = canvas.clientWidth || 640, ch = canvas.clientHeight || 520;
     return {
@@ -5252,7 +6068,137 @@ def _explore_js() -> str:
     return nodes[idx].kind === 'hub' ? 4.5 : 3.6;
   }
 
+  // --- Legal-paths layout ---
+  // The network answers "what is near this?"; it cannot answer "how does this
+  // law reach a data center?", because a force layout puts a reading's
+  // activity, statute, precedents and sites wherever the physics settles.
+  // Paths mode lays the focused neighbourhood out as columns in the order a
+  // legal argument runs — activity → statute → reading → case → site → the
+  // records that mention them — so the chain reads left to right.
+  var mode = 'network';
+  var pathView = {scale: 1, ox: 0, oy: 0};
+  var pathPos = null, pathOverflow = [], pathCols = [];
+  var PATH_COLUMN = {activity: 0, statute: 1, reading: 2, case: 3, 'case-type': 3,
+    site: 4, claim: 5, instrument: 6, principle: 6, news: 7, solution: 7};
+  var PATH_HEADS = ['Activity', 'Statute', 'Reading', 'Case', 'Site', 'Claim',
+    'Policy', 'News & solutions'];
+  function pathColumn(idx){
+    var node = nodes[idx];
+    var col = node.kind === 'hub' ? PATH_COLUMN[node.attrs.hub_group] : PATH_COLUMN[node.kind];
+    return col === undefined ? 7 : col;
+  }
+  var ROW = 17, TOP = 34;
+
+  function layoutPaths(){
+    pathPos = {}; pathOverflow = []; pathCols = [];
+    if (focused < 0 || !near) return;
+    var cw = canvas.clientWidth || 640, ch = canvas.clientHeight || 520;
+    var byCol = {};
+    for (var key in near){
+      if (!Object.prototype.hasOwnProperty.call(near, key)) continue;
+      var idx = parseInt(key, 10), col = pathColumn(idx);
+      (byCol[col] = byCol[col] || []).push(idx);
+    }
+    var cols = Object.keys(byCol).map(Number).sort(function(a, b){ return a - b; });
+    var colW = (cw - 16) / Math.max(1, cols.length);
+    var maxRows = Math.max(3, Math.floor((ch - TOP - 12) / ROW));
+    cols.forEach(function(col, c){
+      var members = byCol[col].sort(function(a, b){
+        return (a === focused ? -1 : b === focused ? 1 : 0) ||
+          (near[a] - near[b]) || nodes[a].label.localeCompare(nodes[b].label);
+      });
+      var shown = members.length > maxRows ? members.slice(0, maxRows - 1) : members;
+      var x = 12 + c * colW;
+      pathCols.push({x: x, w: colW, head: PATH_HEADS[col], n: members.length});
+      var h = shown.length * ROW;
+      var y0 = TOP + Math.max(0, (ch - TOP - 12 - h) / 2);
+      shown.forEach(function(idx, r){ pathPos[idx] = {x: x + 6, y: y0 + r * ROW + ROW / 2, w: colW - 14}; });
+      if (members.length > shown.length){
+        pathOverflow.push({x: x + 6, y: y0 + shown.length * ROW + ROW / 2,
+          text: '+' + (members.length - shown.length) + ' more'});
+      }
+    });
+  }
+
+  function pathScreen(p){
+    var cw = canvas.clientWidth || 640, ch = canvas.clientHeight || 520;
+    return {
+      x: (p.x - cw / 2) * pathView.scale + cw / 2 + pathView.ox,
+      y: (p.y - ch / 2) * pathView.scale + ch / 2 + pathView.oy
+    };
+  }
+
+  function fitText(text, width){
+    if (ctx.measureText(text).width <= width) return text;
+    var lo = 0, hi = text.length;
+    while (lo < hi){
+      var mid = (lo + hi + 1) >> 1;
+      if (ctx.measureText(text.slice(0, mid) + '…').width <= width) lo = mid; else hi = mid - 1;
+    }
+    return lo ? text.slice(0, lo) + '…' : '';
+  }
+
+  function drawPaths(){
+    var cw = canvas.clientWidth || 640, ch = canvas.clientHeight || 520;
+    ctx.clearRect(0, 0, cw, ch);
+    ctx.font = '600 11px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';
+    ctx.fillStyle = '#4b5563';
+    pathCols.forEach(function(col){
+      var p = pathScreen({x: col.x + 6, y: 16});
+      ctx.fillText(fitText(col.head.toUpperCase() + ' (' + col.n + ')', col.w * pathView.scale - 8), p.x, p.y);
+    });
+    for (var e = 0; e < D.edges.length; e++){
+      if (!activeKinds[D.edges[e][2]]) continue;
+      var pa = pathPos[D.edges[e][0]], pb = pathPos[D.edges[e][1]];
+      if (!pa || !pb) continue;
+      var sa = pathScreen(pa), sb = pathScreen(pb);
+      var touches = D.edges[e][0] === focused || D.edges[e][1] === focused;
+      ctx.strokeStyle = touches ? 'rgba(8,81,156,0.55)' : 'rgba(49,130,189,0.22)';
+      ctx.lineWidth = touches ? 1.3 : 0.8;
+      ctx.beginPath();
+      if (Math.abs(sa.x - sb.x) < 2){
+        // Same column (a case citing an analogous case): bow out to the right.
+        var bow = Math.min(60, 12 + Math.abs(sa.y - sb.y) / 3);
+        ctx.moveTo(sa.x, sa.y);
+        ctx.bezierCurveTo(sa.x + bow, sa.y, sb.x + bow, sb.y, sb.x, sb.y);
+      } else {
+        var mx = (sa.x + sb.x) / 2;
+        ctx.moveTo(sa.x, sa.y);
+        ctx.bezierCurveTo(mx, sa.y, mx, sb.y, sb.x, sb.y);
+      }
+      ctx.stroke();
+    }
+    ctx.font = '11px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';
+    for (var key in pathPos){
+      if (!Object.prototype.hasOwnProperty.call(pathPos, key)) continue;
+      var idx = parseInt(key, 10), sp = pathScreen(pathPos[key]);
+      var node = nodes[idx], r = idx === focused ? 5.5 : 3.8;
+      ctx.fillStyle = D.kind_colors[node.kind] || '#6b7280';
+      if (node.kind === 'hub') ctx.fillRect(sp.x - r, sp.y - r, r * 2, r * 2);
+      else { ctx.beginPath(); ctx.arc(sp.x, sp.y, r, 0, Math.PI * 2); ctx.fill(); }
+      if (idx === focused){
+        ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(sp.x, sp.y, r + 3, 0, Math.PI * 2); ctx.stroke();
+      }
+      var limit = node.attrs && node.attrs.role === 'limit';
+      ctx.fillStyle = limit ? '#b45309' : '#1a1a2e';
+      ctx.font = (idx === focused ? '700 ' : '') + '11px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';
+      ctx.fillText(fitText((limit ? '[Limit] ' : '') + node.label, pathPos[key].w * pathView.scale - 4), sp.x + 8, sp.y + 4);
+    }
+    ctx.fillStyle = '#6b7280';
+    ctx.font = 'italic 11px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';
+    pathOverflow.forEach(function(o){
+      var sp = pathScreen(o);
+      ctx.fillText(o.text + ' — see the list above', sp.x + 8, sp.y + 4);
+    });
+  }
+
   function draw(){
+    if (mode === 'paths' && focused >= 0){
+      if (!pathPos) layoutPaths();
+      drawPaths();
+      return;
+    }
     var cw = canvas.clientWidth || 640, ch = canvas.clientHeight || 520;
     ctx.clearRect(0, 0, cw, ch);
     var dim = focused >= 0;
@@ -5282,7 +6228,7 @@ def _explore_js() -> str:
         ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 1.5;
         ctx.beginPath(); ctx.arc(p.x, p.y, r + 3, 0, Math.PI * 2); ctx.stroke();
       }
-      // Labelling all 362 nodes is unreadable; label the focused neighbourhood
+      // Labelling every node is unreadable; label the focused neighbourhood
       // only, and cap it so a hub with 100 members does not turn to mud.
       if (dim && near[a] !== undefined && labelled.length < 26) labelled.push([a, p]);
       ctx.globalAlpha = 1;
@@ -5294,20 +6240,32 @@ def _explore_js() -> str:
       if (text.length > 34) text = text.slice(0, 33) + '…';
       ctx.fillText(text, labelled[m][1].x + 7, labelled[m][1].y + 3);
     }
+    if (mode === 'paths'){
+      ctx.fillStyle = '#08519c';
+      ctx.font = '600 12px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';
+      ctx.fillText('Click any dot to lay out its legal paths', 12, 20);
+    }
   }
 
   // --- Pan / zoom ---
+  // One set of handlers for both layouts; each keeps its own camera so
+  // switching between them does not lose your place in either.
+  function cam(){ return mode === 'paths' && focused >= 0 ? pathView : view; }
   var dragging = false, dragged = false, lastX = 0, lastY = 0;
   function pointerDown(x, y){ dragging = true; dragged = false; lastX = x; lastY = y; }
   function pointerMove(x, y){
     if (!dragging) return;
     if (Math.abs(x - lastX) + Math.abs(y - lastY) > 3) dragged = true;
-    view.ox += x - lastX; view.oy += y - lastY;
+    var c2 = cam();
+    if (c2 === view) cameraMoved = true;
+    c2.ox += x - lastX; c2.oy += y - lastY;
     lastX = x; lastY = y;
     draw();
   }
   function zoom(factor){
-    view.scale = Math.min(4, Math.max(0.2, view.scale * factor));
+    var c2 = cam();
+    if (c2 === view) cameraMoved = true;
+    c2.scale = Math.min(4, Math.max(0.1, c2.scale * factor));
     draw();
   }
   canvas.addEventListener('mousedown', function(e){ pointerDown(e.clientX, e.clientY); });
@@ -5414,6 +6372,8 @@ def _explore_js() -> str:
       }
     }
     renderDirectConnections(idx);
+    pathView = {scale: 1, ox: 0, oy: 0};
+    if (mode === 'paths') layoutPaths();
     draw();
     runSearch();
   }
@@ -5422,10 +6382,25 @@ def _explore_js() -> str:
     if (dragged) return;
     var rect = canvas.getBoundingClientRect();
     var mx = ev.clientX - rect.left, my = ev.clientY - rect.top;
-    var best = -1, bestDist = 12 * 12;
-    for (var a = 0; a < nodes.length; a++){
-      var p = toScreen(pos[a]);
-      var d2 = (p.x - mx) * (p.x - mx) + (p.y - my) * (p.y - my);
+    var best = -1, bestDist = 12 * 12, a, p, d2;
+    if (mode === 'paths' && focused >= 0){
+      // In paths mode the label is part of the target: a row is clickable
+      // along its text, not only on its 4px dot.
+      for (var key in pathPos){
+        if (!Object.prototype.hasOwnProperty.call(pathPos, key)) continue;
+        p = pathScreen(pathPos[key]);
+        if (mx >= p.x - 8 && mx <= p.x + pathPos[key].w * pathView.scale &&
+            Math.abs(my - p.y) <= ROW / 2 * pathView.scale){
+          best = parseInt(key, 10);
+          break;
+        }
+      }
+      if (best >= 0) setFocus(best);
+      return;
+    }
+    for (a = 0; a < nodes.length; a++){
+      p = toScreen(pos[a]);
+      d2 = (p.x - mx) * (p.x - mx) + (p.y - my) * (p.y - my);
       if (d2 < bestDist){ bestDist = d2; best = a; }
     }
     setFocus(best);
@@ -5434,8 +6409,39 @@ def _explore_js() -> str:
   root.querySelector('#explore-zoom-in').addEventListener('click', function(){ zoom(1.2); });
   root.querySelector('#explore-zoom-out').addEventListener('click', function(){ zoom(1 / 1.2); });
   root.querySelector('#explore-reset').addEventListener('click', function(){
-    view = {scale: 0.62, ox: 0, oy: 0};
+    cameraMoved = false;
+    fitView();
     setFocus(-1);
+  });
+
+  // --- Layout mode ---
+  // Paths mode needs the two taxonomy links that make its first columns —
+  // reading → activity and reading → statute — so switching to it turns them
+  // on, visibly, in the connection-type list rather than behind the reader's
+  // back.
+  var layoutSel = root.querySelector('#explore-layout');
+  var PATH_KINDS = ['reading.activity', 'reading.family'];
+  if (layoutSel) layoutSel.addEventListener('change', function(){
+    mode = layoutSel.value === 'paths' ? 'paths' : 'network';
+    if (mode === 'paths'){
+      var changed = false;
+      PATH_KINDS.forEach(function(kind){
+        var k2 = D.edge_kinds.indexOf(kind);
+        if (k2 >= 0 && !activeKinds[k2]){
+          activeKinds[k2] = true;
+          changed = true;
+          if (kindBoxesByIndex[k2]) kindBoxesByIndex[k2].checked = true;
+        }
+      });
+      if (changed) rebuildAdjacency();
+      // Focus first, so the neighbourhood is recomputed over the new edges
+      // before anything draws; the network re-layout then runs underneath.
+      if (focused >= 0) setFocus(focused); else draw();
+      if (changed) runLayout();
+      return;
+    }
+    if (layoutStale) runLayout();
+    if (focused >= 0) setFocus(focused); else draw();
   });
   root.querySelector('#explore-depth').addEventListener('change', function(){
     if (focused >= 0) setFocus(focused);
@@ -5443,12 +6449,14 @@ def _explore_js() -> str:
 
   // --- Edge-kind toggles ---
   var edgeList = root.querySelector('#explore-edgelist');
+  var kindBoxesByIndex = [];
   D.edge_kinds.forEach(function(kind, idx){
     var label = document.createElement('label');
     label.className = 'explore-chip';
     var box2 = document.createElement('input');
     box2.type = 'checkbox';
     box2.checked = activeKinds[idx];
+    kindBoxesByIndex[idx] = box2;
     box2.addEventListener('change', function(){
       activeKinds[idx] = box2.checked;
       rebuildAdjacency();
@@ -5466,6 +6474,7 @@ def _explore_js() -> str:
   var resultsBox = root.querySelector('#explore-results');
   var countLine = root.querySelector('#explore-count');
   var familySel = root.querySelector('#explore-family');
+  var activitySel = root.querySelector('#explore-activity');
   var scopeBox = root.querySelector('#explore-scope');
   var kindBoxes = [].slice.call(root.querySelectorAll('.explore-kind'));
   var TOP_N = 12;
@@ -5480,6 +6489,11 @@ def _explore_js() -> str:
     if (family){
       var list = (node.attrs && node.attrs.statutes) || [];
       if (list.indexOf(family) < 0) return false;
+    }
+    var activity = activitySel ? activitySel.value : '';
+    if (activity){
+      var acts = (node.attrs && node.attrs.activities) || [];
+      if (acts.indexOf(activity) < 0) return false;
     }
     if (scopeBox.checked && focused >= 0 && (!near || near[nodeIdx] === undefined)) return false;
     return true;
@@ -5608,6 +6622,7 @@ def _explore_js() -> str:
   });
   kindBoxes.forEach(function(c){ c.addEventListener('change', runSearch); });
   familySel.addEventListener('change', runSearch);
+  if (activitySel) activitySel.addEventListener('change', runSearch);
   scopeBox.addEventListener('change', runSearch);
 
   // --- Boot ---
@@ -5617,11 +6632,13 @@ def _explore_js() -> str:
     started = true;
     sizeCanvas();
     rebuildAdjacency();
-    runLayout();
+    if (precomputed){ fitView(); draw(); }
+    else runLayout();
   }
   window.addEventListener('resize', function(){
     if (!started) return;
     sizeCanvas();
+    if (mode === 'paths') layoutPaths();
     draw();
   });
   start();
@@ -5708,8 +6725,10 @@ def main():
     st.markdown(_build_water_loop_svg(), unsafe_allow_html=True)
 
     (
+        tab_overview,
         tab_legislation,
         tab_states,
+        tab_commitments,
         tab_cwa,
         tab_issues,
         tab_news,
@@ -5719,8 +6738,10 @@ def main():
         tab_explore,
     ) = st.tabs(
         [
+            "Overview",
             "Legislation",
             "States & Localities",
+            "Commitments",
             "Water Cases",
             "Issues & Claims",
             "News",
@@ -5731,9 +6752,17 @@ def main():
         ]
     )
 
+    # --- Overview tab (landing) ---
+    with tab_overview:
+        render_overview()
+
     # --- States & Localities tab ---
     with tab_states:
         render_states_tab()
+
+    # --- Commitments tab ---
+    with tab_commitments:
+        render_commitments()
 
     # --- CWA Cases tab ---
     with tab_cwa:

@@ -12,6 +12,7 @@ text index — and only when a reader opens that tab.
 
 from __future__ import annotations
 
+import functools
 import json
 import re
 import html as html_lib
@@ -21,8 +22,22 @@ import dashboard
 from refdata import graph
 
 
+@functools.lru_cache(maxsize=1)
+def _files() -> dict[str, str]:
+    """Every published file, built once per test session. Nothing in this
+    module mutates the datasets between calls, and a full build is ~1 s."""
+    return build_site.build_site_files()
+
+
+def _index() -> str:
+    """index.html alone — the shell and the default tab."""
+    return _files()["index.html"]
+
+
 def _html() -> str:
-    return build_site.build_html()
+    """The whole published site's HTML: index.html plus every standalone tab
+    page. Content assertions should not care which file a tab ships in."""
+    return "\n".join(v for k, v in _files().items() if k.endswith(".html"))
 
 
 def _blob() -> dict:
@@ -85,8 +100,12 @@ class TestStaticBuild:
         assert "chart.js" not in html.lower()
         assert not hasattr(build_site, "CHARTJS_URL")
         assert not hasattr(build_site, "CHARTJS_SRI")
-        for attr in ("<script src", "<iframe", "<embed", "<object"):
+        for attr in ("<iframe", "<embed", "<object"):
             assert attr not in html.lower(), f"external resource tag: {attr}"
+        # The standalone tab pages load site.js; any script src must be
+        # same-origin and relative, like every <link> and <img>.
+        for url in re.findall(r'<script\b[^>]*?\bsrc="([^"]+)"', html):
+            assert not url.startswith(("http:", "https:", "//")), url
         # Every <link> and <img> must be same-origin/relative, and no
         # stylesheet may pull one in.
         for url in re.findall(r'<(?:link|img)\b[^>]*?(?:href|src)="([^"]+)"', html):
@@ -296,17 +315,18 @@ class TestLlmsTxt:
 
 
 class TestWriteOutput:
-    def test_main_writes_all_three_outputs(self, tmp_path, monkeypatch):
-        out = tmp_path / "index.html"
-        monkeypatch.setattr(build_site, "OUT_PATH", out)
-        monkeypatch.setattr(build_site, "GRAPH_DATA_PATH", tmp_path / "graph-data.json")
-        monkeypatch.setattr(build_site, "LLMS_TXT_PATH", tmp_path / "llms.txt")
+    def test_main_writes_every_published_file(self, tmp_path, monkeypatch):
+        monkeypatch.setattr(build_site, "PAGES_DIR", tmp_path)
+        stale = tmp_path / "tab-retired.html"
+        stale.write_text("old")
         build_site.main()
-        assert out.exists()
-        assert out.stat().st_size > 200_000
-        assert (tmp_path / "llms.txt").exists()
+        expected = set(build_site.build_site_files())
+        written = {p.name for p in tmp_path.iterdir()}
+        assert written == expected, written ^ expected
+        assert not stale.exists(), "a retired tab page would be deployed forever"
+        assert (tmp_path / "index.html").stat().st_size > 50_000
         blob = tmp_path / "graph-data.json"
-        assert blob.exists() and blob.stat().st_size > 100_000
+        assert blob.stat().st_size > 100_000
         assert json.loads(blob.read_text())["nodes"]
 
     def test_pages_workflow_deploys_everything_the_build_writes(self):
@@ -316,9 +336,16 @@ class TestWriteOutput:
         from pathlib import Path
 
         wf = (Path(build_site.__file__).parent / ".github/workflows/pages.yml").read_text()
+        # The copy is a glob over pages/ — every emitted file is top-level
+        # (tab-NAME.html, not tabs/NAME.html) precisely so this line ships them
+        # all. A subdirectory would be silently dropped.
         assert "cp pages/*.* _site/" in wf
+        for name in build_site.build_site_files():
+            assert "/" not in name, f"{name} would not survive the flat copy"
+            # Every published name matches the copy's pages/*.* glob.
+            assert "." in name, f"{name} has no extension; pages/*.* skips it"
         for name in ("index.html", "graph-data.json", "llms.txt"):
-            assert name in wf, f"deploy does not mention {name}"
+            assert name in wf, f"deploy does not verify {name}"
 
 
 class TestConflictIssueFilter:
@@ -375,7 +402,8 @@ class TestIssuesAndClaimsTab:
         html = _html()
         assert 'data-tab="issues"' in html
         assert 'id="panel-issues"' in html
-        panel = html[html.index('id="panel-issues"'):html.index('id="panel-news"')]
+        # The tab ships as its own page; the index holds a placeholder.
+        panel = _files()[build_site.tab_file("issues")]
         sites = dashboard.load_dc_water_conflicts().get("sites", [])
         claims = dashboard.load_company_water_claims().get("claims", [])
         assert panel.count("dc-site") == len(sites)
@@ -562,7 +590,10 @@ class TestExploreTab:
             re.S,
         )
         assert match, "graph-data element missing from the page"
-        assert f'data-src="{build_site.GRAPH_DATA_URL}"' in match.group(1)
+        # Versioned by content hash, so a cached blob from the previous
+        # deploy can never pair with this build's page.
+        expected = build_site.versioned(build_site.GRAPH_DATA_URL, _files()["graph-data.json"])
+        assert f'data-src="{expected}"' in match.group(1)
         assert match.group(2).strip() == "", "graph blob is still inline"
 
     def test_page_fetches_the_blob_on_first_explore_activation(self):
@@ -717,10 +748,8 @@ class TestExploreTab:
         """Two surfaces, one implementation — the whole reason the builder
         lives in dashboard.py rather than in build_site.py. They differ only in
         where the payload comes from, which is the builder's one argument."""
-        assert (
-            dashboard._build_explore_html(build_site.GRAPH_DATA_URL)
-            in build_site.build_explore_tab()
-        )
+        url = build_site.versioned(build_site.GRAPH_DATA_URL, build_site.build_graph_data_json())
+        assert dashboard._build_explore_html(url) in build_site.build_explore_tab()
 
     def test_llms_txt_notes_the_tab(self):
         txt = build_site.build_llms_txt()
@@ -826,18 +855,25 @@ class TestInfrastructureVisuals:
         assert opacity and int(opacity.group(1)) <= 12
 
     def test_page_stays_under_the_weight_ceiling(self):
-        """Every record is in the markup, so the page is ~1.45 MB by design.
-        This is a tripwire for an accidental order-of-magnitude regression — a
-        second copy of a dataset, an embedded raster, a duplicated tab — not a
-        diet.
+        """What a reader downloads before seeing anything: index.html alone.
 
-        Raised twice earlier on 2026-08-24 (1.85 → 2 → 2.25 MB) as the statute
-        families and the States & Localities tab landed, then **lowered to
-        1.6 MB** the same day when the ~620 KB Explore graph blob moved out to
-        pages/graph-data.json: the page went 2.11 MB → 1.46 MB. The ceiling
-        tracks the page, so re-inlining the blob has to fail here rather than
-        quietly costing every reader 620 KB again."""
-        assert len(_html().encode("utf-8")) < 1_600_000
+        History: ~1.45 MB by design while every record was inline, lowered to
+        1.6 MB when the Explore blob moved out (2026-08-24), briefly 1.7 MB for
+        the statute paths. On 2026-09-26 every tab but the default moved to
+        its own page fetched on first open, and index.html fell from 1.65 MB
+        to ~0.4 MB. The ceiling tracks the shell, so re-inlining a tab has to
+        fail here rather than quietly costing every reader a megabyte again.
+
+        The same day the default tab became the small Overview (was the 320 KB
+        Legislation list), taking index.html to ~130 KB: ceiling 250 KB."""
+        assert len(_index().encode("utf-8")) < 250_000
+
+    def test_no_tab_page_is_a_second_monolith(self):
+        """Water Cases is the heaviest tab (~750 KB); a tab page twice that size
+        means a dataset got embedded twice or a tab swallowed another."""
+        for name, content in _files().items():
+            if name.startswith("tab-"):
+                assert len(content.encode("utf-8")) < 1_000_000, name
 
 
 class TestNavigationAndScrollControl:
@@ -1100,3 +1136,117 @@ class TestStatesTab:
         assert "local_actions.json" in txt
         actions = dashboard.load_local_actions()["actions"]
         assert f"{len(actions)} county, city and town" in txt
+
+
+class TestLazyTabs:
+    """The 2026-09-26 split: index.html carries the shell and the default tab;
+    every other tab is a standalone page fetched on first open."""
+
+    def test_default_tab_is_inline_and_the_rest_are_placeholders(self):
+        index = _index()
+        for name, _label, _ in build_site._tab_specs():
+            if name == build_site.DEFAULT_TAB:
+                assert f'id="panel-{name}" role="tabpanel">' in index
+                continue
+            src = build_site.versioned(build_site.tab_file(name), _files()[build_site.tab_file(name)])
+            assert f'id="panel-{name}" role="tabpanel" hidden data-src="{src}"' in index
+            # Readers without JavaScript get a link to the standalone page.
+            assert f'<a href="{build_site.tab_file(name)}">' in index
+
+    def test_every_tab_page_carries_exactly_its_panel(self):
+        for name, _label, _ in build_site._tab_specs():
+            if name == build_site.DEFAULT_TAB:
+                continue
+            page = _files()[build_site.tab_file(name)]
+            assert page.lstrip().startswith("<!doctype html>")
+            assert page.count('class="tabpanel"') == 1
+            assert f'id="panel-{name}"' in page
+            assert f'href="{build_site.SITE_CSS_FILE}"' in page
+
+    def test_anchor_map_covers_every_id_in_every_lazy_tab(self):
+        """A link, a shared URL or the Back button can name a card whose tab
+        has not been fetched; the map is how the page knows which tab to load."""
+        match = re.search(
+            r'<script type="application/json" id="tab-anchors">(.*?)</script>', _index(), re.S
+        )
+        anchors = json.loads(match.group(1).replace("<\\/", "</"))
+        for name, _label, _ in build_site._tab_specs():
+            if name == build_site.DEFAULT_TAB:
+                assert name not in anchors
+                continue
+            page = _files()[build_site.tab_file(name)]
+            body = page[page.index(f'id="panel-{name}"'):]
+            ids = set(re.findall(r'\bid="([^"]+)"', body)) - {f"panel-{name}"}
+            assert ids <= set(anchors[name]), sorted(ids - set(anchors[name]))[:5]
+
+    def test_every_link_resolves_within_the_published_files(self):
+        """Per file, not per concatenation: a same-page fragment must exist in
+        that page, and a rewritten cross-tab link must exist in the page it
+        names. This is what makes the standalone pages navigable without JS."""
+        files = _files()
+        ids = {name: set(re.findall(r'\bid="([^"]+)"', c)) for name, c in files.items()
+               if name.endswith(".html")}
+        for name, content in files.items():
+            if not name.endswith(".html"):
+                continue
+            for target in re.findall(r'href="#([^"]+)"', content):
+                if target == "top":
+                    continue
+                if name == "index.html":
+                    # The index resolves lazy targets through the anchor map.
+                    assert target in ids["index.html"] or any(
+                        target in ids[f] for f in ids if f.startswith("tab-")
+                    ), (name, target)
+                else:
+                    assert target in ids[name], (name, target)
+            for page, target in re.findall(r'href="((?:tab-[a-z]+|index)\.html)#([^"]+)"', content):
+                assert target in ids[page], (name, page, target)
+
+    def test_script_unrewrites_standalone_links(self):
+        """The page turns tab-cwa.html#x back into #x when it inserts a tab —
+        the regex there must match what _standalone_links writes."""
+        js = build_site.build_js()
+        assert "tab-[a-z]+|index)[.]html(#.+)$" in js
+        assert "document.importNode" in js
+        # Scripts moved in by DOM insertion never run; the page re-creates them.
+        assert "document.createElement('script')" in js
+
+    def test_tabs_are_prefetched_on_intent_not_up_front(self):
+        js = build_site.build_js()
+        for event in ("pointerenter", "focus", "touchstart"):
+            assert f"addEventListener('{event}', warm" in js
+        # Nothing fetches a tab at load: only default-tab panels initialise.
+        assert "querySelectorAll('.tabpanel:not([data-src])').forEach(initPanel)" in js
+
+    def test_tab_urls_are_shareable(self):
+        js = build_site.build_js()
+        assert "history[onPanel ? 'replaceState' : 'pushState'](null, '', '#panel-' + name)" in js
+        assert "addEventListener('popstate'" in js
+
+    def test_review_fixes_for_history_and_hashes(self):
+        """PR #30 review: malformed escapes must not throw, Back to the first
+        entry restores the default tab, and a loaded tab's parsed page is
+        released."""
+        js = build_site.build_js()
+        assert "decodeURIComponent(location.hash" not in js
+        assert "try { return decodeURIComponent(raw); } catch (e) { return raw; }" in js
+        assert "else if (DEFAULT_TAB) activateTab(DEFAULT_TAB, true)" in js
+        assert "delete panelFetches[name];" in js
+
+
+class TestStandaloneTabPages:
+    """Codex review, PR #30: the no-JS / failed-fetch fallback pages shipped no
+    script, so Water Cases Parts 1-3 stayed hidden and every filter was inert."""
+
+    def test_standalone_pages_run_the_page_script(self):
+        files = _files()
+        assert files["site.js"] == build_site.build_js()
+        for name, content in files.items():
+            if name.startswith("tab-"):
+                assert '<script src="site.js" defer></script>' in content, name
+                assert "classList.add('js')" in content, name
+
+    def test_no_script_readers_see_every_sub_panel(self):
+        page = _files()[build_site.tab_file("cwa")]
+        assert "<noscript><style>.subtabpanel[hidden]{display:block}</style></noscript>" in page
+        assert 'id="panel-cwa-p1" hidden' in page  # hidden only until the rule applies

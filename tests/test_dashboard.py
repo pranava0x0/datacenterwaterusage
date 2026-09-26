@@ -745,6 +745,63 @@ class TestLegislationTracker:
         assert "separate" in texas["status_detail"].lower()
         assert "remains voluntary" in texas["status_detail"].lower()
 
+    def test_september_26_refresh_is_pinned(self):
+        """The 2026-09-26 research pass: the commitments sweep's seven state
+        executive orders and four statutes, plus the movement sweep's CA AB 2469
+        and US S. 5054."""
+        by_id = {b["bill_id"]: b for b in self._bills()}
+        expected = {
+            "CA AB 2469": "enacted",
+            "US S. 5054": "introduced",
+            "KY EO 2026-494": "enacted",
+            "LA EO 26-058": "enacted",
+            "MA EO 658": "enacted",
+            "NE EO 26-17": "enacted",
+            "PA EO 2026-05": "enacted",
+            "VA EO 22 (2026)": "enacted",
+            "WY EO 2026-03": "enacted",
+            "KS SB 98": "enacted",
+            "ID H 897": "failed",
+            "VT H.727": "failed",
+        }
+        for bill_id, status in expected.items():
+            assert by_id[bill_id]["status"] == status, bill_id
+            assert by_id[bill_id]["last_verified"] >= "2026-09-26", bill_id
+        # Nebraska's water content is a task-force study; the record must say
+        # so rather than read as a water standard.
+        assert "study-only" in by_id["NE EO 26-17"]["status_detail"]
+        # Two orders rest on secondary sources (mass.gov 403s; the Wyoming
+        # governor's site serves no text) — medium confidence, stated.
+        assert by_id["MA EO 658"]["confidence"] == "medium"
+        assert by_id["WY EO 2026-03"]["confidence"] == "medium"
+        texas = by_id["TX PUC Energy and Water Use Survey (data centers)"]
+        assert any(ev["date"] == "2026-09-24" for ev in texas["timeline"])
+
+    def test_september_26_corrections_hold(self):
+        from refdata.loaders import (
+            load_cwa_investigations,
+            load_local_actions,
+            load_water_news,
+        )
+
+        news = {i["id"]: i for i in load_water_news()["items"]}
+        # Newsom signed seven bills, not three; four reach water or CEQA.
+        ca = news["california-data-center-laws-signed-2026-09"]
+        assert "Seven" in ca["title"]
+        assert "CA AB 2469" in ca["cross_ref_targets"]
+        # The research agent called Fort Wayne Phase 3 a §401 certification.
+        # It is a state isolated-wetland permit — the whole point of the case.
+        case = next(
+            c for c in load_cwa_investigations()["cases"]
+            if c["case_id"] == "Google-FortWayneIN-isolated-wetland-permit-2025"
+        )
+        assert "isolated wetlands" in case["violation_summary"]
+        assert "401" not in case["violation_summary"]
+        actions = {a["action_id"]: a for a in load_local_actions()["actions"]}
+        assert actions["dccb-spartanburg-county-sc-2026-06"]["status"] == "active"
+        assert actions["direct-elkhart-in-2026-08"]["water_related"]
+        assert actions["direct-palm-beach-county-fl-2026-09"]["water_related"]
+
     def test_rows_match_bill_count(self):
         bills = self._bills()
         rows = _legislation_rows(bills)

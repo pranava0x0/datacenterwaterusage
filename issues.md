@@ -301,7 +301,8 @@ All resolved on the branch unless noted.
 - **Standing rule** (also in CLAUDE.md and the file's own note): the mirror is a lead list, not a source of truth; verify mirrored records against primary coverage before shipping, and re-apply corrections after any re-sync (the upsert has no field-level protection).
 
 ### [TEST-002] Nothing exercises the Streamlit render_* layer
-- **Severity**: medium · **Root cause**: test gap · **Status**: open
+- **Severity**: medium · **Root cause**: test gap · **Status**: resolved (2026-09-26, tests/test_streamlit_app.py)
+- **Resolution**: `tests/test_streamlit_app.py` boots `dashboard.py` with `streamlit.testing.v1.AppTest` once per run (~1.2 s) and asserts no exception and every tab present, including the Overview, Commitments and statute-paths tabs added the same day.
 - BUG-110's crash was invisible to an 800-test suite because every test drives the pure builders or the static build; no test calls a `render_*` function. `streamlit.testing.v1.AppTest` can smoke-run the app headlessly — one test booting each tab would catch this whole class. Backlog-worthy next session.
 
 ### [TEST-003] News tags were a closed taxonomy nobody enforced

@@ -55,10 +55,14 @@ from refdata.loaders import (
     load_water_news,
     load_water_solutions,
 )
+from refdata.registry import _signature as _registry_signature
 from refdata.registry import build_registry
+from refdata.paths import activity_anchor
 from refdata.taxonomies import (
     COLORS,
     CWA_CASE_TYPE_LABELS,
+    DC_ACTIVITY_DESCRIPTIONS,
+    DC_ACTIVITY_LABELS,
     LEGISLATION_PRINCIPLE_DESCRIPTIONS,
     WATER_STATUTE_ORDER,
 )
@@ -103,6 +107,7 @@ HUB_ID_PREFIX = "hub:"
 # derived edge kind → the hub group (and id segment) it points into
 DERIVED_EDGE_KINDS = {
     "reading.family": "statute",
+    "reading.activity": "activity",
     "case.type": "case-type",
     "instrument.principle": "principle",
 }
@@ -126,6 +131,7 @@ EDGE_KIND_LABELS = {
     "news.cross_ref_targets": "News → tracked record",
     "solution.cross_ref_targets": "Solution → tracked record",
     "reading.family": "Reading → statute family",
+    "reading.activity": "Reading → data-center activity",
     "case.type": "Case → project type",
     "instrument.principle": "Instrument → principle",
 }
@@ -254,7 +260,36 @@ def _statutes_for(kind: str, record: dict, statute_of: dict[str, str]) -> list[s
     return sorted((c for c in codes if c), key=lambda c: (order.get(c, 99), c))
 
 
-def _node_attrs(kind: str, record: dict, statute_of: dict[str, str]) -> dict:
+def _activities_for(kind: str, record: dict, activities_of: dict[str, list[str]]) -> list[str]:
+    """Data-center activities a record touches, via the readings it cites.
+
+    A case inherits the activities of the readings in its ``authorities``; a
+    site those of the readings mapped to it — except mappings the curator marked
+    ``reaches: false``, which say the reading does NOT apply there.
+    """
+    if kind == "reading":
+        acts = set(record.get("dc_activities") or [])
+    elif kind == "case":
+        acts = {a for r in record.get("authorities") or [] for a in activities_of.get(r, [])}
+    elif kind == "site":
+        acts = {
+            a
+            for m in record.get("applicable_readings") or []
+            if m.get("reaches") is not False
+            for a in activities_of.get(m.get("reading_id", ""), [])
+        }
+    else:
+        return []
+    order = list(DC_ACTIVITY_LABELS)
+    return sorted(acts, key=lambda a: order.index(a) if a in order else 99)
+
+
+def _node_attrs(
+    kind: str,
+    record: dict,
+    statute_of: dict[str, str],
+    activities_of: dict[str, list[str]] | None = None,
+) -> dict:
     """The grouping fields the Explore filters and the graph legend read.
 
     Only what the UI actually filters or labels by — the full record is one
@@ -262,6 +297,7 @@ def _node_attrs(kind: str, record: dict, statute_of: dict[str, str]) -> dict:
     go stale in the blob.
     """
     statutes = _statutes_for(kind, record, statute_of)
+    activities = _activities_for(kind, record, activities_of or {})
     if kind == "instrument":
         return {
             "status": record.get("status", ""),
@@ -272,10 +308,16 @@ def _node_attrs(kind: str, record: dict, statute_of: dict[str, str]) -> dict:
             ),
         }
     if kind == "reading":
-        return {"statutes": statutes, "section": record.get("section", "")}
+        return {
+            "statutes": statutes,
+            "activities": activities,
+            "section": record.get("section", ""),
+            "role": record.get("dc_role", "hook"),
+        }
     if kind == "case":
         return {
             "statutes": statutes,
+            "activities": activities,
             "category": record.get("category", ""),
             "case_type": record.get("case_type", ""),
             "year": record.get("year", ""),
@@ -283,6 +325,7 @@ def _node_attrs(kind: str, record: dict, statute_of: dict[str, str]) -> dict:
     if kind == "site":
         return {
             "statutes": statutes,
+            "activities": activities,
             "issue_types": list(record.get("issue_types", [])),
             "location": record.get("location", ""),
         }
@@ -356,11 +399,9 @@ def build_graph() -> dict:
     """
     reg = build_registry()
     by_kind = _records_by_kind()
-    statute_of = {
-        r["reading_id"]: r.get("statute", "")
-        for r in load_water_authorities().get("readings", [])
-        if r.get("reading_id")
-    }
+    readings = [r for r in load_water_authorities().get("readings", []) if r.get("reading_id")]
+    statute_of = {r["reading_id"]: r.get("statute", "") for r in readings}
+    activities_of = {r["reading_id"]: list(r.get("dc_activities") or []) for r in readings}
 
     nodes = [
         {
@@ -369,7 +410,9 @@ def build_graph() -> dict:
             "label": ref.label,
             "tab": ref.tab,
             "anchor": ref.anchor,
-            "attrs": _node_attrs(ref.kind, by_kind[ref.kind].get(record_id, {}), statute_of),
+            "attrs": _node_attrs(
+                ref.kind, by_kind[ref.kind].get(record_id, {}), statute_of, activities_of
+            ),
         }
         for record_id, ref in reg.items()
     ]
@@ -401,6 +444,8 @@ def _taxonomy_hubs(by_kind: dict[str, dict[str, dict]]) -> tuple[list[dict], lis
         statute = reading.get("statute")
         if statute:
             members.setdefault(("statute", statute), []).append(reading_id)
+        for activity in reading.get("dc_activities") or []:
+            members.setdefault(("activity", activity), []).append(reading_id)
     for case_id, case in by_kind["case"].items():
         case_type = case.get("case_type")
         if case_type:
@@ -415,9 +460,16 @@ def _taxonomy_hubs(by_kind: dict[str, dict[str, dict]]) -> tuple[list[dict], lis
     edge_kind_of = {group: kind for kind, group in DERIVED_EDGE_KINDS.items()}
     statute_rank = {code: i for i, code in enumerate(WATER_STATUTE_ORDER)}
 
+    activity_rank = {a: i for i, a in enumerate(DC_ACTIVITY_LABELS)}
+
     def sort_key(item):
         (group, value), _ = item
-        rank = statute_rank.get(value, 99) if group == "statute" else 0
+        if group == "statute":
+            rank = statute_rank.get(value, 99)
+        elif group == "activity":
+            rank = activity_rank.get(value, 99)
+        else:
+            rank = 0
         return (group, rank, value)
 
     nodes, edges = [], []
@@ -429,6 +481,12 @@ def _taxonomy_hubs(by_kind: dict[str, dict[str, dict]]) -> tuple[list[dict], lis
             # The toolkit renders one <details id="statute-CODE"> per family, so
             # a statute hub can open its own section like any record node.
             tab, anchor = "cwa", f"statute-{value}"
+        elif group == "activity":
+            label = DC_ACTIVITY_LABELS.get(value, value)
+            title = DC_ACTIVITY_DESCRIPTIONS.get(value, label)
+            # Each activity is a <details id="paths-ACTIVITY"> in the statute
+            # paths view, so the hub opens its own group of legal paths.
+            tab, anchor = "cwa", activity_anchor(value)
         elif group == "case-type":
             label = CWA_CASE_TYPE_LABELS.get(value, value)
             title = label
@@ -518,6 +576,102 @@ def build_search_index() -> dict:
     }
 
 
+# --- Precomputed layout -------------------------------------------------------
+
+# These mirror the constants in dashboard._explore_js exactly — the page runs
+# the same loop whenever a reader changes which edge kinds are drawn, and a
+# layout computed here with different constants would jump the first time that
+# happened. A test runs the page's own JavaScript loop against this one.
+LAYOUT_W, LAYOUT_H = 900, 700
+LAYOUT_ITERATIONS = 120
+LAYOUT_GRAVITY = 0.05
+LAYOUT_CUTOFF = 3  # repulsion reaches CUTOFF·k and no further
+LAYOUT_RING_GAP = 60
+_GOLDEN_ANGLE = 2.399963229728653
+
+
+def compute_layout(
+    n_nodes: int,
+    edges: list[list[int]],
+    active_kinds: set[int],
+    kinds: list[str] | None = None,
+) -> list[list[float]]:
+    """Settled node positions for the default view, computed once at build time.
+
+    The browser used to run this on every visit: millions of pairwise force
+    evaluations across ~20 animation frames before the picture held still, the
+    most CPU-expensive thing on the site. The default view (curated edges only)
+    is the same for every reader, so it ships settled; the page re-runs the
+    loop only when a reader switches edge kinds.
+
+    Two departures from textbook Fruchterman-Reingold, both fixes for what the
+    old unbounded version did to this graph: repulsion is cut off beyond
+    ``LAYOUT_CUTOFF·k`` (summed over hundreds of nodes it swamped gravity and
+    inflated the layout to ~10,000 units), and records with no drawn edge sit
+    out the simulation and are placed on an outer ring in ``kinds`` order —
+    previously they were flung off-canvas, where no reader could see or click
+    167 of the 445 records.
+
+    Deterministic: golden-angle start, fixed annealing, no randomness, so an
+    unchanged dataset produces a byte-identical file.
+    """
+    if not n_nodes:
+        return []
+    import numpy as np  # pandas' own dependency; imported here to keep refdata import-light
+
+    idx = np.arange(n_nodes, dtype=float)
+    angle = idx * _GOLDEN_ANGLE
+    radius = 40 + 300 * np.sqrt(idx / n_nodes)
+    pos = np.stack(
+        [LAYOUT_W / 2 + radius * np.cos(angle), LAYOUT_H / 2 + radius * np.sin(angle)], axis=1
+    )
+    live = np.array([[a, b] for a, b, kind in edges if kind in active_kinds], dtype=int).reshape(-1, 2)
+    degree = np.zeros(n_nodes, dtype=int)
+    if len(live):
+        np.add.at(degree, live[:, 0], 1)
+        np.add.at(degree, live[:, 1], 1)
+    sim = np.flatnonzero(degree)
+    center = np.array([LAYOUT_W / 2, LAYOUT_H / 2])
+    k = np.sqrt((LAYOUT_W * LAYOUT_H) / max(1, len(sim)))
+    cutoff = LAYOUT_CUTOFF * k
+    temp0 = LAYOUT_W / 12
+
+    for t in range(LAYOUT_ITERATIONS if len(sim) else 0):
+        temperature = temp0 * (1 - t / LAYOUT_ITERATIONS)
+        p_sim = pos[sim]
+        diff = p_sim[:, None, :] - p_sim[None, :, :]
+        dist = np.sqrt((diff**2).sum(axis=2))
+        dist[dist == 0] = 0.01
+        np.fill_diagonal(dist, np.inf)
+        repel = (k * k) / (dist * dist)
+        repel[dist > cutoff] = 0
+        disp = np.zeros_like(pos)
+        disp[sim] = (diff * repel[:, :, None]).sum(axis=1)
+        d = pos[live[:, 0]] - pos[live[:, 1]]
+        dl = np.sqrt((d**2).sum(axis=1))
+        dl[dl == 0] = 0.01
+        pull = d * (dl / k)[:, None]  # unit vector · |d|²/k
+        np.add.at(disp, live[:, 0], -pull)
+        np.add.at(disp, live[:, 1], pull)
+        disp[sim] += (center - pos[sim]) * LAYOUT_GRAVITY
+        mag = np.sqrt((disp[sim] ** 2).sum(axis=1))
+        mag[mag == 0] = 0.01
+        move = np.minimum(mag, temperature)
+        pos[sim] += disp[sim] / mag[:, None] * move[:, None]
+
+    lone = [i for i in range(n_nodes) if not degree[i]]
+    if lone:
+        order = {kind: i for i, kind in enumerate(KIND_LABELS)}
+        lone.sort(key=lambda i: (order.get((kinds or [""] * n_nodes)[i], 99), i))
+        rmax = float(np.sqrt(((pos[sim] - center) ** 2).sum(axis=1)).max()) if len(sim) else 0.0
+        ring = max(200.0, rmax + LAYOUT_RING_GAP)
+        for j, i in enumerate(lone):
+            theta = (j / len(lone)) * 2 * np.pi - np.pi / 2
+            pos[i] = center + ring * np.array([np.cos(theta), np.sin(theta)])
+
+    return [[round(float(x), 1), round(float(y), 1)] for x, y in pos]
+
+
 # Weights ride the wire as integers: "874" instead of "0.874" over ~19k values
 # is ~40 KB, and the third decimal is already the rounding floor above.
 WEIGHT_SCALE = 10**WEIGHT_DECIMALS
@@ -560,8 +714,14 @@ def build_payload() -> dict:
             "w": [round(weight * WEIGHT_SCALE) for weight in vec.values()],
         }
 
+    default_kinds = {i for i, kind in enumerate(edge_kinds) if kind not in DERIVED_EDGE_KINDS}
+
     return {
         "nodes": nodes,
+        # Positions for the default view (curated edges only); see compute_layout.
+        "layout": compute_layout(
+            len(nodes), edges, default_kinds, [node["kind"] for node in nodes]
+        ),
         "edge_kinds": edge_kinds,
         "edge_kind_labels": [EDGE_KIND_LABELS.get(k, k) for k in edge_kinds],
         "edges": edges,
@@ -578,10 +738,22 @@ def build_payload() -> dict:
     }
 
 
+_PAYLOAD_CACHE: dict = {"sig": None, "json": ""}
+
+
 def payload_json() -> str:
     """The blob as it is embedded, so the size guard measures the real bytes.
 
     ``</`` is escaped because the blob sits in a ``<script>`` element and a
     record quoting ``</script>`` would otherwise end it early.
+
+    Memoised on the seven registry datasets' file signatures — exactly the
+    graph's inputs — so a build that needs the blob twice (to hash its URL
+    and to write it) and every Streamlit rerun compute the layout and index
+    once per data change rather than once per call.
     """
-    return json.dumps(build_payload(), separators=(",", ":")).replace("</", "<\\/")
+    sig = _registry_signature()
+    if _PAYLOAD_CACHE["sig"] != sig:
+        _PAYLOAD_CACHE["json"] = json.dumps(build_payload(), separators=(",", ":")).replace("</", "<\\/")
+        _PAYLOAD_CACHE["sig"] = sig
+    return _PAYLOAD_CACHE["json"]

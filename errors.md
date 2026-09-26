@@ -14,6 +14,22 @@ Format:
 
 ---
 
+### [2026-09-26] `_instrument_movement_date` reported movement dated after `today`
+- **Module**: dashboard.py `_instrument_movement_date` (used by the States tab's what's-new and the new Overview feed)
+- **Error**: `tests/test_overview.py::TestOverviewFeed::test_a_different_today_moves_the_window` — with `today=2026-07-01` the feed listed instruments "moved" on 2026-09-26.
+- **Context**: Writing the Overview tab's 30-day feed with a frozen-date test (DESIGN.md §5 requires time-windowed builders to take `today`).
+- **Root cause**: Code bug, latent since the function was written. When no timeline event had happened as of `today`, it fell back to `last_verified` without checking that date against `today`, so a re-verification after `today` counted as movement. Invisible in production because builds always pass the real date, which is never before a record's `last_verified`.
+- **Fix**: The fallback now applies only when `last_verified <= today`; otherwise the instrument has no movement as of `today`. Code fix; the new Overview test is the regression.
+- **Resolution**: Fixed (this session's Overview commit).
+
+### [2026-09-26] Research agent mislabeled the Fort Wayne Phase 3 approval as a §401 certification
+- **Module**: research deliverable → `data/reference/cwa_investigations.json` (`Google-FortWayneIN-isolated-wetland-permit-2025`)
+- **Error**: The movement-sweep agent described IDEM's 2026-09-10 approval as "a further Section 401 Water Quality Certification".
+- **Context**: Integrating the agent's `updates` list. A §401 certification implies a federal §404 nexus, which would have contradicted the case's whole point (isolated wetlands outside post-Sackett federal jurisdiction).
+- **Root cause**: Data error in agent output, caught by the main-session re-check (one WebSearch): coverage says a state permit for "forested, isolated wetlands".
+- **Fix**: Recorded as a state isolated-wetland permit; `test_september_26_corrections_hold` asserts "401" never enters the case's summary.
+- **Resolution**: Fixed before integration.
+
 ### [2026-09-21] URL spot-check loop used zsh's read-only `status` name
 - **Module**: source-URL verification command
 - **Error**: `zsh: read-only variable: status`

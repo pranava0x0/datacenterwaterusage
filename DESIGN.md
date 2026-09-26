@@ -237,6 +237,15 @@ and every card is visible. Emitting them closed instead would have hidden
 ~150 cards from a no-JS reader, and **no CSS can force a closed
 `<details>` open** — that is the whole reason for the inversion.
 
+**Tabs load on first open (2026-09-26).** Only the default tab ships in
+index.html; the rest are standalone pages fetched when a reader opens them —
+or hovers, focuses or touches their button, so the fetch is usually finished
+before the click. While a tab loads its panel shows a plain "Loading …" line
+(`.tab-loading`, hidden when scripting is off); a failed fetch says so and
+links to the standalone page. Nothing about a tab's look changes when it
+arrives late — the same CSS is already on the page — and a reader with
+JavaScript off gets one link per tab to a styled page of its own.
+
 **Back to top** — `#to-top`, a fixed outline chip bottom-right carrying a
 drawn caret and the word "Top" (no emoji, §12). It gets `.is-visible`
 past two viewport heights and fades with a *transition*, not an
@@ -263,6 +272,13 @@ sheets come out blank.
 ---
 
 ## 5. Tab anatomy — standard structure
+
+**The site opens on the Overview (2026-09-26).** It exists to answer a
+newcomer's three questions — what is this, what just happened, where do I
+start — and to route each to the tab that owns the answer, so it carries no
+cards of its own beyond links. It is also the page's first load (the lazily
+loaded site ships only the default tab inline), which is the second reason to
+keep it small: every tile and card is a link, not a preview.
 
 Every content tab follows this pattern (in order):
 
@@ -304,6 +320,8 @@ before the user scrolls into the card list. Panel shape varies by data type:
 | States & Localities | 3-metric row: States active / Local actions tracked / Newest action |
 | CWA Cases | Datacenter insights callout + application-theories table |
 | News | 3-metric row: Headlines / Topics / Most recent date |
+| Overview (landing) | 6 linked number tiles + six question cards routing to the owning tab + a 30-day feed (a headline absorbs the instruments it cites) + the month's county/city actions as chips |
+| Commitments | 4-metric row (national strategy: None / states with an enacted commitment / local agreements in force / company pledges) + the no-national-strategy finding as a §10 warning callout |
 | Solutions | 6-metric row (Deployed/Pilot/Proposed × Mandate/Utility/Industry) + key-patterns callout |
 | Sources | 4-metric scorecard: Accessible / Blocked / Unlocking / Queue |
 

@@ -25,6 +25,9 @@ PyMuPDF==1.28.2
 # Excel/CSV
 openpyxl==3.1.5
 pandas==3.0.5
+# Direct dependency since 2026-09-26 (refdata.graph.compute_layout). Pinned
+# to the version pandas already resolved to in CI, so the pin changes nothing.
+numpy==2.5.3
 
 # Rate limiting / retries
 tenacity==9.1.4
