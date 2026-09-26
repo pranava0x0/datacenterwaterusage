@@ -1938,6 +1938,9 @@ function loadPanel(name){
     });
     panel.replaceChildren(...[...body.childNodes].map(n => document.importNode(n, true)));
     delete panel.dataset.src;
+    // The parsed page has been copied in; keeping it would hold a second
+    // full DOM of the tab for the life of the page. panelReady remembers.
+    delete panelFetches[name];
     panel.removeAttribute('aria-busy');
     // Parsed-then-moved scripts never run. Re-create each one so the tab's
     // own inline scripts (its totals, the Explore client) execute in order.
@@ -1970,13 +1973,20 @@ const tabsBar = document.querySelector('.tabs-bar');
 const tabsRow = document.querySelector('.tabs');
 const tabs = document.querySelectorAll('.tab');
 const panels = document.querySelectorAll('.tabpanel');
+// The tab that ships inline; Back to the hashless first entry returns here.
+const DEFAULT_TAB = ([...tabs].find(t => t.getAttribute('aria-selected') === 'true') || tabs[0] || {dataset: {}}).dataset.tab;
 function activateTab(name, fromLink){
   tabs.forEach(x => x.setAttribute('aria-selected', x.dataset.tab === name ? 'true' : 'false'));
   panels.forEach(p => p.hidden = (p.id !== 'panel-' + name));
   scrollTabIntoView(name);
-  // A tab is shareable: the address bar names it. replaceState, so switching
-  // tabs does not bury the page under a pile of Back-button entries.
-  if (!fromLink) history.replaceState(null, '', '#panel-' + name);
+  // A tab is shareable: the address bar names it. Tab-to-tab switches
+  // replace the entry, so they do not bury the page under Back-button
+  // entries; but leaving a card a link pushed must not overwrite it, or Back
+  // would skip the card the reader just visited.
+  if (!fromLink){
+    const onPanel = !location.hash || location.hash.startsWith('#panel-');
+    history[onPanel ? 'replaceState' : 'pushState'](null, '', '#panel-' + name);
+  }
   return loadPanel(name).then(panel => {
     // The graph blob is a separate file fetched on first activation.
     if (name === 'explore' && window.exploreInit) window.exploreInit();
@@ -2336,6 +2346,12 @@ function navigateTo(id, push){
   return true;
 }
 
+// A shared URL can carry a malformed escape (a truncated %E2 from a chat
+// app); decodeURIComponent would throw and abort the script.
+function hashId(raw){
+  try { return decodeURIComponent(raw); } catch (e) { return raw; }
+}
+
 document.addEventListener('click', e => {
   // Respect modifier/middle clicks (new tab, etc.) — let the browser handle them.
   if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
@@ -2343,7 +2359,7 @@ document.addEventListener('click', e => {
   // its tab loads — gets the cross-tab treatment.
   const a = e.target.closest('a[href^="#"]');
   if (!a || a.getAttribute('href').length < 2) return;
-  const id = decodeURIComponent(a.getAttribute('href').slice(1));
+  const id = hashId(a.getAttribute('href').slice(1));
   if (id === 'top' || (!document.getElementById(id) && !ANCHOR_TAB[id])) return;
   e.preventDefault();
   navigateTo(id, true);
@@ -2351,9 +2367,11 @@ document.addEventListener('click', e => {
 
 // Back/Forward between cards visited through links, and a URL someone shared.
 window.addEventListener('popstate', () => {
-  if (location.hash.length > 1) navigateTo(decodeURIComponent(location.hash.slice(1)), false);
+  if (location.hash.length > 1) navigateTo(hashId(location.hash.slice(1)), false);
+  // Back to the first, hashless entry: the page opened on the default tab.
+  else if (DEFAULT_TAB) activateTab(DEFAULT_TAB, true).catch(() => {});
 });
-if (location.hash.length > 1) navigateTo(decodeURIComponent(location.hash.slice(1)), false);
+if (location.hash.length > 1) navigateTo(hashId(location.hash.slice(1)), false);
 
 // --- Records table state filter (dormant Data tab; inert while it is off) ---
 const recCount = document.getElementById('rec-count');

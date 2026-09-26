@@ -2116,14 +2116,14 @@ back to the river.</desc>
 </div>
   <div class="tabpanel" id="panel-legislation" role="tabpanel" hidden data-src="tab-legislation.html?v=5b1fa88615"><p class="tab-loading">Loading Legislation…</p><noscript><p class="tab-noscript">With JavaScript off, this section is a page of its own: <a href="tab-legislation.html">open Legislation</a>.</p></noscript></div>
   <div class="tabpanel" id="panel-states" role="tabpanel" hidden data-src="tab-states.html?v=334c60581c"><p class="tab-loading">Loading States &amp; Localities…</p><noscript><p class="tab-noscript">With JavaScript off, this section is a page of its own: <a href="tab-states.html">open States &amp; Localities</a>.</p></noscript></div>
-  <div class="tabpanel" id="panel-commitments" role="tabpanel" hidden data-src="tab-commitments.html?v=3c0e20deb8"><p class="tab-loading">Loading Commitments…</p><noscript><p class="tab-noscript">With JavaScript off, this section is a page of its own: <a href="tab-commitments.html">open Commitments</a>.</p></noscript></div>
+  <div class="tabpanel" id="panel-commitments" role="tabpanel" hidden data-src="tab-commitments.html?v=d574b0a369"><p class="tab-loading">Loading Commitments…</p><noscript><p class="tab-noscript">With JavaScript off, this section is a page of its own: <a href="tab-commitments.html">open Commitments</a>.</p></noscript></div>
   <div class="tabpanel" id="panel-cwa" role="tabpanel" hidden data-src="tab-cwa.html?v=a91a104e20"><p class="tab-loading">Loading Water Cases…</p><noscript><p class="tab-noscript">With JavaScript off, this section is a page of its own: <a href="tab-cwa.html">open Water Cases</a>.</p></noscript></div>
   <div class="tabpanel" id="panel-issues" role="tabpanel" hidden data-src="tab-issues.html?v=0220cf7708"><p class="tab-loading">Loading Issues &amp; Claims…</p><noscript><p class="tab-noscript">With JavaScript off, this section is a page of its own: <a href="tab-issues.html">open Issues &amp; Claims</a>.</p></noscript></div>
   <div class="tabpanel" id="panel-news" role="tabpanel" hidden data-src="tab-news.html?v=eb4a4b213b"><p class="tab-loading">Loading News…</p><noscript><p class="tab-noscript">With JavaScript off, this section is a page of its own: <a href="tab-news.html">open News</a>.</p></noscript></div>
   <div class="tabpanel" id="panel-solutions" role="tabpanel" hidden data-src="tab-solutions.html?v=8cc3761d38"><p class="tab-loading">Loading Solutions…</p><noscript><p class="tab-noscript">With JavaScript off, this section is a page of its own: <a href="tab-solutions.html">open Solutions</a>.</p></noscript></div>
   <div class="tabpanel" id="panel-security" role="tabpanel" hidden data-src="tab-security.html?v=ca72d15b5c"><p class="tab-loading">Loading Security…</p><noscript><p class="tab-noscript">With JavaScript off, this section is a page of its own: <a href="tab-security.html">open Security</a>.</p></noscript></div>
   <div class="tabpanel" id="panel-sources" role="tabpanel" hidden data-src="tab-sources.html?v=648806fd2d"><p class="tab-loading">Loading Sources…</p><noscript><p class="tab-noscript">With JavaScript off, this section is a page of its own: <a href="tab-sources.html">open Sources</a>.</p></noscript></div>
-  <div class="tabpanel" id="panel-explore" role="tabpanel" hidden data-src="tab-explore.html?v=e4d33094cb"><p class="tab-loading">Loading Explore…</p><noscript><p class="tab-noscript">With JavaScript off, this section is a page of its own: <a href="tab-explore.html">open Explore</a>.</p></noscript></div>
+  <div class="tabpanel" id="panel-explore" role="tabpanel" hidden data-src="tab-explore.html?v=764ab070b7"><p class="tab-loading">Loading Explore…</p><noscript><p class="tab-noscript">With JavaScript off, this section is a page of its own: <a href="tab-explore.html">open Explore</a>.</p></noscript></div>
 
   
 <svg class="footer-motif" viewBox="0 0 960 26" xmlns="http://www.w3.org/2000/svg"
@@ -2205,6 +2205,9 @@ function loadPanel(name){
     });
     panel.replaceChildren(...[...body.childNodes].map(n => document.importNode(n, true)));
     delete panel.dataset.src;
+    // The parsed page has been copied in; keeping it would hold a second
+    // full DOM of the tab for the life of the page. panelReady remembers.
+    delete panelFetches[name];
     panel.removeAttribute('aria-busy');
     // Parsed-then-moved scripts never run. Re-create each one so the tab's
     // own inline scripts (its totals, the Explore client) execute in order.
@@ -2237,13 +2240,20 @@ const tabsBar = document.querySelector('.tabs-bar');
 const tabsRow = document.querySelector('.tabs');
 const tabs = document.querySelectorAll('.tab');
 const panels = document.querySelectorAll('.tabpanel');
+// The tab that ships inline; Back to the hashless first entry returns here.
+const DEFAULT_TAB = ([...tabs].find(t => t.getAttribute('aria-selected') === 'true') || tabs[0] || {dataset: {}}).dataset.tab;
 function activateTab(name, fromLink){
   tabs.forEach(x => x.setAttribute('aria-selected', x.dataset.tab === name ? 'true' : 'false'));
   panels.forEach(p => p.hidden = (p.id !== 'panel-' + name));
   scrollTabIntoView(name);
-  // A tab is shareable: the address bar names it. replaceState, so switching
-  // tabs does not bury the page under a pile of Back-button entries.
-  if (!fromLink) history.replaceState(null, '', '#panel-' + name);
+  // A tab is shareable: the address bar names it. Tab-to-tab switches
+  // replace the entry, so they do not bury the page under Back-button
+  // entries; but leaving a card a link pushed must not overwrite it, or Back
+  // would skip the card the reader just visited.
+  if (!fromLink){
+    const onPanel = !location.hash || location.hash.startsWith('#panel-');
+    history[onPanel ? 'replaceState' : 'pushState'](null, '', '#panel-' + name);
+  }
   return loadPanel(name).then(panel => {
     // The graph blob is a separate file fetched on first activation.
     if (name === 'explore' && window.exploreInit) window.exploreInit();
@@ -2603,6 +2613,12 @@ function navigateTo(id, push){
   return true;
 }
 
+// A shared URL can carry a malformed escape (a truncated %E2 from a chat
+// app); decodeURIComponent would throw and abort the script.
+function hashId(raw){
+  try { return decodeURIComponent(raw); } catch (e) { return raw; }
+}
+
 document.addEventListener('click', e => {
   // Respect modifier/middle clicks (new tab, etc.) — let the browser handle them.
   if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
@@ -2610,7 +2626,7 @@ document.addEventListener('click', e => {
   // its tab loads — gets the cross-tab treatment.
   const a = e.target.closest('a[href^="#"]');
   if (!a || a.getAttribute('href').length < 2) return;
-  const id = decodeURIComponent(a.getAttribute('href').slice(1));
+  const id = hashId(a.getAttribute('href').slice(1));
   if (id === 'top' || (!document.getElementById(id) && !ANCHOR_TAB[id])) return;
   e.preventDefault();
   navigateTo(id, true);
@@ -2618,9 +2634,11 @@ document.addEventListener('click', e => {
 
 // Back/Forward between cards visited through links, and a URL someone shared.
 window.addEventListener('popstate', () => {
-  if (location.hash.length > 1) navigateTo(decodeURIComponent(location.hash.slice(1)), false);
+  if (location.hash.length > 1) navigateTo(hashId(location.hash.slice(1)), false);
+  // Back to the first, hashless entry: the page opened on the default tab.
+  else if (DEFAULT_TAB) activateTab(DEFAULT_TAB, true).catch(() => {});
 });
-if (location.hash.length > 1) navigateTo(decodeURIComponent(location.hash.slice(1)), false);
+if (location.hash.length > 1) navigateTo(hashId(location.hash.slice(1)), false);
 
 // --- Records table state filter (dormant Data tab; inert while it is off) ---
 const recCount = document.getElementById('rec-count');

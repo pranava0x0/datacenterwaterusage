@@ -161,15 +161,15 @@ Who has committed to what on data-center water, and how binding it is. The Unite
 ### State commitments (enacted instruments, by principle)
 
 - California — Disclose water use: CA AB 1577, CA AB 2619, CA SB 887, CA AB 2469; Review before building: CA AB 1577, CA AB 2619, CA SB 887, CA AB 2469; Pay its own way: CA AB 2469; Use less water: CA AB 2469
-- Virginia — Disclose water use: VA HB 496 / SB 553, VA DEQ waterworks data-center reporting regulations, VA DEQ Eastern Virginia groundwater study, VA EO 22 (2026); Review before building: VA HB 496 / SB 553, VA DEQ Eastern Virginia groundwater study, VA EO 22 (2026); Use less water: VA EO 22 (2026); Guidance only: VA EO 22 (2026)
+- Virginia — Disclose water use: VA HB 496 / SB 553, VA DEQ waterworks data-center reporting regulations, VA DEQ Eastern Virginia groundwater study, VA EO 22 (2026); Review before building: VA HB 496 / SB 553, VA DEQ Eastern Virginia groundwater study, VA EO 22 (2026); Use less water: VA EO 22 (2026); Issue guidance: VA EO 22 (2026)
 - Florida — Review before building: FL SB 484; Pay its own way: FL SB 484; Use less water: FL SB 484
 - Louisiana — Pay its own way: LA EO 26-058; Use less water: LA EO 26-058; Condition incentives: LA EO 26-058
-- Massachusetts — Review before building: MA EO 658; Pay its own way: MA EO 658; Guidance only: MA EO 658
+- Massachusetts — Review before building: MA EO 658; Pay its own way: MA EO 658; Issue guidance: MA EO 658
 - Minnesota — Review before building: MN HF 16; Pay its own way: MN HF 16; Use less water: MN HF 16
 - Nevada — Review before building: NV EO 2026-005; Pay its own way: NV EO 2026-005; Condition incentives: NV EO 2026-005
 - South Dakota — Review before building: SD SB 135; Pay its own way: SD SB 135; Use less water: SD SB 135
 - Utah — Disclose water use: UT HB 76, UT EO 2026-03; Review before building: UT HB 76; Pay its own way: UT EO 2026-03
-- Wyoming — Pay its own way: WY EO 2026-03; Use less water: WY EO 2026-03; Guidance only: WY EO 2026-03
+- Wyoming — Pay its own way: WY EO 2026-03; Use less water: WY EO 2026-03; Issue guidance: WY EO 2026-03
 - Idaho — Review before building: ID H 895; Use less water: ID H 895
 - Kansas — Use less water: KS SB 98; Condition incentives: KS SB 98
 - Kentucky — Review before building: KY EO 2026-494; Pay its own way: KY EO 2026-494

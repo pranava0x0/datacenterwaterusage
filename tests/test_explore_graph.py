@@ -150,3 +150,26 @@ def test_toolbar_controls_wrap_on_a_phone():
     css = dashboard._explore_css()
     rule = next(line for line in css.splitlines() if line.startswith(".explore-tools{"))
     assert "flex-wrap:wrap" in rule
+
+
+def test_relayout_keeps_the_readers_camera():
+    """PR #30 review: re-layout frames re-fit only if the reader has not
+    panned or zoomed, and paths mode defers the network re-layout."""
+    js = dashboard._explore_js()
+    assert "if (!cameraMoved) fitView();" in js
+    assert "if (mode === 'paths'){ layoutStale = true; return; }" in js
+    assert "if (layoutStale) runLayout();" in js
+
+
+def test_payload_is_built_once_per_data_change():
+    """PR #30 review: the build needed the blob twice (URL hash + file)."""
+    graph._PAYLOAD_CACHE.update(sig=None, json="")
+    first = graph.payload_json()
+    calls = []
+    original = graph.build_payload
+    graph.build_payload = lambda: calls.append(1) or original()
+    try:
+        assert graph.payload_json() == first
+    finally:
+        graph.build_payload = original
+    assert calls == []

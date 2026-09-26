@@ -480,7 +480,9 @@ STATE_COMMITMENT_COLUMNS = {
     "conserve": ("Use less water", ("Conservation", "Closed-loop cooling")),
     "incentives": ("Condition incentives", ("Anti-corporate-welfare",)),
     "pause": ("Pause development", ("Moratorium",)),
-    "guidance": ("Guidance only", ("Best-practice guidance",)),
+    # "Issue guidance", not "Guidance only": a state lands here whenever any
+    # enacted instrument carries guidance, even beside binding commitments.
+    "guidance": ("Issue guidance", ("Best-practice guidance",)),
 }
 
 

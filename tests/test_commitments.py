@@ -167,3 +167,10 @@ class TestCommitmentsTab:
         assert "## Water commitments" in llms
         for rec in _records():
             assert rec["id"] in llms, rec["id"]
+
+
+def test_guidance_column_does_not_claim_exclusivity():
+    """PR #30 review: 'Guidance only' mislabelled states with binding
+    commitments in other columns (Virginia's EO 22)."""
+    label, _tags = taxonomies.STATE_COMMITMENT_COLUMNS["guidance"]
+    assert "only" not in label.lower()

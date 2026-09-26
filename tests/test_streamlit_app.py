@@ -12,12 +12,19 @@ import pytest
 
 pytest.importorskip("streamlit.testing.v1")
 
+from pathlib import Path  # noqa: E402
+
 from streamlit.testing.v1 import AppTest  # noqa: E402
+
+# Absolute: Streamlit 1.62 resolves a relative path against the calling file
+# (tests/), older releases against the working directory — CI and local
+# disagreed until this was pinned.
+APP = Path(__file__).resolve().parent.parent / "dashboard.py"
 
 
 @pytest.fixture(scope="module")
 def app():
-    at = AppTest.from_file("dashboard.py", default_timeout=120)
+    at = AppTest.from_file(str(APP), default_timeout=120)
     at.run()
     return at
 

@@ -1216,5 +1216,15 @@ class TestLazyTabs:
 
     def test_tab_urls_are_shareable(self):
         js = build_site.build_js()
-        assert "history.replaceState(null, '', '#panel-' + name)" in js
+        assert "history[onPanel ? 'replaceState' : 'pushState'](null, '', '#panel-' + name)" in js
         assert "addEventListener('popstate'" in js
+
+    def test_review_fixes_for_history_and_hashes(self):
+        """PR #30 review: malformed escapes must not throw, Back to the first
+        entry restores the default tab, and a loaded tab's parsed page is
+        released."""
+        js = build_site.build_js()
+        assert "decodeURIComponent(location.hash" not in js
+        assert "try { return decodeURIComponent(raw); } catch (e) { return raw; }" in js
+        assert "else if (DEFAULT_TAB) activateTab(DEFAULT_TAB, true)" in js
+        assert "delete panelFetches[name];" in js

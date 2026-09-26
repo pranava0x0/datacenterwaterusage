@@ -323,16 +323,24 @@
 
   var ITERATIONS = 120;
   var layoutEpoch = 0;
+  // Set once the reader pans or zooms: a re-layout then keeps their camera
+  // instead of snapping back to fit-all on every frame.
+  var cameraMoved = false;
+  // In Legal-paths mode the network is not on screen, so a re-layout is
+  // owed rather than run; switching back to Network pays it.
+  var layoutStale = false;
   function runLayout(){
     // A fast series of edge-kind changes can start several animation loops.
     // Only the newest layout may keep spending frames on this canvas.
     var epoch = ++layoutEpoch;
+    if (mode === 'paths'){ layoutStale = true; return; }
+    layoutStale = false;
     var lone = partition();
     var t = 0, temp0 = W / 12;
     if (reduceMotion){
       for (t = 0; t < ITERATIONS; t++) step(temp0 * (1 - t / ITERATIONS));
       ringLone(lone);
-      fitView();
+      if (!cameraMoved) fitView();
       draw();
       return;
     }
@@ -342,7 +350,7 @@
       if (epoch !== layoutEpoch) return;
       for (var c = 0; c < 6 && t < ITERATIONS; c++, t++) step(temp0 * (1 - t / ITERATIONS));
       ringLone(lone);
-      fitView();
+      if (!cameraMoved) fitView();
       draw();
       if (t < ITERATIONS && epoch === layoutEpoch) requestAnimationFrame(frame);
     })();
@@ -584,12 +592,14 @@
     if (!dragging) return;
     if (Math.abs(x - lastX) + Math.abs(y - lastY) > 3) dragged = true;
     var c2 = cam();
+    if (c2 === view) cameraMoved = true;
     c2.ox += x - lastX; c2.oy += y - lastY;
     lastX = x; lastY = y;
     draw();
   }
   function zoom(factor){
     var c2 = cam();
+    if (c2 === view) cameraMoved = true;
     c2.scale = Math.min(4, Math.max(0.1, c2.scale * factor));
     draw();
   }
@@ -734,6 +744,7 @@
   root.querySelector('#explore-zoom-in').addEventListener('click', function(){ zoom(1.2); });
   root.querySelector('#explore-zoom-out').addEventListener('click', function(){ zoom(1 / 1.2); });
   root.querySelector('#explore-reset').addEventListener('click', function(){
+    cameraMoved = false;
     fitView();
     setFocus(-1);
   });
@@ -764,6 +775,7 @@
       if (changed) runLayout();
       return;
     }
+    if (layoutStale) runLayout();
     if (focused >= 0) setFocus(focused); else draw();
   });
   root.querySelector('#explore-depth').addEventListener('change', function(){

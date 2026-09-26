@@ -55,6 +55,7 @@ from refdata.loaders import (
     load_water_news,
     load_water_solutions,
 )
+from refdata.registry import _signature as _registry_signature
 from refdata.registry import build_registry
 from refdata.paths import activity_anchor
 from refdata.taxonomies import (
@@ -737,10 +738,22 @@ def build_payload() -> dict:
     }
 
 
+_PAYLOAD_CACHE: dict = {"sig": None, "json": ""}
+
+
 def payload_json() -> str:
     """The blob as it is embedded, so the size guard measures the real bytes.
 
     ``</`` is escaped because the blob sits in a ``<script>`` element and a
     record quoting ``</script>`` would otherwise end it early.
+
+    Memoised on the seven registry datasets' file signatures — exactly the
+    graph's inputs — so a build that needs the blob twice (to hash its URL
+    and to write it) and every Streamlit rerun compute the layout and index
+    once per data change rather than once per call.
     """
-    return json.dumps(build_payload(), separators=(",", ":")).replace("</", "<\\/")
+    sig = _registry_signature()
+    if _PAYLOAD_CACHE["sig"] != sig:
+        _PAYLOAD_CACHE["json"] = json.dumps(build_payload(), separators=(",", ":")).replace("</", "<\\/")
+        _PAYLOAD_CACHE["sig"] = sig
+    return _PAYLOAD_CACHE["json"]
