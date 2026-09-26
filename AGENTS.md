@@ -512,6 +512,40 @@ the correction yield is what paid for it.**
   input (the AWS suit's state-law theory forced the `SL` authority family) —
   keep that clause in every research-agent prompt for this repo.
 
+**2026-09-26 — three Sonnet research agents, run one at a time by user
+instruction (movement sweep → commitments landscape → moratorium mirror
+verification). Verdict: all three justified and used; serial cost wall-clock
+only, because implementation ran in the main session while each agent worked.**
+
+- *Movement sweep (seeded with 3 orchestrator WebSearches):* 200.2k tokens, 63
+  tool uses, ~9 min → 12 items + 6 updates (~11.1k/unit). One material error:
+  it called IDEM's Fort Wayne Phase 3 approval a "§401 certification"; one
+  main-session search showed a state isolated-wetland permit (errors.md). It
+  correctly excluded three water-free California bills after reading their text
+  and fixed the seed's misattribution of a disclosure mechanism.
+- *Commitments landscape (seeded with the sibling repo's 32 water-themed
+  policies as a lead list):* 438.1k tokens, 81 tool uses, ~21 min → 17
+  state/local + 11 company + 5 national records (~13.3k/unit, the costliest).
+  Read scanned EO PDFs via vision where WebFetch returned binary; reported
+  Nebraska's water content as study-only instead of padding; corrected the
+  sibling's Saline Township paraphrase. Weakest part: the company-progress task
+  found new progress for Google only — next time do that inline, one search per
+  company.
+- *Moratorium verification (35 unmirrored water-tagged records):* 201.4k
+  tokens, 75 tool uses, ~11.6 min → 35/35 adjudicated (~5.8k/record, the
+  mirror-verify regime). Caught Augusta GA superseded by a closed-loop
+  ordinance the snapshot predated, and two records whose sources never mention
+  water. Missed that two upstream ids duplicated `direct-` records here — the
+  main session's jurisdiction check caught it.
+- *Main-session verification* (two batch curls over 108 URLs: no 404s; ~15
+  WebSearches) caught the §401 mislabel, sourced Augusta's adoption, and
+  supplied every legislation record's dated coverage and reaction paragraph,
+  which no agent had been asked for.
+- *Lesson:* seeding each agent with a concrete lead list (search results, the
+  sibling's records, the unmirrored ids) kept all three out of the 35k/entry
+  open-discovery regime. Put "check for existing records under another id
+  prefix" in any mirror-verification prompt.
+
 **2026-09-21 — three parallel research agents (news refresh, security
 landscape, federal program design). Verdict: all three justified and used;
 the bounded split kept discovery, market mapping and program design distinct.**
