@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-08-24",
+  "last_updated": "2026-09-26",
   "source_repo": "pranava0x0/datacentercommunitybenefits",
   "source_path": "docs/data/claims.json",
   "live_dashboard": "https://pranava0x0.github.io/datacentercommunitybenefits/",
@@ -34,10 +34,10 @@
       "captured_at": "2026-05-14",
       "delivered": {
         "status": "partial",
-        "summary": "Reframed rather than retired. Google's June 2026 announcement leads with replenishing 'more water than we consume' across data centers by 2030; the 120% figure remains in the supporting technical documentation, so the target stands while the headline softened. Progress is real and large — 165 projects across 97 watersheds, $17M committed across seven states, and projects expected to replenish over 19 billion gallons a year by 2030, roughly double 2024 consumption — but replenishment is watershed-level and does not by itself answer local strain where a campus actually draws.",
+        "summary": "Reframed rather than retired. Google's June 2026 announcement leads with replenishing 'more water than we consume' across data centers by 2030; the 120% figure remains in the supporting technical documentation, so the target stands while the headline softened. Progress is real and large — 165 projects across 97 watersheds, $17M committed across seven states (raised to $77M across 12 states in an August 2026 expansion), and projects expected to replenish over 19 billion gallons a year by 2030, roughly double 2024 consumption — but replenishment is watershed-level and does not by itself answer local strain where a campus actually draws.",
         "source_url": "https://blog.google/company-news/outreach-and-initiatives/sustainability/new-water-stewardship-commitments/",
         "source_title": "Google — New water stewardship commitments (June 2026)",
-        "assessed_at": "2026-07-26"
+        "assessed_at": "2026-09-26"
       },
       "claim_type": "water-positive-pledge"
     },
@@ -136,10 +136,10 @@
       ],
       "delivered": {
         "status": "litigated",
-        "summary": "AWS's published Northern Virginia water figures are now before the Circuit Court of Arlington County. A former AWS water sustainability program manager alleges, on FOIA'd utility billing records for 2023-2026, that the company's '42% year-over-year reduction' and 'ninety-seven percent of the year ... not using any water' statements are materially misleading. AWS denies wrongdoing and says its water data is independently assured by a third party. No ruling as of 2026-07-26 — this records that the claim is contested in a forum, not that it is false.",
+        "summary": "AWS's published Northern Virginia water figures are now before the Circuit Court of Arlington County. A former AWS water sustainability program manager alleges, on FOIA'd utility billing records for 2023-2026, that the company's '42% year-over-year reduction' and 'ninety-seven percent of the year ... not using any water' statements are materially misleading. AWS denies wrongdoing and says its water data is independently assured by a third party. No ruling as of 2026-07-26 — this records that the claim is contested in a forum, not that it is false. AWS's July 16, 2026 update says it reached 75% of its 2030 water-positive goal in 2025; no ruling, motion or hearing in the Arlington case was found as of 2026-09-26.",
         "source_url": "https://www.theregister.com/on-prem/2026/07/15/aws-sustainability-claims-dont-hold-water-lawsuit-alleges/5269723",
         "source_title": "The Register — AWS sustainability claims don't hold water, lawsuit alleges",
-        "assessed_at": "2026-07-26"
+        "assessed_at": "2026-09-26"
       }
     },
     {
@@ -354,7 +354,14 @@
       "source_title": "Microsoft — Building Community-First AI Infrastructure (Brad Smith, Jan 13, 2026)",
       "captured_at": "2026-05-15",
       "published_at": "2026-01-13",
-      "claim_type": "water-positive-pledge"
+      "claim_type": "water-positive-pledge",
+      "delivered": {
+        "status": "partial",
+        "summary": "Restates the water-positive-by-2030 pledge tracked separately. Microsoft reports it replenished more water than it withdrew across global operations in FY25 — the pledge met five years early as a global aggregate — but 'more of your water' is a community-level promise that a global total does not establish basin by basin.",
+        "source_url": "https://blogs.microsoft.com/blog/2026/06/24/inside-microsofts-two-decade-push-to-cut-water-intensity-while-scaling-for-growth/",
+        "source_title": "Microsoft — Inside Microsoft's two-decade push to cut water intensity (June 24, 2026)",
+        "assessed_at": "2026-09-26"
+      }
     },
     {
       "id": "nebius-water-closed-loop",
@@ -625,7 +632,14 @@
       "captured_at": "2026-06-05",
       "published_at": "2026-01-13",
       "formal_agreement": false,
-      "claim_type": "efficiency-wue"
+      "claim_type": "efficiency-wue",
+      "delivered": {
+        "status": "partial",
+        "summary": "Microsoft reports a 25 percent reduction in data-center water-use intensity against a 2022 baseline as of 2025 — well over halfway to the 40 percent target by its own account. The figure is self-reported, and intensity can fall while total consumption rises: reporting across 2022-2025 shows efficiency gains alongside higher absolute use.",
+        "source_url": "https://blogs.microsoft.com/blog/2026/06/24/inside-microsofts-two-decade-push-to-cut-water-intensity-while-scaling-for-growth/",
+        "source_title": "Microsoft — Inside Microsoft's two-decade push to cut water intensity (June 24, 2026)",
+        "assessed_at": "2026-09-26"
+      }
     },
     {
       "id": "ms-el-mirage-water-2024",

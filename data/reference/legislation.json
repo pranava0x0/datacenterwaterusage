@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-09-21",
-  "note": "State + federal data center water/energy legislation, plus selected regulatory actions and major local zoning decisions. Verified entries had their status confirmed against a primary source (state legislature page, Congress.gov / GovInfo, official sponsor press release) on the listed last_verified date; unverified entries should be re-checked before being relied upon. July 5, 2026 addition: FL SB 484 — enacted (signed May 7, 2026, effective July 1, 2026), ratepayer cost-allocation protections, a 100,000 gal/day reclaimed-water cooling requirement, and preserved local zoning authority; resolves the 'Florida hyperscale data-center regulatory framework' backlog candidate with a confirmed bill number. June 27, 2026 additions: IA HF 2690 (water + energy reporting and a separate data-center electric tariff; introduced) and CT SB 245 (would have repealed Connecticut's data-center tax incentives and added clean-energy/sustainability conditions; failed — died on the Senate calendar). Each bill is enriched with recent_news (up to 3 dated items with source URLs), public_sentiment (a paragraph naming supporters/opponents), general_principles (tagged policy concepts), and a procedural timeline. These fields are best-effort as of last_updated and should be re-verified before being cited. Scope expanded 2026-05-28 to include regulatory rulemakings (OH EPA OHD000001) and major local ordinances (Loudoun ZOAM) that function as de facto data-center policy. August 24, 2026 additions (state/local + federal sweep): TX EO 2026-08 (data center audit) — Abbott's directive gating the ERCOT interconnection queue on a water-and-power audit of ~250-300 projects; VA DEQ Eastern Virginia groundwater study — the delayed Potomac Aquifer report finding no headroom for new industrial withdrawals east of I-95; ME EO 2026-04 (data center advisory council) — the alternative Gov. Mills chose the day the LD 307 veto was sustained; SC S. 724 — annual water-consumption reporting for data centers over 100 MW and 3 MGal/month; and three federal items (WRDA 2026 H.R. 9497, NDAA FY2026 Sec. 1531, H.R. 2940 Advancing Water Reuse Act). The House companion H.R. 9825 was merged into the existing US S. 4213 record rather than entered twice. County and city measures below the first-of-kind threshold live in local_actions.json and render on the States & Localities tab.",
+  "last_updated": "2026-09-26",
+  "note": "State + federal data center water/energy legislation, plus selected regulatory actions and major local zoning decisions. Verified entries had their status confirmed against a primary source (state legislature page, Congress.gov / GovInfo, official sponsor press release) on the listed last_verified date; unverified entries should be re-checked before being relied upon. July 5, 2026 addition: FL SB 484 — enacted (signed May 7, 2026, effective July 1, 2026), ratepayer cost-allocation protections, a 100,000 gal/day reclaimed-water cooling requirement, and preserved local zoning authority; resolves the 'Florida hyperscale data-center regulatory framework' backlog candidate with a confirmed bill number. June 27, 2026 additions: IA HF 2690 (water + energy reporting and a separate data-center electric tariff; introduced) and CT SB 245 (would have repealed Connecticut's data-center tax incentives and added clean-energy/sustainability conditions; failed — died on the Senate calendar). Each bill is enriched with recent_news (up to 3 dated items with source URLs), public_sentiment (a paragraph naming supporters/opponents), general_principles (tagged policy concepts), and a procedural timeline. These fields are best-effort as of last_updated and should be re-verified before being cited. Scope expanded 2026-05-28 to include regulatory rulemakings (OH EPA OHD000001) and major local ordinances (Loudoun ZOAM) that function as de facto data-center policy. August 24, 2026 additions (state/local + federal sweep): TX EO 2026-08 (data center audit) — Abbott's directive gating the ERCOT interconnection queue on a water-and-power audit of ~250-300 projects; VA DEQ Eastern Virginia groundwater study — the delayed Potomac Aquifer report finding no headroom for new industrial withdrawals east of I-95; ME EO 2026-04 (data center advisory council) — the alternative Gov. Mills chose the day the LD 307 veto was sustained; SC S. 724 — annual water-consumption reporting for data centers over 100 MW and 3 MGal/month; and three federal items (WRDA 2026 H.R. 9497, NDAA FY2026 Sec. 1531, H.R. 2940 Advancing Water Reuse Act). The House companion H.R. 9825 was merged into the existing US S. 4213 record rather than entered twice. County and city measures below the first-of-kind threshold live in local_actions.json and render on the States & Localities tab. September 26, 2026 additions: CA AB 2469 (permit-stage water supply assessment, 2028 drought plan, developer-funded water infrastructure; enacted with the 2026-09-21 package); US S. 5054 (Warner: bonus depreciation conditioned on water and power disclosure); seven state executive orders with data-center water terms — KY EO 2026-494 (water harm as a permit-denial ground), LA EO 26-058 (efficiency commitment as a tax-exemption condition), MA EO 658 (MassDEP water and wastewater protocols; community agreements above 25 MW), NE EO 26-17 (incentives closed; water study only), PA EO 2026-05 (annual DEP water reporting from July 2027), VA EO 22 (Eastern Virginia designated a cooling water scarcity area) and WY EO 2026-03 (voluntary closed-loop pillar); KS SB 98 (2025 tax exemption with a water-plan condition); and two failed bills, ID H 897 and VT H.727 (closed-loop mandate, vetoed). The TX PUC survey record gains the 2026-09-24 Attorney General investigation.",
   "bills": [
     {
       "bill_id": "NV EO 2026-005",
@@ -4098,9 +4098,9 @@
         "energy"
       ],
       "status": "introduced",
-      "status_detail": "PUCT's survey remains voluntary. A separate Texas Water Development Board water-use survey is mandatory: on 2026-09-14 Governor Abbott directed TWDB to penalize major users, including data centers, for nonresponse, with possible criminal referral and ineligibility for certain TCEQ Chapter 11 water permits, amendments, or renewals. TWDB must coordinate with PUCT and ERCOT on an audit of consumption, sources, and efficiency technology and report progress by 2026-10-14. Do not describe the voluntary PUCT survey itself as mandatory.",
+      "status_detail": "PUCT's survey remains voluntary. A separate Texas Water Development Board water-use survey is mandatory: on 2026-09-14 Governor Abbott directed TWDB to penalize major users, including data centers, for nonresponse, with possible criminal referral and ineligibility for certain TCEQ Chapter 11 water permits, amendments, or renewals. TWDB must coordinate with PUCT and ERCOT on an audit of consumption, sources, and efficiency technology and report progress by 2026-10-14. Do not describe the voluntary PUCT survey itself as mandatory. On 2026-09-24 Attorney General Paxton opened an investigation into hundreds of data-center developments in 18 named counties for nonresponse to the mandatory TWDB survey.",
       "source_url": "https://www.puc.texas.gov/industry/water/utilities/energy-and-water-use-survey/faq/",
-      "last_verified": "2026-09-21",
+      "last_verified": "2026-09-26",
       "verified": true,
       "confidence": "high",
       "general_principles": [
@@ -4133,9 +4133,21 @@
           "date": "2026-09-14",
           "milestone": "Mandatory TWDB survey enforcement ordered",
           "detail": "Governor directs penalties, permit consequences, and a TWDB/PUCT/ERCOT audit; the separate PUCT survey remains voluntary."
+        },
+        {
+          "date": "2026-09-24",
+          "milestone": "Attorney General investigation",
+          "detail": "AG Paxton opens an investigation into hundreds of data-center developments in 18 counties for not responding to the mandatory TWDB survey"
         }
       ],
       "recent_news": [
+        {
+          "date": "2026-09-24",
+          "title": "Attorney General Paxton launches landmark investigation into hundreds of data center developments in Texas",
+          "source": "Office of the Texas Attorney General",
+          "url": "https://www.texasattorneygeneral.gov/news/releases/attorney-general-paxton-launches-landmark-investigation-hundreds-data-center-developments-texas",
+          "takeaway": "Escalates the TWDB survey enforcement ten days after the Governor's penalty directive; no docket or penalty announced yet."
+        },
         {
           "date": "2026-09-14",
           "title": "Governor directs penalties for mandatory water-use reporting failures",
@@ -4751,6 +4763,665 @@
         }
       ],
       "public_sentiment": "The six-month delay became half the story: the finding lands as evidence that Eastern Virginia's aquifer has no headroom, and legislators who pushed HB 496's reporting mandate treated the withholding as proof the disclosure regime is still too weak. Water advocates read it as grounds for tighter data-center rules; the industry's position is that surface-water and reclaimed supply, not the aquifer, is where new campuses would draw."
+    },
+    {
+      "bill_id": "CA AB 2469",
+      "instrument_type": "bill",
+      "jurisdiction": "California",
+      "level": "state",
+      "title": "Data Centers: Water Use Disclosures (permit-stage water supply assessment)",
+      "sponsor": "Asm. Diane Papan",
+      "summary": "Bars a city or county from approving any discretionary or ministerial permit for a new data center, or for an expansion that raises peak water use, unless the applicant gives local governments and water suppliers a water supply assessment (Water Code §10910 et seq.), projected water use and efficiency measures. From January 1, 2028 applicants must also file a water scarcity plan describing how the facility would cut use in drought, and the data center pays for any water conveyance, treatment, storage or distribution upgrades its supply requires.",
+      "scope": [
+        "water"
+      ],
+      "status": "enacted",
+      "status_detail": "Signed by Governor Newsom on 2026-09-21 as one of seven data-center bills (Senate 28-9 on 2026-08-30; Assembly concurrence 61-12 on 2026-08-31). Of the rest of the package, AB 2619, AB 1577 and SB 887 are tracked separately; AB 2383, SB 886 and SB 1168 contain no water provisions (electricity ratemaking and interconnection only).",
+      "source_url": "https://leginfo.legislature.ca.gov/faces/billTextClient.xhtml?bill_id=202520260AB2469",
+      "last_verified": "2026-09-26",
+      "verified": true,
+      "confidence": "high",
+      "general_principles": [
+        {
+          "tag": "Preemptive review",
+          "note": "No local permit for a new campus or a peak-water expansion until a water supply assessment is on file."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "Applicants give local governments and water suppliers projected water use and efficiency measures."
+        },
+        {
+          "tag": "Cost allocation",
+          "note": "The data center pays for any water conveyance, treatment, storage or distribution upgrades its supply needs."
+        },
+        {
+          "tag": "Conservation",
+          "note": "From 2028, a water scarcity plan must show how the facility cuts use under drought conditions."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-08-30",
+          "milestone": "Passed Senate",
+          "detail": "28-9"
+        },
+        {
+          "date": "2026-08-31",
+          "milestone": "Assembly concurrence",
+          "detail": "61-12; sent to the Governor"
+        },
+        {
+          "date": "2026-09-21",
+          "milestone": "Signed",
+          "detail": "Signed by Governor Newsom with six other data-center bills"
+        }
+      ],
+      "recent_news": [
+        {
+          "date": "2026-09-21",
+          "title": "Governor Newsom signs most comprehensive data center laws in the nation",
+          "source": "Office of the Governor of California",
+          "url": "https://www.gov.ca.gov/2026/09/21/governor-newsom-signs-most-comprehensive-data-center-laws-in-the-nation-providing-communities-more-control-on-water-electricity-and-land-use/",
+          "takeaway": "AB 2469 is the package's permit-stage water bill; AB 2619 carries the annual water-use reporting."
+        },
+        {
+          "date": "2026-08-31",
+          "title": "Newsom vetoed a data center water bill last year. Will he sign it this time?",
+          "source": "CalMatters (via Almanac News)",
+          "url": "https://www.almanacnews.com/calmatters/2026/08/31/newsom-vetoed-a-data-center-water-bill-last-year-will-he-sign-it-this-time/",
+          "takeaway": "Frames the 2026 water bills as successors to the vetoed AB 93."
+        }
+      ],
+      "public_sentiment": "The Governor's office presented the seven-bill package as the most comprehensive data-center law in the country, giving communities more control over water, electricity and land use. AB 2469 passed with recorded opposition in both chambers (28-9 in the Senate, 61-12 on concurrence), and it arrives a year after Newsom vetoed AB 93, the earlier water-disclosure bill this tracker follows."
+    },
+    {
+      "bill_id": "US S. 5054",
+      "instrument_type": "bill",
+      "jurisdiction": "Federal (US)",
+      "level": "federal",
+      "title": "Data Center Tax Accountability and Disclosure Act of 2026",
+      "sponsor": "Sen. Mark Warner (D-VA)",
+      "summary": "Would deny bonus-depreciation tax benefits to covered data centers (25 MW or more of power demand) unless the operator publicly discloses monthly water withdrawal and consumption, water sources, annual average water-use effectiveness, and water rights, permits or long-term supply agreements, alongside electricity and emissions metrics. Reports go to DOE and EPA for annual public release; new facilities disclose 180 days before operating and existing ones within 180 days of enactment, then annually.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "introduced",
+      "status_detail": "Introduced 2026-07-21 as part of a Warner AI legislative package; bill text on GovInfo. No committee action found as of 2026-09-26.",
+      "source_url": "https://www.govinfo.gov/app/details/BILLS-119s5054is",
+      "last_verified": "2026-09-26",
+      "verified": true,
+      "confidence": "high",
+      "general_principles": [
+        {
+          "tag": "Disclosure",
+          "note": "Monthly water withdrawal and consumption, sources, WUE and water rights, filed with DOE and EPA."
+        },
+        {
+          "tag": "Anti-corporate-welfare",
+          "note": "Bonus depreciation is withheld unless the facility discloses."
+        },
+        {
+          "tag": "Federal coordination",
+          "note": "One federal reporting format instead of state-by-state disclosure rules."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-07-21",
+          "milestone": "Introduced",
+          "detail": "Introduced by Sen. Warner in the Senate"
+        }
+      ],
+      "recent_news": [
+        {
+          "date": "2026-07-22",
+          "title": "Sen. Warner targets data centers' energy usage, economic impacts of AI in new bills",
+          "source": "ARLnow",
+          "url": "https://www.arlnow.com/2026/07/22/sen-warner-targets-data-centers-energy-usage-economic-impacts-of-ai-in-new-bills/",
+          "takeaway": "Places S. 5054 inside Warner's broader AI package."
+        }
+      ],
+      "public_sentiment": "Warner represents the largest data-center market in the country, and coverage has framed the bill as using a federal tax benefit, rather than a mandate, to pry open water and power figures that operators currently keep behind non-disclosure agreements. No industry response or cosponsor was found in coverage reviewed for this entry."
+    },
+    {
+      "bill_id": "KY EO 2026-494",
+      "instrument_type": "executive-order",
+      "jurisdiction": "Kentucky",
+      "level": "state",
+      "title": "Data Center Ratepayer, Environmental, Tax, and Community Commitments (Executive Order)",
+      "sponsor": "Gov. Andy Beshear",
+      "summary": "Requires data-center developers to show they will not harm ratepayers or the environment, pay their share of local and school taxes, and engage with host communities. On water, it directs the Energy and Environment Cabinet to deny any permit where a data center would negatively affect air quality, water use, water quality, water supply, federally jurisdictional wetlands or natural resources (Section I.C). Developers must also file an energy plan protecting other customers from rate increases.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Signed and effective 2026-08-06. Water is one of six listed grounds for mandatory permit denial, not a standalone water program: no numeric cap, reporting schedule or cooling-technology requirement. Whether the order can be enforced without enabling legislation was questioned in coverage within two weeks.",
+      "source_url": "https://governor.ky.gov/attachments/20260806_Executive-Order_2026-494_Related-to-Data-Centers.pdf",
+      "last_verified": "2026-09-26",
+      "verified": true,
+      "confidence": "high",
+      "general_principles": [
+        {
+          "tag": "Permit oversight",
+          "note": "Directs the Cabinet to deny permits where a data center would harm water use, quality or supply, or jurisdictional wetlands."
+        },
+        {
+          "tag": "Cost allocation",
+          "note": "Energy plans must shield families and existing businesses from rate increases."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-08-06",
+          "milestone": "Signed and effective",
+          "detail": "Executive Order 2026-494"
+        },
+        {
+          "date": "2026-08-18",
+          "milestone": "Enforceability questioned",
+          "detail": "Coverage asks whether the order has teeth without state law behind it"
+        }
+      ],
+      "recent_news": [
+        {
+          "date": "2026-08-06",
+          "title": "Beshear issues executive order to protect against 'harmful impacts' of data centers",
+          "source": "Kentucky Lantern",
+          "url": "https://kentuckylantern.com/2026/08/06/beshear-to-issue-executive-order-to-protect-against-harmful-impacts-of-data-centers/",
+          "takeaway": "Sets out the three demonstrations developers must make, including no environmental harm."
+        },
+        {
+          "date": "2026-08-18",
+          "title": "Does Beshear's data center executive order have 'teeth' without state law to back it up?",
+          "source": "Kentucky Lantern",
+          "url": "https://kentuckylantern.com/2026/08/18/does-beshears-data-center-executive-order-have-teeth-without-state-law-to-back-it-up/",
+          "takeaway": "The enforceability question: an executive order directing permit denials without enabling legislation."
+        }
+      ],
+      "public_sentiment": "Reaction was mixed. Panattoni Data Centers said it supports the order's principles; residents near proposed Mercer County sites said it does not go far enough; and the Kentucky Resources Council urged the administration to consider a special legislative session to put the order's goals into statute."
+    },
+    {
+      "bill_id": "LA EO 26-058",
+      "instrument_type": "executive-order",
+      "jurisdiction": "Louisiana",
+      "level": "state",
+      "title": "Louisiana Ratepayer and Community Protection Initiative (Executive Order)",
+      "sponsor": "Gov. Jeff Landry",
+      "summary": "Directs Louisiana Economic Development to condition the data-center sales and use tax exemption (R.S. 47:305.73) on a Ratepayer and Community Protection Framework: projects must fully fund the generation, transmission and other infrastructure they need, submit detailed compliance attestations, and commit to 'best-in-class efficiency standards for water use, energy management, and environmental stewardship' (Section 3.E).",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Signed 2026-06-25. The water commitment is a condition of the sales-tax exemption, not a freestanding permit rule — a project that never seeks the exemption is not bound — and it sets no numeric water target.",
+      "source_url": "https://gov.louisiana.gov/assets/2026-Executive-Orders/JML-Executive-Order-25-058.pdf",
+      "last_verified": "2026-09-26",
+      "verified": true,
+      "confidence": "high",
+      "general_principles": [
+        {
+          "tag": "Anti-corporate-welfare",
+          "note": "The sales and use tax exemption is conditioned on the protection framework."
+        },
+        {
+          "tag": "Cost allocation",
+          "note": "Power-intensive projects fully fund the infrastructure needed to serve them."
+        },
+        {
+          "tag": "Conservation",
+          "note": "Commit to best-in-class water-use efficiency, without a numeric standard."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-06-25",
+          "milestone": "Signed",
+          "detail": "Executive Order 26-058"
+        }
+      ],
+      "recent_news": [
+        {
+          "date": "2026-06-26",
+          "title": "Landry signs order to protect utility customers as he promotes more data center development",
+          "source": "Louisiana Illuminator",
+          "url": "https://lailluminator.com/2026/06/26/landry-order-data-power/",
+          "takeaway": "Protection conditions arrive alongside a continued push for data-center investment."
+        }
+      ],
+      "public_sentiment": "Landry paired the order with a defense of Louisiana's data-center strategy, including the Meta campus in Richland Parish, and coverage framed it as ratepayer protection rather than restraint. The water language is a commitment to efficiency 'standards' the order leaves undefined, which is the gap critics of the incentive program point to."
+    },
+    {
+      "bill_id": "MA EO 658",
+      "instrument_type": "executive-order",
+      "jurisdiction": "Massachusetts",
+      "level": "state",
+      "title": "Requirements for Responsible Data Center Development and Operations (Executive Order)",
+      "sponsor": "Gov. Maura Healey",
+      "summary": "For data centers and expansions above 25 MW of peak demand, state agencies will not process permits until the developer has a community benefits agreement with local stakeholders meeting state environmental-justice standards, and the project must bring its own clean energy or pay into a Ratepayer Protection Fund. On water, MassDEP is directed to develop protocols for protecting water resources and treating wastewater from covered projects.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Signed 2026-09-08. The water provision is a directive to MassDEP to write protocols, not a standard in the order itself. The mass.gov text returns 403 to automated clients; provisions confirmed through two legal analyses and statewide news coverage.",
+      "source_url": "https://www.mass.gov/executive-orders/no-658-establishing-requirements-for-responsible-data-center-development-and-operations-in-massachusetts-to-protect-and-support-ratepayers-communities-and-the-environment",
+      "last_verified": "2026-09-26",
+      "verified": true,
+      "confidence": "medium",
+      "general_principles": [
+        {
+          "tag": "Permit oversight",
+          "note": "No state permit review above 25 MW without a community benefits agreement."
+        },
+        {
+          "tag": "Best-practice guidance",
+          "note": "MassDEP to develop water-resource protection and wastewater protocols for covered projects."
+        },
+        {
+          "tag": "Cost allocation",
+          "note": "Bring-your-own-clean-energy, or pay into a Ratepayer Protection Fund."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-09-08",
+          "milestone": "Signed",
+          "detail": "Executive Order No. 658"
+        }
+      ],
+      "recent_news": [
+        {
+          "date": "2026-09-11",
+          "title": "Healey conditions state permits for large data centers on community agreements",
+          "source": "Winchester News",
+          "url": "https://winchesternews.org/20260911_healey-conditions-state-permits-for-large-data-centers-on-community-agreements/",
+          "takeaway": "The 25 MW threshold makes the host community a required party before any state permit moves."
+        }
+      ],
+      "public_sentiment": "Healey summarized the order as 'unless a community says yes to a data center, we are saying no,' and coverage framed it as handing towns a veto over large projects. Legal commentary focused on how the community-agreement requirement interacts with existing permitting timelines."
+    },
+    {
+      "bill_id": "NE EO 26-17",
+      "instrument_type": "executive-order",
+      "jurisdiction": "Nebraska",
+      "level": "state",
+      "title": "Responsible Administration of Economic Development Incentives under the ImagiNE Nebraska Act (Executive Order)",
+      "sponsor": "Gov. Jim Pillen",
+      "summary": "Closes ImagiNE Nebraska Act tax incentives to new data-center applications and directs the Department of Water, Environment, and Energy to convene a Data Center Task Force to analyze data centers' impact on Nebraska's water, grid and local infrastructure and recommend legislation. Incentive reviews must also consider environmental quality.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Signed 2026-07-20; 17 task-force members appointed 2026-08-19. The water content is study-only: a task-force analysis and report, plus a non-binding 'consider environmental quality' factor in incentive review — no water standard.",
+      "source_url": "https://govdocs.nebraska.gov/docs/pilot/pubs/eofiles/26-17.pdf",
+      "last_verified": "2026-09-26",
+      "verified": true,
+      "confidence": "high",
+      "general_principles": [
+        {
+          "tag": "Anti-corporate-welfare",
+          "note": "Ends ImagiNE Act incentive approvals for new data-center applications."
+        },
+        {
+          "tag": "Preemptive review",
+          "note": "A DWEE task force studies water and grid impacts before the state sets rules (study only)."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-07-20",
+          "milestone": "Signed",
+          "detail": "Executive Order 26-17"
+        },
+        {
+          "date": "2026-08-19",
+          "milestone": "Task force appointed",
+          "detail": "17 members named to the Data Center Task Force"
+        }
+      ],
+      "recent_news": [
+        {
+          "date": "2026-07-20",
+          "title": "Pillen rescinds ImagiNE Act tax incentives for new Nebraska data centers",
+          "source": "Nebraska Examiner",
+          "url": "https://nebraskaexaminer.com/2026/07/20/pillen-rescinds-imagine-act-tax-incentives-for-new-nebraska-data-centers/",
+          "takeaway": "The incentive cut is the operative change; water is routed to a task force."
+        }
+      ],
+      "public_sentiment": "Coverage centered on the end of tax incentives, which Pillen first described as applying to large projects and then clarified applies to all new data-center applications, and on protecting Nebraska's public-power system. Water appears as one of the task force's study areas rather than as a live controversy."
+    },
+    {
+      "bill_id": "PA EO 2026-05",
+      "instrument_type": "executive-order",
+      "jurisdiction": "Pennsylvania",
+      "level": "state",
+      "title": "Protecting Pennsylvania Consumers from Data Center Impacts (Executive Order)",
+      "sponsor": "Gov. Josh Shapiro",
+      "summary": "Conditions DEP permitting and state tax and incentive actions for data centers above 25 MW on the Governor's GRID requirements. Developers report water use, wastewater discharges and water-efficiency metrics and hold public meetings; operating data centers file annual reports with DEP (first due July 1, 2027) including total water consumption, under Fiscal Code §1813-B. For applicants outside the GRID consent order, DEP will not begin permit review until any water-withdrawal authorization is documented. DEP is also directed to recommend new regulations protecting air and water.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Signed 2026-08-18. The annual water-reporting duty rests on Fiscal Code §1813-B, enacted before the order; the order operationalizes it and spells out the water fields. Critics noted how much of the order restates existing law.",
+      "source_url": "http://www.pa.gov/content/dam/copapwp-pagov/en/governor/documents/eo2026_05_protecting%20pennsylvania%20consumers%20from%20data%20center%20impacts_final_executed.pdf",
+      "last_verified": "2026-09-26",
+      "verified": true,
+      "confidence": "high",
+      "general_principles": [
+        {
+          "tag": "Disclosure",
+          "note": "Annual DEP reports including total water consumption, first due July 1, 2027."
+        },
+        {
+          "tag": "Permit oversight",
+          "note": "DEP review waits on documented water-withdrawal authorization for applicants outside the GRID order."
+        },
+        {
+          "tag": "Preemptive review",
+          "note": "Water use, wastewater and efficiency metrics are reported before permits, with public meetings."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-08-18",
+          "milestone": "Signed",
+          "detail": "Executive Order 2026-05"
+        },
+        {
+          "date": "2027-07-01",
+          "milestone": "First annual DEP water report due",
+          "detail": "Operating data centers report prior-year water consumption"
+        }
+      ],
+      "recent_news": [
+        {
+          "date": "2026-09-15",
+          "title": "Shapiro called his data-centers executive order the strictest in the nation. Much of it was already the law.",
+          "source": "Broad + Liberty",
+          "url": "https://broadandliberty.com/2026/09/15/shapiro-called-his-data-centers-executive-order-the-strictest-in-the-nation-much-of-it-was-already-the-law/",
+          "takeaway": "The water-reporting duty predates the order; the order's contribution is enforcement and field definitions."
+        }
+      ],
+      "public_sentiment": "Shapiro called it the strictest data-center order in the nation; law-firm alerts described it as tying streamlined permitting to compliance with the GRID requirements, while critics argued much of it restates obligations already in state law."
+    },
+    {
+      "bill_id": "VA EO 22 (2026)",
+      "instrument_type": "executive-order",
+      "jurisdiction": "Virginia",
+      "level": "state",
+      "title": "Virginia Data Center Accountability Framework and AI Initiatives (Executive Order 22)",
+      "sponsor": "Gov. Abigail Spanberger",
+      "summary": "Designates the Eastern Virginia Groundwater Management Area — the Commonwealth east of I-95 — a 'cooling water scarcity area' effective immediately, and directs DEQ to propose general criteria for such designations. A 120-day Data Center Planning and Community Engagement Toolkit must cover evaluating anticipated water use and wastewater management in local review; responsible-development scoring (VA-LEAD) must weigh water and land use; and Virginia Energy must examine co-locating developments that use data-center waste heat or reclaimed water. The order also limits confidentiality protections.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Signed 2026-09-18; rescinds EO 30 (2024) and Executive Directive 5 (2023). The Eastern Virginia designation is self-executing; the general designation criteria, the toolkit and the siting review arrive over 120-240 days. Follows the DEQ Eastern Virginia groundwater study tracked here, which found no region east of I-95 can support a new 3 MGD industrial withdrawal.",
+      "source_url": "https://www.governor.virginia.gov/media/governorvirginiagov/governor-of-virginia/pdf/eo/eo-22-establishing-va-data-center-accountability-and-ai-initiatives.pdf",
+      "last_verified": "2026-09-26",
+      "verified": true,
+      "confidence": "high",
+      "general_principles": [
+        {
+          "tag": "Conservation",
+          "note": "Eastern Virginia is designated a cooling water scarcity area; DEQ to set statewide designation criteria."
+        },
+        {
+          "tag": "Transparency",
+          "note": "Limits confidentiality protections for data-center projects."
+        },
+        {
+          "tag": "Best-practice guidance",
+          "note": "A local-review toolkit covering anticipated water use and wastewater management."
+        },
+        {
+          "tag": "Preemptive review",
+          "note": "VA-LEAD scoring weighs water and land use before development."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-09-18",
+          "milestone": "Signed",
+          "detail": "Eastern Virginia Groundwater Management Area designated a cooling water scarcity area"
+        }
+      ],
+      "recent_news": [
+        {
+          "date": "2026-09-21",
+          "title": "Spanberger presents slate of data center regulation proposals, puts first directives in motion",
+          "source": "WHRO",
+          "url": "https://www.whro.org/environment/2026-09-21/spanberger-presents-slate-of-data-center-regulation-proposals-puts-first-directives-in-motion",
+          "takeaway": "The cooling-water designation is among the directives that take effect immediately."
+        },
+        {
+          "date": "2026-09-23",
+          "title": "What Virginia's new AI and data center executive order means now and what comes next",
+          "source": "WSLS",
+          "url": "https://www.wsls.com/news/local/2026/09/23/data-center-spanberger/",
+          "takeaway": "Separates the immediate directives from the rulemakings to come."
+        }
+      ],
+      "public_sentiment": "Coverage treated EO 22 as the first substantial data-center action of the Spanberger administration in the largest US market, and law-firm alerts flagged the cooling-water scarcity designation and the narrower confidentiality protections as the changes developers feel first."
+    },
+    {
+      "bill_id": "WY EO 2026-03",
+      "instrument_type": "executive-order",
+      "jurisdiction": "Wyoming",
+      "level": "state",
+      "title": "Data Centers the Wyoming Way (Executive Order)",
+      "sponsor": "Gov. Mark Gordon",
+      "summary": "Establishes the Wyoming Data Center Development Framework, eight principles agencies apply when permitting or facilitating large data-center projects: water sustainability, wildlife stewardship, transparency, energy leadership, grid protection, revenue-driven growth, workforce development and community investment. On water it encourages closed-loop ('filled once') cooling and technologies that minimize consumption; developers bear incremental power-infrastructure costs.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Signed 2026-06-03. The water pillar encourages rather than requires closed-loop cooling, and the order preserves existing statutory authority. The governor's site does not serve the order's text to automated clients; provisions confirmed through a consultancy analysis and statewide news coverage.",
+      "source_url": "https://trinityconsultants.com/resources/data-centers-the-wyoming-way-what-governor-gordons-executive-order-2026-03-means/",
+      "last_verified": "2026-09-26",
+      "verified": true,
+      "confidence": "medium",
+      "general_principles": [
+        {
+          "tag": "Best-practice guidance",
+          "note": "Water sustainability is a framework pillar agencies apply, not a numeric standard."
+        },
+        {
+          "tag": "Closed-loop cooling",
+          "note": "Encourages closed-loop, fill-once cooling (voluntary)."
+        },
+        {
+          "tag": "Cost allocation",
+          "note": "Developers bear incremental power-infrastructure costs."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-06-03",
+          "milestone": "Signed",
+          "detail": "Executive Order 2026-03"
+        }
+      ],
+      "recent_news": [
+        {
+          "date": "2026-06-03",
+          "title": "Gov. Gordon signs order to manage Wyoming's data center growth",
+          "source": "Oil City News",
+          "url": "https://oilcity.news/government/state/2026/06/03/gov-gordon-signs-order-to-manage-wyomings-data-center-growth/",
+          "takeaway": "Framework principles for agencies, with water sustainability listed first."
+        }
+      ],
+      "public_sentiment": "Gordon framed the order as keeping Wyoming a destination for data-center investment while shielding residents from environmental and financial costs, and coverage treated it as pro-development guardrails rather than a restriction."
+    },
+    {
+      "bill_id": "KS SB 98",
+      "instrument_type": "bill",
+      "jurisdiction": "Kansas",
+      "level": "state",
+      "title": "Qualified data center sales and use tax exemption (with water-plan condition)",
+      "sponsor": "Kansas Senate Committee on Commerce",
+      "summary": "Creates a full state and local sales and use tax exemption for building or remodeling qualified data centers investing at least $250 million and creating 20 jobs. To qualify, a firm must adopt a comprehensive water plan reflecting responsible stewardship and long-term sustainability and commit to practices that conserve, reuse and replace water, and must buy electricity for ten years from the certified utility.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "enacted",
+      "status_detail": "Approved by Governor Kelly on 2025-04-24 (2025 Session Laws, Chapter 124); exemption available from 2025-07-01. The water plan is a condition of eligibility for the exemption, not a standalone mandate.",
+      "source_url": "https://www.sos.ks.gov/publications/sessionlaws/2025/Chapter-124-SB-98.html",
+      "last_verified": "2026-09-26",
+      "verified": true,
+      "confidence": "high",
+      "general_principles": [
+        {
+          "tag": "Anti-corporate-welfare",
+          "note": "The tax exemption carries water, investment, jobs and security-review conditions."
+        },
+        {
+          "tag": "Conservation",
+          "note": "Qualified firms adopt a water plan committing to conserve, reuse and replace water."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2025-04-24",
+          "milestone": "Approved by the Governor",
+          "detail": "2025 Session Laws of Kansas, Chapter 124"
+        },
+        {
+          "date": "2025-07-01",
+          "milestone": "Exemption available",
+          "detail": "Qualified data centers may apply"
+        }
+      ],
+      "recent_news": [],
+      "public_sentiment": "Coverage of the law has centered on the size of the exemption and its investment and jobs thresholds, plus the Kansas Intelligence Fusion Center security review each applicant faces. The water-plan condition is an eligibility requirement, and no public controversy over it was found in sources reviewed for this entry."
+    },
+    {
+      "bill_id": "ID H 897",
+      "instrument_type": "bill",
+      "jurisdiction": "Idaho",
+      "level": "state",
+      "title": "Data center tax exemption limits, water-use notice and cost-recovery electric service",
+      "sponsor": "Bipartisan House sponsors",
+      "summary": "Would have limited Idaho's data-center sales tax exemption to server equipment for projects starting after April 1, 2026, phased out the large-capital-investment property tax exemption, required electric service that fully recovers the utility's costs, and required a data center to give its water provider written notice of how much water it will use, with reporting on economic, energy and water impacts.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "failed",
+      "status_detail": "Returned from the Senate amended and referred back to House Revenue & Taxation on 2026-04-02; no further action before adjournment. The second year in a row a rollback of Idaho's data-center tax breaks failed. The water-notice idea survives in a weaker form next to ID H 895, the enacted consumptive-cooling limit.",
+      "source_url": "https://legislature.idaho.gov/sessioninfo/2026/legislation/H0897/",
+      "last_verified": "2026-09-26",
+      "verified": true,
+      "confidence": "high",
+      "general_principles": [
+        {
+          "tag": "Disclosure",
+          "note": "Written notice to the water provider of expected water use."
+        },
+        {
+          "tag": "Anti-corporate-welfare",
+          "note": "Narrows the sales-tax exemption and phases out a property-tax exemption."
+        },
+        {
+          "tag": "Cost allocation",
+          "note": "Electric service must fully recover the utility's cost of serving the data center."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-02-09",
+          "milestone": "Introduced",
+          "detail": "Bipartisan bill filed in the House"
+        },
+        {
+          "date": "2026-04-02",
+          "milestone": "Stalled",
+          "detail": "Returned from the Senate amended; referred back to House Revenue & Taxation"
+        }
+      ],
+      "recent_news": [
+        {
+          "date": "2026-02-09",
+          "title": "Bipartisan bill would limit tax exemptions for data centers, add new requirements for water, power usage",
+          "source": "BoiseDev",
+          "url": "https://boisedev.com/news/2026/02/09/bipartisan-bill-would-limit-tax-exemptions-for-data-centers-add-new-requirements-for-water-power-usage/",
+          "takeaway": "Introduced as a bipartisan rollback paired with water and power conditions."
+        }
+      ],
+      "public_sentiment": "The Idaho Conservation League backed the bill as tax accountability for data centers, and it drew bipartisan sponsorship, but it failed for the second year running as lawmakers balanced incentive rollbacks against pending data-center investment."
+    },
+    {
+      "bill_id": "VT H.727",
+      "instrument_type": "bill",
+      "jurisdiction": "Vermont",
+      "level": "state",
+      "title": "Vermont Sustainable Data Centers Act",
+      "sponsor": "Vermont House",
+      "summary": "Would have required data centers of 20 MW or more that use water for cooling to use closed-loop systems, required a groundwater withdrawal permit for any cooling withdrawal regardless of the normal 57,600 gallon-per-day threshold, required surface-water withdrawal permits whose rules force withdrawals to stop in drought, triggered impact assessment above 150,000 gallons per day, capped PFAS in discharges, and required quarterly public reports of water and energy use including daily peaks. Utility contracts approved by the Public Utility Commission would have insulated other ratepayers.",
+      "scope": [
+        "water",
+        "energy"
+      ],
+      "status": "failed",
+      "status_detail": "Passed the Senate 26-3 and the House on a voice vote; vetoed by Governor Scott on 2026-05-28. The House override vote on 2026-05-29 failed 83-52, short of the two-thirds required.",
+      "source_url": "https://legislature.vermont.gov/Documents/2026/Docs/BILLS/H-0727/H-0727%20As%20Passed%20by%20Both%20House%20and%20Senate%20Official.pdf",
+      "last_verified": "2026-09-26",
+      "verified": true,
+      "confidence": "high",
+      "general_principles": [
+        {
+          "tag": "Closed-loop cooling",
+          "note": "Closed-loop systems required for any data center that cools with water."
+        },
+        {
+          "tag": "Conservation",
+          "note": "Withdrawal permits at any volume, and a duty to stop surface withdrawals in drought."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "Quarterly public reports of water and energy use, including daily peaks."
+        },
+        {
+          "tag": "Cost allocation",
+          "note": "PUC-approved utility contracts insulate other ratepayers."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2026-05-28",
+          "milestone": "Vetoed",
+          "detail": "Governor Scott vetoes H.727"
+        },
+        {
+          "date": "2026-05-29",
+          "milestone": "Override failed",
+          "detail": "House vote 83-52, short of two-thirds"
+        }
+      ],
+      "recent_news": [
+        {
+          "date": "2026-05-28",
+          "title": "Scott vetoes data center bill H.727",
+          "source": "Vermont Business Magazine",
+          "url": "https://vermontbiz.com/news/2026/may/28/scott-vetoes-data-center-bill-h727",
+          "takeaway": "Scott argued existing Vermont law already gives regulators substantial authority."
+        },
+        {
+          "date": "2026-06-12",
+          "title": "Scott's data center veto was a mistake",
+          "source": "VTDigger (opinion)",
+          "url": "https://vtdigger.org/2026/06/12/opinion-scotts-data-center-veto-was-a-mistake/",
+          "takeaway": "Supporters' case for the closed-loop and reporting requirements."
+        }
+      ],
+      "public_sentiment": "The Vermont Natural Resources Council and other environmental groups backed the bill and criticized the veto; Governor Scott argued existing law already provides substantial authority. The override vote broke largely along party lines, with every recorded nay from Republicans."
     }
   ]
 }

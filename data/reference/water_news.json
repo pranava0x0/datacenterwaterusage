@@ -1,13 +1,13 @@
 {
-  "last_updated": "2026-09-21",
+  "last_updated": "2026-09-26",
   "description": "Curated headlines about data center water use, regulation, enforcement, and solutions — linked to the tracker's datasets where possible.",
   "items": [
     {
       "id": "california-data-center-laws-signed-2026-09",
       "date": "2026-09-21",
-      "title": "California Signs Three Data Center Water, Energy, and CEQA Laws",
+      "title": "California Signs Seven Data Center Bills; Four Reach Water or Environmental Review",
       "outlet": "Office of Governor Gavin Newsom / California Legislative Information",
-      "summary": "Governor Newsom signed AB 1577, AB 2619, and SB 887. Together they create statewide data-center energy and water reporting, facility-level projected and actual water disclosure tied to local licensing and urban-water planning, and revised CEQA treatment for data-center projects. The signature converts all three tracked bills from proposals into enacted law.",
+      "summary": "Governor Newsom signed seven data-center bills on September 21, 2026. Four reach water or environmental review: AB 2469 requires a water supply assessment before any local permit and, from 2028, a drought plan, with developers paying for water infrastructure; AB 2619 requires projected and actual water-use disclosure; AB 1577 creates statewide energy and water reporting; and SB 887 revises CEQA treatment. The other three — AB 2383, SB 886 and SB 1168 — address electricity ratemaking and interconnection only.",
       "tags": [
         "regulation",
         "policy",
@@ -15,8 +15,9 @@
       ],
       "source_url": "https://www.gov.ca.gov/2026/09/21/governor-newsom-signs-most-comprehensive-data-center-laws-in-the-nation-providing-communities-more-control-on-water-electricity-and-land-use/",
       "cross_ref_tab": "legislation",
-      "cross_ref_note": "Final status for the three California measures tracked since committee stage",
+      "cross_ref_note": "Final status for the four California measures with water or CEQA provisions",
       "cross_ref_targets": [
+        "CA AB 2469",
         "CA AB 1577",
         "CA AB 2619",
         "CA SB 887"
@@ -400,7 +401,7 @@
       "date": "2026-06",
       "title": "Spartanburg County, SC Freezes Data-Center Applications for One Year Amid Water/Air Permit Fight",
       "outlet": "Post and Courier / Fox Carolina",
-      "summary": "Spartanburg County Council unanimously passed first reading of a 12-month data-center application moratorium on June 22, 2026, invoking the 'pending ordinance doctrine' to immediately freeze new applications — including a proposed Lighthouse Data Centers/Wharton Digital project at 300 Jones Road. The vote came days before SC DES held a June 25 public hearing on air and water discharge permits and increased power demand for the separate, already-under-construction Valara Holdings data center at the former Kohler plant site, which is exempt from the new moratorium. Part of a broader wave: several other SC counties have enacted or begun similar pauses in the absence of statewide rules.",
+      "summary": "Spartanburg County Council unanimously passed first reading of a 12-month data-center application moratorium on June 22, 2026, invoking the 'pending ordinance doctrine' to immediately freeze new applications — including a proposed Lighthouse Data Centers/Wharton Digital project at 300 Jones Road. The vote came days before SC DES held a June 25 public hearing on air and water discharge permits and increased power demand for the separate, already-under-construction Valara Holdings data center at the former Kohler plant site, which is exempt from the new moratorium. Part of a broader wave: several other SC counties have enacted or begun similar pauses in the absence of statewide rules. Follow-up: council passed the moratorium 5-1 on final reading on September 21, 2026, limiting it to facilities over 65 MW and grandfathering projects already approved.",
       "tags": [
         "regulation",
         "policy"
@@ -890,6 +891,120 @@
       "source_url": "https://arxiv.org/abs/2304.03271",
       "cross_ref_tab": "data",
       "cross_ref_note": "Per-query estimates discussed in Data tab"
+    },
+    {
+      "id": "texas-ag-data-center-investigation-2026-09",
+      "date": "2026-09-24",
+      "title": "Texas Attorney General Opens Investigation Into Hundreds of Data Centers Over Water-Use Survey",
+      "outlet": "Office of the Texas Attorney General",
+      "summary": "Attorney General Ken Paxton opened an investigation into hundreds of data-center developments that have not answered the Texas Water Development Board's mandatory water-use survey, starting in 18 named counties including Harris, Travis, Dallas, Tarrant, Bexar and El Paso. It escalates, ten days later, the Governor's directive to penalize nonresponse, and follows his August audit order gating grid interconnection on water and power impacts. No docket or penalty had been announced.",
+      "tags": [
+        "enforcement",
+        "regulation"
+      ],
+      "source_url": "https://www.texasattorneygeneral.gov/news/releases/attorney-general-paxton-launches-landmark-investigation-hundreds-data-center-developments-texas",
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "The mandatory TWDB survey and the audit directive this investigation enforces",
+      "cross_ref_targets": [
+        "TX PUC Energy and Water Use Survey (data centers)",
+        "TX EO 2026-08 (data center audit)"
+      ]
+    },
+    {
+      "id": "virginia-cooling-water-scarcity-area-2026-09",
+      "date": "2026-09-18",
+      "title": "Virginia Designates Everything East of I-95 a 'Cooling Water Scarcity Area'",
+      "outlet": "Office of Governor Abigail Spanberger",
+      "summary": "Executive Order 22 designates the Eastern Virginia Groundwater Management Area a cooling water scarcity area effective immediately and directs DEQ to propose statewide criteria for such designations. It follows the DEQ groundwater study, released in August only under a records request, that found no region east of I-95 can support a new 3 MGD industrial withdrawal. The order also narrows confidentiality protections and adds water and land use to responsible-development scoring.",
+      "tags": [
+        "regulation",
+        "policy"
+      ],
+      "source_url": "https://www.governor.virginia.gov/media/governorvirginiagov/governor-of-virginia/pdf/eo/eo-22-establishing-va-data-center-accountability-and-ai-initiatives.pdf",
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "The order and the groundwater study behind it",
+      "cross_ref_targets": [
+        "VA EO 22 (2026)",
+        "VA DEQ Eastern Virginia groundwater study"
+      ]
+    },
+    {
+      "id": "afp-data-centers-less-thirsty-2026-09",
+      "date": "2026-09-07",
+      "title": "'AI Data Centers Are Less Thirsty Now,' Tech Giants Say",
+      "outlet": "AFP (via TechXplore)",
+      "summary": "An AFP wire story puts global data-center water consumption at 222 billion liters (59 billion gallons) in 2025, on course to nearly triple by 2030 without adaptation. Citing company reporting, it says Microsoft improved water-use efficiency 25% and AWS 37% between 2022 and 2025 while both used more water in total; Meta says its closed-loop systems achieve 'no net water loss'; Nvidia says its DSX design can nearly eliminate consumption at some sites; and xAI publishes no sustainability report.",
+      "tags": [
+        "data",
+        "solutions"
+      ],
+      "source_url": "https://techxplore.com/news/2026-09-ai-centers-thirsty-tech-giants.html",
+      "cross_ref_tab": "issues",
+      "cross_ref_note": "Microsoft's efficiency target, tracked with its progress",
+      "cross_ref_targets": [
+        "microsoft-water-intensity-40pct-2026"
+      ]
+    },
+    {
+      "id": "ncsu-data-center-water-pressure-2026-09",
+      "date": "2026-09-03",
+      "title": "NC State: Data Center Boom Puts New Pressure on Local Water",
+      "outlet": "NC State University College of Natural Resources",
+      "summary": "A synthesis featuring hydrologist Matthias Sprenger, drawing on Ceres and Global Energy Monitor, puts US data centers' direct cooling consumption at about 17 billion gallons in 2023, against an estimated 3.4 trillion gallons of withdrawals for the electricity serving data centers in just seven states in 2024 — with more than 189 GW of gas generation planned for data centers by mid-2026. The indirect, power-side footprint dwarfs the direct one.",
+      "tags": [
+        "research"
+      ],
+      "source_url": "https://cnr.ncsu.edu/news/2026/09/data-center-boom-water-resources/"
+    },
+    {
+      "id": "grayslake-t5-lawsuit-2026-08",
+      "date": "2026-08-07",
+      "title": "Lake County Residents Sue to Block T5's $18 Billion Grayslake, IL Campus",
+      "outlet": "Lake & McHenry County Scanner",
+      "summary": "A residents' collective and nine neighbours sued the Village of Grayslake, T5 Data Centers and Alter Asset Management, alleging Open Meetings Act violations in the 2024-2025 approvals of a 472-acre campus and seeking to void them. Opposition organized around T5's application to fill 15.75 acres of wetlands, which T5 withdrew in July; the village issued the first building permit on September 1 with the suit pending and a hearing set for October 30.",
+      "tags": [
+        "enforcement"
+      ],
+      "source_url": "https://www.lakemchenryscanner.com/2026/08/08/project-of-unprecedented-scale-lake-county-residents-file-lawsuit-to-block-472-acre-data-center-campus-in-grayslake/"
+    },
+    {
+      "id": "farmington-mn-lawsuit-withdrawn-2026-09",
+      "date": "2026-09-09",
+      "title": "Farmington, MN Coalition Drops Data-Center Suit Over Costs; Township Suit Continues",
+      "outlet": "Blandin on Broadband / CBS Minnesota",
+      "summary": "A 350-member residents' coalition withdrew its lawsuit against Farmington over Tract's proposed 340-acre, up-to-12-building technology park, citing litigation costs while maintaining the case had merit. Court filings said the park would more than double the city's roughly 2.14 million gallons a day of water use. Castle Rock Township's separate suit over its orderly-annexation agreement continues.",
+      "tags": [
+        "enforcement"
+      ],
+      "source_url": "https://blandinonbroadband.org/2026/09/09/coalition-for-responsible-data-center-development-withdraws-lawsuit-due-in-farmington-to-litigation-costs-dakota-county/"
+    },
+    {
+      "id": "google-water-stewardship-expansion-2026-08",
+      "date": "2026-08-21",
+      "title": "Google Adds $60 Million in Water Stewardship Across Five More States",
+      "outlet": "ESG Today",
+      "summary": "Google added $60 million of water-stewardship funding in Arizona, Indiana, Ohio, Oklahoma and Virginia, raising its 2026 commitment from $17 million to $77 million across 12 states. Its portfolio of about 165 projects in 97 watersheds is projected to replenish more than 19 billion gallons a year by 2030. Replenishment is watershed-level and does not by itself answer local strain where a campus draws.",
+      "tags": [
+        "solutions"
+      ],
+      "source_url": "https://www.esgtoday.com/google-invests-60-million-in-new-water-stewardship-projects-across-the-u-s/",
+      "cross_ref_tab": "issues",
+      "cross_ref_note": "Google's replenishment claim and its assessment",
+      "cross_ref_targets": [
+        "google-water-replenish-120"
+      ]
+    },
+    {
+      "id": "epa-water-reuse-action-plan-2-2026-04",
+      "date": "2026-04-16",
+      "title": "EPA's Water Reuse Action Plan 2.0 Names Data-Center Cooling a Priority",
+      "outlet": "US Environmental Protection Agency",
+      "summary": "EPA launched WRAP 2.0 as a collaborative, non-regulatory framework under existing Clean Water Act and Safe Drinking Water Act authority. One of three headline initiatives, 'Water for the U.S. Technology Revolution', commits EPA to compile best practices so states can more readily permit reclaimed water for data-center cooling and to identify regulatory hurdles to that reuse. It is the closest thing to a national water strategy that addresses data centers, and it is voluntary.",
+      "tags": [
+        "policy",
+        "solutions"
+      ],
+      "source_url": "https://www.epa.gov/waterreuse/water-reuse-action-plan-20"
     }
   ]
 }

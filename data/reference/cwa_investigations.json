@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-09-21",
+  "last_updated": "2026-09-26",
   "note": "Clean Water Act enforcement actions and landmark precedent cases relevant to data center water use and cooling discharge. Four categories: 'datacenter' = direct CWA actions against named hyperscale operators or their contractors, including state permit enforcement and §404 permit applications with significant wetland/stream impacts (e.g. Amazon Boardman nitrate settlement, Google §404 applications in VA and AR); 'adjacent' = water-relevant actions at data-center sites where the binding or active enforcement sits OUTSIDE the CWA — a Clean Air Act suit, a local well-permitting action, a §404 citizen suit over data-center power infrastructure, or a permitted-but-paused voluntary water commitment; 'industrial' = enforcement against large industrial water users that are the closest practical analogs (cooling water §316(a)/(b), pretreatment, sewer-system consent decrees, PFAS, CAFO discharges); 'precedent' = Supreme Court and federal appellate rulings that set the legal scope of the CWA, including Loper Bright (2024) ending Chevron deference and Lewis v. US (5th Cir. 2023) applying Sackett. Comprehensive coverage for 2020-present, with foundational earlier cases retained as benchmarks (Smithfield 1997, Tyson 2003, Brayton Point 2003-2007). Direct hyperscaler enforcement remains thin because operators usually sit behind contractor-permittee structures and discharge to municipal sewers — the industrial cases show what enforcement looks like once that shield slips. The Amazon Boardman 2026 $20.5M nitrate settlement is the first eight-figure direct-hyperscaler water settlement. The Port of Morrow OR DEQ enforcement ($727K, 2024) is the largest state-level penalty at a WWTP explicitly identified as receiving data center wastewater. Google's concurrent §404 applications in VA (Project Raspberry, Project Loch) and AR (Port of Little Rock, 16.8 ac wetlands) mark a new wave of federal permitting scrutiny on data center construction in sensitive watersheds. July 2, 2026 expansion: the dataset now spans federal water authorities beyond the CWA — 10 historical SDWA / TSCA / RCRA / Rivers-and-Harbors-Act cases and rulemakings (DuPont Washington Works PFOA, 3M TSCA 8(e), Flint and Trinity American SDWA 1431, Alisal receivership, Edwards sole-source-aquifer designation, the 1999 UIC Class V rule, Interfaith v. Honeywell RCRA 7002, US v. Republic Steel RHA 10/13, and the TSCA 8(a)(7) PFAS reporting rule) — and every case carries an 'authorities' list of reading_ids from data/reference/water_authorities.json mapping it to the statutory readings it used or could trigger (overlap intentional). August 24, 2026 additions: 14 cases anchoring the supply-side federal and interstate families — NEPA (Hughes River Watershed Conservancy v. Glickman; the Crane Clean Energy Center restart bundle behind Constellation's Microsoft power deal), CERCLA (Bestfoods, CTS Corp. v. Waldburger), the Water Supply Act's authorized-purposes ceiling on Lake Lanier (Southeastern Federal Power Customers v. Geren; In re MDL-1824 Tri-State Water Rights), interstate basin compacts (the Foxconn/Racine Great Lakes diversion at the site Microsoft now occupies, the SRBC Panda Power withdrawal penalty, the DRBC fracking ban), the Wild and Scenic Rivers Act (the Blue Ridge Project), the Federal Power Act (California v. FERC), Reclamation contract law (United States v. Klamath Drainage District) and EPCRA (Steel Co.; Nidec Elesys). Most are typed 'water-supply': those statutes govern allocation, storage and licensing rather than discharge. Prior count was 109.",
   "cases": [
     {
@@ -2571,10 +2571,10 @@
       "case_id": "Google-FortWayneIN-isolated-wetland-permit-2025",
       "category": "datacenter",
       "respondent": "Google LLC (Project Zodiac, Fort Wayne/Allen County, Indiana) and AEP Indiana Michigan Power (transmission for the campus)",
-      "year": "2025",
+      "year": "2025-2026",
       "cwa_section": "Indiana state-regulated (isolated) wetland permit program under IDEM — the state analog covering wetlands outside post-Sackett federal §404 jurisdiction; companion IDEM review for the AEP transmission wetland fill.",
-      "violation_summary": "On September 16, 2025, IDEM granted a permit authorizing Google's $2B Project Zodiac data center (on ~1,400 acres containing ~33 acres of wetlands) to fill 2.44 acres of state-regulated wetlands, after a 30-day comment period that drew dozens of opposition comments; no public hearing was held, which the Hoosier Environmental Council criticized in formal comments (Oct 2025). In October–December 2025, IDEM separately approved AEP's request to temporarily fill wetlands to build power infrastructure for the campus.",
-      "outcome": "Permit issued with compensatory mitigation: Google must purchase ~4 acres of wetland mitigation credits via the state mitigation bank / IDNR in-lieu-fee program (Maumee Service Area). Opposition continued at later IDEM hearings (e.g., a packed November 2025 hearing on the campus's generator permit). Construction is proceeding as of mid-2026.",
+      "violation_summary": "On September 16, 2025, IDEM granted a permit authorizing Google's $2B Project Zodiac data center (on ~1,400 acres containing ~33 acres of wetlands) to fill 2.44 acres of state-regulated wetlands, after a 30-day comment period that drew dozens of opposition comments; no public hearing was held, which the Hoosier Environmental Council criticized in formal comments (Oct 2025). In October–December 2025, IDEM separately approved AEP's request to temporarily fill wetlands to build power infrastructure for the campus. On September 10, 2026, IDEM approved a third-phase request from Hatchworks LLC, the campus developer, to fill a further 2.13 acres of forested isolated wetlands for three more buildings, after an online public hearing on August 26 — the hearing the first permit never had.",
+      "outcome": "Permit issued with compensatory mitigation: Google must purchase ~4 acres of wetland mitigation credits via the state mitigation bank / IDNR in-lieu-fee program (Maumee Service Area). Opposition continued at later IDEM hearings (e.g., a packed November 2025 hearing on the campus's generator permit). Construction is proceeding as of mid-2026. Phase 3 (September 2026) carries its own mitigation: 4.26 acres of credits from the Openings Mitigation Bank in Fort Wayne.",
       "takeaway": "Post-Sackett, hyperscaler wetland exposure increasingly runs through state isolated-wetland programs rather than federal §404 — and states like Indiana are approving fills with bank-credit mitigation and minimal process (no hearing). Power-delivery infrastructure (utility transmission) generates its own parallel wetland permits, widening the project's water-permit footprint beyond the data center parcel.",
       "case_type": "wetlands-streams",
       "cwa_applied": "not-applied",
@@ -2605,6 +2605,16 @@
           "title": "AEP request to temporarily fill wetlands to power Fort Wayne Google data center approved",
           "url": "https://www.21alivenews.com/2025/12/04/aep-request-temporarily-fill-wetlands-power-fort-wayne-google-data-center-approved/",
           "type": "news"
+        },
+        {
+          "title": "IDEM approves Google's latest request to fill wetlands for Fort Wayne data center expansion",
+          "url": "https://www.21alivenews.com/2026/09/11/idem-approves-googles-latest-request-fill-wetlands-fort-wayne-data-center-expansion/",
+          "type": "news"
+        },
+        {
+          "title": "IDEM approves data center request to fill in wetlands (Indiana Public Media)",
+          "url": "https://www.ipm.org/news/2026-09-15/idem-approves-data-center-request-to-fill-in-wetlands",
+          "type": "news"
         }
       ],
       "display_section": "historical",
@@ -2614,7 +2624,8 @@
       "outcome_type": [
         "permit-issued",
         "permit-conditioned"
-      ]
+      ],
+      "last_verified": "2026-09-26"
     },
     {
       "case_id": "Microsoft-MountPleasantWI-wetland-individual-permit-2024",

@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-09-21",
+  "last_updated": "2026-09-26",
   "source_repo": "pranava0x0/datacentercommunitybenefits",
   "source_path": "docs/data/moratoriums.json",
-  "note": "County and city data-center actions — moratoriums, permanent ordinances and resolutions — mirrored from the Data Center Community Benefits project's moratoriums.json (snapshot generated 2026-08-04), filtered to city/county/town scope. State-level measures stay in legislation.json; the four instruments that appear in both files are there because legislation.json keeps only the first-of-kind and litigated local measures as full instruments, while this file is the broader table. Records whose action_id starts with 'direct-' were verified directly rather than mirrored; the 2026-09-21 file update adds Gilroy from its city notice, not a fresh mirror snapshot. Refresh by fetching docs/data/moratoriums.json from source_repo, mapping each record to this schema, and upserting on action_id — the sync is a pure upsert, never a replace, so nothing here is lost when the upstream snapshot shrinks. Corrections in this file were verified against primary sources on 2026-08-24 and are newer than the mirror: Maine LD 307 was vetoed, not enacted (which is why it is absent here and correct in legislation.json); Hill County TX rescinded its moratorium under a $100M developer suit (superseded, not active); Cleveland's moratorium passed 14-1 on 2026-07-15 (active, not proposed); Indianapolis was finalized 6-0 on 2026-08-19 (active, not proposed); and Monterey Park's Measure NDC passed on 2026-06-02 with 86.4% in favour. A second verification pass (2026-08-24, commit cb9f348) added three more: Cheyenne WY rejected a 12-month (not nine-month) moratorium 8-1 on 2026-05-26, date 2026-05 and source upgraded to WyoFile; Santa Fe County NM voted on 2026-06-30 (not July 1), date 2026-06; Boulder County CO is water_related — the commissioners' announcement cites electricity and water demands. It also stripped the trailing 'Status.' sentence artifact from 13 summaries. Re-apply ALL corrections after any re-sync (the upsert has no field-level protection), and re-check any record still marked 'proposed' whose date is more than about 60 days old. See REFRESH.md.",
+  "note": "County and city data-center actions — moratoriums, permanent ordinances and resolutions — mirrored from the Data Center Community Benefits project's moratoriums.json (snapshot generated 2026-08-04), filtered to city/county/town scope. State-level measures stay in legislation.json; the four instruments that appear in both files are there because legislation.json keeps only the first-of-kind and litigated local measures as full instruments, while this file is the broader table. Records whose action_id starts with 'direct-' were verified directly rather than mirrored; the 2026-09-21 file update adds Gilroy from its city notice, not a fresh mirror snapshot. Refresh by fetching docs/data/moratoriums.json from source_repo, mapping each record to this schema, and upserting on action_id — the sync is a pure upsert, never a replace, so nothing here is lost when the upstream snapshot shrinks. Corrections in this file were verified against primary sources on 2026-08-24 and are newer than the mirror: Maine LD 307 was vetoed, not enacted (which is why it is absent here and correct in legislation.json); Hill County TX rescinded its moratorium under a $100M developer suit (superseded, not active); Cleveland's moratorium passed 14-1 on 2026-07-15 (active, not proposed); Indianapolis was finalized 6-0 on 2026-08-19 (active, not proposed); and Monterey Park's Measure NDC passed on 2026-06-02 with 86.4% in favour. A second verification pass (2026-08-24, commit cb9f348) added three more: Cheyenne WY rejected a 12-month (not nine-month) moratorium 8-1 on 2026-05-26, date 2026-05 and source upgraded to WyoFile; Santa Fe County NM voted on 2026-06-30 (not July 1), date 2026-06; Boulder County CO is water_related — the commissioners' announcement cites electricity and water demands. It also stripped the trailing 'Status.' sentence artifact from 13 summaries. Re-apply ALL corrections after any re-sync (the upsert has no field-level protection), and re-check any record still marked 'proposed' whose date is more than about 60 days old. See REFRESH.md. 2026-09-26: Spartanburg County SC moved from proposed to active (final reading 5-1 on 2026-09-21, with a 65 MW threshold and industrial-park carve-outs); Elkhart IN and Palm Beach County FL added as direct records (neither was in the mirror).",
   "actions": [
     {
       "action_id": "dccb-birmingham-city-2026-03",
@@ -921,12 +921,12 @@
       "jurisdiction": "Spartanburg County",
       "state": "SC",
       "action_type": "moratorium",
-      "status": "proposed",
-      "date": "2026-07",
+      "status": "active",
+      "date": "2026-09",
       "water_related": true,
       "water_angle": "Water is tagged among this jurisdiction's stated reasons in source data; the source summary does not itemize a specific water impact.",
-      "summary": "Spartanburg County Council (South Carolina) approved the first reading of a 12-month data center moratorium on June 22, 2026, with no dissenting votes. Two additional readings are required before full enactment. Council immediately invoked the pending ordinance doctrine, allowing the county to halt new data center permit applications after first reading — the protective effect begins at first reading even before final passage. Triggered by a company filing a land development permit for a data center at 300 Jones Road without local tax incentives. A separate state bill (SC H.5526) proposing a statewide data center moratorium is also before the legislature.",
-      "source_url": "https://www.foxcarolina.com/2026/06/22/spartanburg-county-votes-pause-data-center-applications-one-year/"
+      "summary": "Spartanburg County Council (South Carolina) passed a one-year data-center moratorium 5-1 on final reading on September 21, 2026, after a unanimous first reading on June 22. Amendments limit the freeze to facilities over 65 MW: smaller projects may proceed in an established industrial park or former industrial site if they use no self-generation beyond emergency backup and are primarily for data storage and processing. Data centers the county had already approved are grandfathered.",
+      "source_url": "https://www.foxcarolina.com/2026/09/22/spartanburg-county-council-passes-data-center-moratorium-with-several-amendments/"
     },
     {
       "action_id": "direct-austin-county-tx-2026-07",
@@ -1083,6 +1083,30 @@
       "water_angle": "The council's stated study topics for the pause lead with water use and cooling technology, alongside electricity demand, noise, aesthetics and backup-generator emissions.",
       "summary": "Gilroy City Council unanimously adopted an immediately effective 45-day urgency moratorium on new data-center applications and entitlements on September 14, 2026, while staff write citywide siting standards. It covers a possible second Amazon project still at pre-application stage but not Amazon's already approved facility; California law allows extensions up to a two-year total, none recorded yet. Added directly from the city's notice (not present in the DCCB moratoriums.json mirror).",
       "source_url": "https://www.cityofgilroy.org/m/newsflash/Home/Detail/1331"
+    },
+    {
+      "action_id": "direct-elkhart-in-2026-08",
+      "jurisdiction": "Elkhart",
+      "state": "IN",
+      "action_type": "moratorium",
+      "status": "active",
+      "date": "2026-08",
+      "water_related": true,
+      "water_angle": "Council members said they need to study water use alongside electrical capacity, public safety, traffic and noise, and to adopt regulations addressing water use and electricity demand before accepting new projects.",
+      "summary": "Elkhart City Council voted 9-0 on August 27, 2026 to stop accepting new data-center and battery-storage-facility applications until December 2027, within city limits only. The pause followed developer interest, including a proposed 'Edge Compute Data Center'.",
+      "source_url": "https://www.wndu.com/2026/08/28/elkhart-council-casts-unanimous-vote-moratorium-data-centers-battery-storage-facilities/"
+    },
+    {
+      "action_id": "direct-palm-beach-county-fl-2026-09",
+      "jurisdiction": "Palm Beach County",
+      "state": "FL",
+      "action_type": "moratorium",
+      "status": "active",
+      "date": "2026-09",
+      "water_related": true,
+      "water_angle": "The pause follows the commission's July rejection of 'Project Tango', where the developer estimated 5,000 gallons a day of potable water for closed-loop cooling and county staff projected 100,000 gallons a day; staff will use the year to draft enforceable standards.",
+      "summary": "Palm Beach County commissioners unanimously gave final approval on September 24, 2026 to a one-year moratorium on new hyperscale AI data centers (peak electrical load of 50 MW or more) in unincorporated areas, to give staff time to draft zoning and regulatory standards.",
+      "source_url": "https://www.wflx.com/2026/09/24/palm-beach-county-commissioners-unanimously-approve-moratorium-new-hyperscale-ai-data-centers/"
     }
   ]
 }
