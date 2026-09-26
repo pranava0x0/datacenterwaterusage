@@ -145,7 +145,12 @@ def build_statute_paths() -> list[dict]:
         members = [r for r in readings if activity in (r.get("dc_activities") or [])]
         if not members:
             continue
-        members.sort(key=lambda r: (_statute_rank(r.get("statute", "")), r["reading_id"]))
+        # Family order first, then the curator's own order within a family —
+        # the registry lists a statute's workhorse readings before its edge
+        # cases (construction stormwater and §404 before §401), which
+        # alphabetical order by id would scramble.
+        position = {r["reading_id"]: i for i, r in enumerate(readings)}
+        members.sort(key=lambda r: (_statute_rank(r.get("statute", "")), position[r["reading_id"]]))
         paths = []
         site_ids: set[str] = set()
         for reading in members:

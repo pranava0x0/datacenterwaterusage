@@ -666,6 +666,10 @@ def build_cwa_tab() -> str:
         for c in sorted_pot
     )
 
+    # The front door (2026-09-26): activity → law → precedent → live site.
+    paths = dash._build_statute_paths_html()
+    n_paths = sum(len(g["paths"]) for g in dash.build_statute_paths())
+
     # Part 1: the statutory toolkit (reading cards grouped by statute).
     toolkit = dash._build_authorities_html(authorities_payload, all_ids)
     n_readings = len(authorities_payload.get("readings", []))
@@ -677,13 +681,14 @@ def build_cwa_tab() -> str:
     return f"""
 <section class="panel">
   <h2>Federal Water Law &amp; Data Centers — Authorities, Record, Exposure</h2>
-  <p class="lead">Three views on federal water law and data centers: the <strong>statutory
+  <p class="lead">Start with <strong>how statutes apply</strong>: pick what a data
+  center is doing and follow each legal path from the law to the precedent to the
+  sites where it is in play. Behind it sit the <strong>statutory
   toolkit</strong> ({n_families} authority families — federal discharge and supply
-  statutes, interstate compacts, state doctrine — and how each could reach a
-  data center), the
+  statutes, interstate compacts, state doctrine), the
   <strong>historical record</strong> built under those authorities (penalties,
-  settlements, court rulings), and the <strong>named sites</strong> where water
-  conflicts are live. The mappings overlap by design — one fact pattern can trigger
+  settlements, court rulings), and the <strong>active exposure</strong> at named
+  sites. The mappings overlap by design — one fact pattern can trigger
   several readings.</p>
   {insights}
   <details class="lazy">
@@ -703,9 +708,15 @@ def build_cwa_tab() -> str:
   </details>
 
   <div class="subtabs" role="tablist" aria-label="Water Cases sections">
+    <button class="subtab" role="tab" data-subtab="cwa-paths" aria-selected="true">How statutes apply ({n_paths})</button>
     <button class="subtab" role="tab" data-subtab="cwa-p1" aria-selected="false">Part 1 · Toolkit ({n_readings})</button>
-    <button class="subtab" role="tab" data-subtab="cwa-p2" aria-selected="true">Part 2 · Historical Record ({len(historical)})</button>
+    <button class="subtab" role="tab" data-subtab="cwa-p2" aria-selected="false">Part 2 · Historical Record ({len(historical)})</button>
     <button class="subtab" role="tab" data-subtab="cwa-p3" aria-selected="false">Part 3 · Active/Potential Exposure ({len(potential)})</button>
+  </div>
+
+  <div class="subtabpanel" id="panel-cwa-paths">
+    <h3>How statutes apply — start from what the data center is doing</h3>
+    {paths}
   </div>
 
   <div class="subtabpanel" id="panel-cwa-p1" hidden>
@@ -719,7 +730,7 @@ def build_cwa_tab() -> str:
     <div id="water-toolkit">{toolkit}</div>
   </div>
 
-  <div class="subtabpanel" id="panel-cwa-p2">
+  <div class="subtabpanel" id="panel-cwa-p2" hidden>
     <h3>Part 2 — Historical Enforcement Record ({len(historical)} cases)</h3>
     <p><strong>{len(historical)} cases</strong> — enforcement actions, penalties, settlements,
     landmark court rulings, and standing rulemakings that have <strong>actually
@@ -2277,6 +2288,33 @@ def build_llms_txt() -> str:
             f"- {r['date']} — {r['jurisdiction']} — {r['label']} — "
             f"{r['status_label']} — {r['detail']}"
         )
+
+    # The paths come first because they answer the question readers arrive
+    # with ("the campus is doing X — which laws reach it?"); the toolkit below
+    # is the by-statute reference the paths point into.
+    lines += [
+        "",
+        "## How statutes apply — by data-center activity",
+        "",
+        dash.STATUTE_PATHS_LEAD,
+    ]
+    for group in dash.build_statute_paths():
+        lines += ["", f"### {group['label']} ({len(group['paths'])} paths)", "", group["description"], ""]
+        for path in group["paths"]:
+            precedents = ", ".join(c["case_id"] for c in path["precedents"])
+            if path["more_cases"]:
+                precedents += f" (+{path['more_cases']} more)"
+            sites = ", ".join(site["site_id"] for site in path["sites"])
+            if path["more_sites"]:
+                sites += f" (+{path['more_sites']} more)"
+            ruled_out = ", ".join(site["site_id"] for site in path["ruled_out"])
+            lines.append(
+                f"- {'[LIMIT] ' if path['role'] == 'limit' else ''}{path['statute']} "
+                f"{path['reading_id']} — triggered when {path['when']}."
+                + (f" Precedent: {precedents}." if precedents else " No precedent in this record yet.")
+                + (f" In play at: {sites}." if sites else "")
+                + (f" Ruled out at: {ruled_out}." if ruled_out else "")
+            )
 
     lines += ["", "## Federal water-law toolkit (statutory readings)", ""]
     for r in readings:

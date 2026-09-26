@@ -134,3 +134,73 @@ class TestBuildStatutePaths:
         for g in groups:
             ranks = [WATER_STATUTE_ORDER.index(p["statute"]) for p in g["paths"]]
             assert ranks == sorted(ranks), g["activity"]
+
+
+class TestStatutePathsHtml:
+    @pytest.fixture(scope="class")
+    def fragment(self):
+        import dashboard
+
+        return dashboard._build_statute_paths_html()
+
+    def test_every_class_is_styled_on_both_surfaces(self, fragment):
+        """The fragment renders through st.markdown (page CSS = components.css)
+        and inside the static page. A class styled only in build_site's CSS
+        renders as bare text in Streamlit — the PR #28 .jumpnav lesson."""
+        import re
+
+        from refdata.loaders import BASE_DIR
+
+        shared = (BASE_DIR / "assets" / "components.css").read_text()
+        used = {c for attr in re.findall(r'class="([^"]+)"', fragment) for c in attr.split()}
+        undefined = sorted(c for c in used if f".{c}" not in shared)
+        assert not undefined, undefined
+
+    def test_every_link_targets_a_registry_anchor(self, fragment):
+        import re
+
+        from refdata.registry import build_registry
+
+        anchors = {ref.anchor for ref in build_registry().values()}
+        anchors |= {g["anchor"] for g in P.build_statute_paths()}
+        hrefs = set(re.findall(r'href="#([^"]+)"', fragment))
+        assert hrefs, "no links rendered"
+        assert not sorted(hrefs - anchors)
+
+    def test_one_row_per_path_and_one_group_per_activity(self, fragment):
+        groups = P.build_statute_paths()
+        assert fragment.count('class="path-row') == sum(len(g["paths"]) for g in groups)
+        assert fragment.count('<details class="path-group"') == len(groups)
+
+    def test_first_group_opens_the_rest_collapse(self, fragment):
+        import re
+
+        heads = re.findall(r'<details class="path-group"[^>]*>', fragment)
+        assert "data-collapsed" not in heads[0]
+        assert all("data-collapsed" in h and " open" in h for h in heads[1:])
+
+    def test_limits_are_marked(self, fragment):
+        limits = [r for r in _readings() if r.get("dc_role") == "limit"]
+        n_rows = sum(len(r["dc_activities"]) for r in limits)
+        assert fragment.count('class="path-row is-limit"') == n_rows
+
+    def test_reading_cards_link_back_to_their_paths(self):
+        import dashboard
+
+        payload = load_water_authorities()
+        toolkit = dashboard._build_authorities_html(payload)
+        for r in payload["readings"]:
+            for a in r["dc_activities"]:
+                assert f'href="#{P.path_anchor(a, r["reading_id"])}"' in toolkit
+
+
+class TestStaticSurface:
+    def test_water_cases_opens_on_the_paths(self):
+        import build_site
+
+        tab = build_site.build_cwa_tab()
+        assert 'data-subtab="cwa-paths" aria-selected="true"' in tab
+        assert '<div class="subtabpanel" id="panel-cwa-paths">' in tab
+        for part in ("cwa-p1", "cwa-p2", "cwa-p3"):
+            assert f'<div class="subtabpanel" id="panel-{part}" hidden>' in tab
+        assert 'id="statute-paths"' in tab

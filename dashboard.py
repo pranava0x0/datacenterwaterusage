@@ -58,6 +58,11 @@ from refdata.graph import (  # noqa: F401
     build_graph,
     payload_json as graph_payload_json,
 )
+from refdata.paths import (  # noqa: F401
+    activity_anchor,
+    build_statute_paths,
+    path_anchor,
+)
 from refdata.registry import (  # noqa: F401
     KIND_TABS,
     Ref,
@@ -76,6 +81,9 @@ from refdata.taxonomies import (  # noqa: F401
     CWA_CATEGORY_ORDER,
     CWA_STATUS_COLORS,
     CWA_STATUS_LABELS,
+    DC_ACTIVITY_DESCRIPTIONS,
+    DC_ACTIVITY_LABELS,
+    DC_ROLE_LABELS,
     DELIVERED_STATUS_COLORS,
     DELIVERED_STATUS_LABELS,
     INSTRUMENT_TYPE_COLORS,
@@ -3302,13 +3310,14 @@ def render_cwa_tracker():
     """
     st.subheader("Federal Water Law & Data Centers — Authorities, Record, Exposure")
     st.markdown(
-        "Three views on federal water law and data centers: the **statutory "
-        "toolkit** (every EPA / Army Corps water authority — CWA, SDWA, TSCA, "
-        "RCRA, Rivers & Harbors Act — and how each could reach a data center), "
-        "the **historical record** that has actually built under those "
-        "authorities (penalties, settlements, court rulings), and the **named "
-        "sites** where water conflicts are live. The mappings overlap by "
-        "design — one fact pattern can trigger several readings."
+        "Start with **how statutes apply**: pick what a data center is doing and "
+        "follow each legal path from the law to the precedent to the sites where "
+        "it is in play. Behind it sit the **statutory toolkit** (federal "
+        "discharge and supply statutes, interstate compacts, state doctrine), "
+        "the **historical record** built under those authorities (penalties, "
+        "settlements, court rulings), and the **active exposure** at named "
+        "sites. The mappings overlap by design — one fact pattern can trigger "
+        "several readings."
     )
 
     payload = load_cwa_investigations()
@@ -3352,12 +3361,17 @@ def render_cwa_tracker():
     # .subtab/.subtabpanel pair (build_site.py). Conflict sites moved to the
     # Issues & Claims tab (Spec A3), leaving this a purely legal record.
     st.markdown("---")
+    n_paths = sum(len(g["paths"]) for g in build_statute_paths())
     tab_labels = [
+        f"How statutes apply ({n_paths})",
         f"Part 1 · Toolkit ({n_readings})",
         f"Part 2 · Historical Record ({len(historical)})",
         f"Part 3 · Active/Potential Exposure ({len(potential)})",
     ]
-    part_tabs = st.tabs(tab_labels)
+    paths_tab, *part_tabs = st.tabs(tab_labels)
+
+    with paths_tab:
+        st.markdown(_build_statute_paths_html(), unsafe_allow_html=True)
 
     with part_tabs[0]:
         st.markdown(
@@ -3629,6 +3643,26 @@ def _build_reading_card_html(
         '<div class="bill-section-label">How it could apply to a data center</div>'
         f'<p class="cwa-takeaway">{esc(reading.get("dc_applicability", ""))}</p>',
     ]
+    # Back-links into the statute paths: the toolkit is organized by statute,
+    # the paths by activity, and each should reach the other in one click.
+    activities = reading.get("dc_activities") or []
+    if activities:
+        links = " · ".join(
+            f'<a href="#{esc(path_anchor(a, reading["reading_id"]))}">'
+            f"{esc(DC_ACTIVITY_LABELS.get(a, a))}</a>"
+            for a in activities
+        )
+        role = (
+            ' <span class="path-limit">Limit</span>'
+            if reading.get("dc_role") == "limit"
+            else ""
+        )
+        sections.insert(
+            0,
+            f'<div class="reading-trigger"><strong>Triggered when</strong> '
+            f'{esc(reading.get("dc_trigger", ""))}.{role}'
+            f'<div class="reading-activities">Paths: {links}</div></div>',
+        )
     examples = reading.get("example_case_ids", [])
     if examples:
         sections.append(
@@ -3639,6 +3673,136 @@ def _build_reading_card_html(
         f'<div class="bill-card" id="reading-{esc(reading["reading_id"])}">'
         f'{head}{class_row}{"".join(sections)}</div>'
     )
+
+
+STATUTE_PATHS_LEAD = (
+    "Start from what the data center is doing. Each row traces one legal path: "
+    "the statutory reading, the fact that triggers it, the precedent that shows "
+    "it working, and the tracked sites where it is in play — or where it was "
+    "checked and ruled out. Rows marked Limit are dead ends worth knowing: "
+    "readings that say where a theory fails."
+)
+
+
+def _build_statute_paths_html() -> str:
+    """"How statutes apply": activity → reading → precedent → live site.
+
+    Pure and shared: ``build_site`` drops it into the Water Cases tab and the
+    Streamlit app renders the same string, so both surfaces show the same
+    paths. Every class it uses is defined in ``assets/components.css`` (a test
+    enforces that — see the Security-tab lesson in CLAUDE.md).
+
+    Groups are ``<details open data-collapsed>`` except the first: a reader with
+    no JavaScript sees every path, and the static page's loader closes all but
+    the first so the view opens on one activity rather than 74 rows.
+    """
+    esc = html.escape
+    groups = build_statute_paths()
+    reg = build_registry()
+
+    # No per-link tooltips: the site card one click away carries the same
+    # per-site "how", and a title attribute is unreachable on touch anyway —
+    # it cost 23 KB across the 74 rows for desktop hover alone.
+    def ref_link(record_id: str, text: str) -> str:
+        ref = reg.get(record_id)
+        if not ref:
+            return f"<span>{esc(text)}</span>"
+        return f'<a href="#{esc(ref.anchor)}">{esc(text)}</a>'
+
+    nav = "".join(
+        f'<a class="paths-jump" href="#{esc(g["anchor"])}">{esc(g["label"])} '
+        f'<span class="paths-jump-count">{len(g["paths"])}</span></a>'
+        for g in groups
+    )
+
+    blocks = [
+        '<div class="statute-paths" id="statute-paths">',
+        f'<p class="paths-lead">{esc(STATUTE_PATHS_LEAD)}</p>',
+        f'<nav class="paths-jumpnav" aria-label="Data-center activities">{nav}</nav>',
+    ]
+    for i, group in enumerate(groups):
+        rows = []
+        for p in group["paths"]:
+            limit = p["role"] == "limit"
+            limit_chip = '<span class="path-limit">Limit</span>' if limit else ""
+            law = (
+                '<div class="path-step path-law">'
+                f'{_statute_pill_html(p["statute"], css_class="cwa-status-pill")}'
+                f'{limit_chip}'
+                f'<div class="path-reading">{ref_link(p["reading_id"], p["name"])}</div>'
+                f'<div class="path-section">{esc(p["section"])}</div>'
+                "</div>"
+            )
+            when = (
+                '<div class="path-step path-when">'
+                '<span class="path-k">Triggered when</span>'
+                f'<p>{esc(p["when"])}</p></div>'
+            )
+            if p["precedents"]:
+                items = "".join(
+                    f'<li>{ref_link(c["case_id"], c["caption"])}'
+                    + (f'<span class="path-sub">{esc(c["instrument"])}</span>' if c["instrument"] else "")
+                    + "</li>"
+                    for c in p["precedents"]
+                )
+                more = (
+                    f'<span class="path-more">+{p["more_cases"]} more '
+                    f'{"case cites" if p["more_cases"] == 1 else "cases cite"} it</span>'
+                    if p["more_cases"]
+                    else ""
+                )
+                precedent_body = f'<ul class="path-list">{items}</ul>{more}'
+            else:
+                precedent_body = '<p class="path-none">No case in this record yet.</p>'
+            precedent = (
+                '<div class="path-step path-precedent">'
+                f'<span class="path-k">Precedent</span>{precedent_body}</div>'
+            )
+            if p["sites"]:
+                items = "".join(
+                    f'<li>{ref_link(s["site_id"], s["label"])}</li>'
+                    for s in p["sites"]
+                )
+                more = (
+                    f'<span class="path-more">+{p["more_sites"]} more</span>'
+                    if p["more_sites"]
+                    else ""
+                )
+                live_body = f'<ul class="path-list">{items}</ul>{more}'
+            else:
+                live_body = '<p class="path-none">No tracked site yet.</p>'
+            if p["ruled_out"]:
+                live_body += (
+                    '<p class="path-ruled-out"><span class="path-k">Ruled out at</span> '
+                    + ", ".join(ref_link(s["site_id"], s["label"]) for s in p["ruled_out"])
+                    + "</p>"
+                )
+            live = (
+                '<div class="path-step path-live">'
+                f'<span class="path-k">In play at</span>{live_body}</div>'
+            )
+            rows.append(
+                f'<div class="path-row{" is-limit" if limit else ""}" id="{esc(p["anchor"])}">'
+                f"{law}{when}{precedent}{live}</div>"
+            )
+        n = len(group["paths"])
+        summary = (
+            f'<summary><span class="path-group-name">{esc(group["label"])}</span> '
+            f'<span class="path-group-count">{n} legal {"path" if n == 1 else "paths"} · '
+            f'{group["n_families"]} {"family" if group["n_families"] == 1 else "families"} · '
+            f'in play at {group["n_sites"]} tracked '
+            f'{"site" if group["n_sites"] == 1 else "sites"}</span></summary>'
+        )
+        collapsed = ' data-collapsed="1"' if i else ""
+        blocks.append(
+            f'<details class="path-group" id="{esc(group["anchor"])}" '
+            f'data-activity="{esc(group["activity"])}" open{collapsed}>'
+            f"{summary}"
+            f'<p class="path-group-desc">{esc(group["description"])}</p>'
+            f'{"".join(rows)}</details>'
+        )
+    blocks.append("</div>")
+    return "".join(blocks)
 
 
 def _build_authorities_html(payload: dict, case_ids: set[str] | None = None) -> str:

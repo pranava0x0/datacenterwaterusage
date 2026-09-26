@@ -2,7 +2,7 @@
 
 > Tracking how US data centers draw, discharge, and disclose cooling water — permits, enforcement, statutes, and state and local policy, from public records. Scraped sources are EPA ECHO DMR flow at receiving wastewater treatment plants, state permit portals and utility financial reports; alongside them are curated national datasets: data-center water legislation, water-law cases relevant to data centers mapped to a registry of statutory and doctrinal readings, county and city measures, data-center sites with documented water conflicts, and company water claims.
 
-Static build 2026-09-22. Dashboard: https://pranava0x0.github.io/datacenterwaterusage/ · Source: https://github.com/pranava0x0/datacenterwaterusage
+Static build 2026-09-26. Dashboard: https://pranava0x0.github.io/datacenterwaterusage/ · Source: https://github.com/pranava0x0/datacenterwaterusage
 
 ## Key numbers
 
@@ -111,7 +111,7 @@ The dashboard's States & Localities tab covers 41 states with at least one track
 
 State activity, newest first: California (2026-09-21), Nevada (2026-09-18), Texas (2026-09-14), Oregon (2026-09-08), Ohio (2026-09-01), Maryland (2026-09-01), Virginia (2026-08-21), Wisconsin (2026-08), Michigan (2026-07-15), New York (2026-07-14), South Carolina (2026-07-13), New Mexico (2026-07-02), Washington (2026-07-01), Illinois (2026-07-01), Florida (2026-07-01), Nebraska (2026-07), North Carolina (2026-07), Mississippi (2026-07), Missouri (2026-07), Minnesota (2026-07), Massachusetts (2026-07), Indiana (2026-07), Iowa (2026-07), Colorado (2026-07), Utah (2026-06), Kentucky (2026-06), Georgia (2026-06), Arkansas (2026-06), New Jersey (2026-05-27), Pennsylvania (2026-05-24), Connecticut (2026-05-06), Kansas (2026-05-01), Wyoming (2026-05), Rhode Island (2026-05), Idaho (2026-05), Maine (2026-04-29), Alabama (2026-04-10), Oklahoma (2026-04), West Virginia (2026-03-27), South Dakota (2026-03-24), Louisiana (2026-01).
 
-### Moved in the last 120 days (79 movements)
+### Moved in the last 120 days (78 movements)
 
 - 2026-09-21 — California — CA SB 887 — Enacted — Signed and chaptered
 - 2026-09-21 — California — CA AB 2619 — Enacted — Signed and chaptered
@@ -133,6 +133,119 @@ State activity, newest first: California (2026-09-21), Nevada (2026-09-18), Texa
 - 2026-07-07 — Prince George's County, Maryland — Prince George's County MD CB-2026 data center moratorium — Enacted — Adopted
 - 2026-07-02 — Santa Fe County, New Mexico — Santa Fe County NM data center moratorium — Enacted — Adopted unanimously
 - 2026-07 — Woodland Park, CO — Woodland Park — In force — Woodland Park City Council passed an ordinance at its July 16, 2026 meeting imposing an 18-month moratorium on the submission, acceptance, processing, and approval of data center applications, giving the city time to study county-level rules and draft its own zoning use standards.
+
+## How statutes apply — by data-center activity
+
+Start from what the data center is doing. Each row traces one legal path: the statutory reading, the fact that triggers it, the precedent that shows it working, and the tracked sites where it is in play — or where it was checked and ruled out. Rows marked Limit are dead ends worth knowing: readings that say where a theory fails.
+
+### Building the campus (12 paths)
+
+Grading, wetland and stream crossings, construction runoff, structures in navigable water, and the federal permits or financing that trigger environmental review.
+
+- CWA cwa-402-construction-stormwater — triggered when site work disturbs more than an acre, as every campus build-out does, and sediment-laden runoff leaves the site; the general contractor usually holds the permit. Precedent: Google-Stillwater-OK-stormwater-2025, Microsoft-Boydton-VA-2023, QTS-Fayetteville-GA-2024 (+3 more). In play at: meta-newton-county-ga, pw-digital-gateway-va, qts-fayette-county-ga.
+- CWA cwa-404-dredge-fill — triggered when grading fills wetlands or headwater streams that remain federally jurisdictional after Sackett. Precedent: Amazon-NewCarlisle-IN-wetlands-2025, Google-ProjectRaspberry-VA-2026, Google-LittleRock-AR-2026 (+11 more). In play at: pw-digital-gateway-va, microsoft-racine-county-wi, quantum-loophole-frederick-md, bessemer-al-hyperscale.
+- CWA cwa-401-certification — triggered when a §404 or other federal permit is needed, so the state must certify it, which gives state agencies and commenters their own leverage. Precedent: SierraClub-WVDEP-401-2023, SDC-ATLA-DouglasCounty-GA-404-401-2025, Amazon-NewCarlisle-IN-wetlands-2025 (+2 more). In play at: microsoft-racine-county-wi.
+- CWA cwa-505-citizen-suit — triggered when agencies stand down while permit exceedances pile up at the campus, at its contractor's construction coverage or at the receiving treatment plant. Precedent: Atlanta-RMClayton-CRK-2024-2026, QTS-Fayetteville-GA-2024, TransGas-AdamsFork-WV-2025 (+2 more). In play at: qts-fayette-county-ga.
+- SDWA sdwa-1431-emergency — triggered when a data-center-linked contaminant (fuel, cooling chemistry, construction sediment or nitrate) turns up in wells or a public system's source water. Precedent: Flint-MI-SDWA-1431-2016, DuPont-WashingtonWorks-PFOA-2005-2009, Trinity-American-v-EPA-SDWA-1431-1998 (+4 more). In play at: meta-newton-county-ga, amazon-boardman-umatilla-or.
+- SDWA sdwa-1424e-sole-source-aquifer — triggered when federal loans, grants or infrastructure aid back a campus or its utilities over a designated sole-source aquifer. Precedent: Edwards-Aquifer-SoleSource-Designation-1975, Rowan-ProjectCinco-Medina-TX-2025. In play at: project-blue-tucson-az.
+- SDWA sdwa-source-water-protection — triggered when the campus, its fuel farm or its drainfield sits inside a delineated source-water or wellhead protection area. Precedent: Google-Berkeley-SC-Middendorf-aquifer-2019, CorpusChristi-SintonTX-EvangelineAquifer-wells-2026, Atlas-ProjectSail-Coweta-GA-2026 (+7 more). In play at: xai-colossus-memphis-tn, meta-newton-county-ga, meta-mesa-microsoft-goodyear-az, pw-digital-gateway-va (+3 more).
+- RHA rha-10-structures — triggered when a cooling intake or outfall structure is placed in a navigable river or lake. Precedent: US-v-Republic-Steel-RHA-1960, AWS-LakeAnnaVA-VPDES-cooling-discharge-2026. In play at: aws-lake-anna-va, quantum-loophole-frederick-md.
+- NEPA nepa-hard-look-seis — triggered when a federal action clusters around the campus: a DOE loan guarantee, an NRC license, a Corps permit or federally financed infrastructure. Precedent: Hughes-River-Watershed-Conservancy-v-Glickman-1996.
+- WSR wsr-7-hydropower-bar — triggered when the campus or the power and water infrastructure serving it would touch a designated Wild and Scenic river reach. Precedent: BlueRidgeProject-NewRiver-WSR-1976.
+- SEPA sepa-supply-adequacy — triggered when a state environmental review analyzes phase one and assumes water for later phases that it cannot demonstrate. Precedent: Vineyard-v-Rancho-Cordova-2007. In play at: pw-digital-gateway-va, meta-richland-parish-la.
+- SEPA sepa-review-injunction — triggered when construction proceeds while a challenge to the review's water disclosure is still live. Precedent: MCEA-PineIsland-MN-ProjectSkyway-2026.
+
+### Pumping or diverting water (22 paths)
+
+On-site wells and surface intakes — and the water rights, compacts and doctrines that decide who may take how much, and who can object.
+
+- CWA cwa-316-cooling — triggered when the campus or its power plant takes surface water for cooling or returns heated water to it. Precedent: Brayton-Point-Dominion-2003-2007, Entergy-v-Riverkeeper-2009, Greenidge-SenecaLake-NY-2025 (+4 more). In play at: aws-lake-anna-va.
+- SDWA sdwa-pws-compliance — triggered when campus wells serve enough people to make the campus a regulated water system, or a small municipal system strains to serve the campus. Precedent: US-v-Alisal-Water-Corp-2005, Flint-MI-SDWA-1431-2016, Bessemer-AL-Hyperscale-WaterSupply-2025 (+9 more). In play at: google-the-dalles-or, project-blue-tucson-az, meta-mesa-microsoft-goodyear-az, corpus-christi-sinton-tx (+7 more).
+- RHA rha-10-structures — triggered when a cooling intake or outfall structure is placed in a navigable river or lake. Precedent: US-v-Republic-Steel-RHA-1960, AWS-LakeAnnaVA-VPDES-cooling-discharge-2026. In play at: aws-lake-anna-va, quantum-loophole-frederick-md.
+- [LIMIT] FPA fpa-license-flow-preemption — triggered when the campus, or the power feeding it, draws on a FERC-licensed hydropower reservoir whose levels the license sets. Precedent: California-v-FERC-1990.
+- RECL recl-contract-controls-delivery — triggered when the campus's water, or the farm right it buys or offsets against, traces back to a federal Reclamation project. Precedent: US-v-Klamath-Drainage-District-2025. In play at: project-blue-tucson-az.
+- EQAP eqap-interstate-aquifer — triggered when heavy pumping draws down an aquifer that crosses a state line and injures the neighbouring state. Precedent: Mississippi-v-Tennessee-2021. In play at: xai-colossus-memphis-tn.
+- [LIMIT] EQAP eqap-commerce-clause — triggered when a state tries to keep its water away from out-of-state data-center demand by destination rather than by volume or use. Precedent: Sporhase-v-Nebraska-1982.
+- BASIN basin-glc-diversion — triggered when water would leave the Great Lakes basin to serve a campus outside it. Precedent: Foxconn-Racine-GreatLakesCompact-Diversion-2019. In play at: microsoft-racine-county-wi.
+- BASIN basin-drbc-srbc-withdrawal-authority — triggered when the campus, or a power plant built to supply it, withdraws water inside the Delaware or Susquehanna basin. Precedent: Constellation-CraneCleanEnergy-SRBC-NRC-PA-2026, Panda-Power-Funds-SRBC-Penalty-2016, DRBC-Fracking-Ban-2021.
+- PTD ptd-reopener — triggered when an existing municipal or appropriative entitlement supplies the campus and the draw damages a trust resource. Precedent: National-Audubon-v-Superior-Court-1983. In play at: pw-digital-gateway-va.
+- PTD ptd-groundwater-nexus — triggered when campus wells deplete a connected stream or lake, so the state's trust duty attaches to the well permit itself. Precedent: ELF-v-SWRCB-2018. In play at: meta-newton-county-ga, amazon-boardman-umatilla-or. Ruled out at: project-blue-tucson-az.
+- PTD ptd-precautionary — triggered when consumption figures are confidential and the hydrology is unresolved, so the burden falls on the applicant (strongest where, as in Hawai'i, the state constitution says so). Precedent: Waiahole-Ditch-2000.
+- GW gw-ownership-takings — triggered when a withdrawal cap arrives after the campus bought its land, or a permit lets the campus draw down the groundwater under a neighbour's acreage. Precedent: Edwards-Aquifer-Authority-v-Day-2012. In play at: corpus-christi-sinton-tx, hood-county-granbury-tx.
+- WELL well-cumulative-impact — triggered when a high-capacity well permit is sought and objectors bring hydrologic evidence of off-site impact. Precedent: Lake-Beulah-v-DNR-2011. In play at: microsoft-racine-county-wi.
+- GWMGMT gwmgmt-az-ama — triggered when a campus inside an Arizona Active Management Area has to show an assured or designated water supply. Precedent: ProjectBlue-Tucson-AMES-2026. In play at: project-blue-tucson-az, meta-mesa-microsoft-goodyear-az.
+- GWMGMT gwmgmt-sgma — triggered when a large new groundwater user sits in a California basin governed by a sustainability plan. Precedent: ELF-v-SWRCB-2018.
+- XFER xfer-area-of-origin — triggered when the campus's water is piped in from another river basin; in Texas, the transferred supply becomes junior in priority. Precedent: Rowan-ProjectCinco-Medina-TX-2025. In play at: corpus-christi-sinton-tx.
+- [LIMIT] ESA esa-proximate-cause-limit — triggered when a withdrawal is blamed for harm to a listed species; a take claim against the state permitting office usually fails and must run at the withdrawer. Precedent: Aransas-Project-v-Shaw-2014. Ruled out at: xai-colossus-memphis-tn, corpus-christi-sinton-tx.
+- TRIBAL tribal-winters — triggered when the campus draws from a basin that also serves a reservation whose senior reserved rights are being quantified. Precedent: Winters-v-United-States-1908. In play at: meta-mesa-microsoft-goodyear-az. Ruled out at: xai-colossus-memphis-tn.
+- TRIBAL tribal-groundwater — triggered when a project turns to wells because the basin's surface water is fully claimed, and a reservation overlies or adjoins the aquifer. Precedent: Agua-Caliente-v-CVWD-2017. In play at: project-blue-tucson-az.
+- CL cl-negligent-subsidence — triggered when well spacing, boundary siting or pumping rates cause subsidence or other harm to a neighbour, even in a rule-of-capture state. Precedent: Friendswood-v-Smith-Southwest-1978. In play at: meta-newton-county-ga, corpus-christi-sinton-tx, hood-county-granbury-tx, quantum-loophole-frederick-md.
+- [LIMIT] CL cl-citizen-standing-limit — triggered when an opposition group sues without injured members; the household whose well failed has standing, while the coalition may not. Precedent: MCWC-v-Nestle-Waters-2007. In play at: microsoft-racine-county-wi.
+
+### Buying water from a utility (10 paths)
+
+Service from a public water system: capacity, drinking-water compliance, reservoir storage and the entitlements behind the tap.
+
+- SDWA sdwa-pws-compliance — triggered when campus wells serve enough people to make the campus a regulated water system, or a small municipal system strains to serve the campus. Precedent: US-v-Alisal-Water-Corp-2005, Flint-MI-SDWA-1431-2016, Bessemer-AL-Hyperscale-WaterSupply-2025 (+9 more). In play at: google-the-dalles-or, project-blue-tucson-az, meta-mesa-microsoft-goodyear-az, corpus-christi-sinton-tx (+7 more).
+- WSA wsa-reallocation-and-alteration — triggered when a metro utility asks the Corps for more storage in a federal reservoir to serve new commercial and industrial users. Precedent: Southeastern-Fed-Power-Customers-v-Geren-2008, InRe-MDL1824-TriState-WaterRights-2011. In play at: qts-fayette-county-ga.
+- RECL recl-contract-controls-delivery — triggered when the campus's water, or the farm right it buys or offsets against, traces back to a federal Reclamation project. Precedent: US-v-Klamath-Drainage-District-2025. In play at: project-blue-tucson-az.
+- BASIN basin-glc-diversion — triggered when water would leave the Great Lakes basin to serve a campus outside it. Precedent: Foxconn-Racine-GreatLakesCompact-Diversion-2019. In play at: microsoft-racine-county-wi.
+- PTD ptd-reopener — triggered when an existing municipal or appropriative entitlement supplies the campus and the draw damages a trust resource. Precedent: National-Audubon-v-Superior-Court-1983. In play at: pw-digital-gateway-va.
+- GWMGMT gwmgmt-az-ama — triggered when a campus inside an Arizona Active Management Area has to show an assured or designated water supply. Precedent: ProjectBlue-Tucson-AMES-2026. In play at: project-blue-tucson-az, meta-mesa-microsoft-goodyear-az.
+- XFER xfer-area-of-origin — triggered when the campus's water is piped in from another river basin; in Texas, the transferred supply becomes junior in priority. Precedent: Rowan-ProjectCinco-Medina-TX-2025. In play at: corpus-christi-sinton-tx.
+- TRIBAL tribal-winters — triggered when the campus draws from a basin that also serves a reservation whose senior reserved rights are being quantified. Precedent: Winters-v-United-States-1908. In play at: meta-mesa-microsoft-goodyear-az. Ruled out at: xai-colossus-memphis-tn.
+- SEPA sepa-supply-adequacy — triggered when a state environmental review analyzes phase one and assumes water for later phases that it cannot demonstrate. Precedent: Vineyard-v-Rancho-Cordova-2007. In play at: pw-digital-gateway-va, meta-richland-parish-la.
+- UTIL util-shortage-moratorium — triggered when a utility facing a real supply constraint refuses or pauses service to a new large customer. Precedent: Swanson-v-Marin-MWD-1976. In play at: charlotte-nc-moratorium, bessemer-al-hyperscale, missouri-peculiar-stcharles, meta-cheyenne-wy.
+
+### Discharging cooling water (9 paths)
+
+Cooling-tower blowdown and wastewater sent to a sewer, a stream or the ground, plus heat and stormwater from an operating campus.
+
+- CWA cwa-402-npdes — triggered when the campus, or a power plant built to serve it, discharges cooling blowdown, treatment effluent or process water straight to a river, lake or stream instead of a sewer. Precedent: Smithfield-Pagan-River-1997, AWS-LakeAnnaVA-VPDES-cooling-discharge-2026, HomerCity-IndianaCounty-PA-NPDES-2026 (+29 more). In play at: xai-colossus-memphis-tn, aws-lake-anna-va, meta-richland-parish-la, quantum-loophole-frederick-md.
+- CWA cwa-402-industrial-stormwater — triggered when stormwater on an operating campus touches exposed fuel farms, chemical storage, switchyards or equipment yards. Precedent: Google-Stillwater-OK-stormwater-2025.
+- CWA cwa-307-pretreatment — triggered when cooling-tower blowdown goes to the municipal sewer under an industrial-user permit, which is the normal case for an operating campus. Precedent: Swift-Beef-Grand-Island-2011, Yuengling-Pottsville-2016, Reading-WWTP-2024 (+4 more). In play at: google-the-dalles-or, xai-colossus-memphis-tn, amazon-boardman-umatilla-or, microsoft-west-des-moines-ia (+1 more).
+- CWA cwa-316-cooling — triggered when the campus or its power plant takes surface water for cooling or returns heated water to it. Precedent: Brayton-Point-Dominion-2003-2007, Entergy-v-Riverkeeper-2009, Greenidge-SenecaLake-NY-2025 (+4 more). In play at: aws-lake-anna-va.
+- CWA cwa-303-wqs — triggered when a new outfall is proposed into high-quality or pollution-capped water, forcing an antidegradation review of alternatives such as closed-loop or dry cooling. Precedent: AWS-LakeAnnaVA-VPDES-cooling-discharge-2026. In play at: pw-digital-gateway-va, aws-lake-anna-va, bessemer-al-hyperscale.
+- CWA cwa-402-maui-groundwater — triggered when blowdown or effluent goes into injection wells, drywells, infiltration basins or land application and reaches surface water through groundwater. Precedent: County-of-Maui-v-Hawaii-Wildlife-Fund-2020, Maui-remand-DHaw-2021, MCEA-PineIsland-MN-ProjectSkyway-2026 (+2 more). In play at: amazon-boardman-umatilla-or.
+- CWA cwa-505-citizen-suit — triggered when agencies stand down while permit exceedances pile up at the campus, at its contractor's construction coverage or at the receiving treatment plant. Precedent: Atlanta-RMClayton-CRK-2024-2026, QTS-Fayetteville-GA-2024, TransGas-AdamsFork-WV-2025 (+2 more). In play at: qts-fayette-county-ga.
+- SDWA sdwa-uic-classv — triggered when the campus builds stormwater drywells, infiltration galleries, geothermal return wells or any subsurface disposal of treated effluent. Precedent: EPA-UIC-ClassV-MotorVehicleWells-1999.
+- RHA rha-10-structures — triggered when a cooling intake or outfall structure is placed in a navigable river or lake. Precedent: US-v-Republic-Steel-RHA-1960, AWS-LakeAnnaVA-VPDES-cooling-discharge-2026. In play at: aws-lake-anna-va, quantum-loophole-frederick-md.
+
+### Storing fuel & chemicals (11 paths)
+
+Backup-generator diesel, cooling-treatment biocides, PFAS in coolants and fire suppression, and legacy contamination on or under the site.
+
+- CWA cwa-402-industrial-stormwater — triggered when stormwater on an operating campus touches exposed fuel farms, chemical storage, switchyards or equipment yards. Precedent: Google-Stillwater-OK-stormwater-2025.
+- CWA cwa-311-spills — triggered when backup-generator diesel is stored above spill-plan thresholds, or a tank or transfer release reaches a stream. Precedent: Plains-Pipeline-Santa-Barbara-2020, Norfolk-Southern-East-Palestine-2024, JohnsHopkins-DSAI-Baltimore-2025.
+- SDWA sdwa-1431-emergency — triggered when a data-center-linked contaminant (fuel, cooling chemistry, construction sediment or nitrate) turns up in wells or a public system's source water. Precedent: Flint-MI-SDWA-1431-2016, DuPont-WashingtonWorks-PFOA-2005-2009, Trinity-American-v-EPA-SDWA-1431-1998 (+4 more). In play at: meta-newton-county-ga, amazon-boardman-umatilla-or.
+- SDWA sdwa-source-water-protection — triggered when the campus, its fuel farm or its drainfield sits inside a delineated source-water or wellhead protection area. Precedent: Google-Berkeley-SC-Middendorf-aquifer-2019, CorpusChristi-SintonTX-EvangelineAquifer-wells-2026, Atlas-ProjectSail-Coweta-GA-2026 (+7 more). In play at: xai-colossus-memphis-tn, meta-newton-county-ga, meta-mesa-microsoft-goodyear-az, pw-digital-gateway-va (+3 more).
+- TSCA tsca-8e-substantial-risk — triggered when a supplier learns its cooling biocide, corrosion inhibitor or fire suppressant is contaminating water and does not report it. Precedent: DuPont-WashingtonWorks-PFOA-2005-2009, 3M-TSCA-8e-PFAS-2006, Chemours-MultiState-PFAS-TSCA-CWA-RCRA-2026 (+1 more).
+- TSCA tsca-8a7-pfas-reporting — triggered when PFAS-containing coolants, equipment or fire-suppression stocks are made or imported for campus use. Precedent: TSCA-PFAS-Reporting-Rule-2023, Chemours-Washington-Works-PFAS-2023. In play at: aws-lake-anna-va.
+- RCRA rcra-7002-7003-endangerment — triggered when fuel, fill, sludge or spent cooling chemicals migrate through soil and groundwater, even with no surface-water connection. Precedent: Interfaith-v-Honeywell-RCRA-2003-2005, Amazon-Boardman-OR-nitrate-2026, Chemours-MultiState-PFAS-TSCA-CWA-RCRA-2026 (+1 more). In play at: amazon-boardman-umatilla-or.
+- CERCLA cercla-107-operator-liability — triggered when a parent company centrally controls cooling chemistry, fuel storage or remediation at a subsidiary-held campus. Precedent: US-v-Bestfoods-1998.
+- [LIMIT] CERCLA cercla-repose-preemption — triggered when a campus discovers its supply well or soil was contaminated by a decades-old release nearby. Precedent: CTS-Corp-v-Waldburger-2014.
+- [LIMIT] EPCRA epcra-312-past-violation-standing — triggered when a Tier II inventory for backup diesel or treatment chemicals is filed late; filing it before suit moots a citizen suit. Precedent: SteelCo-v-CitizensForBetterEnvironment-1998.
+- EPCRA epcra-313-tri-reporting — triggered when on-site water treatment, biocide dosing or battery operations process a listed chemical above reporting thresholds. Precedent: NidecElesys-Americas-EPCRA-TRI-GA-2024.
+
+### Powering the campus (7 paths)
+
+Generation built or restarted to serve the load — power-plant cooling, hydropower licences and the federal approvals behind a restart.
+
+- CWA cwa-402-npdes — triggered when the campus, or a power plant built to serve it, discharges cooling blowdown, treatment effluent or process water straight to a river, lake or stream instead of a sewer. Precedent: Smithfield-Pagan-River-1997, AWS-LakeAnnaVA-VPDES-cooling-discharge-2026, HomerCity-IndianaCounty-PA-NPDES-2026 (+29 more). In play at: xai-colossus-memphis-tn, aws-lake-anna-va, meta-richland-parish-la, quantum-loophole-frederick-md.
+- CWA cwa-316-cooling — triggered when the campus or its power plant takes surface water for cooling or returns heated water to it. Precedent: Brayton-Point-Dominion-2003-2007, Entergy-v-Riverkeeper-2009, Greenidge-SenecaLake-NY-2025 (+4 more). In play at: aws-lake-anna-va.
+- NEPA nepa-hard-look-seis — triggered when a federal action clusters around the campus: a DOE loan guarantee, an NRC license, a Corps permit or federally financed infrastructure. Precedent: Hughes-River-Watershed-Conservancy-v-Glickman-1996.
+- NEPA nepa-federal-financing-review — triggered when federal loans or licenses back a power-plant restart or new generation built to serve data-center load. Precedent: Constellation-CraneCleanEnergy-SRBC-NRC-PA-2026.
+- WSR wsr-7-hydropower-bar — triggered when the campus or the power and water infrastructure serving it would touch a designated Wild and Scenic river reach. Precedent: BlueRidgeProject-NewRiver-WSR-1976.
+- [LIMIT] FPA fpa-license-flow-preemption — triggered when the campus, or the power feeding it, draws on a FERC-licensed hydropower reservoir whose levels the license sets. Precedent: California-v-FERC-1990.
+- BASIN basin-drbc-srbc-withdrawal-authority — triggered when the campus, or a power plant built to supply it, withdraws water inside the Delaware or Susquehanna basin. Precedent: Constellation-CraneCleanEnergy-SRBC-NRC-PA-2026, Panda-Power-Funds-SRBC-Penalty-2016, DRBC-Fracking-Ban-2021.
+
+### Claims & disclosures (3 paths)
+
+What an operator publishes or must file — water pledges, efficiency figures and chemical inventories — and when a claim becomes a liability.
+
+- [LIMIT] EPCRA epcra-312-past-violation-standing — triggered when a Tier II inventory for backup diesel or treatment chemicals is filed late; filing it before suit moots a citizen suit. Precedent: SteelCo-v-CitizensForBetterEnvironment-1998.
+- EPCRA epcra-313-tri-reporting — triggered when on-site water treatment, biocide dosing or battery operations process a listed chemical above reporting thresholds. Precedent: NidecElesys-Americas-EPCRA-TRI-GA-2024.
+- SL sl-greenwashing-udap — triggered when an operator publishes water-positive pledges or efficiency figures that utility billing records contradict. Precedent: Wangusi-v-Amazon-Web-Services-VA-2026. In play at: google-the-dalles-or, qts-fayette-county-ga, microsoft-west-des-moines-ia.
 
 ## Federal water-law toolkit (statutory readings)
 

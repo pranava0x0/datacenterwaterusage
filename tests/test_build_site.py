@@ -836,8 +836,12 @@ class TestInfrastructureVisuals:
         1.6 MB** the same day when the ~620 KB Explore graph blob moved out to
         pages/graph-data.json: the page went 2.11 MB → 1.46 MB. The ceiling
         tracks the page, so re-inlining the blob has to fail here rather than
-        quietly costing every reader 620 KB again."""
-        assert len(_html().encode("utf-8")) < 1_600_000
+        quietly costing every reader 620 KB again.
+
+        Raised to 1.7 MB on 2026-09-26 for the statute-paths view (~100 KB of
+        rows) in the commit before the page split its tabs into lazily
+        fetched files — which is where the real diet happens."""
+        assert len(_html().encode("utf-8")) < 1_700_000
 
 
 class TestNavigationAndScrollControl:

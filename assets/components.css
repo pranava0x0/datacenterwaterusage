@@ -1011,3 +1011,258 @@ h4.solution-cat-header::before {
     background: #fff;
     color: #1a1a2e;
 }
+
+/* Statute paths — "How statutes apply" (shared by the static Water Cases tab
+   and the Streamlit app via dashboard._build_statute_paths_html). Each row is
+   drawn as a pipe run: the steps after the law hang off a 2px line with a
+   fitting dot where the flow enters — the header schematic's idiom, used here
+   because the row IS a flow: a fact pattern moving through the law to the
+   places it has landed. Amber marks a limit (a reading that says where a
+   theory fails), matching the warning semantics of DESIGN.md §8. */
+.statute-paths {
+    margin: 0.4rem 0 1rem;
+}
+.paths-lead {
+    font-size: 0.92rem;
+    color: #1a1a2e;
+    margin: 0 0 0.6rem;
+}
+.paths-jumpnav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0.4rem 0 0.8rem;
+}
+.paths-jump {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: 32px;
+    padding: 0.2rem 0.75rem;
+    border: 1px solid #bdd7e7;
+    border-radius: 999px;
+    background: #fff;
+    color: #08519c;
+    font-size: 0.84rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+.paths-jump:hover {
+    background: #eff3ff;
+    border-color: #08519c;
+}
+.paths-jump-count {
+    font-weight: 400;
+    color: #4b5563;
+    font-size: 0.78rem;
+}
+.path-group {
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    background: #fff;
+    margin: 0 0 0.6rem;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+.path-group > summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.2rem 0.6rem;
+    min-height: 44px;
+    padding: 0.6rem 0.9rem;
+}
+.path-group > summary::-webkit-details-marker {
+    display: none;
+}
+.path-group > summary::before {
+    content: "\25B8";
+    color: #4b5563;
+    font-size: 0.85rem;
+}
+.path-group[open] > summary::before {
+    content: "\25BE";
+}
+.path-group > summary:hover {
+    background: #f5f9ff;
+}
+.path-group-name {
+    font-weight: 700;
+    color: #08519c;
+    font-size: 1rem;
+}
+.path-group-count {
+    color: #4b5563;
+    font-size: 0.84rem;
+}
+.path-group-desc {
+    margin: 0 0.9rem 0.4rem;
+    font-size: 0.86rem;
+    color: #4b5563;
+}
+.path-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.5rem 1rem;
+    padding: 0.75rem 0.9rem 0.6rem;
+    border-top: 1px solid #eef2f7;
+}
+.path-step {
+    position: relative;
+    min-width: 0;
+    font-size: 0.86rem;
+    line-height: 1.45;
+    color: #1a1a2e;
+    overflow-wrap: anywhere;
+}
+.path-step p {
+    margin: 0.15rem 0 0;
+}
+.path-when,
+.path-precedent,
+.path-live {
+    border-top: 2px solid #bdd7e7;
+    padding-top: 0.45rem;
+}
+.path-when::before,
+.path-precedent::before,
+.path-live::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #3182bd;
+}
+.path-row.is-limit .path-when,
+.path-row.is-limit .path-precedent,
+.path-row.is-limit .path-live {
+    border-top-color: #fde68a;
+}
+.path-row.is-limit .path-when::before,
+.path-row.is-limit .path-precedent::before,
+.path-row.is-limit .path-live::before {
+    background: #d4a017;
+}
+.path-reading {
+    font-weight: 700;
+    margin: 0.3rem 0 0.1rem;
+}
+.path-reading a,
+.path-list a {
+    color: #08519c;
+    text-decoration: none;
+}
+.path-reading a:hover,
+.path-list a:hover {
+    text-decoration: underline;
+}
+.path-section {
+    font-size: 0.78rem;
+    color: #4b5563;
+}
+.path-k {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #4b5563;
+}
+.path-list {
+    list-style: none;
+    margin: 0.2rem 0 0;
+    padding: 0;
+}
+.path-list li {
+    margin: 0 0 0.3rem;
+}
+.path-list a {
+    font-weight: 600;
+}
+.path-sub {
+    display: block;
+    font-size: 0.76rem;
+    color: #4b5563;
+}
+.path-more {
+    font-size: 0.76rem;
+    color: #4b5563;
+}
+.path-none {
+    color: #6b7280;
+    font-style: italic;
+}
+.path-ruled-out {
+    font-size: 0.8rem;
+    color: #4b5563;
+}
+.path-ruled-out .path-k {
+    display: inline;
+}
+.path-ruled-out a {
+    color: #4b5563;
+}
+.path-limit {
+    display: inline-block;
+    margin-left: 0.35rem;
+    padding: 0.02rem 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #b45309;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 999px;
+    vertical-align: middle;
+}
+.reading-trigger {
+    background: #eff3ff;
+    border-left: 3px solid #3182bd;
+    border-radius: 0 0.4rem 0.4rem 0;
+    padding: 0.5rem 0.75rem;
+    margin: 0.4rem 0 0.6rem;
+    font-size: 0.86rem;
+    color: #1a1a2e;
+}
+.reading-activities {
+    margin-top: 0.25rem;
+    font-size: 0.8rem;
+    color: #4b5563;
+}
+.reading-activities a {
+    color: #08519c;
+}
+/* Phones: the four steps stack, and the pipe turns vertical — one line down
+   the left edge with a fitting where each step joins it. */
+@media (max-width: 760px) {
+    .path-row {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+        padding: 0.7rem 0.8rem 0.5rem;
+    }
+    .path-law {
+        padding-bottom: 0.45rem;
+    }
+    .path-when,
+    .path-precedent,
+    .path-live {
+        border-top: 0;
+        border-left: 2px solid #bdd7e7;
+        margin-left: 4px;
+        padding: 0.1rem 0 0.55rem 0.8rem;
+    }
+    .path-row.is-limit .path-when,
+    .path-row.is-limit .path-precedent,
+    .path-row.is-limit .path-live {
+        border-left-color: #fde68a;
+    }
+    .path-when::before,
+    .path-precedent::before,
+    .path-live::before {
+        top: 0.3rem;
+        left: -6px;
+    }
+}
