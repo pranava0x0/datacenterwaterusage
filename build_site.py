@@ -2767,6 +2767,9 @@ FOOTER_MOTIF = """
 # shell plus ~20 KB instead of the 320 KB Legislation card list.
 DEFAULT_TAB = "overview"
 SITE_CSS_FILE = "site.css"
+# The page script as a file, for the standalone tab pages only (index.html
+# inlines it). Same-origin and relative, so the no-third-party rule holds.
+SITE_JS_FILE = "site.js"
 ANCHOR_ID_RE = re.compile(r'\bid="([^"]+)"')
 INTERNAL_HREF_RE = re.compile(r'href="#([^"]+)"')
 
@@ -2850,6 +2853,10 @@ def build_tab_page(name: str, label: str, body: str) -> str:
 <title>{esc(title)}</title>
 <meta name="description" content="{esc(dash.TAGLINE)}">
 <link rel="stylesheet" href="{SITE_CSS_FILE}">
+<script>document.documentElement.classList.add('js')</script>
+<!-- No script: every Water Cases part (and any other sub-panel) shows at once. -->
+<noscript><style>.subtabpanel[hidden]{{display:block}}</style></noscript>
+<script src="{SITE_JS_FILE}" defer></script>
 </head>
 <body>
 <div class="wrap">
@@ -2975,6 +2982,7 @@ def build_site_files(bodies: dict[str, str] | None = None) -> dict[str, str]:
     files = {"index.html": _index_html(bodies, srcs, anchors)}
     files.update(pages)
     files[SITE_CSS_FILE] = COMPONENT_CSS + CSS
+    files[SITE_JS_FILE] = build_js()
     files[GRAPH_DATA_PATH.name] = build_graph_data_json()
     files[LLMS_TXT_PATH.name] = build_llms_txt()
     return files

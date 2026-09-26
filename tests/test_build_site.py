@@ -100,8 +100,12 @@ class TestStaticBuild:
         assert "chart.js" not in html.lower()
         assert not hasattr(build_site, "CHARTJS_URL")
         assert not hasattr(build_site, "CHARTJS_SRI")
-        for attr in ("<script src", "<iframe", "<embed", "<object"):
+        for attr in ("<iframe", "<embed", "<object"):
             assert attr not in html.lower(), f"external resource tag: {attr}"
+        # The standalone tab pages load site.js; any script src must be
+        # same-origin and relative, like every <link> and <img>.
+        for url in re.findall(r'<script\b[^>]*?\bsrc="([^"]+)"', html):
+            assert not url.startswith(("http:", "https:", "//")), url
         # Every <link> and <img> must be same-origin/relative, and no
         # stylesheet may pull one in.
         for url in re.findall(r'<(?:link|img)\b[^>]*?(?:href|src)="([^"]+)"', html):
@@ -1228,3 +1232,21 @@ class TestLazyTabs:
         assert "try { return decodeURIComponent(raw); } catch (e) { return raw; }" in js
         assert "else if (DEFAULT_TAB) activateTab(DEFAULT_TAB, true)" in js
         assert "delete panelFetches[name];" in js
+
+
+class TestStandaloneTabPages:
+    """Codex review, PR #30: the no-JS / failed-fetch fallback pages shipped no
+    script, so Water Cases Parts 1-3 stayed hidden and every filter was inert."""
+
+    def test_standalone_pages_run_the_page_script(self):
+        files = _files()
+        assert files["site.js"] == build_site.build_js()
+        for name, content in files.items():
+            if name.startswith("tab-"):
+                assert '<script src="site.js" defer></script>' in content, name
+                assert "classList.add('js')" in content, name
+
+    def test_no_script_readers_see_every_sub_panel(self):
+        page = _files()[build_site.tab_file("cwa")]
+        assert "<noscript><style>.subtabpanel[hidden]{display:block}</style></noscript>" in page
+        assert 'id="panel-cwa-p1" hidden' in page  # hidden only until the rule applies
