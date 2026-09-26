@@ -142,3 +142,11 @@ class TestLegalPathsMode:
         existed and threw, aborting the layout switch (2026-09-26)."""
         js = dashboard._explore_js()
         assert "if (!pathPos) layoutPaths();" in js
+
+
+def test_toolbar_controls_wrap_on_a_phone():
+    """Regression: with the Layout selector added, the non-wrapping tools row
+    pushed the Reset button past a 375px viewport (page scroll-width 412)."""
+    css = dashboard._explore_css()
+    rule = next(line for line in css.splitlines() if line.startswith(".explore-tools{"))
+    assert "flex-wrap:wrap" in rule

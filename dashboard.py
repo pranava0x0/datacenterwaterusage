@@ -5625,7 +5625,9 @@ def _explore_css() -> str:
 .explore-neighbour a:hover{text-decoration:underline}
 .explore-neighbour-kind{color:#6b7280;font-size:.73rem;text-align:right}
 .explore-neighbours-more summary{cursor:pointer;color:#08519c;font-weight:600;padding:.25rem 0}
-.explore-tools{display:flex;gap:.35rem;align-items:center;font-size:.8rem;color:#4b5563}
+/* Wraps: the Layout selector (2026-09-26) pushed Reset 37px past a 375px
+   phone's edge when this row could not break. */
+.explore-tools{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;font-size:.8rem;color:#4b5563}
 .explore-canvas{width:100%;height:520px;display:block;background:#fff;border:1px solid #cbd5e1;
   border-radius:.5rem;touch-action:none;cursor:grab}
 .explore-canvas:active{cursor:grabbing}
