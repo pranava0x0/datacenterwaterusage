@@ -119,11 +119,11 @@ Static build 2026-09-26. Dashboard: https://pranava0x0.github.io/datacenterwater
 
 ## States and localities
 
-The dashboard's States & Localities tab covers 42 states with at least one tracked measure and 92 county, city and town actions (62 of them water-related), mirrored from pranava0x0/datacentercommunitybenefits and corrected against primary sources. State-level instruments live in the legislation dataset above; this layer is the county and city measures that dataset is too coarse to hold, and it carries no cross-references to other records. States are listed because something tracked happened in them, so an absent state means nothing has been tracked there rather than that nothing is happening.
+The dashboard's States & Localities tab covers 42 states with at least one tracked measure and 125 county, city and town actions (93 of them water-related), mirrored from pranava0x0/datacentercommunitybenefits and corrected against primary sources. State-level instruments live in the legislation dataset above; this layer is the county and city measures that dataset is too coarse to hold, and it carries no cross-references to other records. States are listed because something tracked happened in them, so an absent state means nothing has been tracked there rather than that nothing is happening.
 
-State activity, newest first: Texas (2026-09-24), California (2026-09-21), Virginia (2026-09-18), Nevada (2026-09-18), Oregon (2026-09-08), Massachusetts (2026-09-08), Ohio (2026-09-01), Maryland (2026-09-01), South Carolina (2026-09), Florida (2026-09), Nebraska (2026-08-19), Pennsylvania (2026-08-18), Kentucky (2026-08-18), Wisconsin (2026-08), Indiana (2026-08), Michigan (2026-07-15), New York (2026-07-14), New Mexico (2026-07-02), Washington (2026-07-01), Illinois (2026-07-01), North Carolina (2026-07), Mississippi (2026-07), Missouri (2026-07), Minnesota (2026-07), Iowa (2026-07), Colorado (2026-07), Louisiana (2026-06-25), Wyoming (2026-06-03), Utah (2026-06), Georgia (2026-06), Arkansas (2026-06), Vermont (2026-05-29), New Jersey (2026-05-27), Connecticut (2026-05-06), Kansas (2026-05-01), Rhode Island (2026-05), Idaho (2026-05), Maine (2026-04-29), Alabama (2026-04-10), Oklahoma (2026-04), West Virginia (2026-03-27), South Dakota (2026-03-24).
+State activity, newest first: Texas (2026-09-24), California (2026-09-21), Virginia (2026-09-18), Nevada (2026-09-18), Oregon (2026-09-08), Massachusetts (2026-09-08), Ohio (2026-09-01), Maryland (2026-09-01), South Carolina (2026-09), Minnesota (2026-09), Illinois (2026-09), Georgia (2026-09), Florida (2026-09), Alabama (2026-09), Nebraska (2026-08-19), Pennsylvania (2026-08-18), Kentucky (2026-08-18), Wisconsin (2026-08), New York (2026-08), North Carolina (2026-08), Michigan (2026-08), Indiana (2026-08), New Mexico (2026-07-02), Washington (2026-07-01), Mississippi (2026-07), Missouri (2026-07), Iowa (2026-07), Colorado (2026-07), Louisiana (2026-06-25), Wyoming (2026-06-03), Utah (2026-06), Arkansas (2026-06), Vermont (2026-05-29), New Jersey (2026-05-27), Connecticut (2026-05-06), Kansas (2026-05-01), Rhode Island (2026-05), Idaho (2026-05), Maine (2026-04-29), Oklahoma (2026-04), West Virginia (2026-03-27), South Dakota (2026-03-24).
 
-### Moved in the last 120 days (89 movements)
+### Moved in the last 120 days (122 movements)
 
 - 2026-09-24 — Texas — TX PUC Energy and Water Use Survey (data centers) — Introduced — Attorney General investigation
 - 2026-09-21 — California — CA SB 887 — Enacted — Signed and chaptered
@@ -134,17 +134,17 @@ State activity, newest first: Texas (2026-09-24), California (2026-09-21), Virgi
 - 2026-09-18 — Nevada — NV EO 2026-005 — Enacted — Signed
 - 2026-09-08 — Oregon — OR 2026 state-land data center pause — Enacted — State-agency pause begins
 - 2026-09-08 — Massachusetts — MA EO 658 — Enacted — Signed
+- 2026-09 — Woodbury, MN — Woodbury — In force — A city official (Searles) is quoted citing system-wide supply pressure: "Our system is currently pumping about 2.7 billion gallons of water a year," amid PFAS-treatment strain, and the ordinance separately covers proposed water/sewer users whose consumption would rank among the city's largest.
+- 2026-09 — Woodburn, OR — Woodburn — In force — The city's own resolution page states the pause is meant in part to "study potential impacts to water, energy, noise, the environment, and surrounding properties."
 - 2026-09 — Spartanburg County, SC — Spartanburg County — In force — Water is tagged among this jurisdiction's stated reasons in source data; the source summary does not itemize a specific water impact.
+- 2026-09 — Richmond, CA — Richmond — In force — The article quotes officials wanting to examine "possible demands on the city's electricity and water systems."
 - 2026-09 — Palm Beach County, FL — Palm Beach County — In force — The pause follows the commission's July rejection of 'Project Tango', where the developer estimated 5,000 gallons a day of potable water for closed-loop cooling and county staff projected 100,000 gallons a day; staff will use the year to draft enforceable standards.
 - 2026-09-01 — Ohio — OH EPA OHD000001 (draft general permit) — Introduced — Final permit decision expected (approximate; Q3 2026)
+- 2026-09 — McDonald (village), OH — McDonald (village) — In force — A resident is quoted warning against becoming "a guinea pig to find out down the road all the noise, air and water pollution has led to catastrophic diseases," and the sibling's tag of water/noise/air concerns matches the article's framing of resident objections.
+- 2026-09 — Mattoon, IL — Mattoon — In force — The city's own release asks how large data centers "could affect our water, environment, health, power costs, City services, and finances."
 - 2026-09-01 — Maryland — MD HB 270 / SB 116 — Enacted — Report due
-- 2026-09 — Gilroy, CA — Gilroy — In force — The council's stated study topics for the pause lead with water use and cooling technology, alongside electricity demand, noise, aesthetics and backup-generator emissions.
-- 2026-08-21 — Virginia — VA DEQ Eastern Virginia groundwater study — Enacted — Legislators weigh policy response
-- 2026-08-19 — Nebraska — NE EO 26-17 — Enacted — Task force appointed
-- 2026-08-18 — Pennsylvania — PA EO 2026-05 — Enacted — Signed
-- 2026-08-18 — Kentucky — KY EO 2026-494 — Enacted — Enforceability questioned
-- 2026-08-14 — Texas — TX EO 2026-08 (data center audit) — Enacted — Texas Tribune reports audit scope: ~250-300 projects
-- 2026-08 — Oneida County, WI — Oneida County — Proposed — Concerns cited: water and electricity consumption, noise, and potential pollution.
+- 2026-09 — Marion County, FL — Marion County — In force — Public comment quoted in the article ties the pause to cooling water use directly ("they use a great deal of water for cooling"), and county coverage frames the study period as covering aquifer withdrawals, cooling practices and spring protection.
+- 2026-09 — Manatee County, FL — Manatee County — Proposed — The article states plainly: "Large-scale data centers are known to require substantial water and electrical resources to power and cool specialized computer servers."
 
 ## Water commitments
 
