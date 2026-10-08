@@ -643,7 +643,7 @@ Guardrails:
 
 ## Check a project (fact-pattern matching)
 
-Every case, conflict site and statutory reading carries fact-pattern facets from one closed list; a described project is read into the same facets and matched by weighted overlap. Facets in common are the explanation; outcome tallies describe tracked matters, not predictions.
+Every case, conflict site and statutory reading carries fact-pattern facets from one closed list; a described project is read into the same facets and matched by weighted overlap. Facets in common are the explanation; outcome counts describe tracked matters, not predictions.
 
 ### Fact-pattern facets
 

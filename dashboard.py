@@ -4853,7 +4853,7 @@ OVERVIEW_QUESTIONS = (
      "Deployed and piloted fixes: reclaimed water, closed-loop and dry cooling, reporting mandates.",
      "panel-solutions", "Solutions"),
     ("I have a project — what could reach it?",
-     "Describe a proposed campus and see which readings could apply, the closest cases, similar fights and what they recorded.",
+     "Describe a proposed campus. See which laws could apply, the closest cases, similar fights and how they ended.",
      "panel-check", "Check a project"),
     ("I have a document — what does it match?",
      "Paste a news story, permit notice or draft ordinance to find the records that use the same language.",
@@ -6731,16 +6731,15 @@ def render_explore():
 # --- Check a project (precedent engine surface) ---
 
 PROJECT_CHECK_LEAD = (
-    "Describe a proposed data center — or pick a real 2026 proposal — and the "
-    "tracker reads it into a fact pattern, then shows which statutory readings "
-    "could reach it, the closest tracked cases and community fights, what those "
-    "cases recorded as outcomes, and the rules in its state. It maps legal "
-    "exposure from the record; it does not predict a result or advise a suit."
+    "Describe a proposed data center, or pick a real 2026 proposal. The tracker "
+    "turns it into a fact pattern and shows which laws could reach it, the closest "
+    "cases and community fights, how those cases ended, and the rules in its state. "
+    "It maps exposure from the record. It does not predict a result or recommend a suit."
 )
 
 PROJECT_CHECK_EMPTY_STATE = (
-    "Nothing checked yet. Paste a description, tick the facts that apply, or "
-    "pick an example above — results appear here."
+    "Nothing checked yet. Paste a description, tick the facts, or pick an example. "
+    "Results appear here."
 )
 
 PROJECT_CHECK_PLACEHOLDER = (
@@ -6755,11 +6754,11 @@ PROJECT_CHECK_PLACEHOLDER = (
 PROJECT_CHECK_SECTIONS = {
     "read": "What we read",
     "activities": "Activities implicated",
-    "readings": "Readings that could reach this project",
+    "readings": "Laws and doctrines that could reach this project",
     "cases": "Closest tracked cases",
     "sites": "Communities that fought a similar project",
-    "outcomes": "What the closest cases recorded",
-    "rules": "Rules where this project sits",
+    "outcomes": "How the closest cases ended",
+    "rules": "Rules in this state",
 }
 
 
@@ -6889,8 +6888,8 @@ def _project_result_html(result: dict, state_name: str | None = None) -> str:
         )
         parts.append(
             f'<section class="pcheck-sec"><h4>{esc(PROJECT_CHECK_SECTIONS["outcomes"])}</h4>'
-            f'<p class="pcheck-muted">Outcome types recorded across the {result.get("outcome_sample", len(outcomes))} closest cases '
-            "— a tally of what happened in tracked matters, not a prediction for this one.</p>"
+            f'<p class="pcheck-muted">Outcome types across the {result.get("outcome_sample", len(outcomes))} closest cases. '
+            "A count of what happened in tracked matters, not a forecast for this one.</p>"
             f'<div class="pcheck-bars">{bars}</div></section>'
         )
 
@@ -7005,7 +7004,7 @@ def _build_project_check_html(payload_src: str | None = None) -> str:
     <p class="pcheck-read" id="pcheck-read" aria-live="polite"></p>
     <details class="pcheck-facets" id="pcheck-facets">
       <summary>Facts about the project <span class="pcheck-facets-n" id="pcheck-facets-n"></span></summary>
-      <p class="pcheck-muted">Ticked from the words in your description; untick what does not apply, tick what it left out.</p>
+      <p class="pcheck-muted">Ticked from the words you wrote. Untick what does not apply; tick what it missed.</p>
       {facet_fields}
     </details>
     <div class="pcheck-actions">
@@ -7019,8 +7018,8 @@ def _build_project_check_html(payload_src: str | None = None) -> str:
 </div>
 <section class="pcheck-worked" id="pcheck-worked">
   <h3 class="solution-cat-header">Worked examples — {len(examples)} real 2026 proposals</h3>
-  <p class="pcheck-muted">Each was read from public coverage into the same fact pattern and run through the same
-  engine; the facets are the record and the description is what a reader could paste. Open one to see the analysis.</p>
+  <p class="pcheck-muted">Each was written from public coverage and run through the same engine. The ticked
+  facts are the record; the description is what you could paste. Open one to see the analysis.</p>
   {worked}
 </section>
 <script type="application/json" id="pcheck-strings">{strings}</script>
@@ -7609,8 +7608,8 @@ def _project_check_js() -> str:
       // Outcomes
       if (result.outcomes.length){
         sec = section('outcomes');
-        sec.appendChild(muted('Outcome types recorded across the ' + result.outcome_sample +
-          ' closest cases — a tally of what happened in tracked matters, not a prediction for this one.'));
+        sec.appendChild(muted('Outcome types across the ' + result.outcome_sample +
+          ' closest cases. A count of what happened in tracked matters, not a forecast for this one.'));
         var top = Math.max.apply(null, result.outcomes.map(function(o){ return o.count; })) || 1;
         var bars = el('div', 'pcheck-bars');
         result.outcomes.forEach(function(o){
@@ -7830,7 +7829,7 @@ def render_project_check():
     components.html(_build_project_check_html(), height=900, scrolling=True)
     st.caption(
         "Matching is weighted overlap of fact-pattern facets, plus wording "
-        "similarity for cases and sites. Outcome tallies describe tracked "
+        "similarity for cases and sites. Outcome counts describe tracked "
         "matters, not this project."
     )
 

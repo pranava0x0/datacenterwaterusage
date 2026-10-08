@@ -1524,11 +1524,11 @@ def build_project_check_tab() -> str:
   <h2>Check a project</h2>
   <p class="lead">{esc(dash.PROJECT_CHECK_LEAD)}</p>
   {dash._build_project_check_html(versioned(PROJECT_DATA_URL, build_project_data_json()))}
-  <p class="src-note">Every case, conflict site and statutory reading carries fact-pattern
-  facets from one closed vocabulary; a project is read into the same facets and matched by
-  weighted overlap, plus wording similarity for cases and sites. The facets in common are
-  the explanation. Readings marked <em>Limit</em> say where a theory stops; outcome tallies
-  describe tracked matters, not this project. Everything runs in your browser.</p>
+  <p class="src-note">Every case, site and statutory reading carries facts from one short
+  list. Your project is read into the same list and matched by how much overlaps; the facts
+  in common are the explanation. Readings marked <em>Limit</em> show where a theory stops.
+  Outcome counts are what happened in tracked cases, not what will happen here. Everything
+  runs in your browser.</p>
 </section>
 """
 
@@ -2443,7 +2443,7 @@ def _llms_project_check_lines() -> list[str]:
     lines = [
         "Every case, conflict site and statutory reading carries fact-pattern facets from "
         "one closed list; a described project is read into the same facets and matched "
-        "by weighted overlap. Facets in common are the explanation; outcome tallies describe "
+        "by weighted overlap. Facets in common are the explanation; outcome counts describe "
         "tracked matters, not predictions.",
         "",
         "### Fact-pattern facets",
