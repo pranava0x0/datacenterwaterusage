@@ -331,6 +331,15 @@ Haiku and Sonnet runs were justified and used; the Opus run is scored below.**
   water-scoped instruments, ~1.5k each, with a candid list of the
   low-threshold cases where it had applied the scale rule literally; the
   review stripped eight and added the incentive facet to six). Both used.
+  The second Opus pass (instrument ranking + negative mappings, from a
+  written spec): 159.6k tokens, 24 tool uses, ~5.4 min → engine, renderer,
+  page script, llms lines and 12 tests (960 → 972), with three spec gaps
+  resolved sensibly (a `water_scoped` flag so energy-only instruments do not
+  claim to apply to every data center; a site anchor on negative rows; the
+  Project Blue negative tested on the Tucson example rather than the Maricopa
+  fixture, where the site ranks 11th). It flagged a stale CLAUDE.md sentence
+  outside its task instead of silently editing it. Same lesson as the first
+  pass: spec + parity test = safe delegation.
 
 **2026-08-24 — ten agents (3 Sonnet research, 5 Opus implementation, Haiku +
 Sonnet checkers) through two usage-limit walls. Verdict: the fleet was
