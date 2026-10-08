@@ -49,7 +49,15 @@
         "supply-strain",
         "disclosure-gap"
       ],
-      "issue_types_rationale": "City sued a newspaper (Google paying its fees) to keep water figures secret as a trade secret, while Google's draw passed a quarter of city supply."
+      "issue_types_rationale": "City sued a newspaper (Google paying its fees) to keep water figures secret as a trade secret, while Google's draw passed a quarter of city supply.",
+      "fact_pattern": [
+        "src-utility",
+        "ctx-small-system",
+        "proc-secrecy",
+        "proc-lawsuit",
+        "proc-records",
+        "scale-hyperscale"
+      ]
     },
     {
       "site_id": "xai-colossus-memphis-tn",
@@ -127,7 +135,16 @@
         "aquifer-depletion",
         "alt-source-adoption"
       ],
-      "issue_types_rationale": "~3 MGD of cooling water from the Memphis Sand sole-source aquifer, with a greywater recycling plant as the mitigation."
+      "issue_types_rationale": "~3 MGD of cooling water from the Memphis Sand sole-source aquifer, with a greywater recycling plant as the mitigation.",
+      "fact_pattern": [
+        "src-wells",
+        "src-reclaimed",
+        "ctx-stressed-aquifer",
+        "ctx-city-reservoir",
+        "ctx-interstate",
+        "proc-pledge",
+        "scale-hyperscale"
+      ]
     },
     {
       "site_id": "meta-newton-county-ga",
@@ -202,7 +219,14 @@
       "issue_types": [
         "aquifer-depletion"
       ],
-      "issue_types_rationale": "Well-dependent households nearest the campus lost water after construction — the clearest neighbour-well-failure fact pattern in the record."
+      "issue_types_rationale": "Well-dependent households nearest the campus lost water after construction — the clearest neighbour-well-failure fact pattern in the record.",
+      "fact_pattern": [
+        "src-utility",
+        "ctx-stressed-aquifer",
+        "ctx-small-system",
+        "proc-lawsuit",
+        "scale-hyperscale"
+      ]
     },
     {
       "site_id": "project-blue-tucson-az",
@@ -279,7 +303,16 @@
         "siting-zoning-defeat",
         "supply-strain"
       ],
-      "issue_types_rationale": "~2,000 acre-feet/yr would have made it Tucson Water's largest customer; the project was rejected."
+      "issue_types_rationale": "~2,000 acre-feet/yr would have made it Tucson Water's largest customer; the project was rejected.",
+      "fact_pattern": [
+        "src-wells",
+        "src-utility",
+        "cool-air",
+        "proc-secrecy",
+        "proc-zoning",
+        "proc-moratorium",
+        "scale-hyperscale"
+      ]
     },
     {
       "site_id": "meta-mesa-microsoft-goodyear-az",
@@ -334,7 +367,16 @@
         "supply-strain",
         "aquifer-depletion"
       ],
-      "issue_types_rationale": "~91 metro Phoenix data centers against a potential 77% cut to Arizona's Colorado River allocation."
+      "issue_types_rationale": "~91 metro Phoenix data centers against a potential 77% cut to Arizona's Colorado River allocation.",
+      "fact_pattern": [
+        "src-utility",
+        "cool-closed",
+        "ctx-stressed-aquifer",
+        "ctx-drought",
+        "ctx-interstate",
+        "proc-pledge",
+        "scale-hyperscale"
+      ]
     },
     {
       "site_id": "pw-digital-gateway-va",
@@ -405,7 +447,13 @@
         "siting-zoning-defeat",
         "supply-strain"
       ],
-      "issue_types_rationale": "Rezoning voided on appeal; the corridor drains to the Occoquan Reservoir supplying ~40% of Northern Virginia drinking water."
+      "issue_types_rationale": "Rezoning voided on appeal; the corridor drains to the Occoquan Reservoir supplying ~40% of Northern Virginia drinking water.",
+      "fact_pattern": [
+        "ctx-city-reservoir",
+        "proc-zoning",
+        "proc-lawsuit",
+        "scale-hyperscale"
+      ]
     },
     {
       "site_id": "aws-lake-anna-va",
@@ -473,7 +521,16 @@
       "issue_types": [
         "discharge-quality"
       ],
-      "issue_types_rationale": "A VPDES individual permit for cooling-water discharge to Sedges Creek — the direct-discharge fact pattern."
+      "issue_types_rationale": "A VPDES individual permit for cooling-water discharge to Sedges Creek — the direct-discharge fact pattern.",
+      "fact_pattern": [
+        "cool-evaporative",
+        "out-surface",
+        "ctx-city-reservoir",
+        "chem-pfas",
+        "chem-treatment",
+        "proc-records",
+        "scale-hyperscale"
+      ]
     },
     {
       "site_id": "amazon-boardman-umatilla-or",
@@ -539,7 +596,15 @@
         "discharge-quality",
         "aquifer-depletion"
       ],
-      "issue_types_rationale": "Cooling evaporation concentrates nitrate in Port of Morrow wastewater over a designated groundwater management area."
+      "issue_types_rationale": "Cooling evaporation concentrates nitrate in Port of Morrow wastewater over a designated groundwater management area.",
+      "fact_pattern": [
+        "src-reclaimed",
+        "cool-evaporative",
+        "out-ground",
+        "chem-treatment",
+        "proc-lawsuit",
+        "scale-hyperscale"
+      ]
     },
     {
       "site_id": "corpus-christi-sinton-tx",
@@ -611,7 +676,16 @@
         "aquifer-depletion",
         "supply-strain"
       ],
-      "issue_types_rationale": "A 22-well emergency Evangeline Aquifer field built with reservoirs below 10% full."
+      "issue_types_rationale": "A 22-well emergency Evangeline Aquifer field built with reservoirs below 10% full.",
+      "fact_pattern": [
+        "src-wells",
+        "src-transfer",
+        "ctx-stressed-aquifer",
+        "ctx-drought",
+        "ctx-small-system",
+        "proc-secrecy",
+        "proc-lawsuit"
+      ]
     },
     {
       "site_id": "hood-county-granbury-tx",
@@ -661,7 +735,12 @@
         "aquifer-depletion",
         "moratorium-pause"
       ],
-      "issue_types_rationale": "Aquifer concerns around proposed AI campuses drove a county moratorium (later rescinded)."
+      "issue_types_rationale": "Aquifer concerns around proposed AI campuses drove a county moratorium (later rescinded).",
+      "fact_pattern": [
+        "cool-air",
+        "proc-moratorium",
+        "proc-lawsuit"
+      ]
     },
     {
       "site_id": "charlotte-nc-moratorium",
@@ -705,7 +784,14 @@
         "moratorium-pause",
         "supply-strain"
       ],
-      "issue_types_rationale": "A citywide moratorium adopted during the worst drought since 2007, with a facility's peak draw as the trigger."
+      "issue_types_rationale": "A citywide moratorium adopted during the worst drought since 2007, with a facility's peak draw as the trigger.",
+      "fact_pattern": [
+        "src-utility",
+        "ctx-drought",
+        "proc-zoning",
+        "proc-moratorium",
+        "scale-hyperscale"
+      ]
     },
     {
       "site_id": "microsoft-racine-county-wi",
@@ -779,7 +865,17 @@
         "supply-secrecy",
         "supply-contract-dispute"
       ],
-      "issue_types_rationale": "Caledonia rezoning withdrawn after opposition; Riverkeeper groups sued for water records; Mount Pleasant sits inside the contested Foxconn-era Great Lakes diversion."
+      "issue_types_rationale": "Caledonia rezoning withdrawn after opposition; Riverkeeper groups sued for water records; Mount Pleasant sits inside the contested Foxconn-era Great Lakes diversion.",
+      "fact_pattern": [
+        "src-utility",
+        "src-transfer",
+        "ctx-wetlands",
+        "ctx-interstate",
+        "proc-zoning",
+        "proc-lawsuit",
+        "proc-records",
+        "scale-hyperscale"
+      ]
     },
     {
       "site_id": "qts-fayette-county-ga",
@@ -847,7 +943,14 @@
         "rate-cost-shift",
         "disclosure-gap"
       ],
-      "issue_types_rationale": "Two high-capacity connections ran unmetered and unbilled — other ratepayers carried the cost of water nobody measured."
+      "issue_types_rationale": "Two high-capacity connections ran unmetered and unbilled — other ratepayers carried the cost of water nobody measured.",
+      "fact_pattern": [
+        "src-utility",
+        "out-stormwater",
+        "ctx-wetlands",
+        "ctx-drought",
+        "scale-hyperscale"
+      ]
     },
     {
       "site_id": "meta-richland-parish-la",
@@ -905,7 +1008,12 @@
         "supply-strain",
         "disclosure-gap"
       ],
-      "issue_types_rationale": "Registered for up to 23 MGD (8.4B gal/yr) with no monitoring requirement attached."
+      "issue_types_rationale": "Registered for up to 23 MGD (8.4B gal/yr) with no monitoring requirement attached.",
+      "fact_pattern": [
+        "src-wells",
+        "proc-secrecy",
+        "scale-hyperscale"
+      ]
     },
     {
       "site_id": "quantum-loophole-frederick-md",
@@ -961,7 +1069,14 @@
       "issue_types": [
         "construction-impacts"
       ],
-      "issue_types_rationale": "At least four frac-outs boring the Q-LOOP conduit under the Potomac and Monocacy — harm from building, not operating."
+      "issue_types_rationale": "At least four frac-outs boring the Q-LOOP conduit under the Potomac and Monocacy — harm from building, not operating.",
+      "fact_pattern": [
+        "out-surface",
+        "ctx-wetlands",
+        "ctx-navigable",
+        "proc-lawsuit",
+        "scale-hyperscale"
+      ]
     },
     {
       "site_id": "microsoft-west-des-moines-ia",
@@ -1010,7 +1125,13 @@
         "supply-strain",
         "disclosure-gap"
       ],
-      "issue_types_rationale": "11.5M gallons in a single month, ~6% of the district's supply, surfaced only through reporting."
+      "issue_types_rationale": "11.5M gallons in a single month, ~6% of the district's supply, surfaced only through reporting.",
+      "fact_pattern": [
+        "src-utility",
+        "cool-closed",
+        "proc-pledge",
+        "scale-hyperscale"
+      ]
     },
     {
       "site_id": "bessemer-al-hyperscale",
@@ -1068,7 +1189,16 @@
         "supply-strain",
         "rate-cost-shift"
       ],
-      "issue_types_rationale": "A 2 MGD request against a third of the authority's capacity, with the utility conceding it could not serve without significant upgrades."
+      "issue_types_rationale": "A 2 MGD request against a third of the authority's capacity, with the utility conceding it could not serve without significant upgrades.",
+      "fact_pattern": [
+        "src-surface",
+        "src-utility",
+        "ctx-city-reservoir",
+        "ctx-endangered",
+        "proc-secrecy",
+        "proc-zoning",
+        "scale-hyperscale"
+      ]
     },
     {
       "site_id": "missouri-peculiar-stcharles",
@@ -1110,7 +1240,12 @@
         "rate-cost-shift",
         "moratorium-pause"
       ],
-      "issue_types_rationale": "A project defeated on water-rate grounds, then one of the first US municipal data-center moratoriums driven partly by water supply."
+      "issue_types_rationale": "A project defeated on water-rate grounds, then one of the first US municipal data-center moratoriums driven partly by water supply.",
+      "fact_pattern": [
+        "ctx-small-system",
+        "proc-zoning",
+        "proc-moratorium"
+      ]
     },
     {
       "site_id": "meta-cheyenne-wy",
@@ -1153,6 +1288,14 @@
           "title": "Cheyenne BOPU releases wastewater contamination timeline; over 800K gallons affected",
           "url": "https://capcity.news/community/city/2026/07/20/cheyenne-bopu-releases-wastewater-contamination-timeline-over-800k-gallons-affected/"
         }
+      ],
+      "fact_pattern": [
+        "src-utility",
+        "src-reclaimed",
+        "cool-closed",
+        "out-sewer",
+        "proc-lawsuit",
+        "scale-hyperscale"
       ]
     }
   ]

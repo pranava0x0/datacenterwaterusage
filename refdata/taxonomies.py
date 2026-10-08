@@ -578,3 +578,287 @@ OUTCOME_TYPE_LABELS = {
     "settled-nonmonetary": "Settled, non-monetary",
     "pending-undecided": "Pending / undecided",
 }
+
+
+# --- Fact-pattern facets (cases, conflict sites, statutory readings) ---------
+
+# What a project IS, as a closed vocabulary, so "apply the record to this
+# proposal" can be computed instead of essayed. A case or site carries the
+# facets its fact pattern exhibits (``fact_pattern``); a statutory reading
+# carries the facets that make it potentially reach a project
+# (``fact_triggers``). The Check-a-project engine (refdata.precedent) scores a
+# reader's project against both — the overlap is the explanation, which is why
+# this is a vocabulary and not an embedding.
+#
+# Every facet carries the trigger words the parser looks for in a pasted
+# description. Triggers are tokens exactly as ``refdata.graph.tokenize`` emits
+# them (lower-case unigrams or two-word bigrams) so the browser's parser and
+# this module's agree by construction; a build test round-trips a fixture
+# through both. ``blockers`` suppress a facet when a negating phrase is present
+# ("non evaporative" must not read as evaporative cooling).
+#
+# A facet with no record carrying it is a chip matching nothing, so a value
+# enters here in the same commit as the records that use it (both-ways
+# membership is tested, as for every taxonomy in this module). Two drafted
+# values were held back on 2026-10-08 for exactly that reason: zero-liquid-
+# discharge and incentive/community-benefit agreements — no case or site
+# record carries either yet (the agreements live in water_commitments.json).
+FACT_DIMENSION_LABELS = {
+    "source": "Where the water comes from",
+    "cooling": "How the campus uses it",
+    "discharge": "Where the water goes",
+    "site": "The site and its watershed",
+    "power": "Power for the campus",
+    "chemicals": "Fuel, chemicals and contamination",
+    "process": "How the approval or dispute runs",
+    "scale": "Scale",
+}
+
+FACT_FACETS = {
+    # -- source --
+    "src-wells": {
+        "dimension": "source",
+        "label": "On-site groundwater wells",
+        "description": "The campus pumps its own wells or a dedicated wellfield.",
+        "triggers": ["wells", "wellfield", "groundwater", "aquifer", "high capacity", "pump groundwater", "borehole"],
+    },
+    "src-surface": {
+        "dimension": "source",
+        "label": "Surface-water intake",
+        "description": "A river, lake or reservoir intake, on site or through a new raw-water line.",
+        "triggers": ["intake", "river", "lake", "reservoir", "surface water", "raw water", "withdrawal", "withdraw"],
+    },
+    "src-utility": {
+        "dimension": "source",
+        "label": "Water bought from a public water system",
+        "description": "Service from a municipal, district or investor-owned water utility.",
+        "triggers": ["utility", "municipal water", "city water", "public water", "water system", "potable", "water district", "water authority", "water service", "service agreement", "water contract", "tap"],
+    },
+    "src-reclaimed": {
+        "dimension": "source",
+        "label": "Reclaimed or recycled water",
+        "description": "Treated effluent, greywater or other non-potable supply.",
+        "triggers": ["reclaimed", "recycled", "reuse", "greywater", "gray water", "purple pipe", "non potable", "nonpotable", "effluent reuse"],
+    },
+    "src-transfer": {
+        "dimension": "source",
+        "label": "Water moved from another basin or state",
+        "description": "An inter-basin diversion, a Great Lakes diversion, or a pipeline from a distant source.",
+        "triggers": ["interbasin", "inter basin", "diversion", "divert", "diverted", "transfer", "imported water"],
+    },
+    # -- cooling --
+    "cool-evaporative": {
+        "dimension": "cooling",
+        "label": "Evaporative cooling towers",
+        "description": "Open cooling towers or adiabatic systems that consume water by evaporation.",
+        "triggers": ["evaporative", "evaporation", "evaporate", "evaporates", "cooling towers", "cooling tower", "towers", "adiabatic", "consumptive"],
+        "blockers": ["non evaporative", "zero evaporation"],
+    },
+    "cool-closed": {
+        "dimension": "cooling",
+        "label": "Closed-loop or liquid cooling",
+        "description": "Recirculating, direct-to-chip or immersion cooling with little make-up water.",
+        "triggers": ["closed loop", "non evaporative", "liquid cooling", "immersion", "recirculating", "direct chip", "chip cooling", "closed system"],
+    },
+    "cool-air": {
+        "dimension": "cooling",
+        "label": "Air (dry) cooling",
+        "description": "Dry coolers or free cooling with no process water.",
+        "triggers": ["air cooled", "air cooling", "dry cooling", "dry coolers", "free cooling", "waterless"],
+    },
+    "cool-once-through": {
+        "dimension": "cooling",
+        "label": "Once-through cooling",
+        "description": "Water passes through once and returns warmer — the power-plant pattern.",
+        "triggers": ["thermal discharge", "heated water", "return flow", "condenser water"],
+    },
+    # -- discharge --
+    "out-sewer": {
+        "dimension": "discharge",
+        "label": "Blowdown to a sewer or treatment plant",
+        "description": "Cooling blowdown and process water go to a publicly owned treatment works.",
+        "triggers": ["sewer", "sewers", "potw", "wastewater treatment", "treatment plant", "sanitary", "pretreatment", "blowdown", "wastewater plant", "sewage"],
+    },
+    "out-surface": {
+        "dimension": "discharge",
+        "label": "Direct discharge to surface water",
+        "description": "An outfall to a river, lake or stream under an NPDES-type permit.",
+        "triggers": ["outfall", "npdes", "vpdes", "tpdes", "spdes", "direct discharge", "discharge permit", "effluent limits", "effluent limit", "surface discharge"],
+    },
+    "out-ground": {
+        "dimension": "discharge",
+        "label": "Discharge to the ground or injection wells",
+        "description": "Infiltration, land application, septic or injection — reaching groundwater, not a pipe.",
+        "triggers": ["injection", "infiltration", "septic", "land application", "drain field", "uic", "percolation", "leach"],
+    },
+    "out-stormwater": {
+        "dimension": "discharge",
+        "label": "Construction or site stormwater",
+        "description": "Runoff, sediment and erosion from grading or from the built campus.",
+        "triggers": ["stormwater", "storm water", "sediment", "erosion", "runoff", "swppp", "grading", "silt"],
+    },
+    # -- site --
+    "ctx-wetlands": {
+        "dimension": "site",
+        "label": "Wetlands or streams on the site",
+        "description": "Fill, crossings or buffers that bring in §404, state wetland law and §401.",
+        "triggers": ["wetland", "wetlands", "stream", "streams", "creek", "tributary", "404", "fill", "floodway", "riparian", "bog", "marsh"],
+    },
+    "ctx-stressed-aquifer": {
+        "dimension": "site",
+        "label": "Stressed or declining aquifer",
+        "description": "Documented drawdown, overdraft, subsidence or failing neighbouring wells.",
+        "triggers": ["depletion", "depleted", "drawdown", "declining", "overdraft", "subsidence", "dry wells", "wells dry", "interference", "went dry", "ran dry", "water table", "cone depression", "recharge"],
+    },
+    "ctx-drought": {
+        "dimension": "site",
+        "label": "Drought-prone or arid region",
+        "description": "A basin under drought declarations, curtailment or shortage rules.",
+        "triggers": ["drought", "arid", "desert", "scarce", "scarcity", "shortage", "curtailment", "water stressed", "water stress", "dry region"],
+    },
+    "ctx-small-system": {
+        "dimension": "site",
+        "label": "Small town or small water system",
+        "description": "A community where one campus is a large share of the system's capacity.",
+        "triggers": ["small town", "rural", "small city", "village", "township", "small community", "small utility", "small system", "population"],
+    },
+    "ctx-city-reservoir": {
+        "dimension": "site",
+        "label": "Supply that a city drinks from",
+        "description": "The source is a reservoir, lake or aquifer that supplies a city's drinking water.",
+        "triggers": ["drinking water", "water supply", "supplies city", "drinking supply", "municipal supply", "sole source", "water source"],
+    },
+    "ctx-interstate": {
+        "dimension": "site",
+        "label": "Interstate river, aquifer or compact waters",
+        "description": "A shared aquifer, an apportioned river or compact-governed basin.",
+        "triggers": ["interstate", "compact", "great lakes", "lake michigan", "delaware river", "susquehanna", "memphis sand", "apportionment", "shared aquifer", "basin commission"],
+    },
+    "ctx-coastal": {
+        "dimension": "site",
+        "label": "Coastal plain, subsidence or saltwater intrusion",
+        "description": "Coastal aquifers where pumping causes intrusion or land subsidence.",
+        "triggers": ["coastal", "saltwater", "salt water", "intrusion", "sea level", "coastal plain", "subsiding", "bay"],
+    },
+    "ctx-tribal": {
+        "dimension": "site",
+        "label": "Tribal lands or reserved water rights",
+        "description": "A reservation or senior tribal water right in the same source.",
+        "triggers": ["tribal", "tribe", "tribes", "reservation", "nation", "pueblo", "indigenous"],
+    },
+    "ctx-endangered": {
+        "dimension": "site",
+        "label": "Protected species habitat downstream",
+        "description": "Listed species or critical habitat that depend on the flows at issue.",
+        "triggers": ["endangered", "threatened species", "species", "habitat", "salmon", "mussel", "mussels", "sturgeon", "whooping", "critical habitat", "esa"],
+    },
+    "ctx-navigable": {
+        "dimension": "site",
+        "label": "Navigable water, floodplain or dam",
+        "description": "Structures, dredging or storage in a navigable river, harbor or federal reservoir.",
+        "triggers": ["navigable", "floodplain", "dam", "levee", "harbor", "corps reservoir", "federal reservoir", "dredge", "dredging", "barge"],
+    },
+    # -- power --
+    "pwr-onsite-gas": {
+        "dimension": "power",
+        "label": "On-site gas turbines or generation",
+        "description": "Behind-the-meter gas turbines, fuel cells or a dedicated power plant.",
+        "triggers": ["gas turbines", "turbines", "turbine", "natural gas", "gas fired", "gas plant", "site generation", "onsite generation", "behind meter", "power plant", "fuel cells", "generation plant", "peaker"],
+    },
+    "pwr-diesel": {
+        "dimension": "power",
+        "label": "Diesel backup generators",
+        "description": "Banks of diesel generators and their fuel.",
+        "triggers": ["diesel", "backup generators", "generators", "generator", "standby"],
+    },
+    "pwr-nuclear": {
+        "dimension": "power",
+        "label": "Nuclear restart or new reactor",
+        "description": "A restarted or new reactor, with its cooling water and federal approvals.",
+        "triggers": ["nuclear", "reactor", "reactors", "restart", "smr", "uprate"],
+    },
+    "pwr-hydro": {
+        "dimension": "power",
+        "label": "Hydropower",
+        "description": "Hydroelectric supply, a dam licence or flows governed by a federal licence.",
+        "triggers": ["hydropower", "hydroelectric", "hydro", "ferc", "licence", "license", "dams"],
+    },
+    "pwr-thermo-cooling": {
+        "dimension": "power",
+        "label": "Power-plant cooling water",
+        "description": "Cooling water drawn or discharged by generation built or restarted for the load.",
+        "triggers": ["thermoelectric", "water intake", "316", "plant cooling", "condenser", "steam"],
+    },
+    # -- chemicals --
+    "chem-pfas": {
+        "dimension": "chemicals",
+        "label": "PFAS in coolant or fire suppression",
+        "description": "Fluorinated coolants, foams and the reporting and liability they carry.",
+        "triggers": ["pfas", "pfoa", "pfos", "forever chemicals", "fluorinated", "afff", "fluorosurfactant", "genx"],
+    },
+    "chem-fuel": {
+        "dimension": "chemicals",
+        "label": "Fuel storage and spills",
+        "description": "Diesel and oil storage, spill plans and spill events.",
+        "triggers": ["fuel storage", "fuel tanks", "tank", "tanks", "spill", "spills", "spcc", "petroleum", "oil", "leak", "leaked"],
+    },
+    "chem-treatment": {
+        "dimension": "chemicals",
+        "label": "Cooling-water treatment chemicals",
+        "description": "Biocides, scale and corrosion inhibitors, nitrate and salts in blowdown.",
+        "triggers": ["biocide", "biocides", "chlorine", "bromine", "corrosion inhibitor", "corrosion inhibitors", "nitrate", "nitrates", "salts", "tds", "treatment chemicals", "chemicals"],
+    },
+    "chem-legacy": {
+        "dimension": "chemicals",
+        "label": "Legacy contamination on the site",
+        "description": "A brownfield, a plume, or a former industrial or federal site.",
+        "triggers": ["brownfield", "superfund", "contaminated", "contamination", "remediation", "plume", "cleanup", "legacy", "former plant", "former mill"],
+    },
+    # -- process --
+    "proc-secrecy": {
+        "dimension": "process",
+        "label": "NDA, code name or trade-secret claims",
+        "description": "Water figures withheld as confidential, or a project negotiated under a code name.",
+        "triggers": ["nda", "ndas", "secrecy", "secret", "confidential", "trade secret", "code name", "codename", "non disclosure", "undisclosed", "unnamed", "redacted"],
+    },
+    "proc-pledge": {
+        "dimension": "process",
+        "label": "Water-positive or efficiency pledge",
+        "description": "A replenishment, water-positive, WUE or closed-loop promise by the operator.",
+        "triggers": ["water positive", "replenish", "replenishment", "pledge", "pledged", "wue", "net positive", "commitment", "commits", "committed", "promise", "promised", "stewardship"],
+    },
+    "proc-zoning": {
+        "dimension": "process",
+        "label": "Rezoning or special-use permit",
+        "description": "The fight runs through a rezoning, conditional-use or comprehensive-plan decision.",
+        "triggers": ["rezoning", "rezone", "rezoned", "zoning", "special use", "conditional use", "land use", "comprehensive plan", "planning commission", "county commission", "city council", "board supervisors", "site plan"],
+    },
+    "proc-moratorium": {
+        "dimension": "process",
+        "label": "Moratorium or pause",
+        "description": "A temporary halt on approvals while rules are written.",
+        "triggers": ["moratorium", "moratoriums", "pause", "paused", "temporary ban", "halt", "interim ordinance"],
+    },
+    "proc-lawsuit": {
+        "dimension": "process",
+        "label": "Litigation or citizen suit",
+        "description": "A suit, petition or enforcement action already filed.",
+        "triggers": ["lawsuit", "lawsuits", "sued", "suit", "complaint", "citizen suit", "injunction", "litigation", "court", "appeal", "notice intent", "consent decree", "enforcement"],
+    },
+    "proc-records": {
+        "dimension": "process",
+        "label": "Public-records or disclosure fight",
+        "description": "Records requests, reporting mandates and the fight over what gets published.",
+        "triggers": ["public records", "foia", "records request", "disclosure", "disclose", "transparency", "reporting", "publish", "withheld"],
+    },
+    # -- scale --
+    "scale-hyperscale": {
+        "dimension": "scale",
+        "label": "Large water user (hyperscale, or 1 MGD and up)",
+        "description": "Roughly 100 MW or 1 MGD and up — the size at which one user moves a utility's numbers. On a historical case it marks an industrial user of that size. Also set from a stated MW or MGD figure.",
+        "triggers": ["hyperscale", "hyperscaler", "gigawatt", "gigawatts", "mega campus", "ai campus", "billion gallons"],
+    },
+}
+
+# Readings never carry scale; it ranks cases and sites only.
+FACT_FACET_LABELS = {fid: f["label"] for fid, f in FACT_FACETS.items()}
