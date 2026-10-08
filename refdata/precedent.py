@@ -100,17 +100,18 @@ SCORE_DECIMALS = 6
 ELSEWHERE_FACTOR = 0.25
 
 _NUMBER = r"(\d[\d,]*(?:\.\d+)?)"
-MW_RE = re.compile(_NUMBER + r"\s*(gigawatts?|gw|megawatts?|mw)\b", re.IGNORECASE)
+# "[\s-]*" between number and unit: "300-megawatt", "1.2-gigawatt", "100-MW".
+MW_RE = re.compile(_NUMBER + r"[\s-]*(gigawatts?|gw|megawatts?|mw)\b", re.IGNORECASE)
 # A per-day figure only. "78 million gallons over two years" and "31 million
 # gallons a year" say nothing about daily demand, and "mgd" already means it.
 MGD_RE = re.compile(
-    _NUMBER + r"\s*(?:mgd|mg/d|million gallons?\s*(?:per|a|/|each)\s*day)\b", re.IGNORECASE
+    _NUMBER + r"[\s-]*(?:mgd|mg/d|million[\s-]*gallons?[\s-]*(?:per|a|/|each)[\s-]*day)\b", re.IGNORECASE
 )
 # "5,000,000 gallons a day" / "750,000 gallons per day" — read in gallons, then
 # scaled to MGD. Only a per-day figure counts; "per year" says little about
 # peak demand and "per minute" belongs to well permits (gpm), not campuses.
 GALLONS_PER_DAY_RE = re.compile(
-    _NUMBER + r"\s*(gallons?|gal)\s*(?:per|a|/|each)\s*day\b", re.IGNORECASE
+    _NUMBER + r"[\s-]*(gallons?|gal)[\s-]*(?:per|a|/|each)[\s-]*day\b", re.IGNORECASE
 )
 
 
@@ -120,8 +121,14 @@ def _number(text: str) -> float:
 
 # A state name that is really part of a place or river name: "Port Washington",
 # "Fort Worth"-style prefixes, "Colorado River" (Texas has one of its own).
-_NOT_A_STATE_BEFORE = re.compile(r"(?:\b(?:port|fort|lake|mount|new|west|north|south|east)\s+)$", re.IGNORECASE)
+# No compass words: "West Texas" is Texas, and the compound states ("West
+# Virginia", "North Carolina") match first, longest-first, so their inner name
+# is already inside a taken range.
+_NOT_A_STATE_BEFORE = re.compile(r"(?:\b(?:port|fort|lake|mount|new)\s+)$", re.IGNORECASE)
 _NOT_A_STATE_AFTER = re.compile(r"^\s+(?:river|street|avenue|road|county\s+water)\b", re.IGNORECASE)
+# "Washington, D.C." / "Washington DC" is the District, not Washington state.
+# Matched before the name scan so its "Washington" is already taken.
+_DC_RE = re.compile(r"\bwashington,?\s*d\.?\s?c\b\.?", re.IGNORECASE)
 _STATE_EXACT = {"New York", "New Mexico", "New Jersey", "New Hampshire", "West Virginia",
                 "North Carolina", "North Dakota", "South Carolina", "South Dakota"}
 
@@ -133,8 +140,9 @@ def state_code_for(text: str | None) -> str | None:
     comma counting double — a passage on a campus in "Henderson County, Texas"
     by "a Kansas developer" is about Texas. A name that is part
     of another place's name ("Port Washington", "Colorado River") is skipped.
-    Ties go to the earliest mention. A bare two-letter token counts only when
-    nothing else does, and only if it is a real code, so "US EPA" names no
+    Ties go to the earliest mention. A bare two-letter code counts only when
+    nothing else does, only right after a comma ("Tucson, AZ"), and only if it
+    is a real code — so "US EPA", "a new DC campus" and a stray "OR" name no
     state.
     """
     text = (text or "").strip()
@@ -146,6 +154,16 @@ def state_code_for(text: str | None) -> str | None:
     counts: dict[str, int] = {}
     first: dict[str, int] = {}
     taken: list[tuple[int, int]] = []
+
+    def count(code: str, start: int, end: int) -> None:
+        taken.append((start, end))
+        # "Henderson County, Texas" is a location; "a Kansas developer" is
+        # an adjective. The comma is worth a second mention.
+        counts[code] = counts.get(code, 0) + (2 if text[:start].rstrip().endswith(",") else 1)
+        first.setdefault(code, start)
+
+    for m in _DC_RE.finditer(text):
+        count("DC", m.start(), m.end())
     for name in sorted(by_name, key=len, reverse=True):
         for m in re.finditer(r"\b" + re.escape(name) + r"\b", text, re.IGNORECASE):
             if any(a <= m.start() < b for a, b in taken):
@@ -154,21 +172,57 @@ def state_code_for(text: str | None) -> str | None:
                 continue
             if _NOT_A_STATE_AFTER.search(text[m.end():]):
                 continue
-            taken.append((m.start(), m.end()))
-            code = by_name[name]
-            # "Henderson County, Texas" is a location; "a Kansas developer" is
-            # an adjective. The comma is worth a second mention.
-            counts[code] = counts.get(code, 0) + (2 if text[: m.start()].rstrip().endswith(",") else 1)
-            first.setdefault(code, m.start())
+            count(by_name[name], m.start(), m.end())
     if counts:
         return min(counts, key=lambda c: (-counts[c], first[c]))
-    for token in re.findall(r"\b([A-Z]{2})\b", text):
+    for token in re.findall(r",\s*([A-Z]{2})\b", text):
         if token in US_STATE_NAMES:
             return token
     return None
 
 
 # --- Parsing a description -----------------------------------------------------
+
+# "will not use groundwater or wells", "no wetlands or streams on site",
+# "without evaporative cooling": a negator silences the next NEGATION_SCOPE
+# surviving words (the words tokenize keeps), so "or" and "on" do not end the
+# scope early. Most negators are stopwords, so this reads the raw stream, where
+# "don't" is still one word; a sentence break ends the scope.
+NEGATORS = frozenset({"no", "not", "without", "never", "neither", "nor", "cannot"})
+NEGATION_SCOPE = 3
+_RAW_WORD_RE = re.compile(r"[A-Za-z0-9]+(?:['\u2019][A-Za-z0-9]+)*|[.;!?]")
+_APOSTROPHE_RE = re.compile(r"['\u2019]")
+
+
+def _is_negator(item: str) -> bool:
+    low = item.lower()
+    return low in NEGATORS or low.endswith("n't") or low.endswith("n\u2019t")
+
+
+def live_tokens(text: str) -> set[str]:
+    """The tokens of :func:`tokenize` that occur at least once un-negated.
+
+    Same word stream as ``tokenize``; a unigram is negated when one of
+    :data:`NEGATORS` (or an "n't" word) came within the previous
+    :data:`NEGATION_SCOPE` surviving words of the same sentence, and a bigram
+    when its first word is.
+    """
+    surviving: list[tuple[str, bool]] = []
+    since = NEGATION_SCOPE  # surviving words since the last negator
+    for item in _RAW_WORD_RE.findall(str(text or "")):
+        if item in ".;!?":
+            since = NEGATION_SCOPE
+            continue
+        for word in _APOSTROPHE_RE.split(item.lower()):
+            if len(word) >= MIN_TOKEN_LEN and word not in STOPWORDS:
+                surviving.append((word, since < NEGATION_SCOPE))
+                since += 1
+        if _is_negator(item):
+            since = 0
+    live = {w for w, negated in surviving if not negated}
+    live.update(f"{a} {b}" for (a, negated), (b, _) in zip(surviving, surviving[1:]) if not negated)
+    return live
+
 
 
 def parse_project(text: str) -> dict:
@@ -179,11 +233,12 @@ def parse_project(text: str) -> dict:
     the reader can untick it. Facets come back in taxonomy order.
     """
     tokens = set(tokenize(text))
+    live = live_tokens(text)
     matched: dict[str, list[str]] = {}
     for facet_id, facet in FACT_FACETS.items():
         if any(b in tokens for b in facet.get("blockers", [])):
             continue
-        hits = [t for t in facet["triggers"] if t in tokens]
+        hits = [t for t in facet["triggers"] if t in live]
         if hits:
             matched[facet_id] = hits
 
@@ -290,6 +345,7 @@ def _records() -> dict:
                 "role": r.get("dc_role", "hook"),
                 "trigger": r.get("dc_trigger", ""),
                 "triggers": list(r.get("fact_triggers") or []),
+                "requires": list(r.get("fact_requires") or []),
                 "jurisdictions": list(r.get("jurisdictions") or []),
                 "example_case_ids": list(r.get("example_case_ids") or []),
                 "tab": ref.tab,
@@ -414,8 +470,19 @@ def match_project(
     cases = ranked(recs["cases"], TOP_CASES, lexical)
     sites = ranked(recs["sites"], TOP_SITES, lexical)
 
+    # ``fact_requires`` gates, ``fact_triggers`` scores: a reading or
+    # instrument that requires facets the project lacks does not appear at all
+    # (a UIC Class V reading needs something going into the ground, not just
+    # wells pumping out of it).
+    present = set(facets)
+
+    def admitted(row: dict) -> bool:
+        return all(f in present for f in row.get("requires") or [])
+
     readings = []
     for r in recs["readings"]:
+        if not admitted(r):
+            continue
         score, shared = overlap(facets, r["triggers"], weights)
         if score > 0:
             elsewhere = bool(state and r["jurisdictions"] and state not in r["jurisdictions"])
@@ -447,14 +514,16 @@ def match_project(
     all_instruments = _instruments()
     instruments, local_actions = [], []
     if state:
-        instruments = [scored(i) for i in all_instruments if i["state"] == state]
+        instruments = [scored(i) for i in all_instruments if i["state"] == state and admitted(i)]
         instruments.sort(key=lambda i: (0 if i["status"] == "enacted" else 1, -i["score"], i["id"]))
         local_actions = sorted(
             (a for a in _local_actions() if a["state"] == state),
             key=lambda a: (a["date"] or ""),
             reverse=True,
         )
-    federal = [scored(i) for i in all_instruments if i["jurisdiction"] == FEDERAL_JURISDICTION]
+    # By level, not jurisdiction string: EO 14318 and the AI Action Plan carry
+    # "United States", not "Federal (US)".
+    federal = [scored(i) for i in all_instruments if i["level"] == "federal" and admitted(i)]
     federal = [i for i in federal if i["score"] > 0]
     federal.sort(key=lambda i: (-i["score"], i["id"]))
     federal = federal[:TOP_FEDERAL]
@@ -499,9 +568,6 @@ def match_project(
     }
 
 
-FEDERAL_JURISDICTION = "Federal (US)"
-
-
 def _instruments() -> list[dict]:
     reg = build_registry()
     out = []
@@ -519,6 +585,7 @@ def _instruments() -> list[dict]:
                 "level": b.get("level", ""),
                 "status": b.get("status", ""),
                 "triggers": list(b.get("fact_triggers") or []),
+                "requires": list(b.get("fact_requires") or []),
                 "principles": [p.get("tag", "") for p in b.get("general_principles") or []],
                 # Water-scoped instruments carry fact_triggers (possibly empty:
                 # "every data center in the jurisdiction"); energy-only ones do

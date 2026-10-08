@@ -1,6 +1,6 @@
 {
   "last_updated": "2026-10-08",
-  "note": "Worked examples for the Check-a-project tab: real 2026 proposals the tracker does not otherwise record, each described in the words a reader could paste and tagged with the fact-pattern facets its sources support. The facets are the record; the description's parse is a convenience and a test checks it recovers most of them. Facts come from the cited coverage only — where a source does not say how a campus cools or discharges, that dimension is left off. Verified 2026-10-08 against the sources listed.",
+  "note": "Worked examples for the Check-a-project tab: real 2026 proposals the tracker does not otherwise record, each described in the words a reader could paste and tagged with the fact-pattern facets its sources support. The facets are the record; the description's parse is a convenience and a test checks it recovers most of them. Facts come from the cited coverage only — where a source does not say how a campus cools or discharges, or how big the town is, that dimension is left off. Verified 2026-10-08 against the sources listed.",
   "examples": [
     {
       "id": "cedar-creek-lake-tx-2026",
@@ -17,7 +17,6 @@
         "src-surface",
         "ctx-drought",
         "ctx-city-reservoir",
-        "proc-zoning",
         "scale-hyperscale"
       ],
       "sources": [
@@ -44,16 +43,15 @@
       "operator": "Amazon Data Services",
       "location": "Boling, Wharton County, Texas",
       "state": "TX",
-      "status": "approved",
+      "status": "groundwater permits approved",
       "status_date": "2026-09-08",
       "mw": null,
       "mgd": null,
-      "description": "Amazon is planning a nearly 3,000-acre, $10 billion data center campus near Boling in Wharton County, Texas. The Coastal Bend Groundwater Conservation District approved its groundwater permits on September 8, 2026 — up to 78.2 million gallons over two and a half years for offices, restrooms, construction crews and fire protection. The first buildings are to be air cooled; as the campus grows Amazon expects to need about 500 acre-feet a year of surface water from the Lower Colorado River Authority for cooling on the hottest hours, and has not yet applied for it. Neighbors raised drinking-water wells, electricity costs and backup-generator pollution at the hearing.",
+      "description": "Amazon is planning a nearly 3,000-acre, $10 billion hyperscale data center campus near Boling in Wharton County, Texas. The Coastal Bend Groundwater Conservation District approved its groundwater permits on September 8, 2026 — up to 78.2 million gallons over two and a half years for offices, restrooms, construction crews and fire protection. The first buildings are to be air cooled; as the campus grows Amazon expects to need about 500 acre-feet a year of surface water from the Lower Colorado River Authority for cooling on the hottest hours, and has not yet applied for it. Neighbors raised drinking-water wells, electricity costs and backup-generator pollution at the hearing.",
       "facets": [
         "src-wells",
         "src-surface",
         "cool-air",
-        "ctx-small-system",
         "pwr-diesel",
         "scale-hyperscale"
       ],
@@ -83,8 +81,7 @@
       "description": "Quantica's Big Sky Campus near Broadview, Montana would pump a new public-water-supply well into the deep Madison Aquifer, about 150,000 gallons per day during construction and 20,000 gallons per day once operating, to support a closed-loop cooling system. The Montana Department of Environmental Quality opened the well application for public comment through October 29, 2026, reviewing groundwater protection, while the Department of Natural Resources and Conservation handles the water right.",
       "facets": [
         "src-wells",
-        "cool-closed",
-        "ctx-small-system"
+        "cool-closed"
       ],
       "sources": [
         {
@@ -147,8 +144,7 @@
         "src-wells",
         "ctx-stressed-aquifer",
         "ctx-drought",
-        "proc-secrecy",
-        "proc-zoning"
+        "proc-secrecy"
       ],
       "sources": [
         {
@@ -175,8 +171,7 @@
       "mgd": null,
       "description": "A data center planned just east of Princeton, Texas will take its water from a single well into the Woodbine Aquifer, which underlies 17 North Texas counties, at 150 gallons per minute. The North Texas Groundwater Conservation District approved the well permit on June 9, 2026: 5.56 million gallons during construction through 2028 and 1.65 million gallons a year after that. The campus sits in a fast-growing exurban county where neighbors depend on the same aquifer.",
       "facets": [
-        "src-wells",
-        "ctx-small-system"
+        "src-wells"
       ],
       "sources": [
         {

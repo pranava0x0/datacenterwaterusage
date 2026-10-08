@@ -1024,7 +1024,11 @@ SOURCES_DATA: dict = {
                 "All dischargers — Amazon, hospitals, hotels — sum into one monthly "
                 "number. No federal mechanism disaggregates per data center."
             ),
-            "workaround": "Add WWTP permits as DC clusters grow; long-term unlock is OHD000001 direct DMRs.",
+            "workaround": (
+                "Add WWTP permits as DC clusters grow. Ohio EPA withdrew the OHD000001 "
+                "general permit on 2026-07-21, so the unlock is now per-facility NPDES "
+                "permits with their own DMRs."
+            ),
             "kind": "structural",
         },
         {
@@ -6765,7 +6769,19 @@ PROJECT_CHECK_SECTIONS = {
 
 # What an instrument row says when the instrument names no fact pattern: its
 # terms reach every data center in its jurisdiction, however it uses water.
-PROJECT_CHECK_APPLIES_TO_ALL = "Applies to every data center in the state"
+# Keyed by status, so a bill that died is not described as applying, and
+# "jurisdiction" rather than "state" because federal rows use it too. Shipped
+# to the page whole in #pcheck-strings; "other" covers any status not listed.
+PROJECT_CHECK_APPLIES_TO_ALL = {
+    "enacted": "Applies to every data center in its jurisdiction",
+    "introduced": "Would apply to every data center in its jurisdiction",
+    "failed": "Would have applied to every data center in its jurisdiction",
+    "other": "Covers every data center in its jurisdiction",
+}
+
+
+def _applies_to_all_line(status: str) -> str:
+    return PROJECT_CHECK_APPLIES_TO_ALL.get(status or "other", PROJECT_CHECK_APPLIES_TO_ALL["other"])
 
 
 def _facet_chip_html(facet_id: str) -> str:
@@ -6953,7 +6969,7 @@ def _project_instrument_li(i: dict) -> str:
     if i.get("shared"):
         why = f'<div class="pcheck-why">Because: {"".join(_facet_chip_html(f) for f in i["shared"])}</div>'
     elif i.get("water_scoped") and not i.get("triggers"):
-        why = f'<div class="pcheck-why">{esc(PROJECT_CHECK_APPLIES_TO_ALL)}</div>'
+        why = f'<div class="pcheck-why">{esc(_applies_to_all_line(i.get("status", "")))}</div>'
     else:
         why = ""
     return (
@@ -7170,15 +7186,16 @@ def _project_check_js() -> str:
   // Pure — no DOM — so tests/test_precedent.py can run it under node and hold
   // it to the Python answer on a fixture.
 
-  var NOT_BEFORE = /\b(?:port|fort|lake|mount|new|west|north|south|east)\s+$/i;
+  var NOT_BEFORE = /\b(?:port|fort|lake|mount|new)\s+$/i;
   var NOT_AFTER = /^\s+(?:river|street|avenue|road|county\s+water)\b/i;
+  var DC_SRC = '\\bwashington,?\\s*d\\.?\\s?c\\b\\.?';
   var STATE_EXACT = {'New York': 1, 'New Mexico': 1, 'New Jersey': 1, 'New Hampshire': 1,
     'West Virginia': 1, 'North Carolina': 1, 'North Dakota': 1, 'South Carolina': 1,
     'South Dakota': 1};
   var NUM = '(\\d[\\d,]*(?:\\.\\d+)?)';
-  var MW_SRC = NUM + '\\s*(gigawatts?|gw|megawatts?|mw)\\b';
-  var MGD_SRC = NUM + '\\s*(?:mgd|mg/d|million gallons?\\s*(?:per|a|/|each)\\s*day)\\b';
-  var GPD_SRC = NUM + '\\s*(gallons?|gal)\\s*(?:per|a|/|each)\\s*day\\b';
+  var MW_SRC = NUM + '[\\s-]*(gigawatts?|gw|megawatts?|mw)\\b';
+  var MGD_SRC = NUM + '[\\s-]*(?:mgd|mg/d|million[\\s-]*gallons?[\\s-]*(?:per|a|/|each)[\\s-]*day)\\b';
+  var GPD_SRC = NUM + '[\\s-]*(gallons?|gal)[\\s-]*(?:per|a|/|each)[\\s-]*day\\b';
 
   function has(o, k){ return Object.prototype.hasOwnProperty.call(o, k); }
 
@@ -7222,6 +7239,40 @@ def _project_check_js() -> str:
     return out;
   }
 
+  // Mirrors refdata.precedent.live_tokens: a negator silences the next
+  // NEG_SCOPE surviving words of the same sentence.
+  var NEGATORS = {no: 1, not: 1, without: 1, never: 1, neither: 1, nor: 1, cannot: 1};
+  var NEG_SCOPE = 3;
+  function isNegator(item){
+    var low = item.toLowerCase();
+    return has(NEGATORS, low) || /n['\u2019]t$/.test(low);
+  }
+  function liveTokens(text, D){
+    var P = prep(D);
+    var re = /[A-Za-z0-9]+(?:['\u2019][A-Za-z0-9]+)*|[.;!?]/g, m, surviving = [], since = NEG_SCOPE;
+    var src = String(text == null ? '' : text);
+    while ((m = re.exec(src)) !== null){
+      var item = m[0];
+      if (item.length === 1 && '.;!?'.indexOf(item) >= 0){ since = NEG_SCOPE; continue; }
+      var pieces = item.toLowerCase().split(/['\u2019]/);
+      for (var p = 0; p < pieces.length; p++){
+        var w = pieces[p];
+        if (w.length >= D.min_token_len && !P.stop[w]){
+          surviving.push([w, since < NEG_SCOPE]);
+          since += 1;
+        }
+      }
+      if (isNegator(item)) since = 0;
+    }
+    var live = {};
+    for (var i = 0; i < surviving.length; i++){
+      if (surviving[i][1]) continue;
+      live[surviving[i][0]] = 1;
+      if (i + 1 < surviving.length) live[surviving[i][0] + ' ' + surviving[i + 1][0]] = 1;
+    }
+    return live;
+  }
+
   function escapeRe(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
   function stateCodeFor(text, D){
@@ -7230,6 +7281,14 @@ def _project_check_js() -> str:
     if (!text || text === 'Federal (US)' || text === 'United States') return null;
     if (has(P.byName, text)) return P.byName[text];
     var counts = {}, first = {}, seen = [], taken = [];
+    function count(code, start, end){
+      taken.push([start, end]);
+      var before = text.slice(0, start).replace(/\s+$/, '');
+      if (!has(counts, code)){ counts[code] = 0; first[code] = start; seen.push(code); }
+      counts[code] += before.charAt(before.length - 1) === ',' ? 2 : 1;
+    }
+    var dcRe = new RegExp(DC_SRC, 'gi'), dm;
+    while ((dm = dcRe.exec(text)) !== null) count('DC', dm.index, dm.index + dm[0].length);
     P.names.forEach(function(name){
       var re = new RegExp('\\b' + escapeRe(name) + '\\b', 'gi'), m;
       while ((m = re.exec(text)) !== null){
@@ -7240,11 +7299,7 @@ def _project_check_js() -> str:
         if (inside) continue;
         if (!STATE_EXACT[name] && NOT_BEFORE.test(text.slice(0, start))) continue;
         if (NOT_AFTER.test(text.slice(end))) continue;
-        taken.push([start, end]);
-        var code = P.byName[name];
-        var before = text.slice(0, start).replace(/\s+$/, '');
-        if (!has(counts, code)){ counts[code] = 0; first[code] = start; seen.push(code); }
-        counts[code] += before.charAt(before.length - 1) === ',' ? 2 : 1;
+        count(P.byName[name], start, end);
       }
     });
     if (seen.length){
@@ -7255,7 +7310,7 @@ def _project_check_js() -> str:
       }
       return best;
     }
-    var codeRe = /\b([A-Z]{2})\b/g, mm;
+    var codeRe = /,\s*([A-Z]{2})\b/g, mm;
     while ((mm = codeRe.exec(text)) !== null){
       if (has(D.states, mm[1])) return mm[1];
     }
@@ -7269,12 +7324,13 @@ def _project_check_js() -> str:
     var P = prep(D);
     var tokens = {}, toks = tokenize(text, D), i;
     for (i = 0; i < toks.length; i++) tokens[toks[i]] = 1;
+    var live = liveTokens(text, D);
     var matched = {};
     P.facetOrder.forEach(function(fid){
       var f = D.facets[fid];
       var blockers = f.blockers || [];
       for (var b = 0; b < blockers.length; b++) if (tokens[blockers[b]]) return;
-      var hits = f.triggers.filter(function(t){ return tokens[t] === 1; });
+      var hits = f.triggers.filter(function(t){ return live[t] === 1; });
       if (hits.length) matched[fid] = hits;
     });
 
@@ -7394,8 +7450,17 @@ def _project_check_js() -> str:
     var cases = ranked(D.cases, C.top_cases);
     var sites = ranked(D.sites, C.top_sites);
 
+    // fact_requires gates, fact_triggers scores.
+    var present = {};
+    facets.forEach(function(f){ present[f] = 1; });
+    function admitted(row){
+      var req = row.requires || [];
+      for (var q = 0; q < req.length; q++) if (!has(present, req[q])) return false;
+      return true;
+    }
     var readings = [];
     D.readings.forEach(function(r){
+      if (!admitted(r)) return;
       var ov = overlap(facets, r.triggers, D), score = ov[0];
       if (score > 0){
         var juris = r.jurisdictions || [];
@@ -7437,7 +7502,7 @@ def _project_check_js() -> str:
     }
     var instruments = [], localActions = [];
     if (state){
-      instruments = D.instruments.filter(function(i){ return i.state === state; }).map(scored);
+      instruments = D.instruments.filter(function(i){ return i.state === state && admitted(i); }).map(scored);
       instruments.sort(function(x, y){
         var rx = x.status === 'enacted' ? 0 : 1, ry = y.status === 'enacted' ? 0 : 1;
         if (rx !== ry) return rx - ry;
@@ -7455,7 +7520,7 @@ def _project_check_js() -> str:
       localActions = localActions.map(function(p){ return p[0]; });
     }
     var federal = D.instruments
-      .filter(function(i){ return i.jurisdiction === 'Federal (US)'; })
+      .filter(function(i){ return i.level === 'federal' && admitted(i); })
       .map(scored)
       .filter(function(i){ return i.score > 0; });
     federal.sort(byScoreThenId);
@@ -7550,6 +7615,9 @@ def _project_check_js() -> str:
     var autoState = null;    // the state the parser last put in the select
     var autoMw = null, autoMgd = null;
     var autoRan = false;
+    // An example's curated facets, kept while its description is unedited:
+    // Run or a re-parse of that same text must not replace them with the parse.
+    var baseline = null;     // {text, on}
 
     function facetChip(fid){
       var f = D.facets[fid] || {};
@@ -7737,7 +7805,10 @@ def _project_check_js() -> str:
         li.appendChild(link(i.anchor || '', i.label || i.id));
         li.appendChild(el('span', 'pcheck-meta', ' — ' + (i.title || '')));
         if (i.shared && i.shared.length) li.appendChild(chipsLine('pcheck-why', 'Because: ', i.shared));
-        else if (i.water_scoped && !(i.triggers || []).length) li.appendChild(el('div', 'pcheck-why', S.applies_to_all || ''));
+        else if (i.water_scoped && !(i.triggers || []).length){
+          var all = S.applies_to_all || {};
+          li.appendChild(el('div', 'pcheck-why', has(all, i.status) ? all[i.status] : (all.other || '')));
+        }
         return li;
       }
       function instrumentList(rows){
@@ -7804,29 +7875,47 @@ def _project_check_js() -> str:
       return (mw >= C.hyperscale_mw) || (mgd >= C.hyperscale_mgd);
     }
 
+    // The select and the size inputs follow the text until the reader sets
+    // them by hand: filled when the text names a value, cleared when an edit
+    // removes the value the parser had put there. A manual value stays.
+    function followText(p){
+      if (p.state){
+        if (stateSel.value === '' || stateSel.value === autoState){ stateSel.value = p.state; autoState = p.state; }
+      } else if (autoState !== null && stateSel.value === autoState){
+        stateSel.value = ''; autoState = null;
+      }
+      if (p.mw !== null){
+        if (mwBox.value === '' || mwBox.value === autoMw) mwBox.value = autoMw = fmtG(p.mw);
+      } else if (autoMw !== null && mwBox.value === autoMw){
+        mwBox.value = ''; autoMw = null;
+      }
+      if (p.mgd !== null){
+        if (mgdBox.value === '' || mgdBox.value === autoMgd) mgdBox.value = autoMgd = fmtG(p.mgd);
+      } else if (autoMgd !== null && mgdBox.value === autoMgd){
+        mgdBox.value = ''; autoMgd = null;
+      }
+    }
+
     function parse(){
       var text = textBox.value;
+      if (baseline && text === baseline.text){
+        boxes.forEach(function(b){ if (!touched[b.value]) b.checked = !!baseline.on[b.value]; });
+        syncCount();
+        return;
+      }
+      baseline = null;
       if (!text.trim()){
+        followText({state: null, mw: null, mgd: null});
         if (readLine) readLine.textContent = '';
         boxes.forEach(function(b){ if (!touched[b.value]) b.checked = b.value === 'scale-hyperscale' && sizeFacet(); });
         syncCount();
         return;
       }
       var p = parseProject(text, D), on = {};
+      followText(p);
       p.facets.forEach(function(f){ on[f] = 1; });
       if (sizeFacet()) on['scale-hyperscale'] = 1;
       boxes.forEach(function(b){ if (!touched[b.value]) b.checked = !!on[b.value]; });
-
-      // The select follows the text until the reader picks a state by hand.
-      if (p.state && (stateSel.value === '' || stateSel.value === autoState)){
-        stateSel.value = p.state; autoState = p.state;
-      }
-      if (p.mw !== null && (mwBox.value === '' || mwBox.value === autoMw)){
-        mwBox.value = autoMw = fmtG(p.mw);
-      }
-      if (p.mgd !== null && (mgdBox.value === '' || mgdBox.value === autoMgd)){
-        mgdBox.value = autoMgd = fmtG(p.mgd);
-      }
 
       var parts = p.facets.map(function(f){
         return p.matched[f].join(', ') + ' → ' + (D.facets[f] || {}).label;
@@ -7844,7 +7933,7 @@ def _project_check_js() -> str:
     function clearAll(){
       textBox.value = ''; stateSel.value = ''; mwBox.value = ''; mgdBox.value = '';
       boxes.forEach(function(b){ b.checked = false; });
-      touched = {}; autoState = autoMw = autoMgd = null; autoRan = false;
+      touched = {}; autoState = autoMw = autoMgd = null; autoRan = false; baseline = null;
       if (readLine) readLine.textContent = '';
       syncCount();
       showStatus(idle);
@@ -7862,8 +7951,11 @@ def _project_check_js() -> str:
       // The curated facets are the record; the description's parse is not.
       var on = {};
       (ex.facets || []).forEach(function(f){ on[f] = 1; });
+      // Recorded as a baseline, not as clicks: an edit to the description
+      // re-parses as usual, and only boxes the reader clicks stay manual.
       touched = {};
-      boxes.forEach(function(b){ b.checked = !!on[b.value]; touched[b.value] = 1; });
+      baseline = {text: textBox.value, on: on};
+      boxes.forEach(function(b){ b.checked = !!on[b.value]; });
       if (readLine) readLine.textContent = 'Loaded ' + ex.name + ' — the ticked facts are its curated fact pattern.';
       syncCount();
       autoRan = true;

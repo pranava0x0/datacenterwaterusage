@@ -233,7 +233,7 @@
       "site": "Project Blue — Tucson / Pima County, AZ",
       "operator": "Beale Infrastructure (originally for Amazon Web Services)",
       "location": "Tucson / Pima County, Arizona",
-      "issue_summary": "The first two sites would have needed ~2,000 acre-feet of water per year — making the campus Tucson Water's largest customer — negotiated under NDAs that kept the end user secret. The city council rejected annexation 7-0 on August 6, 2025 after intense community pressure.",
+      "issue_summary": "The first two sites would have needed ~2,000 acre-feet of water per year — making the campus Tucson Water's largest customer — negotiated under NDAs that kept the end user secret. The city council rejected annexation 7-0 on August 6, 2025 after intense community pressure. The campus sits inside the Tucson Active Management Area — a statutory regime created for an overdrafted aquifer — in a desert region living under Colorado River shortage rules.",
       "pushback_summary": "AWS pulled out in late 2025; Beale is proceeding on county land outside city limits with a redesigned air-cooled plan while Tucson cut off water service and sought payback — the clearest municipal-veto precedent over data-center water demand.",
       "status_2026": "City rejection stands; the redesigned county-land project is proceeding on two ADWR-permitted wells. One year on, Tucson adopted zoning code amendments (August 2026) setting siting standards for future large data centers (25,000+ sq ft / 20+ MW): a half-mile residential setback, a ~1,000-foot commercial setback, and a 50-foot height cap. Pima County separately considered a 120-day moratorium on unincorporated-county data centers. On December 16, 2025 the Pima County Board of Supervisors approved, 3-2, a memorandum of agreement with the developer committing the county-land campus to air cooling, domestic-only water use and ADWR-approved sources, alongside $15 million in community funding — the agreement the Commitments tab records.",
       "applicable_readings": [
@@ -312,6 +312,8 @@
         "src-wells",
         "src-utility",
         "cool-air",
+        "ctx-stressed-aquifer",
+        "ctx-drought",
         "proc-secrecy",
         "proc-zoning",
         "proc-moratorium",

@@ -17,10 +17,10 @@ roles:       {hook, limit}
 statute_order: [codes]
 outcomes:    {outcome_id: label}
 states:      {code: name}
-readings:    [{id,label,statute,section,activities[],role,trigger,triggers[],jurisdictions[],example_case_ids[],tab,anchor}]
+readings:    [{id,label,statute,section,activities[],role,trigger,triggers[],requires[],jurisdictions[],example_case_ids[],tab,anchor}]
 cases:       [{id,label,facets[],outcome_type[],case_type,category,year,cwa_applied,instrument,takeaway,tab,anchor}]
 sites:       [{id,label,facets[],issue_types[],location,state,status,tab,anchor}]
-instruments: [{id,label,title,jurisdiction,state,level,status,tab,anchor}]
+instruments: [{id,label,title,jurisdiction,state,level,status,triggers[],requires[],principles[],water_scoped,tab,anchor}]
 local_actions: [{id,jurisdiction,state,action_type,status,date,water_related}]
 examples:    [{id,name,operator,location,state,status,status_date,mw,mgd,description,facets[],sources[]}]
 index:       {vocab[], df[], n_docs, docs:{record_id:{t:[vocab positions], w:[int weights]}}, weight_scale}
@@ -80,7 +80,9 @@ The IIFE must `return {parseProject, matchProject}` so the test can rewrite
   fill MW/MGD if parsed and the inputs are empty, and write a one-line summary into
   `#pcheck-read` ("We read: wells, groundwater → On-site groundwater wells; …") with the
   matched words. Manual unticks must survive the next re-parse of unchanged text
-  (track which boxes the reader touched).
+  (track which boxes the reader touched). When an edit stops naming the state, MW or
+  MGD the parser had filled in, clear that control if it still holds the parsed value;
+  a value the reader set by hand stays.
 - `#pcheck-facets-n` shows "(n ticked)".
 - "Check this project" (and Enter+Cmd/Ctrl in the textarea) runs `matchProject` with the
   ticked facets, the select's state, and the textarea text, then renders into
@@ -88,6 +90,9 @@ The IIFE must `return {parseProject, matchProject}` so the test can rewrite
   reader does not have to find the button. "Clear" resets everything to the empty state.
 - An example button loads that example: textarea ← description, state ← state,
   MW/MGD ← values, boxes ← the example's **curated** facets (not the parse), then runs.
+  The curated facets are a baseline, not clicks: Run on the unedited description keeps
+  them, an edit to the description re-parses as usual, and only boxes the reader
+  clicks stay manual.
 - Render the result as the Python renderer does (`_project_result_html` in
   dashboard.py — copy its structure and class names exactly: `.pcheck-result`,
   `.pcheck-sec` with `<h4>`, `.pcheck-dim-row`, `.pcheck-facet`, `.pcheck-activity`,

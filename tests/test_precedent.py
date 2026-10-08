@@ -144,6 +144,40 @@ class TestParseProject:
         assert precedent.parse_project("5 million gallons per day")["mgd"] == 5.0
         assert precedent.parse_project("2.4 MGD")["mgd"] == 2.4
 
+    @pytest.mark.parametrize(
+        "text, key, value",
+        [
+            ("a 300-megawatt campus", "mw", 300.0),
+            ("a 1.2-gigawatt campus", "mw", 1200.0),
+            ("a 100-MW first phase", "mw", 100.0),
+            ("a 5-million-gallon-per-day draw", "mgd", 5.0),
+        ],
+    )
+    def test_hyphenated_sizes(self, text, key, value):
+        assert precedent.parse_project(text)[key] == value
+
+    @pytest.mark.parametrize(
+        "text, facet",
+        [
+            ("The campus will not use groundwater or wells.", "src-wells"),
+            ("There are no wetlands or streams on site.", "ctx-wetlands"),
+            ("A closed system without evaporative cooling.", "cool-evaporative"),
+            ("We don't pump groundwater.", "src-wells"),
+        ],
+    )
+    def test_negated_facts_do_not_set_the_facet(self, text, facet):
+        assert facet not in precedent.parse_project(text)["facets"]
+
+    def test_negation_ends_at_the_sentence(self):
+        parsed = precedent.parse_project("No wetlands on site. The campus pumps groundwater from wells.")
+        assert "src-wells" in parsed["facets"] and "ctx-wetlands" not in parsed["facets"]
+        # The affirmative sentence alone still reads.
+        assert "src-wells" in precedent.parse_project("The campus will use groundwater from wells")["facets"]
+
+    def test_blocker_still_works_alongside_negation(self):
+        parsed = precedent.parse_project("non-evaporative closed-loop cooling")
+        assert "cool-evaporative" not in parsed["facets"] and "cool-closed" in parsed["facets"]
+
     def test_facets_come_back_in_taxonomy_order(self):
         parsed = precedent.parse_project("sewer blowdown from wells in a drought")
         assert parsed["facets"] == [f for f in FACT_FACETS if f in parsed["facets"]]
@@ -157,10 +191,19 @@ class TestStateCode:
             ("Port Washington, Wisconsin on the Lake Michigan shore", "WI"),
             ("water from the Lower Colorado River Authority in Wharton County, Texas", "TX"),
             ("West Virginia", "WV"),
+            ("West Virginia and Virginia", "WV"),
+            ("a campus in North Texas", "TX"),
             ("Pageland Lane corridor, Prince William County, Virginia", "VA"),
             ("Federal (US)", None),
             ("US EPA guidance", None),
-            ("a site in AZ", "AZ"),
+            ("Tucson, AZ", "AZ"),
+            ("Washington, DC", "DC"),
+            ("Washington, D.C.", "DC"),
+            ("a campus near Washington, D.C., in Loudoun County, Virginia", "VA"),
+            ("Seattle, Washington", "WA"),
+            # A bare code counts only after a comma: "DC" here is a data center.
+            ("a new DC campus using 2 MGD", None),
+            ("OR the county may refuse", None),
             ("", None),
         ],
     )
@@ -175,6 +218,38 @@ class TestStateCode:
 
 
 class TestMatchProject:
+    def test_fact_requires_gates_a_reading(self):
+        """sdwa-uic-classv scores on src-wells but requires out-ground: a
+        campus pumping out of wells, with nothing going in, does not see it."""
+        rows = {r["id"]: r for r in precedent._records()["readings"]}
+        assert rows["sdwa-uic-classv"]["requires"] == ["out-ground"]
+        assert "src-wells" in rows["sdwa-uic-classv"]["triggers"]
+        wells = precedent.parse_project(FIXTURE_WELLS_ONLY)
+        assert "out-ground" not in wells["facets"]
+        result = precedent.match_project(wells["facets"], wells["state"], FIXTURE_WELLS_ONLY)
+        assert "sdwa-uic-classv" not in {r["id"] for r in result["readings"]}
+        for r in result["readings"]:
+            assert set(r["requires"]) <= set(wells["facets"]), r["id"]
+        injection = precedent.parse_project(FIXTURE_INJECTION)
+        result = precedent.match_project(injection["facets"], injection["state"], FIXTURE_INJECTION)
+        assert "sdwa-uic-classv" in {r["id"] for r in result["readings"]}
+
+    def test_fact_requires_gates_instruments(self, monkeypatch):
+        rows = precedent._instruments()
+        fed = next(i for i in rows if i["id"] == "US EO 14318")
+        gated = [{**i, "requires": ["chem-pfas"]} if i["id"] == fed["id"] else i for i in rows]
+        monkeypatch.setattr(precedent, "_instruments", lambda: gated)
+        facets = ["ctx-wetlands", "ctx-endangered", "ctx-navigable"]
+        assert fed["id"] not in {i["id"] for i in precedent.match_project(facets, None)["federal_instruments"]}
+        assert fed["id"] in {
+            i["id"] for i in precedent.match_project(facets + ["chem-pfas"], None)["federal_instruments"]
+        }
+
+    def test_payload_rows_carry_requires(self):
+        payload = precedent.build_payload()
+        assert all(isinstance(r["requires"], list) for r in payload["readings"])
+        assert all(isinstance(i["requires"], list) for i in payload["instruments"])
+
     @pytest.fixture(scope="class")
     def arizona(self):
         parsed = precedent.parse_project(
@@ -259,8 +334,14 @@ class TestMatchProject:
         texas = precedent.match_project(facets, "TX")["federal_instruments"]
         assert anywhere and anywhere == texas
         assert len(anywhere) <= precedent.TOP_FEDERAL
-        assert all(i["jurisdiction"] == "Federal (US)" and i["score"] > 0 and i["shared"] for i in anywhere)
+        assert all(i["level"] == "federal" and i["score"] > 0 and i["shared"] for i in anywhere)
         assert anywhere == sorted(anywhere, key=lambda i: (-i["score"], i["id"]))
+
+    def test_federal_instruments_are_selected_by_level_not_jurisdiction(self):
+        """EO 14318's jurisdiction is "United States", not "Federal (US)"."""
+        facets = ["ctx-wetlands", "ctx-endangered", "ctx-navigable"]
+        federal = precedent.match_project(facets, None)["federal_instruments"]
+        assert "US EO 14318" in {i["id"] for i in federal}
 
     def test_negatives_come_from_the_closest_sites_only(self, arizona):
         top = {s["id"] for s in arizona["sites"][: precedent.NEGATIVE_SITES]}
@@ -411,8 +492,24 @@ FIXTURE_INSTRUMENTS = (
 )
 
 
+# fact_requires: wells but nothing into the ground (sdwa-uic-classv gated out),
+# then the same campus with injection wells (gated in).
+FIXTURE_WELLS_ONLY = (
+    "A 300 MW campus in Texas would pump groundwater from wells for evaporative cooling, "
+    "with blowdown to the city sewer."
+)
+FIXTURE_INJECTION = (
+    "A 300 MW campus in Texas would pump groundwater from wells and send cooling "
+    "blowdown to injection wells."
+)
+
+
 @pytest.mark.skipif(shutil.which("node") is None, reason="node not installed")
-@pytest.mark.parametrize("text", [FIXTURE, FIXTURE_INSTRUMENTS], ids=["jupiter", "idaho"])
+@pytest.mark.parametrize(
+    "text",
+    [FIXTURE, FIXTURE_INSTRUMENTS, FIXTURE_WELLS_ONLY, FIXTURE_INJECTION],
+    ids=["jupiter", "idaho", "wells-only", "injection"],
+)
 def test_page_script_matches_the_engine_on_a_fixture(tmp_path, text):
     """The browser runs the same arithmetic from the same payload. This runs
     the page's own parser and scorer under node and compares facets, the
@@ -430,7 +527,8 @@ def test_page_script_matches_the_engine_on_a_fixture(tmp_path, text):
         "sites: m.sites.map(s => [s.id, s.score]), outcomes: m.outcomes.map(o => [o.outcome, o.count]), "
         "instruments: m.instruments.map(i => [i.id, i.score]), "
         "federal: m.federal_instruments.map(i => [i.id, i.score]), "
-        "negatives: m.negatives.map(n => [n.site_id, n.reading_id])}));\n"
+        "negatives: m.negatives.map(n => [n.site_id, n.reading_id]), "
+        "local_actions: m.local_actions.map(a => a.id), mw: parsed.mw, mgd: parsed.mgd}));\n"
     )
     script = tmp_path / "harness.js"
     script.write_text(harness, encoding="utf-8")
@@ -451,6 +549,60 @@ def test_page_script_matches_the_engine_on_a_fixture(tmp_path, text):
     assert got["instruments"] == [[i["id"], i["score"]] for i in want["instruments"]]
     assert got["federal"] == [[i["id"], i["score"]] for i in want["federal_instruments"]]
     assert got["negatives"] == [[n["site_id"], n["reading_id"]] for n in want["negatives"]]
+    assert got["local_actions"] == [a["id"] for a in want["local_actions"]]
+    assert got["mw"] == parsed["mw"] and got["mgd"] == parsed["mgd"]
+
+
+PARSER_EDGE_CASES = [
+    "a campus in North Texas",
+    "West Virginia",
+    "West Virginia and Virginia",
+    "Tucson, AZ",
+    "a new DC campus using 2 MGD",
+    "OR the county may refuse",
+    "a 300-megawatt campus",
+    "a 1.2-gigawatt campus",
+    "a 100-MW first phase",
+    "a 5-million-gallon-per-day draw",
+    "Washington, DC",
+    "Washington, D.C.",
+    "a campus near Washington, D.C., in Loudoun County, Virginia",
+]
+
+
+NEGATION_CASES = [
+    "The campus will not use groundwater or wells.",
+    "There are no wetlands or streams on site.",
+    "A closed system without evaporative cooling.",
+    "We don't pump groundwater.",
+    "We don\u2019t pump groundwater; we pump wells.",
+    "No wetlands on site. The campus pumps groundwater from wells.",
+    "non-evaporative closed-loop cooling",
+]
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node not installed")
+def test_page_parser_matches_on_edge_cases(tmp_path):
+    """State, size and negation parsing on the strings the review flagged, both sides."""
+    js = dashboard._project_check_js()
+    harness = (
+        "const D = JSON.parse(process.argv[2]);\n"
+        "const texts = JSON.parse(process.argv[3]);\n"
+        + js.replace("(function(){", "const __engine = (function(){", 1)
+        + "\nprocess.stdout.write(JSON.stringify(texts.map(t => { const p = __engine.parseProject(t, D); "
+        "return [p.state, p.mw, p.mgd, p.facets, p.matched]; })));\n"
+    )
+    script = tmp_path / "edge.js"
+    script.write_text(harness, encoding="utf-8")
+    out = subprocess.run(
+        ["node", str(script), precedent.payload_json(), json.dumps(PARSER_EDGE_CASES + NEGATION_CASES)],
+        capture_output=True, text=True, check=True,
+    )
+    want = [
+        [p["state"], p["mw"], p["mgd"], p["facets"], p["matched"]]
+        for p in map(precedent.parse_project, PARSER_EDGE_CASES + NEGATION_CASES)
+    ]
+    assert json.loads(out.stdout) == want
 
 
 # --- Site integration ---------------------------------------------------------------
@@ -502,10 +654,37 @@ class TestSiteIntegration:
         page = dashboard._project_result_html(nowhere)
         assert f'<h4>{dashboard.PROJECT_CHECK_SECTIONS["federal"]}</h4>' in page
         assert dashboard.PROJECT_CHECK_SECTIONS["rules"] not in page
-        # An instrument with empty triggers applies to every campus in the state.
+        # An instrument with empty triggers applies to every campus in its jurisdiction.
         texas = precedent.match_project(["src-wells"], "TX")
-        assert any(i["water_scoped"] and not i["triggers"] for i in texas["instruments"])
-        assert dashboard.PROJECT_CHECK_APPLIES_TO_ALL in dashboard._project_result_html(texas)
+        rows = [i for i in texas["instruments"] if i["water_scoped"] and not i["triggers"]]
+        assert rows
+        page = dashboard._project_result_html(texas)
+        for i in rows:
+            assert dashboard._applies_to_all_line(i["status"]) in page
+
+    @pytest.mark.parametrize(
+        "status, line",
+        [
+            ("enacted", "Applies to every data center in its jurisdiction"),
+            ("introduced", "Would apply to every data center in its jurisdiction"),
+            ("failed", "Would have applied to every data center in its jurisdiction"),
+            ("unknown", "Covers every data center in its jurisdiction"),
+            ("", "Covers every data center in its jurisdiction"),
+        ],
+    )
+    def test_applies_to_all_line_follows_status(self, status, line):
+        row = {"id": "X", "label": "X", "anchor": "bill-x", "title": "t", "status": status,
+               "water_scoped": True, "triggers": [], "shared": []}
+        li = dashboard._project_instrument_li(row)
+        assert line in li
+        others = set(dashboard.PROJECT_CHECK_APPLIES_TO_ALL.values()) - {line}
+        assert not any(o in li for o in others)
+        assert "in the state" not in li
+
+    def test_applies_to_all_strings_ship_to_the_page(self):
+        fragment = dashboard._build_project_check_html()
+        blob = fragment.split('id="pcheck-strings">', 1)[1].split("</script>", 1)[0]
+        assert json.loads(blob)["applies_to_all"] == dashboard.PROJECT_CHECK_APPLIES_TO_ALL
 
     def test_renderer_lists_negatives_after_sites_in_grey(self):
         ex = next(

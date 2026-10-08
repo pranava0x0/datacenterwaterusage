@@ -272,7 +272,6 @@
         "Sackett-v-EPA-2023"
       ],
       "fact_triggers": [
-        "out-stormwater",
         "ctx-wetlands",
         "ctx-navigable"
       ]
@@ -351,6 +350,9 @@
         "cool-once-through",
         "out-surface",
         "pwr-thermo-cooling"
+      ],
+      "fact_requires": [
+        "src-surface"
       ]
     },
     {
@@ -373,6 +375,9 @@
       "fact_triggers": [
         "out-surface",
         "pwr-diesel",
+        "chem-fuel"
+      ],
+      "fact_requires": [
         "chem-fuel"
       ]
     },
@@ -416,6 +421,9 @@
       "fact_triggers": [
         "out-ground",
         "ctx-wetlands"
+      ],
+      "fact_requires": [
+        "out-ground"
       ]
     },
     {
@@ -491,6 +499,9 @@
         "src-wells",
         "out-ground",
         "out-stormwater"
+      ],
+      "fact_requires": [
+        "out-ground"
       ]
     },
     {
@@ -603,6 +614,9 @@
         "cool-closed",
         "chem-pfas",
         "proc-records"
+      ],
+      "fact_requires": [
+        "chem-pfas"
       ]
     },
     {
@@ -670,6 +684,9 @@
       "fact_triggers": [
         "src-wells",
         "ctx-stressed-aquifer",
+        "ctx-interstate"
+      ],
+      "fact_requires": [
         "ctx-interstate"
       ]
     },
@@ -886,6 +903,9 @@
         "src-surface",
         "ctx-endangered",
         "proc-lawsuit"
+      ],
+      "fact_requires": [
+        "ctx-endangered"
       ]
     },
     {
@@ -980,6 +1000,9 @@
         "ctx-drought",
         "ctx-interstate",
         "ctx-tribal"
+      ],
+      "fact_requires": [
+        "ctx-tribal"
       ]
     },
     {
@@ -1000,6 +1023,9 @@
       "fact_triggers": [
         "src-wells",
         "ctx-drought",
+        "ctx-tribal"
+      ],
+      "fact_requires": [
         "ctx-tribal"
       ]
     },
@@ -1065,6 +1091,9 @@
         "proc-secrecy",
         "proc-pledge",
         "proc-records"
+      ],
+      "fact_requires": [
+        "proc-pledge"
       ]
     },
     {
@@ -1127,7 +1156,6 @@
         "US-v-Bestfoods-1998"
       ],
       "fact_triggers": [
-        "chem-fuel",
         "chem-treatment",
         "chem-legacy"
       ]
@@ -1152,6 +1180,9 @@
         "src-wells",
         "chem-legacy",
         "proc-lawsuit"
+      ],
+      "fact_requires": [
+        "chem-legacy"
       ]
     },
     {
@@ -1261,6 +1292,9 @@
         "ctx-wetlands",
         "ctx-navigable",
         "pwr-hydro"
+      ],
+      "fact_requires": [
+        "pwr-hydro"
       ]
     },
     {
@@ -1283,6 +1317,9 @@
       "fact_triggers": [
         "src-surface",
         "ctx-navigable",
+        "pwr-hydro"
+      ],
+      "fact_requires": [
         "pwr-hydro"
       ]
     },

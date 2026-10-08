@@ -634,7 +634,7 @@ FACT_FACETS = {
         "dimension": "source",
         "label": "Water bought from a public water system",
         "description": "Service from a municipal, district or investor-owned water utility.",
-        "triggers": ["utility", "municipal water", "city water", "public water", "water system", "potable", "water district", "water authority", "water service", "service agreement", "water contract", "tap"],
+        "triggers": ["water utility", "utility water", "municipal water", "city water", "public water", "water system", "potable", "water district", "water authority", "water service", "water plant", "water contract", "water supplier"],
     },
     "src-reclaimed": {
         "dimension": "source",
@@ -646,7 +646,7 @@ FACT_FACETS = {
         "dimension": "source",
         "label": "Water moved from another basin or state",
         "description": "An inter-basin diversion, a Great Lakes diversion, or a pipeline from a distant source.",
-        "triggers": ["interbasin", "inter basin", "diversion", "divert", "diverted", "transfer", "imported water"],
+        "triggers": ["interbasin", "inter basin", "diversion", "divert", "diverted", "water transfer", "transfer water", "imported water"],
     },
     # -- cooling --
     "cool-evaporative": {
@@ -704,7 +704,7 @@ FACT_FACETS = {
         "dimension": "site",
         "label": "Wetlands or streams on the site",
         "description": "Fill, crossings or buffers that bring in §404, state wetland law and §401.",
-        "triggers": ["wetland", "wetlands", "stream", "streams", "creek", "tributary", "404", "fill", "floodway", "riparian", "bog", "marsh"],
+        "triggers": ["wetland", "wetlands", "stream", "streams", "tributary", "404", "wetland fill", "floodway", "riparian", "bog", "marsh"],
     },
     "ctx-stressed-aquifer": {
         "dimension": "site",
@@ -722,7 +722,7 @@ FACT_FACETS = {
         "dimension": "site",
         "label": "Small town or small water system",
         "description": "A community where one campus is a large share of the system's capacity.",
-        "triggers": ["small town", "rural", "small city", "village", "township", "small community", "small utility", "small system", "population"],
+        "triggers": ["small town", "rural", "small city", "village", "township", "small community", "small utility", "small system"],
     },
     "ctx-city-reservoir": {
         "dimension": "site",
@@ -740,13 +740,13 @@ FACT_FACETS = {
         "dimension": "site",
         "label": "Coastal plain, subsidence or saltwater intrusion",
         "description": "Coastal aquifers where pumping causes intrusion or land subsidence.",
-        "triggers": ["coastal", "saltwater", "salt water", "intrusion", "sea level", "coastal plain", "subsiding", "bay"],
+        "triggers": ["coastal", "saltwater", "salt water", "intrusion", "sea level", "coastal plain", "subsiding"],
     },
     "ctx-tribal": {
         "dimension": "site",
         "label": "Tribal lands or reserved water rights",
         "description": "A reservation or senior tribal water right in the same source.",
-        "triggers": ["tribal", "tribe", "tribes", "reservation", "nation", "pueblo", "indigenous"],
+        "triggers": ["tribal", "tribe", "tribes", "reservation", "pueblo", "indigenous", "tribal nation"],
     },
     "ctx-endangered": {
         "dimension": "site",
@@ -777,13 +777,13 @@ FACT_FACETS = {
         "dimension": "power",
         "label": "Nuclear restart or new reactor",
         "description": "A restarted or new reactor, with its cooling water and federal approvals.",
-        "triggers": ["nuclear", "reactor", "reactors", "restart", "smr", "uprate"],
+        "triggers": ["nuclear", "reactor", "reactors", "smr", "uprate", "nuclear restart"],
     },
     "pwr-hydro": {
         "dimension": "power",
         "label": "Hydropower",
         "description": "Hydroelectric supply, a dam licence or flows governed by a federal licence.",
-        "triggers": ["hydropower", "hydroelectric", "hydro", "ferc", "licence", "license", "dams"],
+        "triggers": ["hydropower", "hydroelectric", "hydro", "ferc", "ferc license", "ferc licence", "dams"],
     },
     "pwr-thermo-cooling": {
         "dimension": "power",
@@ -802,7 +802,7 @@ FACT_FACETS = {
         "dimension": "chemicals",
         "label": "Fuel storage and spills",
         "description": "Diesel and oil storage, spill plans and spill events.",
-        "triggers": ["fuel storage", "fuel tanks", "tank", "tanks", "spill", "spills", "spcc", "petroleum", "oil", "leak", "leaked"],
+        "triggers": ["fuel storage", "fuel tanks", "fuel tank", "storage tanks", "spill", "spills", "spcc", "petroleum", "leak", "leaked"],
     },
     "chem-treatment": {
         "dimension": "chemicals",
@@ -814,7 +814,7 @@ FACT_FACETS = {
         "dimension": "chemicals",
         "label": "Legacy contamination on the site",
         "description": "A brownfield, a plume, or a former industrial or federal site.",
-        "triggers": ["brownfield", "superfund", "contaminated", "contamination", "remediation", "plume", "cleanup", "legacy", "former plant", "former mill"],
+        "triggers": ["brownfield", "superfund", "contaminated", "contamination", "remediation", "plume", "cleanup", "legacy contamination", "former plant", "former mill"],
     },
     # -- process --
     "proc-secrecy": {
@@ -827,7 +827,7 @@ FACT_FACETS = {
         "dimension": "process",
         "label": "Water-positive or efficiency pledge",
         "description": "A replenishment, water-positive, WUE or closed-loop promise by the operator.",
-        "triggers": ["water positive", "replenish", "replenishment", "pledge", "pledged", "wue", "net positive", "commitment", "commits", "committed", "promise", "promised", "stewardship"],
+        "triggers": ["water positive", "replenish", "replenishment", "pledge", "pledged", "wue", "net positive", "water commitment", "promise", "promised", "stewardship"],
     },
     "proc-zoning": {
         "dimension": "process",
@@ -839,7 +839,7 @@ FACT_FACETS = {
         "dimension": "process",
         "label": "Moratorium or pause",
         "description": "A temporary halt on approvals while rules are written.",
-        "triggers": ["moratorium", "moratoriums", "pause", "paused", "temporary ban", "halt", "interim ordinance"],
+        "triggers": ["moratorium", "moratoriums", "pause", "paused", "temporary ban", "interim ordinance"],
     },
     "proc-incentive": {
         "dimension": "process",
@@ -851,7 +851,7 @@ FACT_FACETS = {
         "dimension": "process",
         "label": "Litigation or citizen suit",
         "description": "A suit, petition or enforcement action already filed.",
-        "triggers": ["lawsuit", "lawsuits", "sued", "suit", "complaint", "citizen suit", "injunction", "litigation", "court", "appeal", "notice intent", "consent decree", "enforcement"],
+        "triggers": ["lawsuit", "lawsuits", "sued", "suit", "complaint", "citizen suit", "injunction", "litigation", "appeal", "notice intent", "consent decree", "enforcement"],
     },
     "proc-records": {
         "dimension": "process",

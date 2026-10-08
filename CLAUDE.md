@@ -180,9 +180,16 @@ past cases to it*. It is computed, not essayed, and explainable by construction:
   with the Pima County Project Blue agreement on the site record.
 - **`parse_project(text)`** reads a pasted description into facets, a state
   (`state_code_for`: most-mentioned full name wins, a name after a comma counts
-  double, "Port Washington"/"Colorado River" are not states), MW and MGD
-  (per-day figures only — "78 million gallons over two years" is not 78 MGD);
-  ≥100 MW or ≥1 MGD sets the scale facet.
+  double, "Port Washington"/"Colorado River" are not states but "West Texas" is
+  Texas, "Washington, D.C." is DC, a bare two-letter code counts only after a
+  comma), MW and MGD (per-day figures only — "78 million gallons over two years"
+  is not 78 MGD; hyphenated "300-megawatt" reads); ≥100 MW or ≥1 MGD sets the
+  scale facet. A negator ("no", "not", "without", "never", "neither", "nor",
+  "cannot", "…n't") silences the next 3 surviving words of its sentence
+  (`live_tokens`), so "will not use groundwater or wells" sets no facet.
+- **`fact_requires` gates, `fact_triggers` scores**: a reading or instrument
+  whose `fact_requires` facets are not all present in the project does not
+  appear at all (sdwa-uic-classv scores on wells but requires `out-ground`).
 - **`match_project(facets, state, text)`** ranks readings by weighted facet
   cosine on `fact_triggers` (weights `1 + ln(N/df)` over cases+sites), cases and
   sites by facet cosine + 0.35 × TF-IDF wording cosine, tallies `outcome_type`
@@ -197,7 +204,8 @@ past cases to it*. It is computed, not essayed, and explainable by construction:
   carry none, and the payload's `water_scoped` flag keeps them from being shown
   as applying to everyone). The state's instruments sort (enacted first,
   −overlap score, id) and show "Because: …" facets; `federal_instruments` are the
-  `TOP_FEDERAL` (6) federal instruments whose triggers overlap, shown whatever the
+  `TOP_FEDERAL` (6) `level: federal` instruments (not a jurisdiction string —
+  EO 14318 says "United States") whose triggers overlap, shown whatever the
   state, and the rules section renders under their own heading when no state is named.
 - **Negative mappings surface**: a site's `applicable_readings[].reaches: false`
   entries ship as `sites[].negatives` and `match_project` returns `negatives` for
