@@ -6757,9 +6757,15 @@ PROJECT_CHECK_SECTIONS = {
     "readings": "Laws and doctrines that could reach this project",
     "cases": "Closest tracked cases",
     "sites": "Communities that fought a similar project",
+    "negatives": "Assessed as NOT reaching a similar site",
     "outcomes": "How the closest cases ended",
     "rules": "Rules in this state",
+    "federal": "Federal instruments that could apply",
 }
+
+# What an instrument row says when the instrument names no fact pattern: its
+# terms reach every data center in its jurisdiction, however it uses water.
+PROJECT_CHECK_APPLIES_TO_ALL = "Applies to every data center in the state"
 
 
 def _facet_chip_html(facet_id: str) -> str:
@@ -6875,6 +6881,22 @@ def _project_result_html(result: dict, state_name: str | None = None) -> str:
             f'<ol class="pcheck-list">{"".join(rows)}</ol></section>'
         )
 
+    # Negative doctrine mappings on the closest sites — what the record
+    # assessed as NOT reaching a similar site. Grey on purpose: a limit, not a route.
+    rows = [
+        '<li class="pcheck-item pcheck-neg">'
+        f'<span class="statute-pill pcheck-neg-pill">{esc(n.get("statute", ""))}</span> '
+        f'<a href="#{esc(n.get("anchor", ""))}"><strong>{esc(n.get("reading_label", n.get("reading_id", "")))}</strong></a>'
+        f' — at <a href="#{esc(n.get("site_anchor", ""))}">{esc(n.get("site_label", n.get("site_id", "")))}</a>: '
+        f'{esc(n.get("how", ""))}</li>'
+        for n in result.get("negatives") or []
+    ]
+    if rows:
+        parts.append(
+            f'<section class="pcheck-sec"><h4>{esc(PROJECT_CHECK_SECTIONS["negatives"])}</h4>'
+            f'<ul class="pcheck-list">{"".join(rows)}</ul></section>'
+        )
+
     # Outcomes
     outcomes = result.get("outcomes") or []
     if outcomes:
@@ -6893,18 +6915,15 @@ def _project_result_html(result: dict, state_name: str | None = None) -> str:
             f'<div class="pcheck-bars">{bars}</div></section>'
         )
 
-    # Rules in the state
+    # Rules in the state, then the federal instruments whose triggers overlap
     instruments = result.get("instruments") or []
+    federal = result.get("federal_instruments") or []
     actions = result.get("local_actions") or []
+    frows = "".join(_project_instrument_li(i) for i in federal)
+    fsub = f'<p class="pcheck-sub">{esc(PROJECT_CHECK_SECTIONS["federal"])}</p><ul class="pcheck-list">{frows}</ul>' if frows else ""
     if result.get("state"):
         name = state_name or US_STATE_NAMES.get(result["state"], result["state"])
-        irows = "".join(
-            '<li class="pcheck-item pcheck-item-tight">'
-            f'<span class="cwa-status-pill" style="background:{_status_color(i.get("status", ""))}">{esc((i.get("status") or "").replace("_", " ").title())}</span> '
-            f'<a href="#{esc(i.get("anchor", ""))}">{esc(i.get("label", i.get("id", "")))}</a>'
-            f'<span class="pcheck-meta"> — {esc(i.get("title", ""))}</span></li>'
-            for i in instruments
-        )
+        irows = "".join(_project_instrument_li(i) for i in instruments)
         arows = "".join(
             '<li class="pcheck-item pcheck-item-tight">'
             f'{esc(a.get("jurisdiction", ""))} — {esc(a.get("action_type", ""))}, {esc(a.get("status", ""))}'
@@ -6916,9 +6935,33 @@ def _project_result_html(result: dict, state_name: str | None = None) -> str:
             f'<section class="pcheck-sec"><h4>{esc(PROJECT_CHECK_SECTIONS["rules"])} — {esc(name)}</h4>'
             + (f'<p class="pcheck-sub">Tracked state instruments</p><ul class="pcheck-list">{irows}</ul>' if irows else f'<p class="pcheck-muted">No tracked {esc(name)} instrument yet.</p>')
             + (f'<p class="pcheck-sub">County and city actions</p><ul class="pcheck-list">{arows}</ul>{more}' if arows else f'<p class="pcheck-muted">No tracked county or city action in {esc(name)} yet.</p>')
+            + fsub
             + "</section>"
         )
+    elif frows:
+        parts.append(
+            f'<section class="pcheck-sec"><h4>{esc(PROJECT_CHECK_SECTIONS["federal"])}</h4>'
+            f'<ul class="pcheck-list">{frows}</ul></section>'
+        )
     return f'<div class="pcheck-result">{"".join(parts)}</div>'
+
+
+def _project_instrument_li(i: dict) -> str:
+    """One instrument row in the rules section: status pill, link, title, and
+    why it is listed — the facets in common, or that it names no fact pattern."""
+    esc = html.escape
+    if i.get("shared"):
+        why = f'<div class="pcheck-why">Because: {"".join(_facet_chip_html(f) for f in i["shared"])}</div>'
+    elif i.get("water_scoped") and not i.get("triggers"):
+        why = f'<div class="pcheck-why">{esc(PROJECT_CHECK_APPLIES_TO_ALL)}</div>'
+    else:
+        why = ""
+    return (
+        '<li class="pcheck-item pcheck-item-tight">'
+        f'<span class="cwa-status-pill" style="background:{_status_color(i.get("status", ""))}">{esc((i.get("status") or "").replace("_", " ").title())}</span> '
+        f'<a href="#{esc(i.get("anchor", ""))}">{esc(i.get("label", i.get("id", "")))}</a>'
+        f'<span class="pcheck-meta"> — {esc(i.get("title", ""))}</span>{why}</li>'
+    )
 
 
 def _status_color(status: str) -> str:
@@ -6985,6 +7028,7 @@ def _build_project_check_html(payload_src: str | None = None) -> str:
             "statute_colors": WATER_STATUTE_COLORS,
             "case_types": CWA_CASE_TYPE_LABELS,
             "status_colors": LEGISLATION_STATUS_BADGE_COLORS,
+            "applies_to_all": PROJECT_CHECK_APPLIES_TO_ALL,
         },
         separators=(",", ":"),
     ).replace("</", "<\\/")
@@ -7086,6 +7130,9 @@ def _project_check_css() -> str:
 .pcheck-flag{display:inline-block;font-size:.74rem;font-weight:600;border-radius:999px;padding:.1rem .5rem;margin-left:.35rem}
 .pcheck-flag-limit{color:#b45309;background:#fffbeb;border:1px solid #fde68a}
 .pcheck-flag-else{color:#6b7280;background:#f9fafb;border:1px solid #e5e7eb}
+.pcheck-neg{color:#6b7280;font-size:.84rem}
+.pcheck .pcheck-item.pcheck-neg a{color:#4b5563}
+.pcheck .statute-pill.pcheck-neg-pill{background:#6b7280}
 .pcheck-bars{display:flex;flex-direction:column;gap:.3rem}
 .pcheck-bar-row{display:grid;grid-template-columns:minmax(0,11rem) minmax(0,1fr) 2rem;gap:.5rem;align-items:center;font-size:.82rem}
 .pcheck-bar{height:8px;background:#eff3ff;border-radius:4px;overflow:hidden}
@@ -7382,13 +7429,19 @@ def _project_check_js() -> str:
       return x.outcome < y.outcome ? -1 : (x.outcome > y.outcome ? 1 : 0);
     });
 
+    // Instruments rank like readings: overlap with the instrument's fact_triggers.
+    function scored(i){
+      var ov = overlap(facets, i.triggers || [], D), row = copy(i);
+      row.score = ov[0]; row.shared = ov[1];
+      return row;
+    }
     var instruments = [], localActions = [];
     if (state){
-      instruments = D.instruments.filter(function(i){ return i.state === state; });
+      instruments = D.instruments.filter(function(i){ return i.state === state; }).map(scored);
       instruments.sort(function(x, y){
         var rx = x.status === 'enacted' ? 0 : 1, ry = y.status === 'enacted' ? 0 : 1;
         if (rx !== ry) return rx - ry;
-        return x.id < y.id ? -1 : (x.id > y.id ? 1 : 0);
+        return byScoreThenId(x, y);
       });
       localActions = D.local_actions
         .map(function(a, idx){ return [a, idx]; })
@@ -7401,6 +7454,33 @@ def _project_check_js() -> str:
       });
       localActions = localActions.map(function(p){ return p[0]; });
     }
+    var federal = D.instruments
+      .filter(function(i){ return i.jurisdiction === 'Federal (US)'; })
+      .map(scored)
+      .filter(function(i){ return i.score > 0; });
+    federal.sort(byScoreThenId);
+    federal = federal.slice(0, C.top_federal);
+
+    // What the record assessed as NOT reaching the closest sites.
+    var readingById = {};
+    D.readings.forEach(function(r){ readingById[r.id] = r; });
+    var negatives = [], negSeen = {};
+    sites.slice(0, C.negative_sites).forEach(function(site){
+      (site.negatives || []).forEach(function(neg){
+        var key = site.id + '|' + neg.reading_id;
+        if (negSeen[key]) return;
+        negSeen[key] = 1;
+        var r = has(readingById, neg.reading_id) ? readingById[neg.reading_id] : {};
+        negatives.push({
+          site_id: site.id, site_label: site.label, site_anchor: site.anchor,
+          reading_id: neg.reading_id,
+          reading_label: r.label != null ? r.label : neg.reading_id,
+          statute: r.statute != null ? r.statute : '',
+          anchor: r.anchor != null ? r.anchor : '',
+          how: neg.how
+        });
+      });
+    });
 
     return {
       facets: facets,
@@ -7412,7 +7492,9 @@ def _project_check_js() -> str:
       outcomes: outcomes,
       outcome_sample: Math.min(C.outcome_sample, cases.length),
       instruments: instruments,
-      local_actions: localActions
+      federal_instruments: federal,
+      local_actions: localActions,
+      negatives: negatives
     };
   }
 
@@ -7605,6 +7687,24 @@ def _project_check_js() -> str:
         wrap.appendChild(sec);
       }
 
+      // Negative mappings on the closest sites — grey: a limit, not a route
+      if (result.negatives.length){
+        sec = section('negatives');
+        var ul0 = el('ul', 'pcheck-list');
+        result.negatives.forEach(function(n){
+          var li = el('li', 'pcheck-item pcheck-neg');
+          li.appendChild(el('span', 'statute-pill pcheck-neg-pill', n.statute || ''));
+          li.appendChild(document.createTextNode(' '));
+          li.appendChild(link(n.anchor || '', el('strong', null, n.reading_label || n.reading_id)));
+          li.appendChild(document.createTextNode(' — at '));
+          li.appendChild(link(n.site_anchor || '', n.site_label || n.site_id));
+          li.appendChild(document.createTextNode(': ' + (n.how || '')));
+          ul0.appendChild(li);
+        });
+        sec.appendChild(ul0);
+        wrap.appendChild(sec);
+      }
+
       // Outcomes
       if (result.outcomes.length){
         sec = section('outcomes');
@@ -7626,24 +7726,31 @@ def _project_check_js() -> str:
         wrap.appendChild(sec);
       }
 
-      // Rules in the state
+      // Rules in the state, then the federal instruments whose triggers overlap
+      function instrumentLi(i){
+        var li = el('li', 'pcheck-item pcheck-item-tight');
+        var colors = S.status_colors || {};
+        var pill = el('span', 'cwa-status-pill', titleCase((i.status || '').replace(/_/g, ' ')));
+        pill.style.background = colors[i.status] || colors.unknown || '#6b7280';
+        li.appendChild(pill);
+        li.appendChild(document.createTextNode(' '));
+        li.appendChild(link(i.anchor || '', i.label || i.id));
+        li.appendChild(el('span', 'pcheck-meta', ' — ' + (i.title || '')));
+        if (i.shared && i.shared.length) li.appendChild(chipsLine('pcheck-why', 'Because: ', i.shared));
+        else if (i.water_scoped && !(i.triggers || []).length) li.appendChild(el('div', 'pcheck-why', S.applies_to_all || ''));
+        return li;
+      }
+      function instrumentList(rows){
+        var ul = el('ul', 'pcheck-list');
+        rows.forEach(function(i){ ul.appendChild(instrumentLi(i)); });
+        return ul;
+      }
+      var federal = result.federal_instruments || [];
       if (result.state){
         sec = section('rules', ' — ' + stateName);
         if (result.instruments.length){
           sec.appendChild(el('p', 'pcheck-sub', 'Tracked state instruments'));
-          var ul = el('ul', 'pcheck-list');
-          result.instruments.forEach(function(i){
-            var li = el('li', 'pcheck-item pcheck-item-tight');
-            var colors = S.status_colors || {};
-            var pill = el('span', 'cwa-status-pill', titleCase((i.status || '').replace(/_/g, ' ')));
-            pill.style.background = colors[i.status] || colors.unknown || '#6b7280';
-            li.appendChild(pill);
-            li.appendChild(document.createTextNode(' '));
-            li.appendChild(link(i.anchor || '', i.label || i.id));
-            li.appendChild(el('span', 'pcheck-meta', ' — ' + (i.title || '')));
-            ul.appendChild(li);
-          });
-          sec.appendChild(ul);
+          sec.appendChild(instrumentList(result.instruments));
         } else {
           sec.appendChild(muted('No tracked ' + stateName + ' instrument yet.'));
         }
@@ -7667,6 +7774,14 @@ def _project_check_js() -> str:
         } else {
           sec.appendChild(muted('No tracked county or city action in ' + stateName + ' yet.'));
         }
+        if (federal.length){
+          sec.appendChild(el('p', 'pcheck-sub', SEC.federal || 'federal'));
+          sec.appendChild(instrumentList(federal));
+        }
+        wrap.appendChild(sec);
+      } else if (federal.length){
+        sec = section('federal');
+        sec.appendChild(instrumentList(federal));
         wrap.appendChild(sec);
       }
       return wrap;

@@ -120,7 +120,7 @@ Python-based scraping and data extraction pipeline that finds documents related 
   - **`graph-data.json`** (~650 KB) — the Explore connection graph + TF-IDF index **+ the precomputed default layout** (`refdata.graph.compute_layout`, numpy, same constants as the page's JS — a test pins the parity), split out of `index.html` on 2026-08-24 (page was 2.11 MB). The Explore tab `fetch`es it same-origin **on first activation only**, with a loading state and a plain failure message; a reader who never opens Explore never downloads it. `dashboard._build_explore_html(payload_src)` takes the URL — pass `None` (the default) and the payload inlines instead, which is what the Streamlit surface needs since a `components.html` iframe has no origin to fetch from.
   - **`llms.txt`** — an LLM-friendly markdown mirror (llmstxt.org convention: project summary, key numbers, the cross-bill principles summary, one-liners for every bill and CWA case with sources). It is linked from the page (`<link rel="alternate">` + footer) and test-enforced to contain every bill_id/case_id, so it can never drift from the page. **Collapse is a render concern, not a data one** — llms.txt always carries every record regardless of what the page folds away.
 - **The tagline is one constant.** `dashboard.TAGLINE` feeds the Streamlit caption, the static page's `<h1>` subtitle and `<meta name="description">`, and the llms.txt blockquote. It was rewritten on 2026-08-24: the old "Virginia & Ohio via public regulatory data" described the scraper pipeline's first two states and had been wrong since the curated datasets went national.
-- **Testing**: pytest + pytest-asyncio (960 tests; `tests/test_streamlit_app.py` boots the Streamlit app headlessly with `AppTest` in ~1 s). **Local env (2026-09-26):** the only interpreter on this machine is the system Python 3.9 — the uv-managed 3.12 the repo's pins assume is gone — so run tests with `.venv/bin/python -m pytest -q` (3.9 venv with unpinned-latest streamlit/plotly/markdown/pandas 2.x installed); CI remains the 3.12 source of truth.
+- **Testing**: pytest + pytest-asyncio (972 tests; `tests/test_streamlit_app.py` boots the Streamlit app headlessly with `AppTest` in ~1 s). **Local env (2026-09-26):** the only interpreter on this machine is the system Python 3.9 — the uv-managed 3.12 the repo's pins assume is gone — so run tests with `.venv/bin/python -m pytest -q` (3.9 venv with unpinned-latest streamlit/plotly/markdown/pandas 2.x installed); CI remains the 3.12 source of truth.
 
 ### Curated-data layer (`refdata/`, added 2026-07-25)
 
@@ -167,7 +167,7 @@ the renderer emitted the anchor.
 The tab the user asked for by name: *given a project description, apply the
 past cases to it*. It is computed, not essayed, and explainable by construction:
 
-- **`FACT_FACETS`** (`refdata/taxonomies.py`) — a closed vocabulary of 39
+- **`FACT_FACETS`** (`refdata/taxonomies.py`) — a closed vocabulary of 40
   fact-pattern facets in 8 dimensions (water source · cooling · discharge route ·
   site/watershed · power · chemicals · process · scale). Every **case** and
   **conflict site** carries `fact_pattern` (what the project *is*); every
@@ -175,8 +175,9 @@ past cases to it*. It is computed, not essayed, and explainable by construction:
   it potentially reach a project). Each facet carries the trigger words the
   parser looks for; triggers are tokens exactly as `refdata.graph.tokenize`
   emits them (a test proves it), so the browser's parser and Python's agree.
-  Two drafted facets (zero-liquid-discharge, incentive/CBA) were held back
-  because no case or site carries them — same-commit rule.
+  A drafted zero-liquid-discharge facet was held back because no case or site
+  carries it — same-commit rule; the incentive/CBA facet entered the same day
+  with the Pima County Project Blue agreement on the site record.
 - **`parse_project(text)`** reads a pasted description into facets, a state
   (`state_code_for`: most-mentioned full name wins, a name after a comma counts
   double, "Port Washington"/"Colorado River" are not states), MW and MGD
@@ -190,6 +191,19 @@ past cases to it*. It is computed, not essayed, and explainable by construction:
   and flagged *elsewhere* for another state. `role: limit` readings are flagged,
   never hidden. Copy is modal throughout ("could reach", "what the closest cases
   recorded") — it maps exposure, it does not predict.
+- **Instruments rank like readings** (2026-10-08 second pass): every
+  water-scoped instrument in `legislation.json` carries `fact_triggers` (empty =
+  "applies to every data center in its jurisdiction"; energy-only instruments
+  carry none, and the payload's `water_scoped` flag keeps them from being shown
+  as applying to everyone). The state's instruments sort (enacted first,
+  −overlap score, id) and show "Because: …" facets; `federal_instruments` are the
+  `TOP_FEDERAL` (6) federal instruments whose triggers overlap, shown whatever the
+  state, and the rules section renders under their own heading when no state is named.
+- **Negative mappings surface**: a site's `applicable_readings[].reaches: false`
+  entries ship as `sites[].negatives` and `match_project` returns `negatives` for
+  the `NEGATIVE_SITES` (3) closest sites, one row per (site, reading), rendered grey
+  (`.pcheck-neg`) after the sites section under "Assessed as NOT reaching a
+  *similar site*" — that site's limit, never a statement about this project.
 - **`data/reference/project_examples.json`** — six real 2026 proposals the
   tracker does not otherwise record (Cedar Creek Lake TX, Amazon Wharton County
   TX, Big Sky MT, Vantage Port Washington WI, Project Blue wells AZ, BT Aycock

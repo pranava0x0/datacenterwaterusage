@@ -87,6 +87,12 @@ OUTCOME_SAMPLE = 10
 TOP_CASES = 12
 TOP_SITES = 6
 TOP_READINGS = 12
+# Federal instruments whose fact_triggers overlap the project, shown whatever
+# the state: the six closest, so a reader is not handed every federal bill.
+TOP_FEDERAL = 6
+# Negative doctrine mappings (``reaches: false``) are read off this many of
+# the closest conflict sites — the ones the reader is most likely to compare.
+NEGATIVE_SITES = 3
 SCORE_DECIMALS = 6
 # A reading that names its jurisdictions (Arizona's AMA regime, California's
 # SGMA) still appears for a project elsewhere — as the analogy it is — but
@@ -258,6 +264,13 @@ def _records() -> dict:
                 "location": s.get("location", ""),
                 "state": state_code_for(s.get("location", "")),
                 "status": _short(s.get("status_2026", "")),
+                # Mappings the record assessed as *not* reaching this site
+                # (``reaches: false``) — the limits a similar project meets too.
+                "negatives": [
+                    {"reading_id": ar.get("reading_id", ""), "how": _short(ar.get("how", ""))}
+                    for ar in s.get("applicable_readings") or []
+                    if ar.get("reaches") is False
+                ],
                 "tab": ref.tab,
                 "anchor": ref.anchor,
             }
@@ -366,8 +379,16 @@ def match_project(
         a tally of ``outcome_type`` over the :data:`OUTCOME_SAMPLE` closest
         cases — what was recorded, not what will happen;
     ``instruments`` / ``local_actions``
-        the tracked instruments in the named state (enacted first) and the
-        county and city actions there — empty without a state.
+        the tracked instruments in the named state (enacted first, then by
+        ``fact_triggers`` overlap, each with ``score`` and ``shared``) and the
+        county and city actions there — empty without a state;
+    ``federal_instruments``
+        federal instruments whose ``fact_triggers`` overlap the project, best
+        first, at most :data:`TOP_FEDERAL` — shown whatever the state;
+    ``negatives``
+        the ``reaches: false`` mappings on the :data:`NEGATIVE_SITES` closest
+        conflict sites — doctrines the record assessed as not reaching a
+        similar site, one row per (site, reading).
     """
     recs = records or _records()
     weights = facet_weights(recs["cases"], recs["sites"])
@@ -416,15 +437,51 @@ def match_project(
         for o, n in sorted(tally.items(), key=lambda kv: (-kv[1], kv[0]))
     ]
 
+    # Instruments rank like readings: overlap of the project's facets with the
+    # instrument's fact_triggers. Empty triggers score 0 — such an instrument
+    # applies to every data center in its jurisdiction, and the page says so.
+    def scored(inst: dict) -> dict:
+        score, shared = overlap(facets, inst["triggers"], weights)
+        return {**inst, "score": score, "shared": shared}
+
+    all_instruments = _instruments()
     instruments, local_actions = [], []
     if state:
-        instruments = [i for i in _instruments() if i["state"] == state]
-        instruments.sort(key=lambda i: (0 if i["status"] == "enacted" else 1, i["id"]))
+        instruments = [scored(i) for i in all_instruments if i["state"] == state]
+        instruments.sort(key=lambda i: (0 if i["status"] == "enacted" else 1, -i["score"], i["id"]))
         local_actions = sorted(
             (a for a in _local_actions() if a["state"] == state),
             key=lambda a: (a["date"] or ""),
             reverse=True,
         )
+    federal = [scored(i) for i in all_instruments if i["jurisdiction"] == FEDERAL_JURISDICTION]
+    federal = [i for i in federal if i["score"] > 0]
+    federal.sort(key=lambda i: (-i["score"], i["id"]))
+    federal = federal[:TOP_FEDERAL]
+
+    # What the record assessed as NOT reaching the closest sites. The heading
+    # says "a similar site": these are that site's limits, not this project's.
+    reading_by_id = {r["id"]: r for r in recs["readings"]}
+    negatives, seen = [], set()
+    for site in sites[:NEGATIVE_SITES]:
+        for neg in site.get("negatives") or []:
+            key = (site["id"], neg["reading_id"])
+            if key in seen:
+                continue
+            seen.add(key)
+            reading = reading_by_id.get(neg["reading_id"]) or {}
+            negatives.append(
+                {
+                    "site_id": site["id"],
+                    "site_label": site["label"],
+                    "site_anchor": site["anchor"],
+                    "reading_id": neg["reading_id"],
+                    "reading_label": reading.get("label", neg["reading_id"]),
+                    "statute": reading.get("statute", ""),
+                    "anchor": reading.get("anchor", ""),
+                    "how": neg["how"],
+                }
+            )
 
     return {
         "facets": facets,
@@ -436,8 +493,13 @@ def match_project(
         "outcomes": outcomes,
         "outcome_sample": min(OUTCOME_SAMPLE, len(cases)),
         "instruments": instruments,
+        "federal_instruments": federal,
         "local_actions": local_actions,
+        "negatives": negatives,
     }
+
+
+FEDERAL_JURISDICTION = "Federal (US)"
 
 
 def _instruments() -> list[dict]:
@@ -456,6 +518,12 @@ def _instruments() -> list[dict]:
                 "state": state_code_for(b.get("jurisdiction", "")),
                 "level": b.get("level", ""),
                 "status": b.get("status", ""),
+                "triggers": list(b.get("fact_triggers") or []),
+                "principles": [p.get("tag", "") for p in b.get("general_principles") or []],
+                # Water-scoped instruments carry fact_triggers (possibly empty:
+                # "every data center in the jurisdiction"); energy-only ones do
+                # not, and must not be shown as applying to every campus.
+                "water_scoped": "fact_triggers" in b,
                 "tab": ref.tab,
                 "anchor": ref.anchor,
             }
@@ -564,6 +632,8 @@ def build_payload() -> dict:
             "top_cases": TOP_CASES,
             "top_sites": TOP_SITES,
             "top_readings": TOP_READINGS,
+            "top_federal": TOP_FEDERAL,
+            "negative_sites": NEGATIVE_SITES,
             "score_decimals": SCORE_DECIMALS,
             "elsewhere_factor": ELSEWHERE_FACTOR,
         },

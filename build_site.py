@@ -2457,12 +2457,25 @@ def _llms_project_check_lines() -> list[str]:
         result = dash.precedent_match_project(e["facets"], e["state"], e["description"])
         readings = "; ".join(f"{r['statute']} {r['label']}" for r in result["readings"][:5])
         cases = "; ".join(c["label"] for c in result["cases"][:5])
+        # State instruments that could apply (facets in common, or no fact
+        # pattern at all — every data center in the state), then federal ones.
+        applies = [
+            i for i in result["instruments"]
+            if i["shared"] or (i.get("water_scoped") and not i["triggers"])
+        ] + result["federal_instruments"]
+        instruments = "; ".join(f"{i['label']} ({i['status'].replace('_', ' ')})" for i in applies[:5])
         lines += [
             f"- **{e['name']}** ({e['operator']}, {e['location']}; {e['status']} {e['status_date']}) — {e['description']}",
             f"  - Facets: {', '.join(FACT_FACETS[f]['label'] for f in e['facets'])}",
             f"  - Readings that could reach it: {readings}",
             f"  - Closest tracked cases: {cases}",
+            f"  - Instruments that could apply: {instruments or 'none tracked'}",
         ]
+        if result["negatives"]:
+            lines.append(
+                "  - Assessed as not reaching a similar site: "
+                + "; ".join(f"{n['statute']} {n['reading_label']} (at {n['site_label']})" for n in result["negatives"])
+            )
     return lines
 
 

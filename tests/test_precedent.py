@@ -23,6 +23,7 @@ from refdata import precedent
 from refdata.loaders import (
     load_cwa_investigations,
     load_dc_water_conflicts,
+    load_legislation,
     load_water_authorities,
 )
 from refdata.taxonomies import DC_ACTIVITY_LABELS, FACT_DIMENSION_LABELS, FACT_FACETS, OUTCOME_TYPE_LABELS
@@ -81,6 +82,32 @@ class TestFacetTaxonomy:
         readings = {r["reading_id"]: r for r in load_water_authorities()["readings"]}
         assert "cool-evaporative" not in readings["cwa-402-npdes"]["fact_triggers"]
         assert "cool-evaporative" in readings["cwa-307-pretreatment"]["fact_triggers"]
+
+
+class TestInstrumentTriggers:
+    """Instruments carry fact_triggers too (2026-10-08 backlog §1). Empty means
+    "every data center in the jurisdiction"; absent means not water-scoped."""
+
+    def test_every_water_scoped_instrument_carries_known_triggers(self):
+        for b in load_legislation()["bills"]:
+            if "water" in (b.get("scope") or []):
+                triggers = b.get("fact_triggers")
+                assert isinstance(triggers, list), b["bill_id"]
+                assert set(triggers) <= set(FACT_FACETS), (b["bill_id"], sorted(set(triggers) - set(FACT_FACETS)))
+
+    def test_a_non_water_instrument_carries_none(self):
+        non_water = [b for b in load_legislation()["bills"] if "water" not in (b.get("scope") or [])]
+        assert non_water
+        for b in non_water:
+            assert "fact_triggers" not in b, b["bill_id"]
+
+    def test_idaho_h895_ranks_first_for_an_evaporative_project_in_idaho(self):
+        bills = {b["bill_id"]: b for b in load_legislation()["bills"]}
+        assert "cool-evaporative" in bills["ID H 895"]["fact_triggers"]
+        result = precedent.match_project(["src-wells", "cool-evaporative"], "ID")
+        top = result["instruments"][0]
+        assert top["id"] == "ID H 895" and top["score"] > 0
+        assert "cool-evaporative" in top["shared"]
 
 
 # --- Parser ------------------------------------------------------------------------
@@ -214,6 +241,59 @@ class TestMatchProject:
     def test_no_facets_no_matches(self):
         empty = precedent.match_project([], None)
         assert empty["readings"] == [] and empty["cases"] == [] and empty["outcomes"] == []
+        assert empty["federal_instruments"] == [] and empty["negatives"] == []
+
+    def test_state_instruments_rank_enacted_first_then_by_overlap(self, arizona):
+        texas = precedent.match_project(arizona["facets"], "TX")
+        rows = texas["instruments"]
+        assert rows == sorted(rows, key=lambda i: (0 if i["status"] == "enacted" else 1, -i["score"], i["id"]))
+        for i in rows:
+            assert set(i["shared"]) <= set(arizona["facets"])
+            assert (i["score"] > 0) == bool(i["shared"]), i["id"]
+            if not i["triggers"]:
+                assert i["score"] == 0 and i["shared"] == []
+
+    def test_federal_instruments_overlap_and_ignore_the_state(self):
+        facets = ["src-reclaimed", "proc-secrecy", "ctx-navigable"]
+        anywhere = precedent.match_project(facets, None)["federal_instruments"]
+        texas = precedent.match_project(facets, "TX")["federal_instruments"]
+        assert anywhere and anywhere == texas
+        assert len(anywhere) <= precedent.TOP_FEDERAL
+        assert all(i["jurisdiction"] == "Federal (US)" and i["score"] > 0 and i["shared"] for i in anywhere)
+        assert anywhere == sorted(anywhere, key=lambda i: (-i["score"], i["id"]))
+
+    def test_negatives_come_from_the_closest_sites_only(self, arizona):
+        top = {s["id"] for s in arizona["sites"][: precedent.NEGATIVE_SITES]}
+        assert all(n["site_id"] in top for n in arizona["negatives"])
+
+    def test_a_well_pumping_tucson_project_meets_project_blues_negative(self):
+        """The spec's well-pumping fixture: Project Blue's record assesses the
+        public-trust groundwater nexus as NOT reaching it. (The Maricopa
+        fixture above ranks Project Blue 11th, outside the three sites whose
+        negatives are read; the curated Tucson wells example puts it in.)"""
+        ex = next(
+            e for e in precedent.load_project_examples()["examples"] if e["id"] == "project-blue-wells-tucson-az-2026"
+        )
+        result = precedent.match_project(ex["facets"], ex["state"], ex["description"])
+        pairs = {(n["site_id"], n["reading_id"]) for n in result["negatives"]}
+        assert ("project-blue-tucson-az", "ptd-groundwater-nexus") in pairs
+        row = next(n for n in result["negatives"] if n["site_id"] == "project-blue-tucson-az")
+        assert row["anchor"] == "reading-ptd-groundwater-nexus" and row["site_anchor"] == "site-project-blue-tucson-az"
+        assert row["statute"] and row["reading_label"] and 0 < len(row["how"]) <= 260
+
+    def test_negatives_are_only_reaches_false_mappings_and_unique(self):
+        reaches_false = {
+            (s["site_id"], ar["reading_id"])
+            for s in load_dc_water_conflicts()["sites"]
+            for ar in s.get("applicable_readings", [])
+            if ar.get("reaches") is False
+        }
+        assert reaches_false
+        for e in precedent.load_project_examples()["examples"]:
+            result = precedent.match_project(e["facets"], e["state"], e["description"])
+            pairs = [(n["site_id"], n["reading_id"]) for n in result["negatives"]]
+            assert len(pairs) == len(set(pairs)), e["id"]
+            assert set(pairs) <= reaches_false, e["id"]
 
     def test_lexical_term_is_bounded_and_optional(self):
         facets = ["src-wells", "ctx-drought"]
@@ -284,6 +364,17 @@ class TestPayload:
         assert payload["constants"]["lexical_weight"] == precedent.LEXICAL_WEIGHT
         assert payload["stopwords"] and payload["min_token_len"] == 2
 
+    def test_instruments_and_sites_carry_the_new_fields(self, payload):
+        assert payload["constants"]["top_federal"] == precedent.TOP_FEDERAL
+        assert payload["constants"]["negative_sites"] == precedent.NEGATIVE_SITES
+        for i in payload["instruments"]:
+            assert isinstance(i["triggers"], list) and isinstance(i["principles"], list), i["id"]
+            assert isinstance(i["water_scoped"], bool) and i["level"], i["id"]
+        for s in payload["sites"]:
+            for n in s["negatives"]:
+                assert set(n) == {"reading_id", "how"} and len(n["how"]) <= 260, s["id"]
+        assert any(s["negatives"] for s in payload["sites"])
+
     def test_records_link_to_their_cards(self, payload):
         for row in payload["cases"] + payload["sites"] + payload["readings"]:
             assert row["anchor"] and row["tab"], row["id"]
@@ -311,8 +402,18 @@ FIXTURE = (
 )
 
 
+# Exercises the second-pass keys: state instruments with a score (ID H 895),
+# several federal instruments, and two negatives off one site (xAI Memphis).
+FIXTURE_INSTRUMENTS = (
+    "A 300 MW campus in Idaho would pump groundwater from wells for evaporative cooling "
+    "towers, discharge reclaimed water, keep its water use secret under an NDA, and sits "
+    "by a navigable river."
+)
+
+
 @pytest.mark.skipif(shutil.which("node") is None, reason="node not installed")
-def test_page_script_matches_the_engine_on_a_fixture(tmp_path):
+@pytest.mark.parametrize("text", [FIXTURE, FIXTURE_INSTRUMENTS], ids=["jupiter", "idaho"])
+def test_page_script_matches_the_engine_on_a_fixture(tmp_path, text):
     """The browser runs the same arithmetic from the same payload. This runs
     the page's own parser and scorer under node and compares facets, the
     ranked ids and the outcome tally with this module's answer."""
@@ -326,16 +427,19 @@ def test_page_script_matches_the_engine_on_a_fixture(tmp_path):
         "const m = __engine.matchProject(parsed.facets, parsed.state, text, D);\n"
         "process.stdout.write(JSON.stringify({facets: parsed.facets, state: parsed.state, "
         "readings: m.readings.map(r => [r.id, r.score]), cases: m.cases.map(c => [c.id, c.score]), "
-        "sites: m.sites.map(s => [s.id, s.score]), outcomes: m.outcomes.map(o => [o.outcome, o.count])}));\n"
+        "sites: m.sites.map(s => [s.id, s.score]), outcomes: m.outcomes.map(o => [o.outcome, o.count]), "
+        "instruments: m.instruments.map(i => [i.id, i.score]), "
+        "federal: m.federal_instruments.map(i => [i.id, i.score]), "
+        "negatives: m.negatives.map(n => [n.site_id, n.reading_id])}));\n"
     )
     script = tmp_path / "harness.js"
     script.write_text(harness, encoding="utf-8")
     out = subprocess.run(
-        ["node", str(script), payload, FIXTURE], capture_output=True, text=True, check=True
+        ["node", str(script), payload, text], capture_output=True, text=True, check=True
     )
     got = json.loads(out.stdout)
-    parsed = precedent.parse_project(FIXTURE)
-    want = precedent.match_project(parsed["facets"], parsed["state"], FIXTURE)
+    parsed = precedent.parse_project(text)
+    want = precedent.match_project(parsed["facets"], parsed["state"], text)
     assert got["facets"] == parsed["facets"]
     assert got["state"] == parsed["state"]
     # Scores too, not just order: a drifting lexical term would keep the
@@ -344,6 +448,9 @@ def test_page_script_matches_the_engine_on_a_fixture(tmp_path):
     assert got["cases"] == [[c["id"], c["score"]] for c in want["cases"]]
     assert got["sites"] == [[s["id"], s["score"]] for s in want["sites"]]
     assert got["outcomes"] == [[o["outcome"], o["count"]] for o in want["outcomes"]]
+    assert got["instruments"] == [[i["id"], i["score"]] for i in want["instruments"]]
+    assert got["federal"] == [[i["id"], i["score"]] for i in want["federal_instruments"]]
+    assert got["negatives"] == [[n["site_id"], n["reading_id"]] for n in want["negatives"]]
 
 
 # --- Site integration ---------------------------------------------------------------
@@ -383,6 +490,35 @@ class TestSiteIntegration:
         assert "## Check a project (fact-pattern matching)" in txt
         for e in precedent.load_project_examples()["examples"]:
             assert e["name"] in txt, e["id"]
+
+    def test_renderer_shows_instruments_federal_and_negatives(self):
+        idaho = precedent.match_project(["src-wells", "cool-evaporative", "src-reclaimed"], "ID")
+        page = dashboard._project_result_html(idaho)
+        assert dashboard.PROJECT_CHECK_SECTIONS["federal"] in page
+        assert 'href="#bill-' in page and "Because: " in page
+        # No state: the federal list still renders, under its own heading.
+        nowhere = precedent.match_project(["src-reclaimed"], None)
+        assert nowhere["federal_instruments"]
+        page = dashboard._project_result_html(nowhere)
+        assert f'<h4>{dashboard.PROJECT_CHECK_SECTIONS["federal"]}</h4>' in page
+        assert dashboard.PROJECT_CHECK_SECTIONS["rules"] not in page
+        # An instrument with empty triggers applies to every campus in the state.
+        texas = precedent.match_project(["src-wells"], "TX")
+        assert any(i["water_scoped"] and not i["triggers"] for i in texas["instruments"])
+        assert dashboard.PROJECT_CHECK_APPLIES_TO_ALL in dashboard._project_result_html(texas)
+
+    def test_renderer_lists_negatives_after_sites_in_grey(self):
+        ex = next(
+            e for e in precedent.load_project_examples()["examples"] if e["id"] == "project-blue-wells-tucson-az-2026"
+        )
+        result = precedent.match_project(ex["facets"], ex["state"], ex["description"])
+        page = dashboard._project_result_html(result)
+        heading = dashboard.PROJECT_CHECK_SECTIONS["negatives"]
+        assert "similar site" in heading
+        assert page.index(dashboard.PROJECT_CHECK_SECTIONS["sites"]) < page.index(heading)
+        assert 'class="pcheck-item pcheck-neg"' in page
+        assert 'href="#reading-ptd-groundwater-nexus"' in page and 'href="#site-project-blue-tucson-az"' in page
+        assert ".pcheck-neg{" in dashboard._project_check_css()
 
     def test_copy_is_modal(self):
         """The tracker maps exposure; it never says a project *will* face a suit."""
