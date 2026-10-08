@@ -149,3 +149,10 @@ Format:
 - **Root cause**: Code bug (with a test gap). The theme grid restated taxonomy values as string literals instead of referencing the taxonomy, so the two could drift independently. The existing test (`test_legislation_themes_panel_embedded`) only asserted that 6 cards render — never that any count was nonzero or that theme tags exist in the taxonomy.
 - **Next time**: When a UI element aggregates a closed vocabulary, define it as *sets of taxonomy keys* and test (a) subset-of-taxonomy and (b) every aggregate is nonempty against real data. A hardcoded string that mirrors an enum is a drift bug waiting to render as a silent zero.
 - **Resolution**: Fixed (commit on claude/awesome-austin-4fd613, 2026-07-02) — themes now declare `tags: (taxonomy keys...)`, counts aggregate unique bills across the tag set, and `TestLegislationThemeGrid` enforces taxonomy membership, nonzero coverage, and exact rendered counts. Grid now shows 33/11/19/22/24/7. Code fix + test fix.
+
+## 2026-10-08 — recent_news date format (data entry, fixed immediately)
+
+- **Where:** `tests/test_dashboard.py::TestLegislationTracker::test_recent_news_items_well_formed`, after recording the Ohio EPA OHD000001 withdrawal in `legislation.json`.
+- **Error:** a `recent_news` item carried `"date": "2026-07"` (the source gave only a month); the schema requires `YYYY-MM-DD`.
+- **Root cause:** data-entry error (not a code or test bug) — the test is right.
+- **Fix:** dropped the month-only item and kept the dated ABC6 report (2026-07-21). No code change.

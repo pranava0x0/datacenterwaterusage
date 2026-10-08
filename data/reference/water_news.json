@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-09-26",
+  "last_updated": "2026-10-08",
   "description": "Curated headlines about data center water use, regulation, enforcement, and solutions — linked to the tracker's datasets where possible.",
   "items": [
     {
@@ -1005,6 +1005,22 @@
         "solutions"
       ],
       "source_url": "https://www.epa.gov/waterreuse/water-reuse-action-plan-20"
+    },
+    {
+      "id": "ohio-epa-drops-dc-general-permit-2026-07",
+      "date": "2026-07-21",
+      "title": "Ohio EPA Drops the First-Ever Data Center Wastewater General Permit After 7,000 Comments",
+      "outlet": "ABC6 Columbus",
+      "summary": "Ohio EPA announced it will not finalize draft NPDES general permit OHD000001, the first permit written for data-center cooling discharges, and will instead review each facility under an individual NPDES permit. Opponents had argued a one-size-fits-all permit ignored how differently campuses cool and what they discharge; the agency cited the volume of public comment. The per-facility DMRs the tracker expected from the general permit will now arrive permit by permit.",
+      "tags": [
+        "regulation"
+      ],
+      "cross_ref_targets": [
+        "OH EPA OHD000001 (draft general permit)"
+      ],
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "The tracked instrument, now withdrawn",
+      "source_url": "https://abc6onyourside.com/news/local/ohio-epa-drops-plan-statewide-data-center-wastewater-permit-shifts-national-pollutant-discharge-elimination-system-environmental-protection-agency-case-by-case"
     }
   ]
 }

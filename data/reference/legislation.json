@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-09-26",
+  "last_updated": "2026-10-08",
   "note": "State + federal data center water/energy legislation, plus selected regulatory actions and major local zoning decisions. Verified entries had their status confirmed against a primary source (state legislature page, Congress.gov / GovInfo, official sponsor press release) on the listed last_verified date; unverified entries should be re-checked before being relied upon. July 5, 2026 addition: FL SB 484 — enacted (signed May 7, 2026, effective July 1, 2026), ratepayer cost-allocation protections, a 100,000 gal/day reclaimed-water cooling requirement, and preserved local zoning authority; resolves the 'Florida hyperscale data-center regulatory framework' backlog candidate with a confirmed bill number. June 27, 2026 additions: IA HF 2690 (water + energy reporting and a separate data-center electric tariff; introduced) and CT SB 245 (would have repealed Connecticut's data-center tax incentives and added clean-energy/sustainability conditions; failed — died on the Senate calendar). Each bill is enriched with recent_news (up to 3 dated items with source URLs), public_sentiment (a paragraph naming supporters/opponents), general_principles (tagged policy concepts), and a procedural timeline. These fields are best-effort as of last_updated and should be re-verified before being cited. Scope expanded 2026-05-28 to include regulatory rulemakings (OH EPA OHD000001) and major local ordinances (Loudoun ZOAM) that function as de facto data-center policy. August 24, 2026 additions (state/local + federal sweep): TX EO 2026-08 (data center audit) — Abbott's directive gating the ERCOT interconnection queue on a water-and-power audit of ~250-300 projects; VA DEQ Eastern Virginia groundwater study — the delayed Potomac Aquifer report finding no headroom for new industrial withdrawals east of I-95; ME EO 2026-04 (data center advisory council) — the alternative Gov. Mills chose the day the LD 307 veto was sustained; SC S. 724 — annual water-consumption reporting for data centers over 100 MW and 3 MGal/month; and three federal items (WRDA 2026 H.R. 9497, NDAA FY2026 Sec. 1531, H.R. 2940 Advancing Water Reuse Act). The House companion H.R. 9825 was merged into the existing US S. 4213 record rather than entered twice. County and city measures below the first-of-kind threshold live in local_actions.json and render on the States & Localities tab. September 26, 2026 additions: CA AB 2469 (permit-stage water supply assessment, 2028 drought plan, developer-funded water infrastructure; enacted with the 2026-09-21 package); US S. 5054 (Warner: bonus depreciation conditioned on water and power disclosure); seven state executive orders with data-center water terms — KY EO 2026-494 (water harm as a permit-denial ground), LA EO 26-058 (efficiency commitment as a tax-exemption condition), MA EO 658 (MassDEP water and wastewater protocols; community agreements above 25 MW), NE EO 26-17 (incentives closed; water study only), PA EO 2026-05 (annual DEP water reporting from July 2027), VA EO 22 (Eastern Virginia designated a cooling water scarcity area) and WY EO 2026-03 (voluntary closed-loop pillar); KS SB 98 (2025 tax exemption with a water-plan condition); and two failed bills, ID H 897 and VT H.727 (closed-loop mandate, vetoed). The TX PUC survey record gains the 2026-09-24 Attorney General investigation.",
   "bills": [
     {
@@ -2102,13 +2102,20 @@
       "scope": [
         "water"
       ],
-      "status": "introduced",
-      "status_detail": "Regulatory rulemaking, not a bill. Draft public-noticed October 31, 2025; public hearing December 17, 2025; comment period closed January 16, 2026. Final permit pending Ohio EPA action; five-year permit term once issued.",
+      "status": "failed",
+      "status_detail": "Withdrawn. Regulatory rulemaking, not a bill. Draft public-noticed October 31, 2025; public hearing December 17, 2025; comment period closed January 16, 2026 with more than 7,000 comments. On July 21, 2026 Ohio EPA announced it would not finalize the general permit and would instead require an individual NPDES permit for each data-center discharge — the per-facility DMRs the tracker expected from OHD000001 now arrive one permit at a time.",
       "source_url": "https://epa.ohio.gov/divisions-and-offices/surface-water/permitting/ohnpdes-general-permits",
-      "last_verified": "2026-05-28",
+      "last_verified": "2026-10-08",
       "verified": true,
       "confidence": "high",
       "recent_news": [
+        {
+          "date": "2026-07-21",
+          "title": "Ohio EPA drops plan for statewide data center wastewater permit, shifts to case-by-case",
+          "source": "ABC6 Columbus",
+          "url": "https://abc6onyourside.com/news/local/ohio-epa-drops-plan-statewide-data-center-wastewater-permit-shifts-national-pollutant-discharge-elimination-system-environmental-protection-agency-case-by-case",
+          "takeaway": "After more than 7,000 comments Ohio EPA will review each data-center discharge under an individual NPDES permit rather than a blanket general permit."
+        },
         {
           "date": "2026-03-01",
           "title": "Ohio EPA reviewing draft permit to authorize limited increase in data center wastewater discharge",
@@ -2153,8 +2160,8 @@
           "milestone": "Comment period closed"
         },
         {
-          "date": "2026-09-01",
-          "milestone": "Final permit decision expected (approximate; Q3 2026)"
+          "date": "2026-07-21",
+          "milestone": "Ohio EPA announced it will not finalize the general permit; individual NPDES permits instead"
         }
       ],
       "instrument_type": "agency-rule",
