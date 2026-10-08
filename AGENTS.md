@@ -321,6 +321,16 @@ Haiku and Sonnet runs were justified and used; the Opus run is scored below.**
   the parity test is what made delegation safe. Lesson: a coding agent with a
   parity test and a written contract reviews the spec as well as implementing
   it; give it both every time.
+- *Second round (backlog follow-ups, same session):* a Haiku fact check
+  (71.9k tokens, 15 tool uses, ~1.6 min → Ohio date confirmed with the
+  same-day Statehouse report, Manatee County's adoption found on the day it
+  happened, Leon's final hearing dated, the Pima County agreement sourced;
+  one wrong inference — a "Project Blue CBA with closed-loop terms" that the
+  AZPM source describes as air cooling for offices, caught by a WebFetch) and
+  a Sonnet instrument-trigger pass (119.2k tokens, 9 tool uses, ~2 min → 80/80
+  water-scoped instruments, ~1.5k each, with a candid list of the
+  low-threshold cases where it had applied the scale rule literally; the
+  review stripped eight and added the incentive facet to six). Both used.
 
 **2026-08-24 — ten agents (3 Sonnet research, 5 Opus implementation, Haiku +
 Sonnet checkers) through two usage-limit walls. Verdict: the fleet was
