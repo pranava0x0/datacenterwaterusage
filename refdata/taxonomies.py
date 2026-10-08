@@ -599,10 +599,12 @@ OUTCOME_TYPE_LABELS = {
 #
 # A facet with no record carrying it is a chip matching nothing, so a value
 # enters here in the same commit as the records that use it (both-ways
-# membership is tested, as for every taxonomy in this module). Two drafted
-# values were held back on 2026-10-08 for exactly that reason: zero-liquid-
-# discharge and incentive/community-benefit agreements — no case or site
-# record carries either yet (the agreements live in water_commitments.json).
+# membership is tested, as for every taxonomy in this module). A drafted
+# zero-liquid-discharge value was held back on 2026-10-08 for exactly that
+# reason: no case, site or dispute on record involves a ZLD campus (a search
+# found operating examples, no matters). proc-incentive entered the same day
+# with the Pima County Project Blue agreement on the site record and the
+# community-benefit and incentive-condition instruments that trigger on it.
 FACT_DIMENSION_LABELS = {
     "source": "Where the water comes from",
     "cooling": "How the campus uses it",
@@ -838,6 +840,12 @@ FACT_FACETS = {
         "label": "Moratorium or pause",
         "description": "A temporary halt on approvals while rules are written.",
         "triggers": ["moratorium", "moratoriums", "pause", "paused", "temporary ban", "halt", "interim ordinance"],
+    },
+    "proc-incentive": {
+        "dimension": "process",
+        "label": "Tax incentive or community-benefit agreement",
+        "description": "Abatements, exemptions or a negotiated benefits agreement with water terms.",
+        "triggers": ["tax abatement", "abatement", "incentive", "incentives", "tax incremental", "tif", "tax exemption", "tax break", "community benefit", "benefits agreement", "cba", "pilot agreement", "development agreement", "mou", "memorandum"],
     },
     "proc-lawsuit": {
         "dimension": "process",

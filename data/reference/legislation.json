@@ -50,6 +50,9 @@
           "milestone": "Signed",
           "detail": "Executive Order 2026-005 establishes the Nevada Standard for Responsible Data Center Development."
         }
+      ],
+      "fact_triggers": [
+        "proc-incentive"
       ]
     },
     {
@@ -104,6 +107,9 @@
           "milestone": "Scheduled end",
           "detail": "Ends earlier if superseded by statewide action."
         }
+      ],
+      "fact_triggers": [
+        "proc-moratorium"
       ]
     },
     {
@@ -186,7 +192,10 @@
           "detail": "Gov. Spanberger signed both transparency bills (approximate date — within the April action window)."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "src-utility"
+      ]
     },
     {
       "bill_id": "MN HF 16",
@@ -269,7 +278,11 @@
           "detail": "Most provisions took effect day after enactment."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "src-wells",
+        "src-surface"
+      ]
     },
     {
       "bill_id": "CA AB 93",
@@ -346,7 +359,10 @@
           "detail": "Gov. Gavin Newsom vetoed the bill, ending its progress."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "src-utility"
+      ]
     },
     {
       "bill_id": "GA SB 421",
@@ -420,7 +436,10 @@
           "detail": "Session adjourned shortly after midnight April 3 with bill never receiving a hearing or vote."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "proc-secrecy"
+      ]
     },
     {
       "bill_id": "OH SB 378",
@@ -488,7 +507,12 @@
           "detail": "Senate Public Utilities Committee."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "src-utility",
+        "cool-evaporative",
+        "scale-hyperscale"
+      ]
     },
     {
       "bill_id": "OH HB 784",
@@ -556,7 +580,12 @@
           "detail": "Awaiting House committee action."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "src-wells",
+        "src-surface",
+        "proc-secrecy"
+      ]
     },
     {
       "bill_id": "SC H 4583",
@@ -638,7 +667,12 @@
           "detail": "Rep. Atkinson; total co-sponsors now eight."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "cool-evaporative",
+        "out-sewer",
+        "out-surface"
+      ]
     },
     {
       "bill_id": "CA AB 1577",
@@ -745,7 +779,8 @@
           "detail": "Governor Newsom signs AB 1577 into law."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": []
     },
     {
       "bill_id": "IA HF 2447",
@@ -823,7 +858,8 @@
           "detail": "Effectively kills the package for the 91st General Assembly."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": []
     },
     {
       "bill_id": "MI SB 762",
@@ -892,7 +928,8 @@
           "detail": "Indirect momentum; SB 762 itself remained in Senate committee."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": []
     },
     {
       "bill_id": "KS SB 400",
@@ -953,7 +990,10 @@
           "detail": "No floor action; bill page confirms the measure failed to advance past committee."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "cool-evaporative"
+      ]
     },
     {
       "bill_id": "US HR 6984",
@@ -1027,7 +1067,8 @@
           "detail": "Grew to ~5 Democratic cosponsors (Houlahan, Carson, Craig) through spring 2026; no markup scheduled."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": []
     },
     {
       "bill_id": "US HR 5332",
@@ -1105,7 +1146,8 @@
           "detail": "Senate Energy and Natural Resources subcommittee held a related hearing on companion bill."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": []
     },
     {
       "bill_id": "US S. 4213",
@@ -1185,7 +1227,8 @@
         "kind": "legiscan",
         "key": "US SB4213",
         "note": "Federal transparency bill — watch for committee action or floor movement. NB: the LegiScan bill-number string is not verified against the live API (no key available here). If it is wrong the watch fails LOUDLY on the first keyed run — getSearch matches the bill number exactly — rather than silently never firing."
-      }
+      },
+      "fact_triggers": []
     },
     {
       "bill_id": "TX SB 6",
@@ -1383,7 +1426,8 @@
           "milestone": "Governor calls for stronger construction limits"
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": []
     },
     {
       "bill_id": "NY S6394 / A9086",
@@ -1451,7 +1495,8 @@
           "milestone": "Carried over to 2026 session"
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": []
     },
     {
       "bill_id": "NY S9144 / A10141",
@@ -1511,7 +1556,10 @@
           "milestone": "500-business coalition endorsement"
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "scale-hyperscale"
+      ]
     },
     {
       "bill_id": "IL SB 4016 / HB 5513",
@@ -1579,7 +1627,12 @@
           "milestone": "Committee hearing with Alliance for the Great Lakes testimony"
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "out-sewer",
+        "proc-secrecy",
+        "proc-incentive"
+      ]
     },
     {
       "bill_id": "PA HB 2246",
@@ -1642,7 +1695,11 @@
           "milestone": "Stalled by Senate Republican leadership"
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "src-wells",
+        "src-surface"
+      ]
     },
     {
       "bill_id": "PA HB 2150",
@@ -1691,7 +1748,8 @@
           "milestone": "Passed PA House"
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": []
     },
     {
       "bill_id": "NC HB 1063",
@@ -1751,7 +1809,8 @@
           "milestone": "Referred to Energy and Public Utilities Committee"
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": []
     },
     {
       "bill_id": "AL SB 270",
@@ -1926,7 +1985,8 @@
           "milestone": "Referred to Senate Commerce Committee"
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": []
     },
     {
       "bill_id": "US S. 3682",
@@ -2090,7 +2150,10 @@
           "milestone": "Referred to House Energy and Commerce Committee"
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "proc-secrecy"
+      ]
     },
     {
       "bill_id": "OH EPA OHD000001 (draft general permit)",
@@ -2109,6 +2172,13 @@
       "verified": true,
       "confidence": "high",
       "recent_news": [
+        {
+          "date": "2026-07-21",
+          "title": "Ohio EPA drops plan to permit data center discharge into lakes, rivers",
+          "source": "Ohio Statehouse News Bureau",
+          "url": "https://www.statenews.org/government-politics/2026-07-21/ohio-epa-drops-plan-to-permit-data-center-discharges-into-lakes-rivers",
+          "takeaway": "Same-day report of the decision; confirms the July 21 date and the shift to individual permits."
+        },
         {
           "date": "2026-07-21",
           "title": "Ohio EPA drops plan for statewide data center wastewater permit, shifts to case-by-case",
@@ -2169,7 +2239,13 @@
         "kind": "url-watch",
         "key": "https://ohioepa.commentinput.com/?id=csDN8pRrg",
         "note": "Ohio EPA's public-comment portal for the draft permit — the page that changes when the comment period closes or the permit is finalized. (The agency's own permits index 404s; found by the first live sweep.)"
-      }
+      },
+      "fact_triggers": [
+        "cool-evaporative",
+        "out-surface",
+        "out-stormwater",
+        "chem-treatment"
+      ]
     },
     {
       "bill_id": "Loudoun County ZOAM 2025",
@@ -2241,7 +2317,10 @@
           "milestone": "Phase 2 full Board action expected"
         }
       ],
-      "instrument_type": "local-ordinance"
+      "instrument_type": "local-ordinance",
+      "fact_triggers": [
+        "proc-zoning"
+      ]
     },
     {
       "bill_id": "ID H 895",
@@ -2302,7 +2381,12 @@
           "detail": "Session Law Chapter 291, effective July 1, 2026"
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "src-wells",
+        "src-surface",
+        "cool-evaporative"
+      ]
     },
     {
       "bill_id": "SD SB 135",
@@ -2375,7 +2459,10 @@
           "detail": "Signed by Gov. Larry Rhoden."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "src-utility"
+      ]
     },
     {
       "bill_id": "UT HB 76",
@@ -2441,7 +2528,10 @@
           "detail": "Signed by Gov. Spencer Cox among 87 bills."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "src-utility"
+      ]
     },
     {
       "bill_id": "WV HB 4983",
@@ -2520,7 +2610,10 @@
           "detail": "Approved by Gov. Patrick Morrisey."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "proc-secrecy"
+      ]
     },
     {
       "bill_id": "MD HB 270 / SB 116",
@@ -2591,7 +2684,8 @@
           "milestone": "Report due"
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": []
     },
     {
       "bill_id": "WA HB 2515",
@@ -2660,7 +2754,8 @@
           "detail": "Failed to advance before the 2026 session deadline."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": []
     },
     {
       "bill_id": "IN SB 79",
@@ -2722,7 +2817,10 @@
           "detail": "Never granted a hearing in the Senate Utilities Committee before session end."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "proc-zoning"
+      ]
     },
     {
       "bill_id": "NY S10642 / A11560",
@@ -2800,7 +2898,12 @@
         "kind": "legiscan",
         "key": "NY S10642",
         "note": "Never signed or vetoed — superseded by EO 62. Watch for an eventual veto. NB: the LegiScan bill-number string is not verified against the live API (no key available here). If it is wrong the watch fails LOUDLY on the first keyed run — getSearch matches the bill number exactly — rather than silently never firing."
-      }
+      },
+      "fact_triggers": [
+        "src-utility",
+        "out-sewer",
+        "scale-hyperscale"
+      ]
     },
     {
       "bill_id": "UT EO 2026-03",
@@ -2846,7 +2949,8 @@
           "detail": "Gov. Spencer Cox signed EO 2026-03, effective immediately"
         }
       ],
-      "instrument_type": "executive-order"
+      "instrument_type": "executive-order",
+      "fact_triggers": []
     },
     {
       "bill_id": "CA AB 2619",
@@ -2911,7 +3015,10 @@
           "detail": "Governor Newsom signs AB 2619 into law."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "src-utility"
+      ]
     },
     {
       "bill_id": "CA SB 887",
@@ -2976,7 +3083,10 @@
           "detail": "Governor Newsom signs SB 887 into law."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "proc-zoning"
+      ]
     },
     {
       "bill_id": "IL SB 3830 (POWER Act)",
@@ -3030,7 +3140,8 @@
           "detail": "Executive action in response to POWER Act failure"
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": []
     },
     {
       "bill_id": "MI SB 1018-1020",
@@ -3080,7 +3191,8 @@
           "detail": "No hearing scheduled; Senate leadership prefers targeted regulation"
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": []
     },
     {
       "bill_id": "SC HB 4583",
@@ -3124,7 +3236,14 @@
           "milestone": "SC General Assembly adjourned; bill carried over to 2027"
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "src-wells",
+        "src-utility",
+        "cool-evaporative",
+        "out-sewer",
+        "out-surface"
+      ]
     },
     {
       "bill_id": "VA SB 417",
@@ -3189,7 +3308,11 @@
           "milestone": "Expected reconsideration when legislature reconvenes in 2027"
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "src-utility",
+        "src-reclaimed"
+      ]
     },
     {
       "bill_id": "CO SB26-102",
@@ -3257,7 +3380,8 @@
           "milestone": "Postponed indefinitely 9-0 at sponsor's request"
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": []
     },
     {
       "bill_id": "WI AB 840 / SB 843",
@@ -3326,7 +3450,11 @@
           "detail": "Date approximate — re-verify adjournment disposition"
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "src-utility",
+        "cool-evaporative"
+      ]
     },
     {
       "bill_id": "ME LD 307",
@@ -3394,7 +3522,10 @@
           "milestone": "Veto sustained in House"
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "scale-hyperscale"
+      ]
     },
     {
       "bill_id": "Denver CB 26-0431",
@@ -3463,7 +3594,8 @@
           "detail": "Council may extend or shorten"
         }
       ],
-      "instrument_type": "local-ordinance"
+      "instrument_type": "local-ordinance",
+      "fact_triggers": []
     },
     {
       "bill_id": "IA HF 2690",
@@ -3520,7 +3652,8 @@
           "detail": "Committee bill introduced by the House Committee on Commerce during the 2026 session."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": []
     },
     {
       "bill_id": "CT SB 245",
@@ -3582,7 +3715,10 @@
           "detail": "2026 General Assembly adjourned sine die without a Senate floor vote on SB 245."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "proc-incentive"
+      ]
     },
     {
       "bill_id": "FL SB 484",
@@ -3649,7 +3785,14 @@
           "detail": "Ratepayer, reclaimed-water, and permitting provisions take effect."
         }
       ],
-      "instrument_type": "bill"
+      "instrument_type": "bill",
+      "fact_triggers": [
+        "src-wells",
+        "src-utility",
+        "src-reclaimed",
+        "proc-zoning",
+        "scale-hyperscale"
+      ]
     },
     {
       "bill_id": "US EO 14318",
@@ -3713,7 +3856,13 @@
           "takeaway": "Practitioner read of the order's scope: NEPA categorical exclusions, §404/§10 nationwide permit, FAST-41 expansion."
         }
       ],
-      "public_sentiment": "Sharply split. Industry and permitting-reform advocates treat it as removing a genuine bottleneck; water and conservation groups read the §404 nationwide-permit route as replacing individual wetland review with a checkbox precisely as data-center footprints grow."
+      "public_sentiment": "Sharply split. Industry and permitting-reform advocates treat it as removing a genuine bottleneck; water and conservation groups read the §404 nationwide-permit route as replacing individual wetland review with a checkbox precisely as data-center footprints grow.",
+      "fact_triggers": [
+        "ctx-wetlands",
+        "ctx-endangered",
+        "ctx-navigable",
+        "scale-hyperscale"
+      ]
     },
     {
       "bill_id": "US AI Action Plan 2025",
@@ -3755,7 +3904,10 @@
           "takeaway": "Confirms the plan's environmental-permitting asks, including the data-center §404 nationwide permit later reissued as NWP 39."
         }
       ],
-      "public_sentiment": "Received as the administration's clearest statement that AI-infrastructure buildout outranks incremental environmental review."
+      "public_sentiment": "Received as the administration's clearest statement that AI-infrastructure buildout outranks incremental environmental review.",
+      "fact_triggers": [
+        "ctx-wetlands"
+      ]
     },
     {
       "bill_id": "NY EO 62",
@@ -3815,7 +3967,10 @@
         "kind": "url-watch",
         "key": "https://www.governor.ny.gov/executive-orders",
         "note": "One-year moratorium; watch for extension, expiry, or the DEC withdrawal rulemaking."
-      }
+      },
+      "fact_triggers": [
+        "scale-hyperscale"
+      ]
     },
     {
       "bill_id": "NY DPS Data Center Impact Report (EO 62)",
@@ -3856,7 +4011,8 @@
         }
       ],
       "recent_news": [],
-      "public_sentiment": "Watched as the test of whether the moratorium produces enforceable water standards or expires with a report on a shelf."
+      "public_sentiment": "Watched as the test of whether the moratorium produces enforceable water standards or expires with a report on a shelf.",
+      "fact_triggers": []
     },
     {
       "bill_id": "VA DEQ waterworks data-center reporting regulations",
@@ -3919,7 +4075,10 @@
         "kind": "url-watch",
         "key": "https://townhall.virginia.gov/L/ViewBoard.cfm?BoardID=125",
         "note": "Virginia Regulatory Town Hall board page for the State Water Control Board — tracks regulatory stages. deq.virginia.gov itself is WAF-blocked for automated clients (errors.md, 2026-02-24), so watch the Town Hall instead. First aggregate report due 2026-10-01."
-      }
+      },
+      "fact_triggers": [
+        "src-utility"
+      ]
     },
     {
       "bill_id": "QTS Richmond Technology Park DC5 (FAST-41)",
@@ -3972,7 +4131,8 @@
           "takeaway": "Names QTS Richmond Technology Park DC5 as the first covered data center."
         }
       ],
-      "public_sentiment": "Local attention has focused on the campus's scale in Henrico County rather than on the federal designation itself."
+      "public_sentiment": "Local attention has focused on the campus's scale in Henrico County rather than on the federal designation itself.",
+      "fact_triggers": []
     },
     {
       "bill_id": "MI SB 1046-1050",
@@ -4031,7 +4191,13 @@
         "kind": "url-watch",
         "key": "https://legislature.mi.gov/Bills/Bill?ObjectName=2026-SB-1046",
         "note": "Michigan legislature bill page for SB 1046, the water-permitting bill in the package. Bill numbers unverified; confirm against the lookup when status moves."
-      }
+      },
+      "fact_triggers": [
+        "cool-evaporative",
+        "proc-secrecy",
+        "proc-incentive",
+        "scale-hyperscale"
+      ]
     },
     {
       "bill_id": "WV HB 4832",
@@ -4090,7 +4256,11 @@
           "takeaway": "Documents water protections being affirmatively stripped from the enacted framework rather than simply omitted."
         }
       ],
-      "public_sentiment": "Conservation groups treat the session as the clearest example of a state choosing data-center recruitment over water safeguards explicitly on the record."
+      "public_sentiment": "Conservation groups treat the session as the clearest example of a state choosing data-center recruitment over water safeguards explicitly on the record.",
+      "fact_triggers": [
+        "src-wells",
+        "src-surface"
+      ]
     },
     {
       "bill_id": "TX PUC Energy and Water Use Survey (data centers)",
@@ -4182,7 +4352,8 @@
         "kind": "url-watch",
         "key": "https://www.puc.texas.gov/industry/water/utilities/energy-and-water-use-survey/faq/",
         "note": "Watch for the voluntary survey becoming a mandatory registration."
-      }
+      },
+      "fact_triggers": []
     },
     {
       "bill_id": "Prince George's County MD CB-2026 data center moratorium",
@@ -4228,7 +4399,10 @@
           "takeaway": "Council member Blegay cites unresolved questions about county water among the reasons."
         }
       ],
-      "public_sentiment": "Organized resident opposition preceded the vote, with protests at the council as it considered the measure."
+      "public_sentiment": "Organized resident opposition preceded the vote, with protests at the council as it considered the measure.",
+      "fact_triggers": [
+        "scale-hyperscale"
+      ]
     },
     {
       "bill_id": "Washington County MD data center moratorium",
@@ -4273,7 +4447,8 @@
           "takeaway": "Confirms the one-year term and adoption date."
         }
       ],
-      "public_sentiment": "Rural and agricultural water users have been the most visible constituency, a different coalition from the suburban ratepayer opposition elsewhere in Maryland."
+      "public_sentiment": "Rural and agricultural water users have been the most visible constituency, a different coalition from the suburban ratepayer opposition elsewhere in Maryland.",
+      "fact_triggers": []
     },
     {
       "bill_id": "Santa Fe County NM data center moratorium",
@@ -4319,7 +4494,8 @@
           "takeaway": "Confirms the unanimous vote, the 18-month term and the 1 MW threshold."
         }
       ],
-      "public_sentiment": "Arid-region water scarcity and acequia water rights shape the debate here in a way they do not in the eastern moratoria."
+      "public_sentiment": "Arid-region water scarcity and acequia water rights shape the debate here in a way they do not in the eastern moratoria.",
+      "fact_triggers": []
     },
     {
       "bill_id": "York County SC data center moratorium",
@@ -4377,7 +4553,8 @@
           "takeaway": "Places York County in a wider South Carolina county-level wave."
         }
       ],
-      "public_sentiment": "Scrutiny intensified around the existing QTS construction, which the moratorium deliberately does not stop — a limit opponents have noted."
+      "public_sentiment": "Scrutiny intensified around the existing QTS construction, which the moratorium deliberately does not stop — a limit opponents have noted.",
+      "fact_triggers": []
     },
     {
       "bill_id": "TX EO 2026-08 (data center audit)",
@@ -4448,7 +4625,8 @@
           "date": "2026-08-14",
           "milestone": "Texas Tribune reports audit scope: ~250-300 projects"
         }
-      ]
+      ],
+      "fact_triggers": []
     },
     {
       "bill_id": "WRDA 2026 (H.R. 9497)",
@@ -4505,6 +4683,9 @@
           "milestone": "Provision described by CRS",
           "detail": "R49057 frames the reporting requirement as the Corps' answer to data-center demand on federal water-supply projects"
         }
+      ],
+      "fact_triggers": [
+        "ctx-navigable"
       ]
     },
     {
@@ -4554,7 +4735,8 @@
           "milestone": "Enacted",
           "detail": "Signed as P.L. 119-60; Sec. 1531 amends the FY2025 NDAA's computing roadmap"
         }
-      ]
+      ],
+      "fact_triggers": []
     },
     {
       "bill_id": "US H.R. 2940 (Advancing Water Reuse Act)",
@@ -4595,6 +4777,9 @@
           "milestone": "Introduced",
           "detail": "Referred to House Committee on Ways and Means"
         }
+      ],
+      "fact_triggers": [
+        "src-reclaimed"
       ]
     },
     {
@@ -4691,6 +4876,9 @@
           "date": "2026-01-13",
           "milestone": "Introduced and read first time"
         }
+      ],
+      "fact_triggers": [
+        "scale-hyperscale"
       ]
     },
     {
@@ -4769,7 +4957,12 @@
           "takeaway": "Per-region sustainable maxima: ~360,000 gal/day in Northumberland down to under 30,000 gal/day in Henrico and Sussex."
         }
       ],
-      "public_sentiment": "The six-month delay became half the story: the finding lands as evidence that Eastern Virginia's aquifer has no headroom, and legislators who pushed HB 496's reporting mandate treated the withholding as proof the disclosure regime is still too weak. Water advocates read it as grounds for tighter data-center rules; the industry's position is that surface-water and reclaimed supply, not the aquifer, is where new campuses would draw."
+      "public_sentiment": "The six-month delay became half the story: the finding lands as evidence that Eastern Virginia's aquifer has no headroom, and legislators who pushed HB 496's reporting mandate treated the withholding as proof the disclosure regime is still too weak. Water advocates read it as grounds for tighter data-center rules; the industry's position is that surface-water and reclaimed supply, not the aquifer, is where new campuses would draw.",
+      "fact_triggers": [
+        "src-wells",
+        "ctx-stressed-aquifer",
+        "ctx-coastal"
+      ]
     },
     {
       "bill_id": "CA AB 2469",
@@ -4839,7 +5032,11 @@
           "takeaway": "Frames the 2026 water bills as successors to the vetoed AB 93."
         }
       ],
-      "public_sentiment": "The Governor's office presented the seven-bill package as the most comprehensive data-center law in the country, giving communities more control over water, electricity and land use. AB 2469 passed with recorded opposition in both chambers (28-9 in the Senate, 61-12 on concurrence), and it arrives a year after Newsom vetoed AB 93, the earlier water-disclosure bill this tracker follows."
+      "public_sentiment": "The Governor's office presented the seven-bill package as the most comprehensive data-center law in the country, giving communities more control over water, electricity and land use. AB 2469 passed with recorded opposition in both chambers (28-9 in the Senate, 61-12 on concurrence), and it arrives a year after Newsom vetoed AB 93, the earlier water-disclosure bill this tracker follows.",
+      "fact_triggers": [
+        "src-utility",
+        "proc-zoning"
+      ]
     },
     {
       "bill_id": "US S. 5054",
@@ -4889,7 +5086,10 @@
           "takeaway": "Places S. 5054 inside Warner's broader AI package."
         }
       ],
-      "public_sentiment": "Warner represents the largest data-center market in the country, and coverage has framed the bill as using a federal tax benefit, rather than a mandate, to pry open water and power figures that operators currently keep behind non-disclosure agreements. No industry response or cosponsor was found in coverage reviewed for this entry."
+      "public_sentiment": "Warner represents the largest data-center market in the country, and coverage has framed the bill as using a federal tax benefit, rather than a mandate, to pry open water and power figures that operators currently keep behind non-disclosure agreements. No industry response or cosponsor was found in coverage reviewed for this entry.",
+      "fact_triggers": [
+        "proc-incentive"
+      ]
     },
     {
       "bill_id": "KY EO 2026-494",
@@ -4947,7 +5147,10 @@
           "takeaway": "The enforceability question: an executive order directing permit denials without enabling legislation."
         }
       ],
-      "public_sentiment": "Reaction was mixed. Panattoni Data Centers said it supports the order's principles; residents near proposed Mercer County sites said it does not go far enough; and the Kentucky Resources Council urged the administration to consider a special legislative session to put the order's goals into statute."
+      "public_sentiment": "Reaction was mixed. Panattoni Data Centers said it supports the order's principles; residents near proposed Mercer County sites said it does not go far enough; and the Kentucky Resources Council urged the administration to consider a special legislative session to put the order's goals into statute.",
+      "fact_triggers": [
+        "ctx-wetlands"
+      ]
     },
     {
       "bill_id": "LA EO 26-058",
@@ -4997,7 +5200,8 @@
           "takeaway": "Protection conditions arrive alongside a continued push for data-center investment."
         }
       ],
-      "public_sentiment": "Landry paired the order with a defense of Louisiana's data-center strategy, including the Meta campus in Richland Parish, and coverage framed it as ratepayer protection rather than restraint. The water language is a commitment to efficiency 'standards' the order leaves undefined, which is the gap critics of the incentive program point to."
+      "public_sentiment": "Landry paired the order with a defense of Louisiana's data-center strategy, including the Meta campus in Richland Parish, and coverage framed it as ratepayer protection rather than restraint. The water language is a commitment to efficiency 'standards' the order leaves undefined, which is the gap critics of the incentive program point to.",
+      "fact_triggers": []
     },
     {
       "bill_id": "MA EO 658",
@@ -5047,7 +5251,11 @@
           "takeaway": "The 25 MW threshold makes the host community a required party before any state permit moves."
         }
       ],
-      "public_sentiment": "Healey summarized the order as 'unless a community says yes to a data center, we are saying no,' and coverage framed it as handing towns a veto over large projects. Legal commentary focused on how the community-agreement requirement interacts with existing permitting timelines."
+      "public_sentiment": "Healey summarized the order as 'unless a community says yes to a data center, we are saying no,' and coverage framed it as handing towns a veto over large projects. Legal commentary focused on how the community-agreement requirement interacts with existing permitting timelines.",
+      "fact_triggers": [
+        "out-sewer",
+        "proc-incentive"
+      ]
     },
     {
       "bill_id": "NE EO 26-17",
@@ -5098,7 +5306,8 @@
           "takeaway": "The incentive cut is the operative change; water is routed to a task force."
         }
       ],
-      "public_sentiment": "Coverage centered on the end of tax incentives, which Pillen first described as applying to large projects and then clarified applies to all new data-center applications, and on protecting Nebraska's public-power system. Water appears as one of the task force's study areas rather than as a live controversy."
+      "public_sentiment": "Coverage centered on the end of tax incentives, which Pillen first described as applying to large projects and then clarified applies to all new data-center applications, and on protecting Nebraska's public-power system. Water appears as one of the task force's study areas rather than as a live controversy.",
+      "fact_triggers": []
     },
     {
       "bill_id": "PA EO 2026-05",
@@ -5153,7 +5362,13 @@
           "takeaway": "The water-reporting duty predates the order; the order's contribution is enforcement and field definitions."
         }
       ],
-      "public_sentiment": "Shapiro called it the strictest data-center order in the nation; law-firm alerts described it as tying streamlined permitting to compliance with the GRID requirements, while critics argued much of it restates obligations already in state law."
+      "public_sentiment": "Shapiro called it the strictest data-center order in the nation; law-firm alerts described it as tying streamlined permitting to compliance with the GRID requirements, while critics argued much of it restates obligations already in state law.",
+      "fact_triggers": [
+        "src-wells",
+        "src-surface",
+        "out-sewer",
+        "out-surface"
+      ]
     },
     {
       "bill_id": "VA EO 22 (2026)",
@@ -5214,7 +5429,12 @@
           "takeaway": "Separates the immediate directives from the rulemakings to come."
         }
       ],
-      "public_sentiment": "Coverage treated EO 22 as the first substantial data-center action of the Spanberger administration in the largest US market, and law-firm alerts flagged the cooling-water scarcity designation and the narrower confidentiality protections as the changes developers feel first."
+      "public_sentiment": "Coverage treated EO 22 as the first substantial data-center action of the Spanberger administration in the largest US market, and law-firm alerts flagged the cooling-water scarcity designation and the narrower confidentiality protections as the changes developers feel first.",
+      "fact_triggers": [
+        "src-wells",
+        "ctx-stressed-aquifer",
+        "proc-secrecy"
+      ]
     },
     {
       "bill_id": "WY EO 2026-03",
@@ -5264,7 +5484,10 @@
           "takeaway": "Framework principles for agencies, with water sustainability listed first."
         }
       ],
-      "public_sentiment": "Gordon framed the order as keeping Wyoming a destination for data-center investment while shielding residents from environmental and financial costs, and coverage treated it as pro-development guardrails rather than a restriction."
+      "public_sentiment": "Gordon framed the order as keeping Wyoming a destination for data-center investment while shielding residents from environmental and financial costs, and coverage treated it as pro-development guardrails rather than a restriction.",
+      "fact_triggers": [
+        "cool-evaporative"
+      ]
     },
     {
       "bill_id": "KS SB 98",
@@ -5307,7 +5530,8 @@
         }
       ],
       "recent_news": [],
-      "public_sentiment": "Coverage of the law has centered on the size of the exemption and its investment and jobs thresholds, plus the Kansas Intelligence Fusion Center security review each applicant faces. The water-plan condition is an eligibility requirement, and no public controversy over it was found in sources reviewed for this entry."
+      "public_sentiment": "Coverage of the law has centered on the size of the exemption and its investment and jobs thresholds, plus the Kansas Intelligence Fusion Center security review each applicant faces. The water-plan condition is an eligibility requirement, and no public controversy over it was found in sources reviewed for this entry.",
+      "fact_triggers": []
     },
     {
       "bill_id": "ID H 897",
@@ -5362,7 +5586,10 @@
           "takeaway": "Introduced as a bipartisan rollback paired with water and power conditions."
         }
       ],
-      "public_sentiment": "The Idaho Conservation League backed the bill as tax accountability for data centers, and it drew bipartisan sponsorship, but it failed for the second year running as lawmakers balanced incentive rollbacks against pending data-center investment."
+      "public_sentiment": "The Idaho Conservation League backed the bill as tax accountability for data centers, and it drew bipartisan sponsorship, but it failed for the second year running as lawmakers balanced incentive rollbacks against pending data-center investment.",
+      "fact_triggers": [
+        "src-utility"
+      ]
     },
     {
       "bill_id": "VT H.727",
@@ -5428,7 +5655,14 @@
           "takeaway": "Supporters' case for the closed-loop and reporting requirements."
         }
       ],
-      "public_sentiment": "The Vermont Natural Resources Council and other environmental groups backed the bill and criticized the veto; Governor Scott argued existing law already provides substantial authority. The override vote broke largely along party lines, with every recorded nay from Republicans."
+      "public_sentiment": "The Vermont Natural Resources Council and other environmental groups backed the bill and criticized the veto; Governor Scott argued existing law already provides substantial authority. The override vote broke largely along party lines, with every recorded nay from Republicans.",
+      "fact_triggers": [
+        "src-wells",
+        "src-surface",
+        "cool-evaporative",
+        "chem-pfas",
+        "scale-hyperscale"
+      ]
     }
   ]
 }
