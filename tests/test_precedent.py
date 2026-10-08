@@ -325,8 +325,8 @@ def test_page_script_matches_the_engine_on_a_fixture(tmp_path):
         + "\nconst parsed = __engine.parseProject(text, D);\n"
         "const m = __engine.matchProject(parsed.facets, parsed.state, text, D);\n"
         "process.stdout.write(JSON.stringify({facets: parsed.facets, state: parsed.state, "
-        "readings: m.readings.map(r => r.id), cases: m.cases.map(c => c.id), "
-        "sites: m.sites.map(s => s.id), outcomes: m.outcomes.map(o => [o.outcome, o.count])}));\n"
+        "readings: m.readings.map(r => [r.id, r.score]), cases: m.cases.map(c => [c.id, c.score]), "
+        "sites: m.sites.map(s => [s.id, s.score]), outcomes: m.outcomes.map(o => [o.outcome, o.count])}));\n"
     )
     script = tmp_path / "harness.js"
     script.write_text(harness, encoding="utf-8")
@@ -338,9 +338,11 @@ def test_page_script_matches_the_engine_on_a_fixture(tmp_path):
     want = precedent.match_project(parsed["facets"], parsed["state"], FIXTURE)
     assert got["facets"] == parsed["facets"]
     assert got["state"] == parsed["state"]
-    assert got["readings"] == [r["id"] for r in want["readings"]]
-    assert got["cases"] == [c["id"] for c in want["cases"]]
-    assert got["sites"] == [s["id"] for s in want["sites"]]
+    # Scores too, not just order: a drifting lexical term would keep the
+    # order for a long time before it flipped a rank.
+    assert got["readings"] == [[r["id"], r["score"]] for r in want["readings"]]
+    assert got["cases"] == [[c["id"], c["score"]] for c in want["cases"]]
+    assert got["sites"] == [[s["id"], s["score"]] for s in want["sites"]]
     assert got["outcomes"] == [[o["outcome"], o["count"]] for o in want["outcomes"]]
 
 

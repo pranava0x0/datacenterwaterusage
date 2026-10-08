@@ -1250,3 +1250,52 @@ class TestStandaloneTabPages:
         page = _files()[build_site.tab_file("cwa")]
         assert "<noscript><style>.subtabpanel[hidden]{display:block}</style></noscript>" in page
         assert 'id="panel-cwa-p1" hidden' in page  # hidden only until the rule applies
+
+
+class TestProjectCheckTab:
+    """The Check-a-project page script ships, reads its strings as data, and
+    is wired to the lazy tab loader (docs/specs/project-check-js.md)."""
+
+    def test_fragment_carries_the_section_titles_as_data(self):
+        frag = dashboard._build_project_check_html("project-data.json")
+        match = re.search(r'<script type="application/json" id="pcheck-strings">(.*?)</script>', frag, re.S)
+        assert match, "pcheck-strings block missing"
+        strings = json.loads(match.group(1))
+        assert strings["sections"] == dashboard.PROJECT_CHECK_SECTIONS
+        assert strings["statute_colors"] and strings["case_types"] and strings["status_colors"]
+
+    def test_standalone_page_carries_the_script(self):
+        page = _files()[build_site.tab_file("check")]
+        assert dashboard._project_check_js() in page
+        assert "window.projectCheckInit = init" in page
+
+    def test_tab_activation_boots_the_checker(self):
+        assert "if (name === 'check' && window.projectCheckInit) window.projectCheckInit();" in build_site.build_js()
+
+    def test_script_builds_dom_without_innerhtml_or_eval(self):
+        js = dashboard._project_check_js()
+        assert "innerHTML" not in js and "eval(" not in js
+        assert js.lstrip().startswith("(function(){")
+
+
+class TestTablesScrollInsideTheirWrap:
+    def test_every_table_sits_directly_in_a_table_wrap(self):
+        """A phone is 375px wide; a table with four text columns is not. The
+        site's idiom is ``.table-wrap{overflow-x:auto}`` around every table
+        (the Security tab's three tables escaped it until 2026-10-08)."""
+        for name, body in build_site.build_tab_bodies().items():
+            for match in re.finditer(r"<table\b", body):
+                opener = re.findall(r'<div\b[^>]*\bclass="([^"]*)"[^>]*>\s*$', body[: match.start()])
+                assert opener and "table-wrap" in opener[-1].split(), (name, body[match.start() : match.start() + 80])
+
+
+class TestExploreGraphFold:
+    def test_canvas_folds_on_a_phone_and_ships_open(self):
+        frag = dashboard._build_explore_html("graph-data.json")
+        fold = re.search(r'<details class="explore-graph-fold" id="explore-graph-fold" open>(.*?)</details>', frag, re.S)
+        assert fold, "graph fold missing or not shipped open"
+        assert 'id="explore-canvas"' in fold.group(1)
+        assert 'id="explore-neighbours"' not in fold.group(1)  # the text view stays visible
+        css = dashboard._explore_css()
+        assert "@media (min-width:761px){.explore-graph-fold>summary{display:none}}" in css
+        assert "matchMedia('(max-width:760px)')" in dashboard._explore_js()

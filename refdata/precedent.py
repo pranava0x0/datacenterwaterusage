@@ -321,7 +321,12 @@ def _lexical_scores(text: str, index: dict, doc_ids: set[str]) -> dict[str, floa
     arithmetic as the Explore search, restricted to cases and sites."""
     if not (text or "").strip():
         return {}
-    counts = Counter(t for t in tokenize(text) if t in index["df"])
+    # Only words that some case or site actually carries: the page ships just
+    # that sub-vocabulary, and a query word outside it would change the query
+    # norm here and not there — the two cosines would drift in the fourth
+    # decimal and nothing would fail until a ranking flipped.
+    known = {t for d in doc_ids for t in (index["docs"].get(d) or {})}
+    counts = Counter(t for t in tokenize(text) if t in known)
     if not counts:
         return {}
     n_docs = index["n_docs"]

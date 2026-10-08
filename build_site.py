@@ -49,6 +49,8 @@ OUT_PATH = PAGES_DIR / "index.html"
 # committed alongside index.html, fetched on first activation of that tab.
 GRAPH_DATA_PATH = BASE_DIR / "pages" / "graph-data.json"
 GRAPH_DATA_URL = "graph-data.json"
+PROJECT_DATA_PATH = BASE_DIR / "pages" / "project-data.json"
+PROJECT_DATA_URL = "project-data.json"
 
 # The card/timeline/context component CSS that the dashboard's _build_*_html
 # builders target (.bill-card, .cwa-*, .context-card, .explainer-card,
@@ -1299,7 +1301,7 @@ def build_solutions_tab() -> str:
         f'<li>All {n_mandate} state/federal mandates and all {n_utility} utility programs have '
         f'at least one deployed or active-pilot example. Voluntary industry solutions ({n_industry}) '
         f'have no independent verification path.</li>'
-        f'<li>The critical unlock: OHD000001 direct DMRs (Ohio) and HB&nbsp;496 monthly utility '
+        f'<li>The critical unlock: per-facility NPDES permits in Ohio (the OHD000001 general permit was withdrawn 2026-07-21) and HB&nbsp;496 monthly utility '
         f'reports (Virginia, eff. July 2026) are the two pending mandates that would make '
         f'operator claims independently checkable.</li>'
         f'</ul></div>'
@@ -1370,7 +1372,7 @@ def build_sources_tab() -> str:
         for lbl, val, sub in [
             ("Sources accessible", sc["accessible"], "active data pipelines"),
             ("Hard-blocked",       sc["blocked"],    "NDA · WAF · voluntary-only · no mandate"),
-            ("Unlocking soon",     sc["coming"],     "HB 496 · OHD000001 · EIA 923"),
+            ("Unlocking soon",     sc["coming"],     "HB 496 · Ohio per-DC NPDES · EIA 923"),
             ("Build queue",        sc["build_queue"], "data exists, scraper pending"),
         ]
     )
@@ -1496,6 +1498,37 @@ def build_commitments_tab() -> str:
   {esc(payload.get("last_updated") or "unknown")}; state commitments are read from the
   Legislation tab's enacted instruments and company pledges from Issues &amp; Claims,
   so each record exists once.</p>
+</section>
+"""
+
+
+# --------------------------------------------------------------------------
+# Check a project tab
+# --------------------------------------------------------------------------
+
+
+def build_project_data_json() -> str:
+    """The Check-a-project engine payload as a served file (same ``</``
+    unescaping as :func:`build_graph_data_json`)."""
+    return dash.precedent_payload_json().replace("<\\/", "</")
+
+
+def build_project_check_tab() -> str:
+    """Fact-pattern matching over the whole record for a described project.
+
+    ``dashboard._build_project_check_html`` is the surface; this adds the tab
+    chrome and points the fragment at the fetched payload.
+    """
+    return f"""
+<section class="panel">
+  <h2>Check a project</h2>
+  <p class="lead">{esc(dash.PROJECT_CHECK_LEAD)}</p>
+  {dash._build_project_check_html(versioned(PROJECT_DATA_URL, build_project_data_json()))}
+  <p class="src-note">Every case, conflict site and statutory reading carries fact-pattern
+  facets from one closed vocabulary; a project is read into the same facets and matched by
+  weighted overlap, plus wording similarity for cases and sites. The facets in common are
+  the explanation. Readings marked <em>Limit</em> say where a theory stops; outcome tallies
+  describe tracked matters, not this project. Everything runs in your browser.</p>
 </section>
 """
 
@@ -1990,6 +2023,8 @@ function activateTab(name, fromLink){
   return loadPanel(name).then(panel => {
     // The graph blob is a separate file fetched on first activation.
     if (name === 'explore' && window.exploreInit) window.exploreInit();
+    // Same for the Check-a-project engine payload.
+    if (name === 'check' && window.projectCheckInit) window.projectCheckInit();
     return panel;
   });
 }
@@ -2400,6 +2435,37 @@ SITE_URL = "https://pranava0x0.github.io/datacenterwaterusage/"
 REPO_URL = "https://github.com/pranava0x0/datacenterwaterusage"
 
 
+def _llms_project_check_lines() -> list[str]:
+    """The Check-a-project tab for llms.txt: the facet vocabulary and each
+    worked example with the readings and cases the engine returns for it."""
+    from refdata.taxonomies import FACT_DIMENSION_LABELS, FACT_FACETS
+
+    lines = [
+        "Every case, conflict site and statutory reading carries fact-pattern facets from "
+        "one closed list; a described project is read into the same facets and matched "
+        "by weighted overlap. Facets in common are the explanation; outcome tallies describe "
+        "tracked matters, not predictions.",
+        "",
+        "### Fact-pattern facets",
+        "",
+    ]
+    for dim, label in FACT_DIMENSION_LABELS.items():
+        names = ", ".join(f["label"] for f in FACT_FACETS.values() if f["dimension"] == dim)
+        lines.append(f"- **{label}:** {names}")
+    lines += ["", "### Worked examples (real 2026 proposals)", ""]
+    for e in dash.load_project_examples().get("examples", []):
+        result = dash.precedent_match_project(e["facets"], e["state"], e["description"])
+        readings = "; ".join(f"{r['statute']} {r['label']}" for r in result["readings"][:5])
+        cases = "; ".join(c["label"] for c in result["cases"][:5])
+        lines += [
+            f"- **{e['name']}** ({e['operator']}, {e['location']}; {e['status']} {e['status_date']}) — {e['description']}",
+            f"  - Facets: {', '.join(FACT_FACETS[f]['label'] for f in e['facets'])}",
+            f"  - Readings that could reach it: {readings}",
+            f"  - Closest tracked cases: {cases}",
+        ]
+    return lines
+
+
 def build_llms_txt() -> str:
     """llms.txt — an LLM-friendly plain-markdown mirror of the site.
 
@@ -2702,6 +2768,8 @@ def build_llms_txt() -> str:
         lines += ["", "Guardrails:"]
         lines += [f"- {g}" for g in proposal.get("guardrails", [])]
 
+    lines += ["", "## Check a project (fact-pattern matching)", ""]
+    lines += _llms_project_check_lines()
     lines += [
         "",
         "## Explore tab (connection graph + text search)",
@@ -2778,6 +2846,7 @@ def _tab_specs() -> list[tuple[str, str, object]]:
     """``(data-tab key, button label, builder)`` in tab-strip order."""
     return [
         ("overview", "Overview", build_overview_tab),
+        ("check", "Check a project", build_project_check_tab),
         ("legislation", "Legislation", build_legislation_tab),
         ("states", "States &amp; Localities", build_states_tab),
         ("commitments", "Commitments", build_commitments_tab),
@@ -2984,6 +3053,7 @@ def build_site_files(bodies: dict[str, str] | None = None) -> dict[str, str]:
     files[SITE_CSS_FILE] = COMPONENT_CSS + CSS
     files[SITE_JS_FILE] = build_js()
     files[GRAPH_DATA_PATH.name] = build_graph_data_json()
+    files[PROJECT_DATA_PATH.name] = build_project_data_json()
     files[LLMS_TXT_PATH.name] = build_llms_txt()
     return files
 

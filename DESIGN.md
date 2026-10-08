@@ -237,6 +237,8 @@ and every card is visible. Emitting them closed instead would have hidden
 ~150 cards from a no-JS reader, and **no CSS can force a closed
 `<details>` open** — that is the whole reason for the inversion.
 
+**Explore's graph folds on a phone (2026-10-08).** The canvas, hint and legend sit in `<details class="explore-graph-fold" open>`; the Explore script closes it at ≤760px (and reopens it if the window widens), and CSS hides its summary above 760px — the same ship-open idiom, so a wide screen never depends on the script.
+
 **Tabs load on first open (2026-09-26).** Only the default tab ships in
 index.html; the rest are standalone pages fetched when a reader opens them —
 or hovers, focuses or touches their button, so the fetch is usually finished
@@ -322,6 +324,7 @@ before the user scrolls into the card list. Panel shape varies by data type:
 | News | 3-metric row: Headlines / Topics / Most recent date |
 | Overview (landing) | 6 linked number tiles + six question cards routing to the owning tab + a 30-day feed (a headline absorbs the instruments it cites) + the month's county/city actions as chips |
 | Commitments | 4-metric row (national strategy: None / states with an enacted commitment / local agreements in force / company pledges) + the no-national-strategy finding as a §10 warning callout |
+| Check a project | No summary panel — the input form *is* the panel (textarea, example buttons, state/MW/MGD, facet chips); results render beside it on desktop and below it on a phone; the six pre-rendered worked examples sit under both |
 | Solutions | 6-metric row (Deployed/Pilot/Proposed × Mandate/Utility/Industry) + key-patterns callout |
 | Sources | 4-metric scorecard: Accessible / Blocked / Unlocking / Queue |
 
