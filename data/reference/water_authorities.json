@@ -198,6 +198,11 @@
         "HomerCity-IndianaCounty-PA-NPDES-2026",
         "Hanover-Foods-2025",
         "PortOfMorrow-DEQ-OR-2024"
+      ],
+      "fact_triggers": [
+        "cool-once-through",
+        "out-surface",
+        "pwr-thermo-cooling"
       ]
     },
     {
@@ -218,6 +223,10 @@
         "QTS-Fayetteville-GA-2024",
         "JohnsHopkins-DSAI-Baltimore-2025",
         "Energix-VA-2024"
+      ],
+      "fact_triggers": [
+        "out-stormwater",
+        "ctx-wetlands"
       ]
     },
     {
@@ -235,6 +244,11 @@
       "dc_trigger": "stormwater on an operating campus touches exposed fuel farms, chemical storage, switchyards or equipment yards",
       "example_case_ids": [
         "Google-Stillwater-OK-stormwater-2025"
+      ],
+      "fact_triggers": [
+        "out-stormwater",
+        "pwr-diesel",
+        "chem-fuel"
       ]
     },
     {
@@ -256,6 +270,10 @@
         "SDC-ATLA-DouglasCounty-GA-404-401-2025",
         "USACE-NWP39-DataCenters-2026",
         "Sackett-v-EPA-2023"
+      ],
+      "fact_triggers": [
+        "ctx-wetlands",
+        "ctx-navigable"
       ]
     },
     {
@@ -274,6 +292,11 @@
         "SierraClub-WVDEP-401-2023",
         "SDC-ATLA-DouglasCounty-GA-404-401-2025",
         "Amazon-NewCarlisle-IN-wetlands-2025"
+      ],
+      "fact_triggers": [
+        "ctx-wetlands",
+        "ctx-navigable",
+        "pwr-hydro"
       ]
     },
     {
@@ -294,6 +317,11 @@
         "Reading-WWTP-2024",
         "PortOfMorrow-DEQ-OR-2024",
         "Agri-Star-Postville-IA-2024-2025"
+      ],
+      "fact_triggers": [
+        "cool-evaporative",
+        "out-sewer",
+        "chem-treatment"
       ]
     },
     {
@@ -316,6 +344,15 @@
         "Greenidge-SenecaLake-NY-2025",
         "AWS-LakeAnnaVA-VPDES-cooling-discharge-2026",
         "HomerCity-IndianaCounty-PA-NPDES-2026"
+      ],
+      "fact_triggers": [
+        "src-surface",
+        "cool-once-through",
+        "out-surface",
+        "pwr-thermo-cooling"
+      ],
+      "fact_requires": [
+        "src-surface"
       ]
     },
     {
@@ -334,6 +371,14 @@
         "Plains-Pipeline-Santa-Barbara-2020",
         "Norfolk-Southern-East-Palestine-2024",
         "JohnsHopkins-DSAI-Baltimore-2025"
+      ],
+      "fact_triggers": [
+        "out-surface",
+        "pwr-diesel",
+        "chem-fuel"
+      ],
+      "fact_requires": [
+        "chem-fuel"
       ]
     },
     {
@@ -350,6 +395,11 @@
       "dc_trigger": "a new outfall is proposed into high-quality or pollution-capped water, forcing an antidegradation review of alternatives such as closed-loop or dry cooling",
       "example_case_ids": [
         "AWS-LakeAnnaVA-VPDES-cooling-discharge-2026"
+      ],
+      "fact_triggers": [
+        "out-surface",
+        "ctx-city-reservoir",
+        "chem-treatment"
       ]
     },
     {
@@ -367,6 +417,13 @@
       "example_case_ids": [
         "County-of-Maui-v-Hawaii-Wildlife-Fund-2020",
         "Maui-remand-DHaw-2021"
+      ],
+      "fact_triggers": [
+        "out-ground",
+        "ctx-wetlands"
+      ],
+      "fact_requires": [
+        "out-ground"
       ]
     },
     {
@@ -388,6 +445,12 @@
         "TransGas-AdamsFork-WV-2025",
         "PortOfTacoma-v-PugetSoundkeeper-9thCir-2024",
         "CERF-v-Naples-9thCir-2024"
+      ],
+      "fact_triggers": [
+        "out-sewer",
+        "out-surface",
+        "out-stormwater",
+        "proc-lawsuit"
       ]
     },
     {
@@ -409,6 +472,12 @@
         "Trinity-American-v-EPA-SDWA-1431-1998",
         "Amazon-Boardman-OR-nitrate-2026",
         "Meta-MorganCo-GA-investigation-2026"
+      ],
+      "fact_triggers": [
+        "src-wells",
+        "ctx-city-reservoir",
+        "chem-fuel",
+        "chem-treatment"
       ]
     },
     {
@@ -425,6 +494,14 @@
       "dc_trigger": "the campus builds stormwater drywells, infiltration galleries, geothermal return wells or any subsurface disposal of treated effluent",
       "example_case_ids": [
         "EPA-UIC-ClassV-MotorVehicleWells-1999"
+      ],
+      "fact_triggers": [
+        "src-wells",
+        "out-ground",
+        "out-stormwater"
+      ],
+      "fact_requires": [
+        "out-ground"
       ]
     },
     {
@@ -441,6 +518,10 @@
       "dc_trigger": "federal loans, grants or infrastructure aid back a campus or its utilities over a designated sole-source aquifer",
       "example_case_ids": [
         "Edwards-Aquifer-SoleSource-Designation-1975"
+      ],
+      "fact_triggers": [
+        "src-wells",
+        "ctx-city-reservoir"
       ]
     },
     {
@@ -459,6 +540,12 @@
       "example_case_ids": [
         "US-v-Alisal-Water-Corp-2005",
         "Flint-MI-SDWA-1431-2016"
+      ],
+      "fact_triggers": [
+        "src-wells",
+        "src-utility",
+        "ctx-small-system",
+        "ctx-city-reservoir"
       ]
     },
     {
@@ -477,6 +564,12 @@
       "example_case_ids": [
         "Google-Berkeley-SC-Middendorf-aquifer-2019",
         "CorpusChristi-SintonTX-EvangelineAquifer-wells-2026"
+      ],
+      "fact_triggers": [
+        "src-wells",
+        "out-ground",
+        "ctx-city-reservoir",
+        "chem-fuel"
       ]
     },
     {
@@ -494,6 +587,11 @@
       "example_case_ids": [
         "DuPont-WashingtonWorks-PFOA-2005-2009",
         "3M-TSCA-8e-PFAS-2006"
+      ],
+      "fact_triggers": [
+        "chem-pfas",
+        "chem-treatment",
+        "proc-records"
       ]
     },
     {
@@ -511,6 +609,14 @@
       "example_case_ids": [
         "TSCA-PFAS-Reporting-Rule-2023",
         "Chemours-Washington-Works-PFAS-2023"
+      ],
+      "fact_triggers": [
+        "cool-closed",
+        "chem-pfas",
+        "proc-records"
+      ],
+      "fact_requires": [
+        "chem-pfas"
       ]
     },
     {
@@ -528,6 +634,12 @@
       "example_case_ids": [
         "Interfaith-v-Honeywell-RCRA-2003-2005",
         "Amazon-Boardman-OR-nitrate-2026"
+      ],
+      "fact_triggers": [
+        "out-ground",
+        "chem-fuel",
+        "chem-treatment",
+        "chem-legacy"
       ]
     },
     {
@@ -547,6 +659,11 @@
       "example_case_ids": [
         "US-v-Republic-Steel-RHA-1960",
         "AWS-LakeAnnaVA-VPDES-cooling-discharge-2026"
+      ],
+      "fact_triggers": [
+        "src-surface",
+        "out-surface",
+        "ctx-navigable"
       ]
     },
     {
@@ -563,6 +680,14 @@
       "dc_trigger": "heavy pumping draws down an aquifer that crosses a state line and injures the neighbouring state",
       "example_case_ids": [
         "Mississippi-v-Tennessee-2021"
+      ],
+      "fact_triggers": [
+        "src-wells",
+        "ctx-stressed-aquifer",
+        "ctx-interstate"
+      ],
+      "fact_requires": [
+        "ctx-interstate"
       ]
     },
     {
@@ -580,6 +705,11 @@
       "dc_role": "limit",
       "example_case_ids": [
         "Sporhase-v-Nebraska-1982"
+      ],
+      "fact_triggers": [
+        "src-wells",
+        "src-transfer",
+        "ctx-interstate"
       ]
     },
     {
@@ -597,6 +727,11 @@
       "dc_trigger": "an existing municipal or appropriative entitlement supplies the campus and the draw damages a trust resource",
       "example_case_ids": [
         "National-Audubon-v-Superior-Court-1983"
+      ],
+      "fact_triggers": [
+        "src-surface",
+        "src-utility",
+        "ctx-navigable"
       ]
     },
     {
@@ -613,6 +748,11 @@
       "dc_trigger": "campus wells deplete a connected stream or lake, so the state's trust duty attaches to the well permit itself",
       "example_case_ids": [
         "ELF-v-SWRCB-2018"
+      ],
+      "fact_triggers": [
+        "src-wells",
+        "ctx-stressed-aquifer",
+        "ctx-navigable"
       ]
     },
     {
@@ -629,6 +769,12 @@
       "dc_trigger": "consumption figures are confidential and the hydrology is unresolved, so the burden falls on the applicant (strongest where, as in Hawai'i, the state constitution says so)",
       "example_case_ids": [
         "Waiahole-Ditch-2000"
+      ],
+      "fact_triggers": [
+        "src-wells",
+        "ctx-stressed-aquifer",
+        "proc-secrecy",
+        "proc-records"
       ]
     },
     {
@@ -645,6 +791,10 @@
       "dc_trigger": "a withdrawal cap arrives after the campus bought its land, or a permit lets the campus draw down the groundwater under a neighbour's acreage",
       "example_case_ids": [
         "Edwards-Aquifer-Authority-v-Day-2012"
+      ],
+      "fact_triggers": [
+        "src-wells",
+        "ctx-stressed-aquifer"
       ]
     },
     {
@@ -661,6 +811,11 @@
       "dc_trigger": "a high-capacity well permit is sought and objectors bring hydrologic evidence of off-site impact",
       "example_case_ids": [
         "Lake-Beulah-v-DNR-2011"
+      ],
+      "fact_triggers": [
+        "src-wells",
+        "ctx-stressed-aquifer",
+        "ctx-navigable"
       ]
     },
     {
@@ -677,6 +832,11 @@
       "dc_trigger": "well spacing, boundary siting or pumping rates cause subsidence or other harm to a neighbour, even in a rule-of-capture state",
       "example_case_ids": [
         "Friendswood-v-Smith-Southwest-1978"
+      ],
+      "fact_triggers": [
+        "src-wells",
+        "ctx-stressed-aquifer",
+        "ctx-coastal"
       ]
     },
     {
@@ -694,6 +854,11 @@
       "dc_role": "limit",
       "example_case_ids": [
         "MCWC-v-Nestle-Waters-2007"
+      ],
+      "fact_triggers": [
+        "src-wells",
+        "ctx-wetlands",
+        "proc-lawsuit"
       ]
     },
     {
@@ -710,6 +875,12 @@
       "dc_trigger": "a utility facing a real supply constraint refuses or pauses service to a new large customer",
       "example_case_ids": [
         "Swanson-v-Marin-MWD-1976"
+      ],
+      "fact_triggers": [
+        "src-utility",
+        "ctx-drought",
+        "ctx-small-system",
+        "proc-moratorium"
       ]
     },
     {
@@ -727,6 +898,14 @@
       "dc_role": "limit",
       "example_case_ids": [
         "Aransas-Project-v-Shaw-2014"
+      ],
+      "fact_triggers": [
+        "src-surface",
+        "ctx-endangered",
+        "proc-lawsuit"
+      ],
+      "fact_requires": [
+        "ctx-endangered"
       ]
     },
     {
@@ -744,6 +923,14 @@
       "dc_trigger": "a campus inside an Arizona Active Management Area has to show an assured or designated water supply",
       "example_case_ids": [
         "ProjectBlue-Tucson-AMES-2026"
+      ],
+      "fact_triggers": [
+        "src-wells",
+        "ctx-stressed-aquifer",
+        "ctx-drought"
+      ],
+      "jurisdictions": [
+        "AZ"
       ]
     },
     {
@@ -760,6 +947,14 @@
       "dc_trigger": "a large new groundwater user sits in a California basin governed by a sustainability plan",
       "example_case_ids": [
         "ELF-v-SWRCB-2018"
+      ],
+      "fact_triggers": [
+        "src-wells",
+        "ctx-stressed-aquifer",
+        "ctx-drought"
+      ],
+      "jurisdictions": [
+        "CA"
       ]
     },
     {
@@ -777,6 +972,11 @@
       "dc_trigger": "the campus's water is piped in from another river basin; in Texas, the transferred supply becomes junior in priority",
       "example_case_ids": [
         "Rowan-ProjectCinco-Medina-TX-2025"
+      ],
+      "fact_triggers": [
+        "src-surface",
+        "src-transfer",
+        "ctx-drought"
       ]
     },
     {
@@ -794,6 +994,15 @@
       "dc_trigger": "the campus draws from a basin that also serves a reservation whose senior reserved rights are being quantified",
       "example_case_ids": [
         "Winters-v-United-States-1908"
+      ],
+      "fact_triggers": [
+        "src-surface",
+        "ctx-drought",
+        "ctx-interstate",
+        "ctx-tribal"
+      ],
+      "fact_requires": [
+        "ctx-tribal"
       ]
     },
     {
@@ -810,6 +1019,14 @@
       "dc_trigger": "a project turns to wells because the basin's surface water is fully claimed, and a reservation overlies or adjoins the aquifer",
       "example_case_ids": [
         "Agua-Caliente-v-CVWD-2017"
+      ],
+      "fact_triggers": [
+        "src-wells",
+        "ctx-drought",
+        "ctx-tribal"
+      ],
+      "fact_requires": [
+        "ctx-tribal"
       ]
     },
     {
@@ -827,6 +1044,11 @@
       "dc_trigger": "a state environmental review analyzes phase one and assumes water for later phases that it cannot demonstrate",
       "example_case_ids": [
         "Vineyard-v-Rancho-Cordova-2007"
+      ],
+      "fact_triggers": [
+        "src-utility",
+        "proc-zoning",
+        "proc-records"
       ]
     },
     {
@@ -843,6 +1065,11 @@
       "dc_trigger": "construction proceeds while a challenge to the review's water disclosure is still live",
       "example_case_ids": [
         "MCEA-PineIsland-MN-ProjectSkyway-2026"
+      ],
+      "fact_triggers": [
+        "proc-zoning",
+        "proc-lawsuit",
+        "proc-records"
       ]
     },
     {
@@ -859,6 +1086,14 @@
       "dc_trigger": "an operator publishes water-positive pledges or efficiency figures that utility billing records contradict",
       "example_case_ids": [
         "Wangusi-v-Amazon-Web-Services-VA-2026"
+      ],
+      "fact_triggers": [
+        "proc-secrecy",
+        "proc-pledge",
+        "proc-records"
+      ],
+      "fact_requires": [
+        "proc-pledge"
       ]
     },
     {
@@ -876,6 +1111,12 @@
       "dc_trigger": "a federal action clusters around the campus: a DOE loan guarantee, an NRC license, a Corps permit or federally financed infrastructure",
       "example_case_ids": [
         "Hughes-River-Watershed-Conservancy-v-Glickman-1996"
+      ],
+      "fact_triggers": [
+        "ctx-wetlands",
+        "ctx-navigable",
+        "pwr-nuclear",
+        "pwr-hydro"
       ]
     },
     {
@@ -892,6 +1133,11 @@
       "dc_trigger": "federal loans or licenses back a power-plant restart or new generation built to serve data-center load",
       "example_case_ids": [
         "Constellation-CraneCleanEnergy-SRBC-NRC-PA-2026"
+      ],
+      "fact_triggers": [
+        "pwr-onsite-gas",
+        "pwr-nuclear",
+        "pwr-thermo-cooling"
       ]
     },
     {
@@ -908,6 +1154,10 @@
       "dc_trigger": "a parent company centrally controls cooling chemistry, fuel storage or remediation at a subsidiary-held campus",
       "example_case_ids": [
         "US-v-Bestfoods-1998"
+      ],
+      "fact_triggers": [
+        "chem-treatment",
+        "chem-legacy"
       ]
     },
     {
@@ -925,6 +1175,14 @@
       "dc_role": "limit",
       "example_case_ids": [
         "CTS-Corp-v-Waldburger-2014"
+      ],
+      "fact_triggers": [
+        "src-wells",
+        "chem-legacy",
+        "proc-lawsuit"
+      ],
+      "fact_requires": [
+        "chem-legacy"
       ]
     },
     {
@@ -942,6 +1200,12 @@
       "example_case_ids": [
         "Southeastern-Fed-Power-Customers-v-Geren-2008",
         "InRe-MDL1824-TriState-WaterRights-2011"
+      ],
+      "fact_triggers": [
+        "src-utility",
+        "ctx-city-reservoir",
+        "ctx-navigable",
+        "pwr-hydro"
       ]
     },
     {
@@ -959,6 +1223,21 @@
       "dc_trigger": "water would leave the Great Lakes basin to serve a campus outside it",
       "example_case_ids": [
         "Foxconn-Racine-GreatLakesCompact-Diversion-2019"
+      ],
+      "fact_triggers": [
+        "src-utility",
+        "src-transfer",
+        "ctx-interstate"
+      ],
+      "jurisdictions": [
+        "IL",
+        "IN",
+        "MI",
+        "MN",
+        "NY",
+        "OH",
+        "PA",
+        "WI"
       ]
     },
     {
@@ -978,6 +1257,19 @@
         "Constellation-CraneCleanEnergy-SRBC-NRC-PA-2026",
         "Panda-Power-Funds-SRBC-Penalty-2016",
         "DRBC-Fracking-Ban-2021"
+      ],
+      "fact_triggers": [
+        "src-surface",
+        "ctx-drought",
+        "ctx-interstate",
+        "pwr-thermo-cooling"
+      ],
+      "jurisdictions": [
+        "DE",
+        "NJ",
+        "NY",
+        "PA",
+        "MD"
       ]
     },
     {
@@ -995,6 +1287,14 @@
       "dc_trigger": "the campus or the power and water infrastructure serving it would touch a designated Wild and Scenic river reach",
       "example_case_ids": [
         "BlueRidgeProject-NewRiver-WSR-1976"
+      ],
+      "fact_triggers": [
+        "ctx-wetlands",
+        "ctx-navigable",
+        "pwr-hydro"
+      ],
+      "fact_requires": [
+        "pwr-hydro"
       ]
     },
     {
@@ -1013,6 +1313,14 @@
       "dc_role": "limit",
       "example_case_ids": [
         "California-v-FERC-1990"
+      ],
+      "fact_triggers": [
+        "src-surface",
+        "ctx-navigable",
+        "pwr-hydro"
+      ],
+      "fact_requires": [
+        "pwr-hydro"
       ]
     },
     {
@@ -1030,6 +1338,12 @@
       "dc_trigger": "the campus's water, or the farm right it buys or offsets against, traces back to a federal Reclamation project",
       "example_case_ids": [
         "US-v-Klamath-Drainage-District-2025"
+      ],
+      "fact_triggers": [
+        "src-surface",
+        "src-transfer",
+        "ctx-drought",
+        "ctx-interstate"
       ]
     },
     {
@@ -1048,6 +1362,12 @@
       "dc_role": "limit",
       "example_case_ids": [
         "SteelCo-v-CitizensForBetterEnvironment-1998"
+      ],
+      "fact_triggers": [
+        "pwr-diesel",
+        "chem-fuel",
+        "chem-treatment",
+        "proc-records"
       ]
     },
     {
@@ -1065,6 +1385,11 @@
       "dc_trigger": "on-site water treatment, biocide dosing or battery operations process a listed chemical above reporting thresholds",
       "example_case_ids": [
         "NidecElesys-Americas-EPCRA-TRI-GA-2024"
+      ],
+      "fact_triggers": [
+        "pwr-diesel",
+        "chem-treatment",
+        "proc-records"
       ]
     }
   ]

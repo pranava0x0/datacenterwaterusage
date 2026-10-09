@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-09-26",
+  "last_updated": "2026-10-08",
   "source_repo": "pranava0x0/datacentercommunitybenefits",
   "source_path": "docs/data/moratoriums.json",
   "note": "County and city data-center actions — moratoriums, permanent ordinances and resolutions — mirrored from the Data Center Community Benefits project's moratoriums.json (snapshot generated 2026-08-04), filtered to city/county/town scope. State-level measures stay in legislation.json; the four instruments that appear in both files are there because legislation.json keeps only the first-of-kind and litigated local measures as full instruments, while this file is the broader table. Records whose action_id starts with 'direct-' were verified directly rather than mirrored; the 2026-09-21 file update adds Gilroy from its city notice, not a fresh mirror snapshot. Refresh by fetching docs/data/moratoriums.json from source_repo, mapping each record to this schema, and upserting on action_id — the sync is a pure upsert, never a replace, so nothing here is lost when the upstream snapshot shrinks. Corrections in this file were verified against primary sources on 2026-08-24 and are newer than the mirror: Maine LD 307 was vetoed, not enacted (which is why it is absent here and correct in legislation.json); Hill County TX rescinded its moratorium under a $100M developer suit (superseded, not active); Cleveland's moratorium passed 14-1 on 2026-07-15 (active, not proposed); Indianapolis was finalized 6-0 on 2026-08-19 (active, not proposed); and Monterey Park's Measure NDC passed on 2026-06-02 with 86.4% in favour. A second verification pass (2026-08-24, commit cb9f348) added three more: Cheyenne WY rejected a 12-month (not nine-month) moratorium 8-1 on 2026-05-26, date 2026-05 and source upgraded to WyoFile; Santa Fe County NM voted on 2026-06-30 (not July 1), date 2026-06; Boulder County CO is water_related — the commissioners' announcement cites electricity and water demands. It also stripped the trailing 'Status.' sentence artifact from 13 summaries. Re-apply ALL corrections after any re-sync (the upsert has no field-level protection), and re-check any record still marked 'proposed' whose date is more than about 60 days old. See REFRESH.md. 2026-09-26: Spartanburg County SC moved from proposed to active (final reading 5-1 on 2026-09-21, with a 65 MW threshold and industrial-park carve-outs); Elkhart IN and Palm Beach County FL added as direct records (neither was in the mirror). 2026-09-26 mirror pass: 33 county/city records added from the source's water-tagged moratoriums not yet mirrored, each re-verified against primary coverage. Corrections to re-apply after any re-sync: Augusta GA is superseded, not active — its moratorium ended 2026-09-15 when a permanent ordinance requiring closed-loop cooling and barring private wells passed 6-5; Mercer County KY and Westover AL are not water-related (their sources cite environmental, property-value and utility-bill concerns, never water). Skip dccb-fort-worth-tx-2026-08 and dccb-athens-clarke-county-ga-2025-12 on sync: both duplicate direct- records already here.",
@@ -1357,7 +1357,7 @@
       "date": "2026-09",
       "water_related": true,
       "water_angle": "Commissioner Carolyn Cummings is described as wanting review to examine \"water consumption, electricity demand, environmental impacts.\"",
-      "summary": "Leon County commissioners unanimously advanced, at the first of two required public hearings on September 15, 2026, an 18-month moratorium on development permits/orders, rezonings and site plans for large-load facilities including large-scale data centers in unincorporated Leon County; the second and final hearing is scheduled for October 13, 2026, so the ordinance is not yet finally adopted.",
+      "summary": "Leon County commissioners unanimously advanced, at the first of two required public hearings on September 15, 2026, an 18-month moratorium on development permits/orders, rezonings and site plans for large-load facilities including large-scale data centers in unincorporated Leon County; the second and final hearing is scheduled for October 13, 2026, so the ordinance is not yet finally adopted. The second and final public hearing is set for October 13, 2026.",
       "source_url": "https://fox49.tv/news/local/leon-county-moves-toward-18-month-data-center-moratorium"
     },
     {
@@ -1377,12 +1377,12 @@
       "jurisdiction": "Manatee County",
       "state": "FL",
       "action_type": "moratorium",
-      "status": "proposed",
-      "date": "2026-09",
+      "status": "active",
+      "date": "2026-10",
       "water_related": true,
       "water_angle": "The article states plainly: \"Large-scale data centers are known to require substantial water and electrical resources to power and cool specialized computer servers.\"",
-      "summary": "Manatee County commissioners advanced Ordinance 26-42 at the first of two required public hearings on September 22, 2026, which would impose a 12-month moratorium on permits, site plans, rezonings and comprehensive-plan amendments for data centers and other large-load customers in unincorporated Manatee County under authority granted by Florida's SB 484; a second and final hearing is scheduled for October 6, 2026.",
-      "source_url": "https://www.yourobserver.com/news/2026/sep/22/manatee-ordinance-data-center-moratorium/"
+      "summary": "Manatee County commissioners unanimously adopted a one-year moratorium on October 8, 2026, pausing the acceptance, processing and approval of new data-center projects while staff study effects on energy, water, infrastructure and local communities (Ordinance 26-42, advanced at a first hearing in September). No data center is currently proposed in the county.",
+      "source_url": "https://www.mysuncoast.com/2026/10/08/manatee-county-approves-one-year-moratorium-data-centers/"
     },
     {
       "action_id": "dccb-woodbury-mn-2026-09",

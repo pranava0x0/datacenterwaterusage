@@ -1,0 +1,199 @@
+{
+  "last_updated": "2026-10-08",
+  "note": "Worked examples for the Check-a-project tab: real 2026 proposals the tracker does not otherwise record, each described in the words a reader could paste and tagged with the fact-pattern facets its sources support. The facets are the record; the description's parse is a convenience and a test checks it recovers most of them. Facts come from the cited coverage only — where a source does not say how a campus cools or discharges, or how big the town is, that dimension is left off. Verified 2026-10-08 against the sources listed.",
+  "examples": [
+    {
+      "id": "cedar-creek-lake-tx-2026",
+      "name": "Cedar Creek Lake campus (withdrawn)",
+      "operator": "Diode Ventures",
+      "location": "Trinidad / Tool, Henderson County, Texas",
+      "state": "TX",
+      "status": "withdrawn",
+      "status_date": "2026-07-23",
+      "mw": null,
+      "mgd": 5.0,
+      "description": "A Kansas developer proposed a data center campus west of Cedar Creek Lake in Henderson County, Texas, planned to build out over 12 years and to draw up to 5 million gallons per day of surface water from the reservoir by its fifth year. Cedar Creek Lake supplies most of Fort Worth's drinking water and was sitting below its conservation pool. More than 2,500 residents signed a Save Cedar Creek Lake petition, and the company withdrew the project in July 2026 after saying it could not meet the governor's new data-center development standards.",
+      "facets": [
+        "src-surface",
+        "ctx-drought",
+        "ctx-city-reservoir",
+        "scale-hyperscale"
+      ],
+      "sources": [
+        {
+          "title": "KERA: Proposed data center would pull from lake that supplies most of Fort Worth's water",
+          "url": "https://www.keranews.org/news/2026-07-02/proposed-data-center-would-pull-from-lake-that-supplies-most-of-fort-worths-water",
+          "date": "2026-07-02"
+        },
+        {
+          "title": "KLTV: Thousands sign petition to 'save' Cedar Creek Lake from proposed data center",
+          "url": "https://www.kltv.com/2026/07/18/thousands-sign-petition-save-cedar-creek-lake-proposed-data-center/",
+          "date": "2026-07-18"
+        },
+        {
+          "title": "Texas Tribune: East Texas data center project pulled after facing community backlash",
+          "url": "https://www.texastribune.org/2026/07/23/east-texas-data-center-withdrawn/",
+          "date": "2026-07-23"
+        }
+      ]
+    },
+    {
+      "id": "amazon-wharton-county-tx-2026",
+      "name": "Amazon campus, Wharton County",
+      "operator": "Amazon Data Services",
+      "location": "Boling, Wharton County, Texas",
+      "state": "TX",
+      "status": "groundwater permits approved",
+      "status_date": "2026-09-08",
+      "mw": null,
+      "mgd": null,
+      "description": "Amazon is planning a nearly 3,000-acre, $10 billion hyperscale data center campus near Boling in Wharton County, Texas. The Coastal Bend Groundwater Conservation District approved its groundwater permits on September 8, 2026 — up to 78.2 million gallons over two and a half years for offices, restrooms, construction crews and fire protection. The first buildings are to be air cooled; as the campus grows Amazon expects to need about 500 acre-feet a year of surface water from the Lower Colorado River Authority for cooling on the hottest hours, and has not yet applied for it. Neighbors raised drinking-water wells, electricity costs and backup-generator pollution at the hearing.",
+      "facets": [
+        "src-wells",
+        "src-surface",
+        "cool-air",
+        "pwr-diesel",
+        "scale-hyperscale"
+      ],
+      "sources": [
+        {
+          "title": "GovTech / Houston Chronicle: Amazon clears first hurdle for $10B data center near Houston",
+          "url": "https://www.govtech.com/artificial-intelligence/amazon-clears-first-hurdle-for-10b-data-center-near-houston",
+          "date": "2026-09-08"
+        },
+        {
+          "title": "Houston Chronicle: Amazon's Wharton County data center groundwater permits approved",
+          "url": "https://www.houstonchronicle.com/business/economy/article/amazon-data-center-aws-wharton-water-power-boling-22442480.php",
+          "date": "2026-09-08"
+        }
+      ]
+    },
+    {
+      "id": "big-sky-broadview-mt-2026",
+      "name": "Big Sky campus, Broadview",
+      "operator": "Quantica",
+      "location": "Broadview, Yellowstone County, Montana",
+      "state": "MT",
+      "status": "proposed",
+      "status_date": "2026-09-30",
+      "mw": null,
+      "mgd": 0.15,
+      "description": "Quantica's Big Sky Campus near Broadview, Montana would pump a new public-water-supply well into the deep Madison Aquifer, about 150,000 gallons per day during construction and 20,000 gallons per day once operating, to support a closed-loop cooling system. The Montana Department of Environmental Quality opened the well application for public comment through October 29, 2026, reviewing groundwater protection, while the Department of Natural Resources and Conservation handles the water right.",
+      "facets": [
+        "src-wells",
+        "cool-closed"
+      ],
+      "sources": [
+        {
+          "title": "NBC Montana: DEQ seeks public comment on well proposal for new data center in Yellowstone County",
+          "url": "https://nbcmontana.com/news/local/deq-seeks-public-comment-on-well-proposal-for-new-data-center-in-yellowstone-co",
+          "date": "2026-09-30"
+        }
+      ]
+    },
+    {
+      "id": "vantage-port-washington-wi-2026",
+      "name": "Vantage AI campus, Port Washington",
+      "operator": "Vantage Data Centers (OpenAI / Oracle Stargate)",
+      "location": "Port Washington, Ozaukee County, Wisconsin",
+      "state": "WI",
+      "status": "under construction",
+      "status_date": "2025-12-17",
+      "mw": null,
+      "mgd": 1.2,
+      "description": "Vantage Data Centers is building a $15 billion AI campus for the Stargate program in Port Washington, Wisconsin, on the Lake Michigan shore inside the Great Lakes basin; construction began with a groundbreaking in December 2025. The campus is to use closed-loop cooling with dry chillers, and its agreement with the city allows up to 1.2 million gallons per day from Port Washington's water plant on the hottest days. Residents have demanded transparency on water and environmental impacts, and in April 2026 voters passed a referendum requiring voter approval for development incentives of $10 million or more.",
+      "facets": [
+        "src-utility",
+        "cool-closed",
+        "cool-air",
+        "ctx-interstate",
+        "proc-records",
+        "scale-hyperscale"
+      ],
+      "sources": [
+        {
+          "title": "Ozaukee Press: $175M TIF district to help finance data center",
+          "url": "https://ozaukeepress.com/content/175m-tif-district-help-finance-data-center",
+          "date": "2025-08-13"
+        },
+        {
+          "title": "Spectrum News 1: Port Washington data center water agreement",
+          "url": "https://spectrumnews1.com/wi/madison/news/2025/09/23/data-center-port-washington",
+          "date": "2025-09-23"
+        },
+        {
+          "title": "TMJ4: Residents demand transparency on Port Washington's $15B AI data center's water and environmental impact",
+          "url": "https://www.tmj4.com/news/local-news/residents-demand-transparency-on-port-washingtons-15b-ai-data-centers-water-and-environmental-impact",
+          "date": "2025-09"
+        },
+        {
+          "title": "WUWM: Are there rules governing data center water usage?",
+          "url": "https://www.wuwm.com/are-there-rules-governing-data-center-water-usage",
+          "date": "2025-11-14"
+        },
+        {
+          "title": "Urban Milwaukee: Port Washington passes referendum on data center deals",
+          "url": "https://urbanmilwaukee.com/2026/04/08/port-washington-passes-referendum-on-data-center-deals/",
+          "date": "2026-04-08"
+        },
+        {
+          "title": "BizTimes: Groundbreaking held as construction begins on $15B Port Washington data center",
+          "url": "https://biztimes.com/groundbreaking-held-as-construction-begins-on-15b-port-washington-data-center/",
+          "date": "2025-12-17"
+        }
+      ]
+    },
+    {
+      "id": "project-blue-wells-tucson-az-2026",
+      "name": "Project Blue wells, Tucson",
+      "operator": "Beale Infrastructure (Bobcat Tucson Water LLC)",
+      "location": "Tucson, Pima County, Arizona",
+      "state": "AZ",
+      "status": "approved",
+      "status_date": "2026-05-22",
+      "mw": null,
+      "mgd": null,
+      "description": "After the Tucson City Council rejected water service in 2025 for the Project Blue data center — a campus first negotiated under a code name and nondisclosure agreements — an affiliate of the developer applied to the Arizona Department of Water Resources for two commercial groundwater wells under existing grandfathered rights inside the Tucson Active Management Area. In May 2026 the department approved pumping up to about 31 million gallons a year from the aquifer in a desert region under long-term drought, which takes the campus off city water.",
+      "facets": [
+        "src-wells",
+        "ctx-stressed-aquifer",
+        "ctx-drought",
+        "proc-secrecy"
+      ],
+      "sources": [
+        {
+          "title": "AZPM: Arizona water officials approve wells tied to Project Blue data center",
+          "url": "https://www.azpm.org/s/103423-arizona-water-officials-approve-wells-tied-to-project-blue-data-center/",
+          "date": "2026-05-22"
+        },
+        {
+          "title": "KJZZ: Project Blue data center could use up to 31 million gallons of water per year",
+          "url": "https://www.kjzz.org/fronteras-desk/2026-05-29/project-blue-data-center-could-use-up-to-31-million-gallons-of-water-per-year",
+          "date": "2026-05-29"
+        }
+      ]
+    },
+    {
+      "id": "bt-aycock-princeton-tx-2026",
+      "name": "BT Aycock data center, Princeton",
+      "operator": "BT Aycock Data Center LLC",
+      "location": "near Princeton, Collin County, Texas",
+      "state": "TX",
+      "status": "approved",
+      "status_date": "2026-06-09",
+      "mw": null,
+      "mgd": null,
+      "description": "A data center planned just east of Princeton, Texas will take its water from a single well into the Woodbine Aquifer, which underlies 17 North Texas counties, at 150 gallons per minute. The North Texas Groundwater Conservation District approved the well permit on June 9, 2026: 5.56 million gallons during construction through 2028 and 1.65 million gallons a year after that. The campus sits in a fast-growing exurban county where neighbors depend on the same aquifer.",
+      "facets": [
+        "src-wells"
+      ],
+      "sources": [
+        {
+          "title": "Princeton Herald: Data center near Princeton plans to use well water",
+          "url": "https://princetonherald.com/2026/08/28/data-center-near-princeton-plans-to-use-well-water/",
+          "date": "2026-08-28"
+        }
+      ]
+    }
+  ]
+}

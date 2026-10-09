@@ -20,14 +20,14 @@
   <h2>Explore — Connections and Text Search</h2>
   <p class="lead">Every curated record in one graph, plus a text search across all of them. Click a dot to see what a record connects to — or switch the layout to Legal paths to read it as activity → statute → reading → case → site — or paste a paragraph (a news story, a permit notice, a draft ordinance) to find the records that use the same language.</p>
   <div class="explore" id="explore">
-<noscript><div class="explore-noscript"><p><strong>The graph and the text search need JavaScript.</strong> Both run entirely in your browser — there is no server to fall back on — so with scripting off this tab can only point you at the records themselves, which are all on the page already:</p><ul><li><a href="tab-legislation.html#panel-legislation">Policy instruments</a> — 87 records</li><li><a href="tab-cwa.html#panel-cwa">Statutory readings</a> — 51 records</li><li><a href="tab-cwa.html#panel-cwa">Water cases</a> — 123 records</li><li><a href="tab-issues.html#panel-issues">Conflict sites</a> — 19 records</li><li><a href="tab-issues.html#panel-issues">Operator claims</a> — 45 records</li><li><a href="tab-news.html#panel-news">News items</a> — 65 records</li><li><a href="tab-solutions.html#panel-solutions">Solutions</a> — 18 records</li></ul></div></noscript>
+<noscript><div class="explore-noscript"><p><strong>The graph and the text search need JavaScript.</strong> Both run entirely in your browser — there is no server to fall back on — so with scripting off this tab can only point you at the records themselves, which are all on the page already:</p><ul><li><a href="tab-legislation.html#panel-legislation">Policy instruments</a> — 87 records</li><li><a href="tab-cwa.html#panel-cwa">Statutory readings</a> — 51 records</li><li><a href="tab-cwa.html#panel-cwa">Water cases</a> — 123 records</li><li><a href="tab-issues.html#panel-issues">Conflict sites</a> — 19 records</li><li><a href="tab-issues.html#panel-issues">Operator claims</a> — 45 records</li><li><a href="tab-news.html#panel-news">News items</a> — 66 records</li><li><a href="tab-solutions.html#panel-solutions">Solutions</a> — 18 records</li></ul></div></noscript>
 <div class="explore-grid">
   <div class="explore-side">
     <label class="explore-label" for="explore-q">Paste any text — a news story, a
     permit notice, a bill summary</label>
     <textarea id="explore-q" rows="5" placeholder="Paste a paragraph here to rank every tracked record by how much of its language it shares."></textarea>
     <div class="explore-controls">
-      <span class="explore-controls-label">Kinds:</span><label class="explore-chip"><input type="checkbox" class="explore-kind" value="instrument" checked> Policy instruments (87)</label><label class="explore-chip"><input type="checkbox" class="explore-kind" value="reading" checked> Statutory readings (51)</label><label class="explore-chip"><input type="checkbox" class="explore-kind" value="case" checked> Water cases (123)</label><label class="explore-chip"><input type="checkbox" class="explore-kind" value="site" checked> Conflict sites (19)</label><label class="explore-chip"><input type="checkbox" class="explore-kind" value="claim" checked> Operator claims (45)</label><label class="explore-chip"><input type="checkbox" class="explore-kind" value="news" checked> News items (65)</label><label class="explore-chip"><input type="checkbox" class="explore-kind" value="solution" checked> Solutions (18)</label>
+      <span class="explore-controls-label">Kinds:</span><label class="explore-chip"><input type="checkbox" class="explore-kind" value="instrument" checked> Policy instruments (87)</label><label class="explore-chip"><input type="checkbox" class="explore-kind" value="reading" checked> Statutory readings (51)</label><label class="explore-chip"><input type="checkbox" class="explore-kind" value="case" checked> Water cases (123)</label><label class="explore-chip"><input type="checkbox" class="explore-kind" value="site" checked> Conflict sites (19)</label><label class="explore-chip"><input type="checkbox" class="explore-kind" value="claim" checked> Operator claims (45)</label><label class="explore-chip"><input type="checkbox" class="explore-kind" value="news" checked> News items (66)</label><label class="explore-chip"><input type="checkbox" class="explore-kind" value="solution" checked> Solutions (18)</label>
     </div>
     <div class="explore-controls">
       <label class="explore-controls-label" for="explore-family">Statute family:</label>
@@ -67,6 +67,8 @@
       </span>
     </div>
     <div class="explore-neighbours" id="explore-neighbours" hidden></div>
+    <details class="explore-graph-fold" id="explore-graph-fold" open>
+    <summary>Show the connection graph</summary>
     <canvas class="explore-canvas" id="explore-canvas" role="img" aria-label="Connection graph of every tracked record. The results list carries the same records as text."></canvas>
     <p class="explore-hint">Drag to pan, scroll to zoom, click a dot to focus its
     neighbourhood. <strong>Legal paths</strong> lays the focused record out in
@@ -74,13 +76,14 @@
     law reaches a data center; try it on an activity or statute hub with 2 hops.
     Records with no drawn connection sit on the outer ring.</p>
     <div class="explore-legend"><span><span class="explore-dot" style="background:#08519c"></span>Policy instruments</span><span><span class="explore-dot" style="background:#7c3aed"></span>Statutory readings</span><span><span class="explore-dot" style="background:#b45309"></span>Water cases</span><span><span class="explore-dot" style="background:#c41e3a"></span>Conflict sites</span><span><span class="explore-dot" style="background:#2e8b57"></span>Operator claims</span><span><span class="explore-dot" style="background:#3182bd"></span>News items</span><span><span class="explore-dot" style="background:#6b7f2a"></span>Solutions</span><span><span class="explore-dot" style="background:#6b7280;border-radius:2px"></span>Taxonomy hub (activity, statute, project type, principle)</span></div>
+    </details>
     <details class="explore-edges">
       <summary>Connection types</summary>
       <div class="explore-edgelist" id="explore-edgelist"></div>
     </details>
   </div>
 </div>
-<script type="application/json" id="graph-data" data-src="graph-data.json?v=12d93183cd"></script>
+<script type="application/json" id="graph-data" data-src="graph-data.json?v=70d7283030"></script>
 <style>
 .explore{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   color:#1a1a2e;line-height:1.5;font-size:.92rem}
@@ -142,6 +145,16 @@
 .explore-canvas:active{cursor:grabbing}
 @media (max-width:900px){.explore-canvas{height:380px}}
 .explore-hint{font-size:.76rem;color:#6b7280;margin:.3rem 0 .5rem}
+/* On a phone the graph is a few hundred dots in a 380px box: folded away by
+   default (the script closes it at <=760px), one tap to open. Wider, there is
+   no summary and the fold is always open. */
+.explore-graph-fold>summary{cursor:pointer;font-weight:600;color:#08519c;padding:.5rem .7rem;
+  font-size:.85rem;list-style:none;min-height:36px;display:flex;align-items:center;
+  border:1px solid #cbd5e1;border-radius:.5rem;background:#fff;margin:0 0 .5rem}
+.explore-graph-fold>summary::-webkit-details-marker{display:none}
+.explore-graph-fold>summary::before{content:"\25B8";margin-right:.4rem}
+.explore-graph-fold[open]>summary::before{content:"\25BE"}
+@media (min-width:761px){.explore-graph-fold>summary{display:none}}
 .explore-legend{display:flex;flex-wrap:wrap;gap:.3rem .7rem;font-size:.76rem;color:#4b5563;margin-bottom:.5rem}
 .explore-legend span.explore-dot{margin-right:.25rem}
 .explore-edges{border:1px solid #cbd5e1;border-radius:.5rem;background:#fff}
@@ -161,6 +174,17 @@
   var blob = root && root.querySelector('#graph-data');
   var canvas = root && root.querySelector('#explore-canvas');
   if (!root || !blob || !canvas) return;
+
+  // The graph folds away on a phone (CSS hides the summary when wide). Shipped
+  // open, so a wide screen never depends on this running.
+  var fold = root.querySelector('#explore-graph-fold');
+  var narrow = window.matchMedia ? window.matchMedia('(max-width:760px)') : null;
+  if (fold && narrow){
+    if (narrow.matches) fold.open = false;
+    var onWidth = function(){ if (!narrow.matches) fold.open = true; };
+    if (narrow.addEventListener) narrow.addEventListener('change', onWidth);
+    else if (narrow.addListener) narrow.addListener(onWidth);
+  }
 
   // Everything below runs once the blob is in hand — inline on the Streamlit
   // surface, fetched on first tab activation on the static one. See init().
@@ -974,6 +998,14 @@
     if (precomputed){ fitView(); draw(); }
     else runLayout();
   }
+  // A canvas inside a closed fold measures 0 wide; size and frame it on open.
+  if (fold) fold.addEventListener('toggle', function(){
+    if (!fold.open || !started) return;
+    sizeCanvas();
+    if (mode === 'paths') layoutPaths();
+    else if (!cameraMoved) fitView();
+    draw();
+  });
   window.addEventListener('resize', function(){
     if (!started) return;
     sizeCanvas();

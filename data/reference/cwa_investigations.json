@@ -42,6 +42,12 @@
       ],
       "outcome_type": [
         "monetary-penalty"
+      ],
+      "fact_pattern": [
+        "out-stormwater",
+        "ctx-wetlands",
+        "proc-lawsuit",
+        "scale-hyperscale"
       ]
     },
     {
@@ -86,6 +92,11 @@
       ],
       "outcome_type": [
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "out-stormwater",
+        "ctx-stressed-aquifer",
+        "scale-hyperscale"
       ]
     },
     {
@@ -123,6 +134,11 @@
       ],
       "outcome_type": [
         "monetary-penalty"
+      ],
+      "fact_pattern": [
+        "out-sewer",
+        "out-surface",
+        "proc-lawsuit"
       ]
     },
     {
@@ -155,6 +171,10 @@
       ],
       "outcome_type": [
         "monetary-penalty"
+      ],
+      "fact_pattern": [
+        "out-surface",
+        "proc-lawsuit"
       ]
     },
     {
@@ -189,6 +209,14 @@
       "outcome_type": [
         "permit-issued",
         "permit-conditioned"
+      ],
+      "fact_pattern": [
+        "src-surface",
+        "cool-once-through",
+        "out-surface",
+        "pwr-thermo-cooling",
+        "proc-lawsuit",
+        "scale-hyperscale"
       ]
     },
     {
@@ -222,6 +250,10 @@
       "outcome_type": [
         "monetary-penalty",
         "consent-decree"
+      ],
+      "fact_pattern": [
+        "out-sewer",
+        "proc-lawsuit"
       ]
     },
     {
@@ -260,6 +292,10 @@
       "outcome_type": [
         "monetary-penalty",
         "consent-decree"
+      ],
+      "fact_pattern": [
+        "out-sewer",
+        "proc-lawsuit"
       ]
     },
     {
@@ -289,6 +325,13 @@
       "outcome_type": [
         "monetary-penalty",
         "consent-decree"
+      ],
+      "fact_pattern": [
+        "out-surface",
+        "out-stormwater",
+        "chem-fuel",
+        "chem-treatment",
+        "proc-lawsuit"
       ]
     },
     {
@@ -326,6 +369,10 @@
       ],
       "outcome_type": [
         "jurisdiction-narrowed"
+      ],
+      "fact_pattern": [
+        "ctx-wetlands",
+        "proc-lawsuit"
       ]
     },
     {
@@ -363,6 +410,11 @@
       ],
       "outcome_type": [
         "jurisdiction-affirmed"
+      ],
+      "fact_pattern": [
+        "out-ground",
+        "proc-lawsuit",
+        "scale-hyperscale"
       ]
     },
     {
@@ -400,6 +452,12 @@
       ],
       "outcome_type": [
         "jurisdiction-affirmed"
+      ],
+      "fact_pattern": [
+        "src-surface",
+        "cool-once-through",
+        "pwr-thermo-cooling",
+        "proc-lawsuit"
       ]
     },
     {
@@ -437,6 +495,10 @@
       ],
       "outcome_type": [
         "jurisdiction-narrowed"
+      ],
+      "fact_pattern": [
+        "ctx-wetlands",
+        "proc-lawsuit"
       ]
     },
     {
@@ -469,6 +531,11 @@
       ],
       "outcome_type": [
         "consent-decree"
+      ],
+      "fact_pattern": [
+        "out-stormwater",
+        "proc-lawsuit",
+        "scale-hyperscale"
       ]
     },
     {
@@ -520,7 +587,13 @@
         "injunction-stop-work",
         "pending-undecided"
       ],
-      "last_verified": "2026-08-24"
+      "last_verified": "2026-08-24",
+      "fact_pattern": [
+        "src-utility",
+        "out-stormwater",
+        "ctx-wetlands",
+        "scale-hyperscale"
+      ]
     },
     {
       "case_id": "QTS-CedarRapids-IA-2025",
@@ -564,6 +637,11 @@
         "monetary-penalty",
         "compliance-order",
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "src-wells",
+        "proc-lawsuit",
+        "scale-hyperscale"
       ]
     },
     {
@@ -607,6 +685,10 @@
       ],
       "outcome_type": [
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "out-stormwater",
+        "scale-hyperscale"
       ]
     },
     {
@@ -647,6 +729,13 @@
         "monetary-penalty",
         "consent-decree",
         "permit-conditioned"
+      ],
+      "fact_pattern": [
+        "src-surface",
+        "out-surface",
+        "ctx-interstate",
+        "chem-treatment",
+        "proc-lawsuit"
       ]
     },
     {
@@ -680,6 +769,11 @@
       "outcome_type": [
         "monetary-penalty",
         "consent-decree"
+      ],
+      "fact_pattern": [
+        "ctx-wetlands",
+        "chem-fuel",
+        "proc-lawsuit"
       ]
     },
     {
@@ -715,6 +809,12 @@
         "monetary-penalty",
         "permit-conditioned",
         "compliance-order"
+      ],
+      "fact_pattern": [
+        "out-surface",
+        "out-stormwater",
+        "chem-pfas",
+        "proc-lawsuit"
       ]
     },
     {
@@ -753,6 +853,10 @@
       "outcome_type": [
         "monetary-penalty",
         "consent-decree"
+      ],
+      "fact_pattern": [
+        "out-surface",
+        "proc-lawsuit"
       ]
     },
     {
@@ -790,6 +894,11 @@
       ],
       "outcome_type": [
         "consent-decree"
+      ],
+      "fact_pattern": [
+        "ctx-coastal",
+        "chem-fuel",
+        "proc-lawsuit"
       ]
     },
     {
@@ -828,6 +937,11 @@
       "outcome_type": [
         "monetary-penalty",
         "consent-decree"
+      ],
+      "fact_pattern": [
+        "out-sewer",
+        "out-surface",
+        "proc-lawsuit"
       ]
     },
     {
@@ -866,6 +980,12 @@
       "outcome_type": [
         "monetary-penalty",
         "consent-decree"
+      ],
+      "fact_pattern": [
+        "out-sewer",
+        "out-surface",
+        "ctx-small-system",
+        "proc-lawsuit"
       ]
     },
     {
@@ -903,6 +1023,11 @@
       ],
       "outcome_type": [
         "consent-decree"
+      ],
+      "fact_pattern": [
+        "out-sewer",
+        "out-surface",
+        "proc-lawsuit"
       ]
     },
     {
@@ -941,6 +1066,10 @@
       "outcome_type": [
         "monetary-penalty",
         "consent-decree"
+      ],
+      "fact_pattern": [
+        "out-ground",
+        "proc-lawsuit"
       ]
     },
     {
@@ -969,6 +1098,11 @@
       ],
       "outcome_type": [
         "consent-decree"
+      ],
+      "fact_pattern": [
+        "out-sewer",
+        "out-surface",
+        "proc-lawsuit"
       ]
     },
     {
@@ -1006,6 +1140,10 @@
       ],
       "outcome_type": [
         "monetary-penalty"
+      ],
+      "fact_pattern": [
+        "out-surface",
+        "proc-lawsuit"
       ]
     },
     {
@@ -1048,6 +1186,11 @@
       ],
       "outcome_type": [
         "consent-decree"
+      ],
+      "fact_pattern": [
+        "out-stormwater",
+        "ctx-wetlands",
+        "proc-lawsuit"
       ]
     },
     {
@@ -1090,6 +1233,11 @@
       ],
       "outcome_type": [
         "monetary-penalty"
+      ],
+      "fact_pattern": [
+        "out-surface",
+        "chem-treatment",
+        "proc-lawsuit"
       ]
     },
     {
@@ -1127,6 +1275,12 @@
       ],
       "outcome_type": [
         "monetary-penalty"
+      ],
+      "fact_pattern": [
+        "out-surface",
+        "ctx-coastal",
+        "chem-treatment",
+        "proc-lawsuit"
       ]
     },
     {
@@ -1172,6 +1326,12 @@
         "consent-decree",
         "permit-issued",
         "permit-conditioned"
+      ],
+      "fact_pattern": [
+        "out-surface",
+        "ctx-wetlands",
+        "ctx-coastal",
+        "proc-lawsuit"
       ]
     },
     {
@@ -1199,6 +1359,10 @@
       ],
       "outcome_type": [
         "consent-decree"
+      ],
+      "fact_pattern": [
+        "out-surface",
+        "proc-lawsuit"
       ]
     },
     {
@@ -1241,6 +1405,11 @@
       ],
       "outcome_type": [
         "consent-decree"
+      ],
+      "fact_pattern": [
+        "out-sewer",
+        "ctx-small-system",
+        "proc-lawsuit"
       ]
     },
     {
@@ -1273,6 +1442,11 @@
       ],
       "outcome_type": [
         "monetary-penalty"
+      ],
+      "fact_pattern": [
+        "out-surface",
+        "chem-treatment",
+        "proc-lawsuit"
       ]
     },
     {
@@ -1310,6 +1484,11 @@
       ],
       "outcome_type": [
         "permit-conditioned"
+      ],
+      "fact_pattern": [
+        "out-sewer",
+        "out-surface",
+        "proc-lawsuit"
       ]
     },
     {
@@ -1347,6 +1526,11 @@
       ],
       "outcome_type": [
         "jurisdiction-affirmed"
+      ],
+      "fact_pattern": [
+        "out-ground",
+        "proc-lawsuit",
+        "scale-hyperscale"
       ]
     },
     {
@@ -1385,6 +1569,11 @@
       "outcome_type": [
         "permit-denied",
         "jurisdiction-affirmed"
+      ],
+      "fact_pattern": [
+        "out-stormwater",
+        "ctx-wetlands",
+        "proc-lawsuit"
       ]
     },
     {
@@ -1434,6 +1623,12 @@
       ],
       "outcome_type": [
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "out-ground",
+        "chem-treatment",
+        "proc-lawsuit",
+        "scale-hyperscale"
       ]
     },
     {
@@ -1487,6 +1682,13 @@
       ],
       "outcome_type": [
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "src-wells",
+        "src-utility",
+        "proc-secrecy",
+        "proc-lawsuit",
+        "scale-hyperscale"
       ]
     },
     {
@@ -1530,6 +1732,12 @@
       ],
       "outcome_type": [
         "monetary-penalty"
+      ],
+      "fact_pattern": [
+        "out-stormwater",
+        "pwr-diesel",
+        "chem-fuel",
+        "proc-lawsuit"
       ]
     },
     {
@@ -1573,6 +1781,12 @@
       ],
       "outcome_type": [
         "consent-decree"
+      ],
+      "fact_pattern": [
+        "out-sewer",
+        "out-surface",
+        "proc-lawsuit",
+        "scale-hyperscale"
       ]
     },
     {
@@ -1616,6 +1830,11 @@
       "outcome_type": [
         "consent-decree",
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "out-sewer",
+        "out-surface",
+        "proc-lawsuit"
       ]
     },
     {
@@ -1659,6 +1878,11 @@
       "outcome_type": [
         "consent-decree",
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "out-sewer",
+        "out-surface",
+        "proc-lawsuit"
       ]
     },
     {
@@ -1702,6 +1926,10 @@
       "outcome_type": [
         "monetary-penalty",
         "consent-decree"
+      ],
+      "fact_pattern": [
+        "out-surface",
+        "proc-lawsuit"
       ]
     },
     {
@@ -1751,6 +1979,12 @@
       "outcome_type": [
         "compliance-order",
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "out-ground",
+        "out-stormwater",
+        "ctx-interstate",
+        "proc-lawsuit"
       ]
     },
     {
@@ -1799,6 +2033,11 @@
       ],
       "outcome_type": [
         "consent-decree"
+      ],
+      "fact_pattern": [
+        "ctx-city-reservoir",
+        "chem-pfas",
+        "proc-lawsuit"
       ]
     },
     {
@@ -1844,6 +2083,9 @@
       "authorities": [],
       "outcome_type": [
         "jurisdiction-narrowed"
+      ],
+      "fact_pattern": [
+        "proc-lawsuit"
       ]
     },
     {
@@ -1886,6 +2128,10 @@
       ],
       "outcome_type": [
         "jurisdiction-affirmed"
+      ],
+      "fact_pattern": [
+        "ctx-wetlands",
+        "proc-lawsuit"
       ]
     },
     {
@@ -1941,7 +2187,15 @@
       "outcome_type": [
         "pending-undecided"
       ],
-      "last_verified": "2026-08-24"
+      "last_verified": "2026-08-24",
+      "fact_pattern": [
+        "src-wells",
+        "src-reclaimed",
+        "ctx-city-reservoir",
+        "ctx-interstate",
+        "proc-pledge",
+        "scale-hyperscale"
+      ]
     },
     {
       "case_id": "Amazon-NewCarlisle-IN-wetlands-2025",
@@ -1979,6 +2233,11 @@
       ],
       "outcome_type": [
         "monetary-penalty"
+      ],
+      "fact_pattern": [
+        "ctx-wetlands",
+        "proc-lawsuit",
+        "scale-hyperscale"
       ]
     },
     {
@@ -2021,6 +2280,13 @@
       ],
       "outcome_type": [
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "ctx-wetlands",
+        "proc-secrecy",
+        "proc-zoning",
+        "proc-lawsuit",
+        "scale-hyperscale"
       ]
     },
     {
@@ -2064,6 +2330,14 @@
       "outcome_type": [
         "consent-decree",
         "settled-nonmonetary"
+      ],
+      "fact_pattern": [
+        "src-wells",
+        "src-surface",
+        "ctx-stressed-aquifer",
+        "ctx-coastal",
+        "proc-lawsuit",
+        "scale-hyperscale"
       ]
     },
     {
@@ -2109,6 +2383,14 @@
       ],
       "outcome_type": [
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "src-wells",
+        "src-utility",
+        "ctx-stressed-aquifer",
+        "ctx-drought",
+        "proc-secrecy",
+        "proc-pledge"
       ]
     },
     {
@@ -2145,6 +2427,11 @@
       ],
       "outcome_type": [
         "settled-nonmonetary"
+      ],
+      "fact_pattern": [
+        "src-utility",
+        "ctx-drought",
+        "scale-hyperscale"
       ]
     },
     {
@@ -2182,6 +2469,10 @@
       ],
       "outcome_type": [
         "dismissed-no-liability"
+      ],
+      "fact_pattern": [
+        "out-stormwater",
+        "proc-lawsuit"
       ]
     },
     {
@@ -2219,6 +2510,11 @@
       ],
       "outcome_type": [
         "dismissed-no-liability"
+      ],
+      "fact_pattern": [
+        "out-surface",
+        "ctx-coastal",
+        "proc-lawsuit"
       ]
     },
     {
@@ -2256,6 +2552,11 @@
       ],
       "outcome_type": [
         "consent-decree"
+      ],
+      "fact_pattern": [
+        "out-sewer",
+        "out-surface",
+        "proc-lawsuit"
       ]
     },
     {
@@ -2294,6 +2595,13 @@
       ],
       "outcome_type": [
         "monetary-penalty"
+      ],
+      "fact_pattern": [
+        "out-sewer",
+        "out-ground",
+        "chem-treatment",
+        "proc-lawsuit",
+        "scale-hyperscale"
       ]
     },
     {
@@ -2331,6 +2639,13 @@
       ],
       "outcome_type": [
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "ctx-wetlands",
+        "proc-secrecy",
+        "proc-lawsuit",
+        "proc-records",
+        "scale-hyperscale"
       ]
     },
     {
@@ -2363,6 +2678,11 @@
       ],
       "outcome_type": [
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "ctx-wetlands",
+        "proc-secrecy",
+        "scale-hyperscale"
       ]
     },
     {
@@ -2400,6 +2720,11 @@
       ],
       "outcome_type": [
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "ctx-wetlands",
+        "proc-secrecy",
+        "scale-hyperscale"
       ]
     },
     {
@@ -2438,6 +2763,15 @@
       ],
       "outcome_type": [
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "src-surface",
+        "cool-once-through",
+        "out-surface",
+        "pwr-onsite-gas",
+        "pwr-thermo-cooling",
+        "proc-lawsuit",
+        "scale-hyperscale"
       ]
     },
     {
@@ -2471,6 +2805,11 @@
       ],
       "outcome_type": [
         "injunction-stop-work"
+      ],
+      "fact_pattern": [
+        "ctx-wetlands",
+        "pwr-onsite-gas",
+        "proc-lawsuit"
       ]
     },
     {
@@ -2518,6 +2857,12 @@
       ],
       "outcome_type": [
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "out-surface",
+        "ctx-wetlands",
+        "proc-lawsuit",
+        "scale-hyperscale"
       ]
     },
     {
@@ -2565,7 +2910,14 @@
         "permit-issued",
         "pending-undecided"
       ],
-      "last_verified": "2026-08-24"
+      "last_verified": "2026-08-24",
+      "fact_pattern": [
+        "cool-evaporative",
+        "out-surface",
+        "chem-pfas",
+        "chem-treatment",
+        "scale-hyperscale"
+      ]
     },
     {
       "case_id": "Google-FortWayneIN-isolated-wetland-permit-2025",
@@ -2625,7 +2977,12 @@
         "permit-issued",
         "permit-conditioned"
       ],
-      "last_verified": "2026-09-26"
+      "last_verified": "2026-09-26",
+      "fact_pattern": [
+        "ctx-wetlands",
+        "proc-secrecy",
+        "scale-hyperscale"
+      ]
     },
     {
       "case_id": "Microsoft-MountPleasantWI-wetland-individual-permit-2024",
@@ -2669,6 +3026,13 @@
       ],
       "outcome_type": [
         "permit-issued"
+      ],
+      "fact_pattern": [
+        "cool-closed",
+        "ctx-wetlands",
+        "ctx-interstate",
+        "proc-lawsuit",
+        "scale-hyperscale"
       ]
     },
     {
@@ -2722,6 +3086,12 @@
       ],
       "outcome_type": [
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "src-utility",
+        "ctx-stressed-aquifer",
+        "proc-lawsuit",
+        "scale-hyperscale"
       ]
     },
     {
@@ -2764,6 +3134,14 @@
       ],
       "outcome_type": [
         "settled-nonmonetary"
+      ],
+      "fact_pattern": [
+        "src-utility",
+        "ctx-interstate",
+        "proc-secrecy",
+        "proc-lawsuit",
+        "proc-records",
+        "scale-hyperscale"
       ]
     },
     {
@@ -2801,6 +3179,14 @@
       ],
       "outcome_type": [
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "src-wells",
+        "src-transfer",
+        "ctx-drought",
+        "ctx-small-system",
+        "proc-secrecy",
+        "proc-lawsuit"
       ]
     },
     {
@@ -2843,6 +3229,12 @@
       ],
       "outcome_type": [
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "src-wells",
+        "proc-zoning",
+        "proc-moratorium",
+        "scale-hyperscale"
       ]
     },
     {
@@ -2885,6 +3277,12 @@
       ],
       "outcome_type": [
         "permit-denied"
+      ],
+      "fact_pattern": [
+        "ctx-drought",
+        "proc-zoning",
+        "proc-moratorium",
+        "scale-hyperscale"
       ]
     },
     {
@@ -2927,6 +3325,11 @@
       ],
       "outcome_type": [
         "permit-denied"
+      ],
+      "fact_pattern": [
+        "ctx-interstate",
+        "proc-zoning",
+        "scale-hyperscale"
       ]
     },
     {
@@ -2964,6 +3367,9 @@
       ],
       "outcome_type": [
         "permit-issued"
+      ],
+      "fact_pattern": [
+        "ctx-wetlands"
       ]
     },
     {
@@ -3002,6 +3408,9 @@
       ],
       "outcome_type": [
         "permit-issued"
+      ],
+      "fact_pattern": [
+        "ctx-wetlands"
       ]
     },
     {
@@ -3046,6 +3455,15 @@
       ],
       "outcome_type": [
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "out-surface",
+        "ctx-wetlands",
+        "pwr-onsite-gas",
+        "pwr-thermo-cooling",
+        "chem-legacy",
+        "proc-lawsuit",
+        "scale-hyperscale"
       ]
     },
     {
@@ -3084,6 +3502,11 @@
       ],
       "outcome_type": [
         "permit-conditioned"
+      ],
+      "fact_pattern": [
+        "src-wells",
+        "proc-pledge",
+        "scale-hyperscale"
       ]
     },
     {
@@ -3126,6 +3549,14 @@
       ],
       "outcome_type": [
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "src-utility",
+        "out-sewer",
+        "ctx-endangered",
+        "proc-secrecy",
+        "proc-zoning",
+        "scale-hyperscale"
       ]
     },
     {
@@ -3170,6 +3601,12 @@
       "outcome_type": [
         "monetary-penalty",
         "compliance-order"
+      ],
+      "fact_pattern": [
+        "ctx-city-reservoir",
+        "chem-pfas",
+        "proc-lawsuit",
+        "proc-records"
       ]
     },
     {
@@ -3207,6 +3644,11 @@
       ],
       "outcome_type": [
         "monetary-penalty"
+      ],
+      "fact_pattern": [
+        "chem-pfas",
+        "proc-lawsuit",
+        "proc-records"
       ]
     },
     {
@@ -3245,6 +3687,13 @@
       ],
       "outcome_type": [
         "compliance-order"
+      ],
+      "fact_pattern": [
+        "src-surface",
+        "src-utility",
+        "ctx-city-reservoir",
+        "chem-treatment",
+        "proc-lawsuit"
       ]
     },
     {
@@ -3283,6 +3732,11 @@
       "outcome_type": [
         "monetary-penalty",
         "compliance-order"
+      ],
+      "fact_pattern": [
+        "src-utility",
+        "ctx-small-system",
+        "proc-lawsuit"
       ]
     },
     {
@@ -3321,6 +3775,11 @@
       ],
       "outcome_type": [
         "compliance-order"
+      ],
+      "fact_pattern": [
+        "out-ground",
+        "chem-treatment",
+        "proc-lawsuit"
       ]
     },
     {
@@ -3358,6 +3817,9 @@
       ],
       "outcome_type": [
         "jurisdiction-affirmed"
+      ],
+      "fact_pattern": [
+        "ctx-city-reservoir"
       ]
     },
     {
@@ -3395,6 +3857,10 @@
       ],
       "outcome_type": [
         "compliance-order"
+      ],
+      "fact_pattern": [
+        "out-ground",
+        "out-stormwater"
       ]
     },
     {
@@ -3432,6 +3898,11 @@
       ],
       "outcome_type": [
         "compliance-order"
+      ],
+      "fact_pattern": [
+        "ctx-navigable",
+        "chem-legacy",
+        "proc-lawsuit"
       ]
     },
     {
@@ -3468,6 +3939,12 @@
       ],
       "outcome_type": [
         "jurisdiction-affirmed"
+      ],
+      "fact_pattern": [
+        "out-sewer",
+        "out-surface",
+        "ctx-navigable",
+        "proc-lawsuit"
       ]
     },
     {
@@ -3504,6 +3981,10 @@
       ],
       "outcome_type": [
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "chem-pfas",
+        "proc-records"
       ]
     },
     {
@@ -3548,6 +4029,11 @@
       "display_section": "potential",
       "outcome_type": [
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "ctx-wetlands",
+        "proc-secrecy",
+        "scale-hyperscale"
       ]
     },
     {
@@ -3593,6 +4079,13 @@
       "display_section": "potential",
       "outcome_type": [
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "proc-secrecy",
+        "proc-zoning",
+        "proc-lawsuit",
+        "proc-records",
+        "scale-hyperscale"
       ]
     },
     {
@@ -3632,6 +4125,12 @@
       "outcome_type": [
         "monetary-penalty",
         "consent-decree"
+      ],
+      "fact_pattern": [
+        "out-surface",
+        "ctx-city-reservoir",
+        "chem-pfas",
+        "proc-lawsuit"
       ]
     },
     {
@@ -3675,6 +4174,13 @@
       "outcome_type": [
         "monetary-penalty",
         "consent-decree"
+      ],
+      "fact_pattern": [
+        "src-surface",
+        "src-utility",
+        "ctx-city-reservoir",
+        "chem-treatment",
+        "proc-lawsuit"
       ]
     },
     {
@@ -3708,6 +4214,12 @@
       ],
       "outcome_type": [
         "compliance-order"
+      ],
+      "fact_pattern": [
+        "src-utility",
+        "ctx-small-system",
+        "chem-treatment",
+        "proc-lawsuit"
       ]
     },
     {
@@ -3751,6 +4263,13 @@
       "outcome_type": [
         "jurisdiction-affirmed",
         "dismissed-no-liability"
+      ],
+      "fact_pattern": [
+        "src-wells",
+        "ctx-stressed-aquifer",
+        "ctx-city-reservoir",
+        "ctx-interstate",
+        "proc-lawsuit"
       ]
     },
     {
@@ -3788,6 +4307,11 @@
       ],
       "outcome_type": [
         "jurisdiction-narrowed"
+      ],
+      "fact_pattern": [
+        "src-wells",
+        "ctx-interstate",
+        "proc-lawsuit"
       ]
     },
     {
@@ -3825,6 +4349,12 @@
       ],
       "outcome_type": [
         "jurisdiction-affirmed"
+      ],
+      "fact_pattern": [
+        "src-surface",
+        "src-transfer",
+        "ctx-navigable",
+        "proc-lawsuit"
       ]
     },
     {
@@ -3868,6 +4398,11 @@
       ],
       "outcome_type": [
         "jurisdiction-affirmed"
+      ],
+      "fact_pattern": [
+        "src-wells",
+        "ctx-navigable",
+        "proc-lawsuit"
       ]
     },
     {
@@ -3905,6 +4440,11 @@
       ],
       "outcome_type": [
         "jurisdiction-affirmed"
+      ],
+      "fact_pattern": [
+        "src-surface",
+        "src-transfer",
+        "proc-lawsuit"
       ]
     },
     {
@@ -3947,6 +4487,10 @@
       ],
       "outcome_type": [
         "jurisdiction-affirmed"
+      ],
+      "fact_pattern": [
+        "src-wells",
+        "proc-lawsuit"
       ]
     },
     {
@@ -3985,6 +4529,11 @@
       "outcome_type": [
         "permit-issued",
         "jurisdiction-affirmed"
+      ],
+      "fact_pattern": [
+        "src-wells",
+        "ctx-small-system",
+        "proc-lawsuit"
       ]
     },
     {
@@ -4027,6 +4576,12 @@
       ],
       "outcome_type": [
         "dismissed-no-liability"
+      ],
+      "fact_pattern": [
+        "src-wells",
+        "ctx-stressed-aquifer",
+        "ctx-coastal",
+        "proc-lawsuit"
       ]
     },
     {
@@ -4069,6 +4624,11 @@
       ],
       "outcome_type": [
         "dismissed-no-liability"
+      ],
+      "fact_pattern": [
+        "src-wells",
+        "ctx-wetlands",
+        "proc-lawsuit"
       ]
     },
     {
@@ -4106,6 +4666,11 @@
       ],
       "outcome_type": [
         "dismissed-no-liability"
+      ],
+      "fact_pattern": [
+        "src-utility",
+        "proc-moratorium",
+        "proc-lawsuit"
       ]
     },
     {
@@ -4148,6 +4713,12 @@
       ],
       "outcome_type": [
         "dismissed-no-liability"
+      ],
+      "fact_pattern": [
+        "src-surface",
+        "ctx-coastal",
+        "ctx-endangered",
+        "proc-lawsuit"
       ]
     },
     {
@@ -4190,6 +4761,11 @@
       ],
       "outcome_type": [
         "jurisdiction-affirmed"
+      ],
+      "fact_pattern": [
+        "src-surface",
+        "ctx-tribal",
+        "proc-lawsuit"
       ]
     },
     {
@@ -4232,6 +4808,12 @@
       ],
       "outcome_type": [
         "jurisdiction-affirmed"
+      ],
+      "fact_pattern": [
+        "src-wells",
+        "ctx-drought",
+        "ctx-tribal",
+        "proc-lawsuit"
       ]
     },
     {
@@ -4274,6 +4856,10 @@
       ],
       "outcome_type": [
         "permit-denied"
+      ],
+      "fact_pattern": [
+        "proc-zoning",
+        "proc-lawsuit"
       ]
     },
     {
@@ -4314,6 +4900,13 @@
       ],
       "outcome_type": [
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "src-utility",
+        "proc-pledge",
+        "proc-lawsuit",
+        "proc-records",
+        "scale-hyperscale"
       ]
     },
     {
@@ -4355,6 +4948,14 @@
       ],
       "outcome_type": [
         "compliance-order"
+      ],
+      "fact_pattern": [
+        "src-utility",
+        "src-reclaimed",
+        "cool-closed",
+        "out-sewer",
+        "proc-lawsuit",
+        "scale-hyperscale"
       ]
     },
     {
@@ -4393,6 +4994,11 @@
       ],
       "outcome_type": [
         "compliance-order"
+      ],
+      "fact_pattern": [
+        "src-surface",
+        "ctx-navigable",
+        "proc-lawsuit"
       ]
     },
     {
@@ -4442,6 +5048,14 @@
       "outcome_type": [
         "permit-conditioned",
         "pending-undecided"
+      ],
+      "fact_pattern": [
+        "src-surface",
+        "ctx-drought",
+        "ctx-interstate",
+        "pwr-nuclear",
+        "pwr-thermo-cooling",
+        "scale-hyperscale"
       ]
     },
     {
@@ -4479,6 +5093,10 @@
       "outcome_type": [
         "jurisdiction-narrowed",
         "dismissed-no-liability"
+      ],
+      "fact_pattern": [
+        "chem-legacy",
+        "proc-lawsuit"
       ]
     },
     {
@@ -4515,6 +5133,10 @@
       ],
       "outcome_type": [
         "jurisdiction-narrowed"
+      ],
+      "fact_pattern": [
+        "chem-legacy",
+        "proc-lawsuit"
       ]
     },
     {
@@ -4553,6 +5175,13 @@
       ],
       "outcome_type": [
         "jurisdiction-narrowed"
+      ],
+      "fact_pattern": [
+        "src-surface",
+        "src-utility",
+        "ctx-navigable",
+        "pwr-hydro",
+        "proc-lawsuit"
       ]
     },
     {
@@ -4589,6 +5218,14 @@
       ],
       "outcome_type": [
         "jurisdiction-affirmed"
+      ],
+      "fact_pattern": [
+        "src-utility",
+        "ctx-city-reservoir",
+        "ctx-interstate",
+        "ctx-navigable",
+        "pwr-hydro",
+        "proc-lawsuit"
       ]
     },
     {
@@ -4626,6 +5263,14 @@
       ],
       "outcome_type": [
         "permit-issued"
+      ],
+      "fact_pattern": [
+        "src-surface",
+        "src-utility",
+        "src-transfer",
+        "ctx-interstate",
+        "proc-lawsuit",
+        "scale-hyperscale"
       ]
     },
     {
@@ -4662,6 +5307,12 @@
       ],
       "outcome_type": [
         "monetary-penalty"
+      ],
+      "fact_pattern": [
+        "src-utility",
+        "ctx-interstate",
+        "pwr-onsite-gas",
+        "proc-lawsuit"
       ]
     },
     {
@@ -4698,6 +5349,10 @@
       ],
       "outcome_type": [
         "permit-denied"
+      ],
+      "fact_pattern": [
+        "src-surface",
+        "ctx-interstate"
       ]
     },
     {
@@ -4735,6 +5390,11 @@
       ],
       "outcome_type": [
         "permit-denied"
+      ],
+      "fact_pattern": [
+        "ctx-interstate",
+        "ctx-navigable",
+        "pwr-hydro"
       ]
     },
     {
@@ -4772,6 +5432,11 @@
       ],
       "outcome_type": [
         "jurisdiction-affirmed"
+      ],
+      "fact_pattern": [
+        "src-surface",
+        "pwr-hydro",
+        "proc-lawsuit"
       ]
     },
     {
@@ -4809,6 +5474,12 @@
       "outcome_type": [
         "jurisdiction-affirmed",
         "injunction-stop-work"
+      ],
+      "fact_pattern": [
+        "src-surface",
+        "ctx-drought",
+        "ctx-interstate",
+        "proc-lawsuit"
       ]
     },
     {
@@ -4847,6 +5518,10 @@
       "outcome_type": [
         "dismissed-no-liability",
         "jurisdiction-narrowed"
+      ],
+      "fact_pattern": [
+        "proc-lawsuit",
+        "proc-records"
       ]
     },
     {
@@ -4884,6 +5559,10 @@
       ],
       "outcome_type": [
         "monetary-penalty"
+      ],
+      "fact_pattern": [
+        "proc-lawsuit",
+        "proc-records"
       ]
     }
   ]

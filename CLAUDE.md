@@ -110,16 +110,17 @@ Python-based scraping and data extraction pipeline that finds documents related 
 - **Logging**: structlog
 - **CLI**: click
 - **Dashboard (authoring)**: streamlit + plotly — `dashboard.py` is the local-dev / source-of-truth app (`streamlit run dashboard.py`).
-- **Dashboard (deployed)**: a **pre-rendered static site** with **no third-party assets at all**. `build_site.py` imports `dashboard`'s pure `_build_*_html` builders + data constants and emits `pages/index.html` (eleven tabs since 2026-09-26: **Overview** (default landing) · Legislation · States & Localities · **Commitments** · Water Cases (opens on **How statutes apply**) · Issues & Claims · News · Solutions · Security · Sources · Explore; vanilla-JS tabs/filters/collapsibles; a sticky outline-chip tab strip, collapsible card groups and a back-to-top control — see DESIGN.md §4a). This replaced the old stlite/Pyodide WASM deploy in June 2026 — first paint went from ~25–40 s to ~35 ms. Edit a card builder or the data and both the Streamlit app and the static site change together; regenerate with `python build_site.py`. **`build_site.build_site_files()` is the one list of what `pages/` contains** — `main()` writes exactly it, the tests read it, and the deploy test checks every name survives the flat `cp pages/*.* _site/` copy:
+- **Dashboard (deployed)**: a **pre-rendered static site** with **no third-party assets at all**. `build_site.py` imports `dashboard`'s pure `_build_*_html` builders + data constants and emits `pages/index.html` (twelve tabs since 2026-10-08: **Overview** (default landing) · **Check a project** · Legislation · States & Localities · **Commitments** · Water Cases (opens on **How statutes apply**) · Issues & Claims · News · Solutions · Security · Sources · Explore; vanilla-JS tabs/filters/collapsibles; a sticky outline-chip tab strip, collapsible card groups and a back-to-top control — see DESIGN.md §4a). This replaced the old stlite/Pyodide WASM deploy in June 2026 — first paint went from ~25–40 s to ~35 ms. Edit a card builder or the data and both the Streamlit app and the static site change together; regenerate with `python build_site.py`. **`build_site.build_site_files()` is the one list of what `pages/` contains** — `main()` writes exactly it, the tests read it, and the deploy test checks every name survives the flat `cp pages/*.* _site/` copy:
   - **`index.html`** (~0.4 MB; a build test trips at 500 KB) — the shell (header, schematic, tab strip, JS) plus the **default tab only** (`DEFAULT_TAB`). Every other tab is an empty placeholder carrying `data-src="tab-NAME.html?v=HASH"`, a "Loading…" line, and a `<noscript>` link to its standalone page. Split on 2026-09-26: the page had been 1.65 MB and ~15,000 elements parsed up front for tabs most visits never open; it now starts at ~4,000.
   - **`tab-NAME.html`** (one per non-default tab) — a complete standalone page (`site.css`, a link home) whose `#panel-NAME` the script lifts out and inserts on first open. **Prefetched on intent** (pointerenter / focus / touchstart on the tab button), never up front. Cross-tab links inside a tab page are rewritten to sibling files (`tab-cwa.html#x`) so a no-JS reader can follow them; the script rewrites them back to `#x` on insertion. `<script>` elements in a tab page are re-created on insertion so they run (the tab's totals, the Explore client). Files are **top-level on purpose** — the deploy copy is a flat glob.
   - **`site.css`** — the same CSS index.html inlines, for the standalone tab pages only.
   - **A tab-anchor map** (`<script type="application/json" id="tab-anchors">`, ~17 KB) lists every id in every lazy tab, so a link, a shared URL or Back can name a card whose tab has not been fetched: `navigateTo(id)` loads the owning tab, then does the usual tab/sub-tab/details/filter work. Tab switches `replaceState` to `#panel-NAME`, so a tab is shareable; record jumps `pushState`, and a `popstate` handler makes Back work.
   - **Every fetched URL is content-hashed** (`?v=` + 10 hex of sha256, `build_site.versioned`). GitHub Pages caches everything for 10 minutes; without the hash a reader could pair this build's page with the last build's tab or graph file.
+  - **`project-data.json`** (~380 KB) — the Check-a-project engine payload (`refdata.precedent.build_payload`): the fact-pattern facet vocabulary with trigger words and weights, every case/site/reading with its facets and the short lines the result cards show, the state instruments and county/city actions, the worked examples, and a TF-IDF sub-index over cases and sites in the Explore payload's shape. Fetched on first activation of that tab; `dashboard._build_project_check_html(payload_src)` inlines it when passed `None` (the Streamlit iframe).
   - **`graph-data.json`** (~650 KB) — the Explore connection graph + TF-IDF index **+ the precomputed default layout** (`refdata.graph.compute_layout`, numpy, same constants as the page's JS — a test pins the parity), split out of `index.html` on 2026-08-24 (page was 2.11 MB). The Explore tab `fetch`es it same-origin **on first activation only**, with a loading state and a plain failure message; a reader who never opens Explore never downloads it. `dashboard._build_explore_html(payload_src)` takes the URL — pass `None` (the default) and the payload inlines instead, which is what the Streamlit surface needs since a `components.html` iframe has no origin to fetch from.
   - **`llms.txt`** — an LLM-friendly markdown mirror (llmstxt.org convention: project summary, key numbers, the cross-bill principles summary, one-liners for every bill and CWA case with sources). It is linked from the page (`<link rel="alternate">` + footer) and test-enforced to contain every bill_id/case_id, so it can never drift from the page. **Collapse is a render concern, not a data one** — llms.txt always carries every record regardless of what the page folds away.
 - **The tagline is one constant.** `dashboard.TAGLINE` feeds the Streamlit caption, the static page's `<h1>` subtitle and `<meta name="description">`, and the llms.txt blockquote. It was rewritten on 2026-08-24: the old "Virginia & Ohio via public regulatory data" described the scraper pipeline's first two states and had been wrong since the curated datasets went national.
-- **Testing**: pytest + pytest-asyncio (902 tests; `tests/test_streamlit_app.py` boots the Streamlit app headlessly with `AppTest` in ~1 s). **Local env (2026-09-26):** the only interpreter on this machine is the system Python 3.9 — the uv-managed 3.12 the repo's pins assume is gone — so run tests with `.venv/bin/python -m pytest -q` (3.9 venv with unpinned-latest streamlit/plotly/markdown/pandas 2.x installed); CI remains the 3.12 source of truth.
+- **Testing**: pytest + pytest-asyncio (972 tests; `tests/test_streamlit_app.py` boots the Streamlit app headlessly with `AppTest` in ~1 s). **Local env (2026-09-26):** the only interpreter on this machine is the system Python 3.9 — the uv-managed 3.12 the repo's pins assume is gone — so run tests with `.venv/bin/python -m pytest -q` (3.9 venv with unpinned-latest streamlit/plotly/markdown/pandas 2.x installed); CI remains the 3.12 source of truth.
 
 ### Curated-data layer (`refdata/`, added 2026-07-25)
 
@@ -160,6 +161,78 @@ default.
 `claim-<id>`, `news-<id>`, `solution-<id>`. A build test asserts every internal
 `href="#x"` has a matching `id="x"` — registry-level integrity does not prove
 the renderer emitted the anchor.
+
+### Check a project — the precedent engine (`refdata/precedent.py`, added 2026-10-08)
+
+The tab the user asked for by name: *given a project description, apply the
+past cases to it*. The computation is a weighted overlap of facets you can inspect:
+
+- **`FACT_FACETS`** (`refdata/taxonomies.py`) — a closed vocabulary of 40
+  fact-pattern facets in 8 dimensions (water source · cooling · discharge route ·
+  site/watershed · power · chemicals · process · scale). Every **case** and
+  **conflict site** carries `fact_pattern` (what the project *is*); every
+  **statutory reading** carries `fact_triggers` (the facets whose presence makes
+  it could reach a project). Each facet carries the trigger words the
+  parser looks for; triggers are tokens exactly as `refdata.graph.tokenize`
+  emits them (a test proves it), so the browser's parser and Python's agree.
+  A drafted zero-liquid-discharge facet was held back because no case or site
+  carries it — same-commit rule; the incentive/CBA facet entered the same day
+  with the Pima County Project Blue agreement on the site record.
+- **`parse_project(text)`** reads a pasted description into facets, a state
+  (`state_code_for`: most-mentioned full name wins, a name after a comma counts
+  double, "Port Washington"/"Colorado River"/"Kansas City" are not states but
+  "West Texas" is Texas and "New York City" is New York, "Washington, D.C." is
+  DC, a bare two-letter code counts only after a comma), MW and MGD (per-day
+  figures only, so "78 million gallons over two years" is not 78 MGD; hyphenated
+  "300-megawatt" reads; "300 MWh", "mg/d", "1,5 MW" and "1e3 MW" do not); ≥100 MW
+  or ≥1 MGD sets the scale facet. A negator ("no", "not", "without", "never", "neither", "nor",
+  "cannot", "…n't") silences the next 3 surviving words of its sentence
+  (`live_tokens`), so "will not use groundwater or wells" sets no facet.
+- **`fact_requires` gates, `fact_triggers` scores**: a reading or instrument
+  whose `fact_requires` facets are not all present in the project does not
+  appear at all (sdwa-uic-classv scores on wells but requires `out-ground`).
+- **`match_project(facets, state, text)`** ranks readings by weighted facet
+  cosine on `fact_triggers` (weights `1 + ln(N/df)` over cases+sites), cases and
+  sites by facet cosine + 0.35 × TF-IDF wording cosine, tallies `outcome_type`
+  over the 10 closest cases, and lists the state's instruments and local
+  actions. A reading that names `jurisdictions` (AZ AMA, CA SGMA) is demoted ×0.25
+  and flagged *elsewhere* for another state or when no state is named.
+  `role: limit` readings are flagged, never hidden. Copy is modal ("could
+  reach", "what the closest cases recorded"): it maps exposure and does not predict.
+- **Instruments rank like readings** (2026-10-08 second pass): every
+  water-scoped instrument in `legislation.json` carries `fact_triggers` (empty =
+  "written to cover data centers in its jurisdiction; thresholds and exemptions
+  not assessed"; energy-only instruments carry none, and the payload's
+  `water_scoped` flag keeps them from being shown as covering anyone). An
+  instrument that names one project, only orders a study or audit, or binds a
+  small population (incentive applicants, DoD procurement) carries
+  `fact_scope: "narrow"` (`INSTRUMENT_FACT_SCOPES`) and gets no applicability
+  line. A state picked with no facts ticked shows only the state's rules. The state's instruments sort (enacted first,
+  −overlap score, id) and show "Because: …" facets; `federal_instruments` are the
+  `TOP_FEDERAL` (6) `level: federal` instruments (not a jurisdiction string —
+  EO 14318 says "United States") whose triggers overlap, shown whatever the
+  state, and the rules section renders under their own heading when no state is named.
+- **Negative mappings surface**: a site's `applicable_readings[].reaches: false`
+  entries ship as `sites[].negatives` and `match_project` returns `negatives` for
+  the `NEGATIVE_SITES` (3) closest sites, one row per (site, reading), rendered grey
+  (`.pcheck-neg`) after the sites section under "Assessed as NOT reaching a
+  *similar site*" — that site's limit, never a statement about this project.
+- **`data/reference/project_examples.json`** — six real 2026 proposals the
+  tracker does not otherwise record (Cedar Creek Lake TX, Amazon Wharton County
+  TX, Big Sky MT, Vantage Port Washington WI, Project Blue wells AZ, BT Aycock
+  Princeton TX), each verified against the cited coverage, with curated facets.
+  They are pre-rendered at build time (no-JS readers and crawlers get full
+  analyses) and mirrored into `llms.txt`; a test requires the parser to recover
+  ≥50 % of each example's curated facets from its description.
+- **Parity**: `tests/test_precedent.py::test_page_script_matches_the_engine_on_a_fixture`
+  runs the page's own JavaScript under `node` against the payload and requires
+  the same facets, ranked ids and outcome tally as the Python engine (skipped
+  only where node is absent; CI has it). The contract is `docs/specs/project-check-js.md`.
+- **Adding a record now means adding its facets**: a case or site without
+  `fact_pattern`, or a reading without `fact_triggers`, fails the suite. The
+  first batch was drafted by a Sonnet agent and reviewed here
+  (`scripts/annotate_fact_patterns.py` is the audit trail; its one override —
+  evaporative towers alone do not trigger §402 — is tested).
 
 ### Status monitors (`scrapers/monitors/`, added 2026-07-26)
 
@@ -309,6 +382,13 @@ Several pending federal bills would, if enacted, become Tier 1 data sources nati
 See `backlog.md` for detailed scraper plans, sample prompts for each source, and the May 2026 External Tracker Survey (10 top-priority ideas borrowed from existing trackers like WRI Aqueduct, FracTracker, PEC ArcGIS, and EIA Form 923).
 
 ## Universal lessons learned here (mirrored to coding-best-practices/CLAUDE.md)
+
+### 2026-10-08
+- **Make matching explainable by making the vocabulary closed.** "Apply past cases to this project" was first built as TF-IDF over prose, which matched the word *Arizona* and nothing about groundwater law. A 39-facet closed vocabulary on every record turns the question into weighted set overlap, and the facets in common *are* the explanation. Embeddings would have scored better and explained nothing.
+- **A parser's trigger words must be tokens the tokenizer can emit.** A third of the first draft's triggers ("well", "cone of depression", "once through") could never fire because the shared tokenizer strips stopwords and single letters. Test triggers through the real tokenizer, not by eye.
+- **Numbers need their unit *and* their period.** "78.2 million gallons over two years" parsed as 78 MGD; "31 million gallons a year" as 31 MGD. A per-day regex that requires the period fixed both; a volume with no period is not a rate.
+- **Re-verify every inferred field in a search agent's leads.** Haiku's project list had cooling type, discharge route and "nuclear restart" filled in where no source said so. The sourced facts were right; the inferred ones were the schema's defaults wearing a source URL. Spot-fetch the sources before a lead becomes data.
+- **A state-specific doctrine needs a jurisdiction gate, not a lower weight.** California's SGMA scored identically to Arizona's AMA regime for an Arizona project because both share the same facets. Data carries `jurisdictions`; the engine demotes and *labels* the out-of-state regime as an analogy rather than hiding it.
 
 ### 2026-09-26
 - **Split a single-page site by making each fragment a real page.** Each lazily fetched tab is a standalone document (own title, shared stylesheet, cross-tab links rewritten to sibling files) that the script lifts `#panel-NAME` out of and un-rewrites on insertion. No-JS readers and crawlers keep a working site, and one id→tab map lets links, shared URLs and Back reach content that has not loaded. Content-hash every fetched URL, or a CDN cache pairs this build's shell with last build's fragment.

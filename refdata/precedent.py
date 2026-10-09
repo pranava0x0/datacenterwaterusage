@@ -1,0 +1,743 @@
+"""Check a project: apply the tracked record to a described data-center proposal.
+
+WHY THIS EXISTS
+---------------
+The Explore tab answers "which records use the same words as this text?".
+That is wording, not law: a paragraph about an Arizona campus matches every
+record that says "Arizona" and nothing that says "groundwater management
+area". A reader with a project wants the chain the Water Cases tab draws by
+hand for nineteen sites (this fact pattern, the statutory readings that could
+reach it, the closest cases, what those cases recorded) for a project the
+tracker has not seen.
+
+The computation is deliberately simple: a weighted overlap of facets you can
+inspect. Every case and conflict site carries ``fact_pattern``, a list of
+facets from the closed :data:`refdata.taxonomies.FACT_FACETS` vocabulary
+(water source, cooling, discharge route, site, power, chemicals, process,
+scale). Every statutory reading carries ``fact_triggers``, the facets whose
+presence could bring it into play. A project is parsed into the same facets,
+from trigger words in a pasted description or from chips a reader ticks, and
+the facets in common are the explanation. The browser runs the same
+arithmetic from a payload this module emits, and a test holds the two to the
+same answer on fixtures.
+
+Nothing here predicts an outcome: ``outcomes`` is a tally of what the closest
+tracked cases recorded.
+
+Purity rule: no ``streamlit`` import.
+"""
+
+from __future__ import annotations
+
+import json
+import math
+import re
+from collections import Counter
+
+from refdata.graph import (
+    MIN_TOKEN_LEN,
+    STOPWORDS,
+    build_search_index,
+    tokenize,
+)
+from functools import lru_cache
+
+from refdata.loaders import (
+    REFERENCE_DIR,
+    _read_json,
+    file_signature,
+    load_cwa_investigations,
+    load_dc_water_conflicts,
+    load_legislation,
+    load_local_actions,
+    load_water_authorities,
+)
+from refdata.registry import build_registry
+from refdata.taxonomies import (
+    DC_ACTIVITY_LABELS,
+    DC_ROLE_LABELS,
+    FACT_DIMENSION_LABELS,
+    FACT_FACETS,
+    OUTCOME_TYPE_LABELS,
+    US_STATE_NAMES,
+    WATER_STATUTE_ORDER,
+)
+
+PROJECT_EXAMPLES_PATH = REFERENCE_DIR / "project_examples.json"
+
+# --- Tunables (mirrored into the page's JavaScript from the payload) ---------
+
+# A stated size at or above either figure sets the hyperscale facet even when
+# no trigger word does. 100 MW is where a single campus starts to move a
+# utility's planning numbers; 1 MGD is a small city's demand.
+HYPERSCALE_MW = 100.0
+HYPERSCALE_MGD = 1.0
+# How much the wording similarity (TF-IDF cosine over the record's own text)
+# adds to the facet similarity for cases and sites. Facets carry the legal
+# meaning; wording catches the names — an operator, a county, an aquifer —
+# that no facet encodes. Readings get no lexical term: a reading's prose is
+# about doctrine, and matching a project's words against it rewards nothing.
+LEXICAL_WEIGHT = 0.35
+# How many of the closest cases feed the outcome tally.
+OUTCOME_SAMPLE = 10
+TOP_CASES = 12
+TOP_SITES = 6
+TOP_READINGS = 12
+# Federal instruments whose fact_triggers overlap the project, shown whatever
+# the state: the six closest, so a reader is not handed every federal bill.
+TOP_FEDERAL = 6
+# Negative doctrine mappings (``reaches: false``) are read off this many of
+# the closest conflict sites — the ones the reader is most likely to compare.
+NEGATIVE_SITES = 3
+SCORE_DECIMALS = 6
+# A reading that names its jurisdictions (Arizona's AMA regime, California's
+# SGMA) still appears for a project elsewhere — as the analogy it is — but
+# scored down and flagged, so a Texas reader is not told SGMA reaches them.
+ELSEWHERE_FACTOR = 0.25
+
+# A comma is a thousands separator only when three digits follow it: "1,5 MW"
+# is a European 1.5, not 15, and is left unread. A number glued to a letter,
+# digit, point or comma ("1e3 MW") is not read either.
+_NUMBER = r"(?:^|[^A-Za-z0-9_.,])(\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?)(?![\d,]*,\d)"
+# "[\s-]*" between number and unit: "300-megawatt", "1.2-gigawatt", "100-MW".
+# Not an energy figure: "300 MWh", "300 megawatt-hours per year".
+MW_RE = re.compile(
+    _NUMBER + r"[\s-]*(gigawatts?|gw|megawatts?|mw)\b(?![\s-]*h(?:ours?|rs?)?\b)", re.IGNORECASE
+)
+# A per-day figure only. "78 million gallons over two years" and "31 million
+# gallons a year" say nothing about daily demand, and "mgd" already means it.
+# No "mg/d": that is milligrams a day.
+MGD_RE = re.compile(
+    _NUMBER + r"[\s-]*(?:mgd|million[\s-]*gallons?[\s-]*(?:per|a|/|each)[\s-]*day)\b", re.IGNORECASE
+)
+# "5,000,000 gallons a day" / "750,000 gallons per day" — read in gallons, then
+# scaled to MGD. Only a per-day figure counts; "per year" says little about
+# peak demand and "per minute" belongs to well permits (gpm), not campuses.
+GALLONS_PER_DAY_RE = re.compile(
+    _NUMBER + r"[\s-]*(gallons?|gal)[\s-]*(?:per|a|/|each)[\s-]*day\b", re.IGNORECASE
+)
+
+
+def _number(text: str) -> float:
+    return float(text.replace(",", ""))
+
+
+def _fmt_g(n: float) -> str:
+    """Six significant digits, never an exponent: the page's ``fmtG``.
+    ``f"{n:g}"`` would print a million megawatts as ``1e+06``."""
+    return f"{float(f'{n:.6g}'):f}".rstrip("0").rstrip(".")
+
+
+# A state name that is really part of a place or river name: "Port Washington",
+# "Fort Worth"-style prefixes, "Colorado River" (Texas has one of its own),
+# "Kansas City" and "Oklahoma City" (a city is not its namesake state; Kansas
+# City is mostly in Missouri). New York City is the one city that is.
+# No compass words: "West Texas" is Texas, and the compound states ("West
+# Virginia", "North Carolina") match first, longest-first, so their inner name
+# is already inside a taken range.
+_NOT_A_STATE_BEFORE = re.compile(r"(?:\b(?:port|fort|lake|mount|new)\s+)$", re.IGNORECASE)
+_NOT_A_STATE_AFTER = re.compile(r"^\s+(?:river|street|avenue|road|county\s+water)\b", re.IGNORECASE)
+_CITY_AFTER = re.compile(r"^\s+city\b", re.IGNORECASE)
+# "Washington, D.C." / "Washington DC" is the District, not Washington state.
+# Matched before the name scan so its "Washington" is already taken.
+_DC_RE = re.compile(r"\bwashington,?\s*d\.?\s?c\b\.?", re.IGNORECASE)
+_STATE_EXACT = {"New York", "New Mexico", "New Jersey", "New Hampshire", "West Virginia",
+                "North Carolina", "North Dakota", "South Carolina", "South Dakota"}
+
+
+def state_code_for(text: str | None) -> str | None:
+    """The state a passage is about, as a two-letter code, or ``None``.
+
+    Full names count, and the name mentioned most often wins, a name after a
+    comma counting double — a passage on a campus in "Henderson County, Texas"
+    by "a Kansas developer" is about Texas. A name that is part
+    of another place's name ("Port Washington", "Colorado River", "Kansas
+    City") is skipped.
+    Ties go to the earliest mention. A bare two-letter code counts only when
+    nothing else does, only right after a comma ("Tucson, AZ"), and only if it
+    is a real code — so "US EPA", "a new DC campus" and a stray "OR" name no
+    state.
+    """
+    text = (text or "").strip()
+    if not text or text in ("Federal (US)", "United States"):
+        return None
+    by_name = {name: code for code, name in US_STATE_NAMES.items()}
+    if text in by_name:
+        return by_name[text]
+    counts: dict[str, int] = {}
+    first: dict[str, int] = {}
+    taken: list[tuple[int, int]] = []
+
+    def count(code: str, start: int, end: int) -> None:
+        taken.append((start, end))
+        # "Henderson County, Texas" is a location; "a Kansas developer" is
+        # an adjective. The comma is worth a second mention.
+        counts[code] = counts.get(code, 0) + (2 if text[:start].rstrip().endswith(",") else 1)
+        first.setdefault(code, start)
+
+    for m in _DC_RE.finditer(text):
+        count("DC", m.start(), m.end())
+    for name in sorted(by_name, key=len, reverse=True):
+        for m in re.finditer(r"\b" + re.escape(name) + r"\b", text, re.IGNORECASE):
+            if any(a <= m.start() < b for a, b in taken):
+                continue  # inside a longer name already counted (West Virginia)
+            if name not in _STATE_EXACT and _NOT_A_STATE_BEFORE.search(text[: m.start()]):
+                continue
+            if _NOT_A_STATE_AFTER.search(text[m.end():]):
+                continue
+            if name != "New York" and _CITY_AFTER.search(text[m.end():]):
+                continue
+            count(by_name[name], m.start(), m.end())
+    if counts:
+        return min(counts, key=lambda c: (-counts[c], first[c]))
+    for token in re.findall(r",\s*([A-Z]{2})\b", text):
+        if token in US_STATE_NAMES:
+            return token
+    return None
+
+
+# --- Parsing a description -----------------------------------------------------
+
+# "will not use groundwater or wells", "no wetlands or streams on site",
+# "without evaporative cooling": a negator silences the next NEGATION_SCOPE
+# surviving words (the words tokenize keeps), so "or" and "on" do not end the
+# scope early. Most negators are stopwords, so this reads the raw stream, where
+# "don't" is still one word; a sentence break ends the scope.
+NEGATORS = frozenset({"no", "not", "without", "never", "neither", "nor", "cannot"})
+NEGATION_SCOPE = 3
+_RAW_WORD_RE = re.compile(r"[A-Za-z0-9]+(?:['\u2019][A-Za-z0-9]+)*|[.;!?]")
+_APOSTROPHE_RE = re.compile(r"['\u2019]")
+
+
+def _is_negator(item: str) -> bool:
+    low = item.lower()
+    return low in NEGATORS or low.endswith("n't") or low.endswith("n\u2019t")
+
+
+def live_tokens(text: str) -> set[str]:
+    """The tokens of :func:`tokenize` that occur at least once un-negated.
+
+    Same word stream as ``tokenize``; a unigram is negated when one of
+    :data:`NEGATORS` (or an "n't" word) came within the previous
+    :data:`NEGATION_SCOPE` surviving words of the same sentence, and a bigram
+    when its first word is.
+    """
+    surviving: list[tuple[str, bool]] = []
+    since = NEGATION_SCOPE  # surviving words since the last negator
+    for item in _RAW_WORD_RE.findall(str(text or "")):
+        if item in ".;!?":
+            since = NEGATION_SCOPE
+            continue
+        for word in _APOSTROPHE_RE.split(item.lower()):
+            if len(word) >= MIN_TOKEN_LEN and word not in STOPWORDS:
+                surviving.append((word, since < NEGATION_SCOPE))
+                since += 1
+        if _is_negator(item):
+            since = 0
+    live = {w for w, negated in surviving if not negated}
+    live.update(f"{a} {b}" for (a, negated), (b, _) in zip(surviving, surviving[1:]) if not negated)
+    return live
+
+
+
+def parse_project(text: str) -> dict:
+    """Read a pasted description into facets, a state and a size.
+
+    ``matched`` records which trigger words set each facet, so the page can
+    say "we read *groundwater* and *wells* as On-site groundwater wells" and
+    the reader can untick it. Facets come back in taxonomy order.
+    """
+    tokens = set(tokenize(text))
+    live = live_tokens(text)
+    matched: dict[str, list[str]] = {}
+    for facet_id, facet in FACT_FACETS.items():
+        if any(b in tokens for b in facet.get("blockers", [])):
+            continue
+        hits = [t for t in facet["triggers"] if t in live]
+        if hits:
+            matched[facet_id] = hits
+
+    mw = None
+    for value, unit in MW_RE.findall(text or ""):
+        n = _number(value) * (1000.0 if unit.lower().startswith("g") else 1.0)
+        mw = n if mw is None else max(mw, n)
+    mgd = None
+    for value in MGD_RE.findall(text or ""):
+        n = _number(value)
+        mgd = n if mgd is None else max(mgd, n)
+    for value, _unit in GALLONS_PER_DAY_RE.findall(text or ""):
+        n = _number(value) / 1_000_000.0
+        mgd = n if mgd is None else max(mgd, n)
+
+    if (mw is not None and mw >= HYPERSCALE_MW) or (mgd is not None and mgd >= HYPERSCALE_MGD):
+        matched.setdefault("scale-hyperscale", []).append(
+            f"{_fmt_g(mw)} MW" if mw is not None and mw >= HYPERSCALE_MW else f"{_fmt_g(mgd)} MGD"
+        )
+
+    return {
+        "facets": [f for f in FACT_FACETS if f in matched],
+        "matched": matched,
+        "state": state_code_for(text),
+        "mw": mw,
+        "mgd": mgd,
+    }
+
+
+# --- Records ----------------------------------------------------------------------
+
+
+def _short(text: str, limit: int = 260) -> str:
+    text = " ".join(str(text or "").split())
+    if len(text) <= limit:
+        return text
+    cut = text[: limit - 1]
+    if " " in cut:
+        cut = cut[: cut.rfind(" ")]
+    return cut + "…"
+
+
+def _records() -> dict:
+    """Cases, sites and readings with the fields the engine and the page use."""
+    reg = build_registry()
+    cases = []
+    for c in load_cwa_investigations().get("cases", []):
+        ref = reg.get(c.get("case_id", ""))
+        if ref is None:
+            continue
+        cases.append(
+            {
+                "id": c["case_id"],
+                "label": ref.label,
+                "facets": list(c.get("fact_pattern") or []),
+                "outcome_type": list(c.get("outcome_type") or []),
+                "case_type": c.get("case_type", ""),
+                "category": c.get("category", ""),
+                "year": str(c.get("year", "")),
+                "cwa_applied": c.get("cwa_applied", ""),
+                "instrument": _short(c.get("cwa_instrument", ""), 120),
+                "takeaway": _short(c.get("takeaway", "")),
+                "tab": ref.tab,
+                "anchor": ref.anchor,
+            }
+        )
+    sites = []
+    for s in load_dc_water_conflicts().get("sites", []):
+        ref = reg.get(s.get("site_id", ""))
+        if ref is None:
+            continue
+        sites.append(
+            {
+                "id": s["site_id"],
+                "label": ref.label,
+                "facets": list(s.get("fact_pattern") or []),
+                "issue_types": list(s.get("issue_types") or []),
+                "location": s.get("location", ""),
+                "state": state_code_for(s.get("location", "")),
+                "status": _short(s.get("status_2026", "")),
+                # Mappings the record assessed as *not* reaching this site
+                # (``reaches: false``), limits a similar project may meet too.
+                "negatives": [
+                    {"reading_id": ar.get("reading_id", ""), "how": _short(ar.get("how", ""))}
+                    for ar in s.get("applicable_readings") or []
+                    if ar.get("reaches") is False
+                ],
+                "tab": ref.tab,
+                "anchor": ref.anchor,
+            }
+        )
+    readings = []
+    for r in load_water_authorities().get("readings", []):
+        ref = reg.get(r.get("reading_id", ""))
+        if ref is None:
+            continue
+        readings.append(
+            {
+                "id": r["reading_id"],
+                "label": r.get("name", ref.label),
+                "statute": r.get("statute", ""),
+                "section": r.get("section", ""),
+                "activities": list(r.get("dc_activities") or []),
+                "role": r.get("dc_role", "hook"),
+                "trigger": r.get("dc_trigger", ""),
+                "triggers": list(r.get("fact_triggers") or []),
+                "requires": list(r.get("fact_requires") or []),
+                "jurisdictions": list(r.get("jurisdictions") or []),
+                "example_case_ids": list(r.get("example_case_ids") or []),
+                "tab": ref.tab,
+                "anchor": ref.anchor,
+            }
+        )
+    return {"cases": cases, "sites": sites, "readings": readings}
+
+
+def facet_weights(cases: list[dict], sites: list[dict]) -> dict[str, float]:
+    """``1 + ln(N / df)`` over cases and sites — a facet half the record shares
+    separates less than one three records share. Never below 1, so a rare
+    facet in common always counts for something."""
+    docs = [r["facets"] for r in cases + sites]
+    n = len(docs) or 1
+    df = Counter(f for facets in docs for f in set(facets))
+    return {
+        f: round(1.0 + math.log(n / max(1, df.get(f, 0))), SCORE_DECIMALS) for f in FACT_FACETS
+    }
+
+
+def overlap(a: list[str], b: list[str], weights: dict[str, float]) -> tuple[float, list[str]]:
+    """Weighted cosine between two facet sets, plus the facets in common.
+
+    Binary vectors weighted by :func:`facet_weights`: ``Σw(shared) /
+    √(Σw(a)·Σw(b))``. Cosine rather than Jaccard so a one-facet site is not
+    penalised against a nine-facet project for the facets the project has
+    and the site's record never mentioned.
+    """
+    sa, sb = set(a), set(b)
+    shared = [f for f in FACT_FACETS if f in sa and f in sb]
+    if not shared:
+        return 0.0, []
+    num = sum(weights.get(f, 1.0) for f in shared)
+    na = sum(weights.get(f, 1.0) for f in sa)
+    nb = sum(weights.get(f, 1.0) for f in sb)
+    return round(num / math.sqrt(na * nb), SCORE_DECIMALS), shared
+
+
+def _lexical_scores(text: str, index: dict, doc_ids: set[str]) -> dict[str, float]:
+    """TF-IDF cosine of ``text`` against the records in ``doc_ids`` — the same
+    arithmetic as the Explore search, restricted to cases and sites."""
+    if not (text or "").strip():
+        return {}
+    # Only words that some case or site actually carries: the page ships just
+    # that sub-vocabulary, and a query word outside it would change the query
+    # norm here and not there — the two cosines would drift in the fourth
+    # decimal and nothing would fail until a ranking flipped.
+    known = {t for d in doc_ids for t in (index["docs"].get(d) or {})}
+    counts = Counter(t for t in tokenize(text) if t in known)
+    if not counts:
+        return {}
+    n_docs = index["n_docs"]
+    qw = {t: c * math.log(n_docs / index["df"][t]) for t, c in counts.items()}
+    norm = math.sqrt(sum(w * w for w in qw.values())) or 1.0
+    out = {}
+    for doc_id in doc_ids:
+        vec = index["docs"].get(doc_id) or {}
+        total = sum((qw[t] / norm) * w for t, w in vec.items() if t in qw)
+        if total > 0:
+            out[doc_id] = round(total, SCORE_DECIMALS)
+    return out
+
+
+def match_project(
+    facets: list[str],
+    state: str | None = None,
+    text: str = "",
+    records: dict | None = None,
+    index: dict | None = None,
+) -> dict:
+    """Rank the record against a project's facets (and, optionally, its words).
+
+    Returns the pieces the page renders, each already sorted and already
+    carrying its explanation (``shared`` facets, matched activities):
+
+    ``readings``
+        statutory readings whose ``fact_triggers`` overlap the project, best
+        first, with ``role`` so a limit is never shown as a route and
+        ``elsewhere`` when the reading's regime belongs to another state;
+    ``activities``
+        the data-center activities those readings belong to, in path order;
+    ``cases`` / ``sites``
+        the closest tracked cases and conflict sites, facet cosine plus
+        :data:`LEXICAL_WEIGHT` × wording cosine when a description was given;
+    ``outcomes``
+        a tally of ``outcome_type`` over the :data:`OUTCOME_SAMPLE` closest
+        cases — what was recorded, not what will happen;
+    ``instruments`` / ``local_actions``
+        the tracked instruments in the named state (enacted first, then by
+        ``fact_triggers`` overlap, each with ``score`` and ``shared``) and the
+        county and city actions there — empty without a state;
+    ``federal_instruments``
+        federal instruments whose ``fact_triggers`` overlap the project, best
+        first, at most :data:`TOP_FEDERAL` — shown whatever the state;
+    ``negatives``
+        the ``reaches: false`` mappings on the :data:`NEGATIVE_SITES` closest
+        conflict sites — doctrines the record assessed as not reaching a
+        similar site, one row per (site, reading).
+    """
+    recs = records or _records()
+    weights = facet_weights(recs["cases"], recs["sites"])
+    facets = [f for f in FACT_FACETS if f in set(facets)]
+
+    def ranked(items: list[dict], top: int, lexical: dict[str, float]) -> list[dict]:
+        rows = []
+        for item in items:
+            score, shared = overlap(facets, item["facets"], weights)
+            lex = lexical.get(item["id"], 0.0)
+            total = round(score + LEXICAL_WEIGHT * lex, SCORE_DECIMALS)
+            if total > 0:
+                rows.append({**item, "score": total, "facet_score": score, "lexical": lex, "shared": shared})
+        rows.sort(key=lambda r: (-r["score"], r["id"]))
+        return rows[:top]
+
+    lexical: dict[str, float] = {}
+    if (text or "").strip():
+        idx = index or build_search_index()
+        ids = {r["id"] for r in recs["cases"]} | {r["id"] for r in recs["sites"]}
+        lexical = _lexical_scores(text, idx, ids)
+
+    cases = ranked(recs["cases"], TOP_CASES, lexical)
+    sites = ranked(recs["sites"], TOP_SITES, lexical)
+
+    # ``fact_requires`` gates, ``fact_triggers`` scores: a reading or
+    # instrument that requires facets the project lacks does not appear at all
+    # (a UIC Class V reading needs something going into the ground, not just
+    # wells pumping out of it).
+    present = set(facets)
+
+    def admitted(row: dict) -> bool:
+        return all(f in present for f in row.get("requires") or [])
+
+    readings = []
+    for r in recs["readings"]:
+        if not admitted(r):
+            continue
+        score, shared = overlap(facets, r["triggers"], weights)
+        if score > 0:
+            # No state named is not a pass: an AMA rule reaches only Arizona.
+            elsewhere = bool(r["jurisdictions"]) and state not in r["jurisdictions"]
+            if elsewhere:
+                score = round(score * ELSEWHERE_FACTOR, SCORE_DECIMALS)
+            readings.append({**r, "score": score, "shared": shared, "elsewhere": elsewhere})
+    readings.sort(key=lambda r: (-r["score"], r["id"]))
+    readings = readings[:TOP_READINGS]
+
+    activity_order = list(DC_ACTIVITY_LABELS)
+    activities = sorted(
+        {a for r in readings for a in r["activities"]},
+        key=lambda a: activity_order.index(a) if a in activity_order else 99,
+    )
+
+    tally = Counter(o for c in cases[:OUTCOME_SAMPLE] for o in c["outcome_type"])
+    outcomes = [
+        {"outcome": o, "label": OUTCOME_TYPE_LABELS.get(o, o), "count": n}
+        for o, n in sorted(tally.items(), key=lambda kv: (-kv[1], kv[0]))
+    ]
+
+    # Instruments rank like readings: overlap of the project's facets with the
+    # instrument's fact_triggers. Empty triggers score 0; the page says the
+    # instrument is written to cover data centers in its jurisdiction, unless
+    # its fact_scope is "narrow".
+    def scored(inst: dict) -> dict:
+        score, shared = overlap(facets, inst["triggers"], weights)
+        return {**inst, "score": score, "shared": shared}
+
+    all_instruments = _instruments()
+    instruments, local_actions = [], []
+    if state:
+        instruments = [scored(i) for i in all_instruments if i["state"] == state and admitted(i)]
+        instruments.sort(key=lambda i: (0 if i["status"] == "enacted" else 1, -i["score"], i["id"]))
+        local_actions = sorted(
+            (a for a in _local_actions() if a["state"] == state),
+            key=lambda a: (a["date"] or ""),
+            reverse=True,
+        )
+    # By level, not jurisdiction string: EO 14318 and the AI Action Plan carry
+    # "United States", not "Federal (US)".
+    federal = [scored(i) for i in all_instruments if i["level"] == "federal" and admitted(i)]
+    federal = [i for i in federal if i["score"] > 0]
+    federal.sort(key=lambda i: (-i["score"], i["id"]))
+    federal = federal[:TOP_FEDERAL]
+
+    # What the record assessed as NOT reaching the closest sites. The heading
+    # says "a similar site": these are that site's limits, not this project's.
+    reading_by_id = {r["id"]: r for r in recs["readings"]}
+    negatives, seen = [], set()
+    for site in sites[:NEGATIVE_SITES]:
+        for neg in site.get("negatives") or []:
+            key = (site["id"], neg["reading_id"])
+            if key in seen:
+                continue
+            seen.add(key)
+            reading = reading_by_id.get(neg["reading_id"]) or {}
+            negatives.append(
+                {
+                    "site_id": site["id"],
+                    "site_label": site["label"],
+                    "site_anchor": site["anchor"],
+                    "reading_id": neg["reading_id"],
+                    "reading_label": reading.get("label", neg["reading_id"]),
+                    "statute": reading.get("statute", ""),
+                    "anchor": reading.get("anchor", ""),
+                    "how": neg["how"],
+                }
+            )
+
+    return {
+        "facets": facets,
+        "state": state,
+        "readings": readings,
+        "activities": activities,
+        "cases": cases,
+        "sites": sites,
+        "outcomes": outcomes,
+        "outcome_sample": min(OUTCOME_SAMPLE, len(cases)),
+        "instruments": instruments,
+        "federal_instruments": federal,
+        "local_actions": local_actions,
+        "negatives": negatives,
+    }
+
+
+def _instruments() -> list[dict]:
+    reg = build_registry()
+    out = []
+    for b in load_legislation().get("bills", []):
+        ref = reg.get(b.get("bill_id", ""))
+        if ref is None:
+            continue
+        out.append(
+            {
+                "id": b["bill_id"],
+                "label": ref.label,
+                "title": _short(b.get("title", ""), 140),
+                "jurisdiction": b.get("jurisdiction", ""),
+                "state": state_code_for(b.get("jurisdiction", "")),
+                "level": b.get("level", ""),
+                "status": b.get("status", ""),
+                "triggers": list(b.get("fact_triggers") or []),
+                "requires": list(b.get("fact_requires") or []),
+                "principles": [p.get("tag", "") for p in b.get("general_principles") or []],
+                # Water-scoped instruments carry fact_triggers (possibly empty:
+                # "every data center in the jurisdiction"); energy-only ones do
+                # not, and must not be shown as applying to every campus.
+                "water_scoped": "fact_triggers" in b,
+                "fact_scope": b.get("fact_scope", ""),
+                "tab": ref.tab,
+                "anchor": ref.anchor,
+            }
+        )
+    return out
+
+
+def _local_actions() -> list[dict]:
+    return [
+        {
+            "id": a.get("action_id", ""),
+            "jurisdiction": a.get("jurisdiction", ""),
+            "state": a.get("state", ""),
+            "action_type": a.get("action_type", ""),
+            "status": a.get("status", ""),
+            "date": a.get("date", ""),
+            "water_related": bool(a.get("water_related")),
+        }
+        for a in load_local_actions().get("actions", [])
+    ]
+
+
+# --- Worked examples -----------------------------------------------------------------
+
+
+@lru_cache(maxsize=2)
+def _load_project_examples_cached(path_str: str, signature: tuple) -> dict:
+    return _read_json(path_str, {"examples": list})
+
+
+def load_project_examples() -> dict:
+    """``project_examples.json`` — real 2026 proposals the tab offers as
+    one-click inputs. Each carries a curated facet list; the description's
+    parse is a convenience, the curated list is the record."""
+    return _load_project_examples_cached(str(PROJECT_EXAMPLES_PATH), file_signature(PROJECT_EXAMPLES_PATH))
+
+
+# --- Payload ---------------------------------------------------------------------------
+
+
+def build_payload() -> dict:
+    """Everything the page needs, in one same-origin JSON file.
+
+    Shipped: the facet vocabulary with its trigger words and weights, the
+    records with their facets and the short lines the result cards show, the
+    state's instruments and local actions, the worked examples, and a
+    TF-IDF index over cases and sites in the Explore payload's shape (vocab
+    positions, integer weights) so the page can reuse that code path. The
+    constants travel too, so the JavaScript is parametrised rather than
+    transcribed.
+    """
+    recs = _records()
+    weights = facet_weights(recs["cases"], recs["sites"])
+    index = build_search_index()
+    wanted = {r["id"] for r in recs["cases"]} | {r["id"] for r in recs["sites"]}
+    docs_raw = {rid: vec for rid, vec in index["docs"].items() if rid in wanted and vec}
+    vocab = sorted({t for vec in docs_raw.values() for t in vec})
+    position = {t: i for i, t in enumerate(vocab)}
+    from refdata.graph import WEIGHT_SCALE  # noqa: PLC0415 — keeps the import graph acyclic at module load
+
+    docs = {
+        rid: {
+            "t": [position[t] for t in vec],
+            "w": [round(w * WEIGHT_SCALE) for w in vec.values()],
+        }
+        for rid, vec in sorted(docs_raw.items())
+    }
+    return {
+        "facets": {
+            fid: {
+                "dimension": f["dimension"],
+                "label": f["label"],
+                "description": f["description"],
+                "triggers": list(f["triggers"]),
+                "blockers": list(f.get("blockers", [])),
+                "weight": weights[fid],
+            }
+            for fid, f in FACT_FACETS.items()
+        },
+        "dimensions": dict(FACT_DIMENSION_LABELS),
+        "activities": dict(DC_ACTIVITY_LABELS),
+        "roles": dict(DC_ROLE_LABELS),
+        "statute_order": list(WATER_STATUTE_ORDER),
+        "outcomes": dict(OUTCOME_TYPE_LABELS),
+        "states": dict(US_STATE_NAMES),
+        "readings": recs["readings"],
+        "cases": recs["cases"],
+        "sites": recs["sites"],
+        "instruments": _instruments(),
+        "local_actions": _local_actions(),
+        "examples": load_project_examples().get("examples", []),
+        "index": {
+            "vocab": vocab,
+            "df": [index["df"][t] for t in vocab],
+            "n_docs": index["n_docs"],
+            "docs": docs,
+            "weight_scale": WEIGHT_SCALE,
+        },
+        "stopwords": sorted(STOPWORDS),
+        "min_token_len": MIN_TOKEN_LEN,
+        "constants": {
+            "hyperscale_mw": HYPERSCALE_MW,
+            "hyperscale_mgd": HYPERSCALE_MGD,
+            "lexical_weight": LEXICAL_WEIGHT,
+            "outcome_sample": OUTCOME_SAMPLE,
+            "top_cases": TOP_CASES,
+            "top_sites": TOP_SITES,
+            "top_readings": TOP_READINGS,
+            "top_federal": TOP_FEDERAL,
+            "negative_sites": NEGATIVE_SITES,
+            "score_decimals": SCORE_DECIMALS,
+            "elsewhere_factor": ELSEWHERE_FACTOR,
+        },
+    }
+
+
+_PAYLOAD_CACHE: dict = {"sig": None, "json": ""}
+
+
+def _signature() -> tuple:
+    from refdata.registry import _signature as registry_signature
+
+    return (registry_signature(), file_signature(PROJECT_EXAMPLES_PATH), file_signature(REFERENCE_DIR / "local_actions.json"))
+
+
+def payload_json() -> str:
+    """The payload as bytes on the wire, memoised on its inputs' signatures."""
+    sig = _signature()
+    if _PAYLOAD_CACHE["sig"] != sig:
+        _PAYLOAD_CACHE["json"] = json.dumps(build_payload(), separators=(",", ":")).replace("</", "<\\/")
+        _PAYLOAD_CACHE["sig"] = sig
+    return _PAYLOAD_CACHE["json"]

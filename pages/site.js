@@ -99,6 +99,8 @@ function activateTab(name, fromLink){
   return loadPanel(name).then(panel => {
     // The graph blob is a separate file fetched on first activation.
     if (name === 'explore' && window.exploreInit) window.exploreInit();
+    // Same for the Check-a-project engine payload.
+    if (name === 'check' && window.projectCheckInit) window.projectCheckInit();
     return panel;
   });
 }

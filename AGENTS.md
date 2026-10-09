@@ -116,7 +116,12 @@ careless rewrite.
    `respondent`, `year` (`YYYY` or `YYYY-YYYY`), `cwa_section`,
    `violation_summary`, `outcome`, `takeaway` (>80 chars), `case_type`,
    `cwa_applied`, `cwa_instrument`, `sources` (≥1 with real URLs), and for
-   pending/not-applied: `cwa_pathway` + `analogous_cases`.
+   pending/not-applied: `cwa_pathway` + `analogous_cases`. Since 2026-10-08
+   also `fact_pattern` — 2-8 facet ids from `FACT_FACETS` describing what the
+   facility *is* (water source, cooling, discharge route, site, power,
+   chemicals, process, scale), never the legal theory; a conflict site takes
+   the same field and a statutory reading takes `fact_triggers`. The suite
+   fails on a record without them.
 2. Adjacent-category cases must open `cwa_section` with a "No CWA action —"
    style disclaimer (a test enforces the framing).
 3. Spot-check every source URL (`curl -s -o /dev/null -w "%{http_code}" -L
@@ -271,6 +276,89 @@ the ~3-4× waste patterns. Score each run on:
    the same result? If yes, log it as an anti-pattern with numbers.
 
 ### Agent-use evaluation log
+
+**2026-10-08 — tiered fan-out at the user's instruction (WebSearch seeds →
+two Haiku search agents in parallel → one Sonnet annotation agent → one Opus
+coding agent), main session on design, review and verification. Verdict: the
+Haiku and Sonnet runs were justified and used; the Opus run is scored below.**
+
+- *Haiku project leads (seeded with 3 WebSearches, 8 named leads):* 87.6k
+  tokens, 20 tool uses, ~3.4 min → 11 sourced proposals; 6 became worked
+  examples (~14.6k per shipped example, ~8k per lead). Every *sourced* fact
+  held up under five main-session WebFetches; every *inferred* field did not
+  — cooling type and discharge route were filled in where no source said so,
+  Amazon's groundwater was for offices and fire protection (the cooling water
+  would be LCRA surface water), AWS Lake Anna gained a "nuclear restart" it
+  does not have, and the Newton County "6-8 MGD" could not be confirmed
+  (dropped). Lesson: a cheap search agent's lead list is a lead list; the
+  schema fields it was asked to fill become defaults wearing a source URL.
+- *Haiku freshness sweep (HB 496 report, 3 local actions, window events):*
+  75.1k tokens, 17 tool uses, ~1.5 min → one material finding (Ohio EPA dropped
+  OHD000001), mis-dated to October; one main-session WebFetch put it at
+  2026-07-21 and it became an instrument update plus a News item. HB 496's SCC
+  report: not found (consistent with the main session's own search). The
+  three local actions were all outside the window. Necessity: borderline —
+  three direct WebSearches would have found the same one item for ~10k.
+- *Sonnet facet annotation (123 cases + 19 sites + 51 readings against the
+  39-facet vocabulary the main session had just written):* 202.4k tokens, 27
+  tool uses, ~5.1 min → 193/193 records (~1.05k per record), incremental
+  file writes, a self-validation pass, and a candid "least sure" list. Review
+  changed one reading (evaporative towers alone do not trigger §402 — now a
+  tested override) and accepted its literal reading of the ≥1 MGD rule on
+  industrial precedents (relabelled the facet instead). It flagged the two
+  facets nothing carried, which is what let the same-commit rule hold.
+  Inline this would have been ~190 record reads in the main context; the
+  agent was the right tool.
+- *Opus page script + mobile polish (given a written contract,
+  docs/specs/project-check-js.md, and a node parity test as acceptance):*
+  194.2k tokens, 42 tool uses, ~7.9 min → the ~600-line page script, the
+  strings block, three table wraps, the Explore phone fold, six build tests;
+  suite 954 → 960 with the parity test passing. It found a real engine bug the
+  main session had written (the lexical query norm counted words the page
+  never ships — 13 of 14 texts drifted in the 3rd-5th decimal) and proposed
+  the exact fix and the stronger test, both adopted. Necessity: yes — the
+  script had to mirror the engine 1:1 and the contract made that checkable;
+  the parity test is what made delegation safe. Lesson: a coding agent with a
+  parity test and a written contract reviews the spec as well as implementing
+  it; give it both every time.
+- *Second round (backlog follow-ups, same session):* a Haiku fact check
+  (71.9k tokens, 15 tool uses, ~1.6 min → Ohio date confirmed with the
+  same-day Statehouse report, Manatee County's adoption found on the day it
+  happened, Leon's final hearing dated, the Pima County agreement sourced;
+  one wrong inference — a "Project Blue CBA with closed-loop terms" that the
+  AZPM source describes as air cooling for offices, caught by a WebFetch) and
+  a Sonnet instrument-trigger pass (119.2k tokens, 9 tool uses, ~2 min → 80/80
+  water-scoped instruments, ~1.5k each, with a candid list of the
+  low-threshold cases where it had applied the scale rule literally; the
+  review stripped eight and added the incentive facet to six). Both used.
+  The second Opus pass (instrument ranking + negative mappings, from a
+  written spec): 159.6k tokens, 24 tool uses, ~5.4 min → engine, renderer,
+  page script, llms lines and 12 tests (960 → 972), with three spec gaps
+  resolved sensibly (a `water_scoped` flag so energy-only instruments do not
+  claim to apply to every data center; a site anchor on negative rows; the
+  Project Blue negative tested on the Tucson example rather than the Maricopa
+  fixture, where the site ranks 11th). It flagged a stale CLAUDE.md sentence
+  outside its task instead of silently editing it. Same lesson as the first
+  pass: spec + parity test = safe delegation.
+- *Sonnet code review of the PR (posted as one GitHub review with 9 inline
+  comments):* 185.6k tokens, 30 tool uses, ~4 min. Five of nine were real
+  and verified by running the code (status-blind "applies to every data
+  center" copy; federal filter keyed on one jurisdiction string, hiding EO
+  14318; "North Texas" → no state; "DC"/"OR" read as states; hyphenated
+  sizes missed), two were data (unsupported example facets, generic trigger
+  words), two were judgment calls (one accepted, one answered). Codex, run
+  free in parallel, found the same compass-word and bare-code bugs plus four
+  it alone caught (negated facts, the example-load locking every checkbox,
+  stale auto-inferred state/size, and the P1: a single incidental facet
+  surfacing a reading whose legal trigger needs more — now `fact_requires`).
+  Verdict: both reviews earned their cost; neither alone would have done.
+- *Opus fix pass (13 items from both reviews, one message mid-run to add
+  the Codex batch):* 154.0k tokens, 40 tool uses, ~6.7 min → 972 → 1003
+  tests, parity holding on four fixtures. It improved one rule it was given
+  (a 3-word negation window missed "wells" in the spec's own test sentence;
+  it silenced the next three kept words instead) and reported the one
+  pre-existing failure as a data issue rather than patching data — which it
+  was (Project Blue's site record lacked the AMA overdraft facets).
 
 **2026-08-24 — ten agents (3 Sonnet research, 5 Opus implementation, Haiku +
 Sonnet checkers) through two usage-limit walls. Verdict: the fleet was

@@ -9,6 +9,7 @@ Run with: streamlit run dashboard.py
 from __future__ import annotations
 
 import html
+import json
 import re
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -59,6 +60,12 @@ from refdata.graph import (  # noqa: F401
     build_graph,
     payload_json as graph_payload_json,
 )
+from refdata.precedent import (  # noqa: F401
+    load_project_examples,
+    match_project as precedent_match_project,
+    payload_json as precedent_payload_json,
+    state_code_for as _precedent_state_code_for,
+)
 from refdata.paths import (  # noqa: F401
     activity_anchor,
     build_statute_paths,
@@ -89,6 +96,8 @@ from refdata.taxonomies import (  # noqa: F401
     CWA_STATUS_LABELS,
     DC_ACTIVITY_DESCRIPTIONS,
     DC_ACTIVITY_LABELS,
+    FACT_DIMENSION_LABELS,
+    FACT_FACETS,
     DC_ROLE_LABELS,
     DELIVERED_STATUS_COLORS,
     DELIVERED_STATUS_LABELS,
@@ -783,7 +792,7 @@ SCORECARD_DATA = [
         "geo_resolution": "state",
         "freshness": "one-time",
         "confidence": "medium",
-        "notes": "OHD000001 — first DC wastewater permit; pending finalization",
+        "notes": "OHD000001 general permit withdrawn 2026-07-21; Ohio EPA now issues individual NPDES permits per data center",
     },
     {
         "source": "Ohio EPA NPDES ArcGIS",
@@ -996,7 +1005,7 @@ SOURCES_DATA: dict = {
         {"level": "Virginia", "name": "DEQ VPDES Excel", "note": "WAF 403 block · stormwater-only permits anyway", "status": "blocked", "action": "Wait / retry"},
         # Ohio
         {"level": "Ohio", "name": "EPA ECHO DMR (OH)", "note": "4 Columbus-area WWTP permits · same aggregation limit", "status": "working", "action": "Add permits"},
-        {"level": "Ohio", "name": "OHD000001 DMRs", "note": "First per-DC direct mandate · public comment closed", "status": "coming", "action": "Awaiting finalization"},
+        {"level": "Ohio", "name": "Per-DC NPDES permits (ex-OHD000001)", "note": "General permit withdrawn 2026-07-21 · individual permits per facility", "status": "coming", "action": "Add permits as issued"},
         {"level": "Ohio", "name": "Central OH Water Study", "note": "Demand projections 40 → 90 MGD (2030 → 2050)", "status": "working", "action": "Annual update"},
         # Local / Utility
         {"level": "Local / Utility", "name": "Water service contracts", "note": "Per-DC monthly volumes · NDA-blocked in 25 of 31 VA localities", "status": "blocked", "action": "No FOIA path"},
@@ -1015,7 +1024,11 @@ SOURCES_DATA: dict = {
                 "All dischargers — Amazon, hospitals, hotels — sum into one monthly "
                 "number. No federal mechanism disaggregates per data center."
             ),
-            "workaround": "Add WWTP permits as DC clusters grow; long-term unlock is OHD000001 direct DMRs.",
+            "workaround": (
+                "Add WWTP permits as DC clusters grow. Ohio EPA withdrew the OHD000001 "
+                "general permit on 2026-07-21; the remaining route is per-facility NPDES "
+                "permits with their own DMRs."
+            ),
             "kind": "structural",
         },
         {
@@ -1050,11 +1063,12 @@ SOURCES_DATA: dict = {
             "color": "purple",
         },
         {
-            "date": "TBD 2026",
-            "title": "Ohio OHD000001 finalized",
+            "date": "2026-07-21",
+            "title": "Ohio OHD000001 withdrawn",
             "desc": (
-                "First state mandate requiring DMR from data centers directly. "
-                "Add new permit numbers to epa_echo_target_permits when published."
+                "Ohio EPA dropped the data-center general permit after 7,000+ comments; "
+                "each campus discharge now gets an individual NPDES permit. Add those "
+                "permit numbers to epa_echo_target_permits as they are issued."
             ),
             "color": "purple",
         },
@@ -1878,7 +1892,7 @@ def _build_legislation_themes_html(bills: list[dict]) -> str:
         '<li><strong>Environmental review triggers</strong> — New York S10642 (passed legislature, '
         'awaiting governor) would require SEQRA review before any facility exceeds 50 MW — the '
         'broadest state environmental-review trigger yet proposed for data centers.</li>'
-        '<li><strong>Direct DC water permits</strong> — Ohio EPA OHD000001 would be the first '
+        '<li><strong>Direct DC water permits</strong> — Ohio EPA\'s withdrawn OHD000001 would have been the first '
         'federal permit requiring data centers to file discharge monitoring reports directly, '
         'closing the gap where DC cooling water routes through municipal WWTPs with no '
         'facility-level accounting.</li>'
@@ -1949,29 +1963,9 @@ def _instrument_movement_date(bill: dict, today: datetime) -> str:
     return verified if verified and verified <= stamp else ""
 
 
-def _state_code_for(jurisdiction: str) -> str | None:
-    """Two-letter code for an instrument's jurisdiction string, or None.
-
-    Handles the three shapes the dataset uses: a bare state name
-    ('Texas'), a county/city string ending in a state name ("Prince George's
-    County, Maryland"), and the parenthesised local form ('Local (Denver,
-    CO)'). Federal jurisdictions ('Federal (US)', 'United States') return
-    None and drop out of the rollup.
-    """
-    text = (jurisdiction or "").strip()
-    if not text or text in ("Federal (US)", "United States"):
-        return None
-    by_name = {name: code for code, name in US_STATE_NAMES.items()}
-    if text in by_name:
-        return by_name[text]
-    for token in re.findall(r"\b([A-Z]{2})\b", text):
-        if token in US_STATE_NAMES:
-            return token
-    # Longest name first so 'West Virginia' is not read as 'Virginia'.
-    for name in sorted(by_name, key=len, reverse=True):
-        if name in text:
-            return by_name[name]
-    return None
+# The pure helper lives with the engine that parses pasted descriptions;
+# the States tab keeps calling it by this name.
+_state_code_for = _precedent_state_code_for
 
 
 def _states_whats_new(
@@ -2685,7 +2679,7 @@ def render_water_solutions():
         f'<li>All {n_mandate} state/federal mandates and all {n_utility} utility programs have at least '
         f'one deployed or active-pilot example. Voluntary industry solutions ({n_industry}) have no '
         f'independent verification path.</li>'
-        f'<li>The critical unlock is closing the measurement gap: OHD000001 direct DMRs (Ohio) '
+        f'<li>The critical unlock is closing the measurement gap: per-facility NPDES permits in Ohio (the OHD000001 general permit was withdrawn 2026-07-21) '
         f'and HB 496 monthly utility reports (Virginia, eff. July 2026) are the two pending mandates '
         f'that would make operator claims checkable.</li>'
         f'</ul></div>',
@@ -4862,6 +4856,9 @@ OVERVIEW_QUESTIONS = (
     ("What is working?",
      "Deployed and piloted fixes: reclaimed water, closed-loop and dry cooling, reporting mandates.",
      "panel-solutions", "Solutions"),
+    ("I have a project — what could reach it?",
+     "Describe a proposed campus. See which laws could apply, the closest cases, similar fights and how they ended.",
+     "panel-check", "Check a project"),
     ("I have a document — what does it match?",
      "Paste a news story, permit notice or draft ordinance to find the records that use the same language.",
      "panel-explore", "Explore"),
@@ -5492,10 +5489,10 @@ def _build_water_security_html() -> str:
   <div class="security-grid">{capability_cards}</div>
   <h3 class="solution-cat-header" id="security-players">Who is in the field</h3>
   <p>Public roles below are authorities and delivery functions. The company list is a selected capability map with explicit evidence limits — not a market-share ranking or endorsement.</p>
-  <div class="security-table-wrap"><table class="security-table"><thead><tr><th>Public player</th><th>Type</th><th>Role</th><th>Boundary</th></tr></thead><tbody>{public_rows}</tbody></table></div>
+  <div class="table-wrap security-table-wrap"><table class="security-table"><thead><tr><th>Public player</th><th>Type</th><th>Role</th><th>Boundary</th></tr></thead><tbody>{public_rows}</tbody></table></div>
   <div class="security-grid">{company_cards}</div>
   <h3 class="solution-cat-header" id="security-investment">What is actually funded</h3>
-  <div class="security-table-wrap"><table class="security-table"><thead><tr><th>Program</th><th>Level</th><th>Amount/status</th><th>Scope and counting rule</th></tr></thead><tbody>{investment_rows}</tbody></table></div>
+  <div class="table-wrap security-table-wrap"><table class="security-table"><thead><tr><th>Program</th><th>Level</th><th>Amount/status</th><th>Scope and counting rule</th></tr></thead><tbody>{investment_rows}</tbody></table></div>
   <h3 class="solution-cat-header">Operating models worth reusing</h3>
   <div class="security-grid">{precedent_cards}</div>
   <section class="confluence" id="security-confluence">
@@ -5506,7 +5503,7 @@ def _build_water_security_html() -> str:
     <p><strong>Governance:</strong> {html.escape(proposal.get("governance", ""))}</p>
     <ol class="security-loop">{service_steps}</ol>
     <p><strong>Regional delivery:</strong> {html.escape(proposal.get("regional_model", ""))}</p>
-    <div class="security-table-wrap"><table class="security-table"><thead><tr><th>Actor</th><th>Job</th></tr></thead><tbody>{role_rows}</tbody></table></div>
+    <div class="table-wrap security-table-wrap"><table class="security-table"><thead><tr><th>Actor</th><th>Job</th></tr></thead><tbody>{role_rows}</tbody></table></div>
     <div class="security-grid security-grid-3">{milestone_cards}</div>
     <details><summary><strong>Measures</strong></summary><ul class="security-list">{measures}</ul></details>
     <details><summary><strong>Funding paths</strong></summary><ul class="security-list">{funding}</ul></details>
@@ -5633,6 +5630,16 @@ def _explore_css() -> str:
 .explore-canvas:active{cursor:grabbing}
 @media (max-width:900px){.explore-canvas{height:380px}}
 .explore-hint{font-size:.76rem;color:#6b7280;margin:.3rem 0 .5rem}
+/* On a phone the graph is a few hundred dots in a 380px box: folded away by
+   default (the script closes it at <=760px), one tap to open. Wider, there is
+   no summary and the fold is always open. */
+.explore-graph-fold>summary{cursor:pointer;font-weight:600;color:#08519c;padding:.5rem .7rem;
+  font-size:.85rem;list-style:none;min-height:36px;display:flex;align-items:center;
+  border:1px solid #cbd5e1;border-radius:.5rem;background:#fff;margin:0 0 .5rem}
+.explore-graph-fold>summary::-webkit-details-marker{display:none}
+.explore-graph-fold>summary::before{content:"\\25B8";margin-right:.4rem}
+.explore-graph-fold[open]>summary::before{content:"\\25BE"}
+@media (min-width:761px){.explore-graph-fold>summary{display:none}}
 .explore-legend{display:flex;flex-wrap:wrap;gap:.3rem .7rem;font-size:.76rem;color:#4b5563;margin-bottom:.5rem}
 .explore-legend span.explore-dot{margin-right:.25rem}
 .explore-edges{border:1px solid #cbd5e1;border-radius:.5rem;background:#fff}
@@ -5789,6 +5796,8 @@ def _build_explore_html(payload_src: str | None = None) -> str:
       </span>
     </div>
     <div class="explore-neighbours" id="explore-neighbours" hidden></div>
+    <details class="explore-graph-fold" id="explore-graph-fold" open>
+    <summary>Show the connection graph</summary>
     <canvas class="explore-canvas" id="explore-canvas" role="img" aria-label="Connection graph of every tracked record. The results list carries the same records as text."></canvas>
     <p class="explore-hint">Drag to pan, scroll to zoom, click a dot to focus its
     neighbourhood. <strong>Legal paths</strong> lays the focused record out in
@@ -5796,6 +5805,7 @@ def _build_explore_html(payload_src: str | None = None) -> str:
     law reaches a data center; try it on an activity or statute hub with 2 hops.
     Records with no drawn connection sit on the outer ring.</p>
     <div class="explore-legend">{legend}</div>
+    </details>
     <details class="explore-edges">
       <summary>Connection types</summary>
       <div class="explore-edgelist" id="explore-edgelist"></div>
@@ -5822,6 +5832,17 @@ def _explore_js() -> str:
   var blob = root && root.querySelector('#graph-data');
   var canvas = root && root.querySelector('#explore-canvas');
   if (!root || !blob || !canvas) return;
+
+  // The graph folds away on a phone (CSS hides the summary when wide). Shipped
+  // open, so a wide screen never depends on this running.
+  var fold = root.querySelector('#explore-graph-fold');
+  var narrow = window.matchMedia ? window.matchMedia('(max-width:760px)') : null;
+  if (fold && narrow){
+    if (narrow.matches) fold.open = false;
+    var onWidth = function(){ if (!narrow.matches) fold.open = true; };
+    if (narrow.addEventListener) narrow.addEventListener('change', onWidth);
+    else if (narrow.addListener) narrow.addListener(onWidth);
+  }
 
   // Everything below runs once the blob is in hand — inline on the Streamlit
   // surface, fetched on first tab activation on the static one. See init().
@@ -6635,6 +6656,14 @@ def _explore_js() -> str:
     if (precomputed){ fitView(); draw(); }
     else runLayout();
   }
+  // A canvas inside a closed fold measures 0 wide; size and frame it on open.
+  if (fold) fold.addEventListener('toggle', function(){
+    if (!fold.open || !started) return;
+    sizeCanvas();
+    if (mode === 'paths') layoutPaths();
+    else if (!cameraMoved) fitView();
+    draw();
+  });
   window.addEventListener('resize', function(){
     if (!started) return;
     sizeCanvas();
@@ -6703,6 +6732,1320 @@ def render_explore():
     )
 
 
+# --- Check a project (precedent engine surface) ---
+
+PROJECT_CHECK_LEAD = (
+    "Describe a proposed data center, or pick a real 2026 proposal. The tracker "
+    "turns it into a fact pattern and shows which laws could reach it, the closest "
+    "cases and community fights, how those cases ended, and the rules in its state. "
+    "It maps exposure from the record; it does not predict a result."
+)
+
+PROJECT_CHECK_EMPTY_STATE = (
+    "Nothing checked yet. Paste a description, tick the facts, or pick an example. "
+    "Results appear here."
+)
+
+PROJECT_CHECK_PLACEHOLDER = (
+    "e.g. A 300 MW campus in Pinal County, Arizona would pump groundwater from "
+    "on-site wells for evaporative cooling towers and send blowdown to the "
+    "city sewer; neighbours report falling well levels and the county is "
+    "considering a moratorium."
+)
+
+# How the page talks about a result. Modal on purpose (plan Spec C3): the
+# tracker maps exposure, it does not predict outcomes or advocate suits.
+PROJECT_CHECK_SECTIONS = {
+    "read": "What we read",
+    "activities": "Activities implicated",
+    "readings": "Laws and doctrines that could reach this project",
+    "cases": "Closest tracked cases",
+    "sites": "Communities that fought a similar project",
+    "negatives": "Assessed as NOT reaching a similar site",
+    "outcomes": "How the closest cases ended",
+    "rules": "Rules in this state",
+    "federal": "Federal instruments that could apply",
+}
+
+# What an instrument row says when the instrument names no fact pattern and
+# is not marked ``fact_scope: "narrow"``. Keyed by status, so a bill that died
+# is not described as covering anything, and "jurisdiction" rather than
+# "state" because federal rows use it too. Shipped to the page whole in
+# #pcheck-strings; "other" covers any status not listed.
+_NOT_ASSESSED = "; thresholds and exemptions not assessed"
+PROJECT_CHECK_APPLIES_TO_ALL = {
+    "enacted": "Written to cover data centers in its jurisdiction" + _NOT_ASSESSED,
+    "introduced": "Would cover data centers in its jurisdiction" + _NOT_ASSESSED,
+    "failed": "Would have covered data centers in its jurisdiction" + _NOT_ASSESSED,
+    "other": "Written to cover data centers in its jurisdiction" + _NOT_ASSESSED,
+}
+
+
+def _applies_to_all_line(status: str) -> str:
+    return PROJECT_CHECK_APPLIES_TO_ALL.get(status or "other", PROJECT_CHECK_APPLIES_TO_ALL["other"])
+
+
+def _facet_chip_html(facet_id: str) -> str:
+    facet = FACT_FACETS.get(facet_id, {})
+    return (
+        f'<span class="pcheck-facet" title="{html.escape(facet.get("description", ""))}">'
+        f'{html.escape(facet.get("label", facet_id))}</span>'
+    )
+
+
+def _project_result_html(result: dict, state_name: str | None = None) -> str:
+    """One analysis as static HTML — the shape the page script also builds.
+
+    Used for the worked examples (pre-rendered at build time, so a no-JS
+    reader and a crawler still get a complete analysis) and by the Streamlit
+    surface. Every record line links to the record's own card.
+    """
+    esc = html.escape
+    parts: list[str] = []
+
+    # What we read
+    facets = result.get("facets") or []
+    by_dim: dict[str, list[str]] = {}
+    for f in facets:
+        by_dim.setdefault(FACT_FACETS.get(f, {}).get("dimension", ""), []).append(f)
+    read_rows = "".join(
+        f'<div class="pcheck-dim-row"><span class="pcheck-dim-k">{esc(FACT_DIMENSION_LABELS.get(dim, dim))}</span>'
+        f'<span class="pcheck-dim-v">{"".join(_facet_chip_html(f) for f in fs)}</span></div>'
+        for dim, fs in by_dim.items()
+    )
+    where = (
+        f'<div class="pcheck-dim-row"><span class="pcheck-dim-k">State</span>'
+        f'<span class="pcheck-dim-v">{esc(state_name or US_STATE_NAMES.get(result.get("state") or "", "not stated"))}</span></div>'
+    )
+    parts.append(
+        f'<section class="pcheck-sec"><h4>{esc(PROJECT_CHECK_SECTIONS["read"])}</h4>'
+        f'{where}{read_rows or "<p class=pcheck-muted>No facts recognised.</p>"}</section>'
+    )
+
+    # Activities
+    acts = result.get("activities") or []
+    if acts:
+        chips = "".join(
+            f'<a class="pcheck-activity" href="#{esc(activity_anchor(a))}">{esc(DC_ACTIVITY_LABELS.get(a, a))}</a>'
+            for a in acts
+        )
+        parts.append(
+            f'<section class="pcheck-sec"><h4>{esc(PROJECT_CHECK_SECTIONS["activities"])}</h4>'
+            f'<div class="pcheck-chips">{chips}</div></section>'
+        )
+
+    # Readings
+    rows = []
+    for r in result.get("readings") or []:
+        flags = ""
+        if r.get("role") == "limit":
+            flags += '<span class="pcheck-flag pcheck-flag-limit">Limit — marks where a theory stops</span>'
+        if r.get("elsewhere"):
+            names = ", ".join(US_STATE_NAMES.get(j, j) for j in r.get("jurisdictions", []))
+            flags += (
+                '<span class="pcheck-flag pcheck-flag-else">'
+                + esc(f"{names} regime — an analogy here" if result.get("state") else f"Applies only in {names}")
+                + "</span>"
+            )
+        rows.append(
+            '<li class="pcheck-item">'
+            f'<span class="statute-pill" style="background:{WATER_STATUTE_COLORS.get(r.get("statute"), "#6b7280")}">{esc(r.get("statute", ""))}</span> '
+            f'<a href="#{esc(r.get("anchor", ""))}"><strong>{esc(r.get("label", r.get("id", "")))}</strong></a>'
+            f'<span class="pcheck-meta"> · {esc(r.get("section", ""))}</span>{flags}'
+            f'<div class="pcheck-why">Because: {"".join(_facet_chip_html(f) for f in r.get("shared", []))}</div>'
+            + (f'<div class="pcheck-trigger">Could reach a campus when {esc(r["trigger"])}.</div>' if r.get("trigger") else "")
+            + "</li>"
+        )
+    # With no facts there is nothing to match; only the state's rules follow.
+    if facets:
+        parts.append(
+            f'<section class="pcheck-sec"><h4>{esc(PROJECT_CHECK_SECTIONS["readings"])}</h4>'
+            + (f'<ol class="pcheck-list">{"".join(rows)}</ol>' if rows else "<p class=pcheck-muted>No reading's triggers overlap these facts.</p>")
+            + "</section>"
+        )
+
+    # Cases
+    rows = []
+    for c in result.get("cases") or []:
+        pills = "".join(
+            f'<span class="pcheck-outcome">{esc(OUTCOME_TYPE_LABELS.get(o, o))}</span>' for o in c.get("outcome_type", [])
+        )
+        rows.append(
+            '<li class="pcheck-item">'
+            f'<a href="#{esc(c.get("anchor", ""))}"><strong>{esc(c.get("label", c.get("id", "")))}</strong></a>'
+            f'<span class="pcheck-meta"> · {esc(c.get("year", ""))} · {esc(CWA_CASE_TYPE_LABELS.get(c.get("case_type", ""), c.get("case_type", "")))}</span>'
+            f'<div class="pcheck-why">In common: {"".join(_facet_chip_html(f) for f in c.get("shared", []))}</div>'
+            f'<div class="pcheck-pills">{pills}</div>'
+            + (f'<div class="pcheck-take">{esc(c["takeaway"])}</div>' if c.get("takeaway") else "")
+            + "</li>"
+        )
+    if facets:
+        parts.append(
+            f'<section class="pcheck-sec"><h4>{esc(PROJECT_CHECK_SECTIONS["cases"])}</h4>'
+            + (f'<ol class="pcheck-list">{"".join(rows)}</ol>' if rows else "<p class=pcheck-muted>No tracked case shares a facet with this project.</p>")
+            + "</section>"
+        )
+
+    # Sites
+    rows = []
+    for s in result.get("sites") or []:
+        rows.append(
+            '<li class="pcheck-item">'
+            f'<a href="#{esc(s.get("anchor", ""))}"><strong>{esc(s.get("label", s.get("id", "")))}</strong></a>'
+            f'<span class="pcheck-meta"> · {esc(s.get("location", ""))}</span>'
+            f'<div class="pcheck-why">In common: {"".join(_facet_chip_html(f) for f in s.get("shared", []))}</div>'
+            + (f'<div class="pcheck-take">{esc(s["status"])}</div>' if s.get("status") else "")
+            + "</li>"
+        )
+    if rows:
+        parts.append(
+            f'<section class="pcheck-sec"><h4>{esc(PROJECT_CHECK_SECTIONS["sites"])}</h4>'
+            f'<ol class="pcheck-list">{"".join(rows)}</ol></section>'
+        )
+
+    # Negative doctrine mappings on the closest sites — what the record
+    # assessed as NOT reaching a similar site. Grey on purpose: a limit, not a route.
+    rows = [
+        '<li class="pcheck-item pcheck-neg">'
+        f'<span class="statute-pill pcheck-neg-pill">{esc(n.get("statute", ""))}</span> '
+        f'<a href="#{esc(n.get("anchor", ""))}"><strong>{esc(n.get("reading_label", n.get("reading_id", "")))}</strong></a>'
+        f' — at <a href="#{esc(n.get("site_anchor", ""))}">{esc(n.get("site_label", n.get("site_id", "")))}</a>: '
+        f'{esc(n.get("how", ""))}</li>'
+        for n in result.get("negatives") or []
+    ]
+    if rows:
+        parts.append(
+            f'<section class="pcheck-sec"><h4>{esc(PROJECT_CHECK_SECTIONS["negatives"])}</h4>'
+            f'<ul class="pcheck-list">{"".join(rows)}</ul></section>'
+        )
+
+    # Outcomes
+    outcomes = result.get("outcomes") or []
+    if outcomes:
+        top = max(o["count"] for o in outcomes) or 1
+        bars = "".join(
+            '<div class="pcheck-bar-row">'
+            f'<span class="pcheck-bar-k">{esc(o.get("label", OUTCOME_TYPE_LABELS.get(o["outcome"], o["outcome"])))}</span>'
+            f'<span class="pcheck-bar"><span style="width:{round(100 * o["count"] / top)}%"></span></span>'
+            f'<span class="pcheck-bar-n">{o["count"]}</span></div>'
+            for o in outcomes
+        )
+        parts.append(
+            f'<section class="pcheck-sec"><h4>{esc(PROJECT_CHECK_SECTIONS["outcomes"])}</h4>'
+            f'<p class="pcheck-muted">Outcome types across the {result.get("outcome_sample", len(outcomes))} closest cases. '
+            "A count of what happened in tracked matters, not a forecast for this one.</p>"
+            f'<div class="pcheck-bars">{bars}</div></section>'
+        )
+
+    # Rules in the state, then the federal instruments whose triggers overlap
+    instruments = result.get("instruments") or []
+    federal = result.get("federal_instruments") or []
+    actions = result.get("local_actions") or []
+    frows = "".join(_project_instrument_li(i) for i in federal)
+    fsub = f'<p class="pcheck-sub">{esc(PROJECT_CHECK_SECTIONS["federal"])}</p><ul class="pcheck-list">{frows}</ul>' if frows else ""
+    if result.get("state"):
+        name = state_name or US_STATE_NAMES.get(result["state"], result["state"])
+        irows = "".join(_project_instrument_li(i) for i in instruments)
+        arows = "".join(
+            '<li class="pcheck-item pcheck-item-tight">'
+            f'{esc(a.get("jurisdiction", ""))} — {esc(a.get("action_type", ""))}, {esc(a.get("status", ""))}'
+            f'<span class="pcheck-meta"> · {esc(a.get("date", ""))}</span></li>'
+            for a in actions[:8]
+        )
+        more = f'<p class="pcheck-muted">{len(actions) - 8} more on <a href="#panel-states">States &amp; Localities</a>.</p>' if len(actions) > 8 else ""
+        parts.append(
+            f'<section class="pcheck-sec"><h4>{esc(PROJECT_CHECK_SECTIONS["rules"])} — {esc(name)}</h4>'
+            + (f'<p class="pcheck-sub">Tracked state instruments</p><ul class="pcheck-list">{irows}</ul>' if irows else f'<p class="pcheck-muted">No tracked {esc(name)} instrument yet.</p>')
+            + (f'<p class="pcheck-sub">County and city actions</p><ul class="pcheck-list">{arows}</ul>{more}' if arows else f'<p class="pcheck-muted">No tracked county or city action in {esc(name)} yet.</p>')
+            + fsub
+            + "</section>"
+        )
+    elif frows:
+        parts.append(
+            f'<section class="pcheck-sec"><h4>{esc(PROJECT_CHECK_SECTIONS["federal"])}</h4>'
+            f'<ul class="pcheck-list">{frows}</ul></section>'
+        )
+    return f'<div class="pcheck-result">{"".join(parts)}</div>'
+
+
+def _project_instrument_li(i: dict) -> str:
+    """One instrument row in the rules section: status pill, link, title, and
+    why it is listed — the facets in common, or that it names no fact pattern."""
+    esc = html.escape
+    if i.get("shared"):
+        why = f'<div class="pcheck-why">Because: {"".join(_facet_chip_html(f) for f in i["shared"])}</div>'
+    elif i.get("water_scoped") and not i.get("triggers") and i.get("fact_scope") != "narrow":
+        why = f'<div class="pcheck-why">{esc(_applies_to_all_line(i.get("status", "")))}</div>'
+    else:
+        why = ""
+    return (
+        '<li class="pcheck-item pcheck-item-tight">'
+        f'<span class="cwa-status-pill" style="background:{_status_color(i.get("status", ""))}">{esc((i.get("status") or "").replace("_", " ").title())}</span> '
+        f'<a href="#{esc(i.get("anchor", ""))}">{esc(i.get("label", i.get("id", "")))}</a>'
+        f'<span class="pcheck-meta"> — {esc(i.get("title", ""))}</span>{why}</li>'
+    )
+
+
+def _status_color(status: str) -> str:
+    return LEGISLATION_STATUS_BADGE_COLORS.get(status, LEGISLATION_STATUS_BADGE_COLORS["unknown"])
+
+
+def _project_example_html(example: dict) -> str:
+    """A worked example: its description, sources, and the analysis the engine
+    gives it, pre-rendered. Anchor ``example-<id>`` so a result can be linked."""
+    esc = html.escape
+    result = precedent_match_project(example["facets"], example["state"], example["description"])
+    sources = ", ".join(
+        f'<a href="{esc(s["url"])}" rel="noopener" target="_blank">{esc(s["title"])}</a>' for s in example.get("sources", [])
+    )
+    return (
+        f'<details class="pcheck-example-card" id="example-{esc(example["id"])}">'
+        f'<summary><strong>{esc(example["name"])}</strong> <span class="pcheck-meta">· {esc(example["operator"])} · '
+        f'{esc(example["location"])} · {esc(example["status"])} {esc(example["status_date"])}</span></summary>'
+        f'<p class="pcheck-desc">{esc(example["description"])}</p>'
+        f'<p class="pcheck-meta">Sources: {sources}</p>'
+        f"{_project_result_html(result, US_STATE_NAMES.get(example['state']))}"
+        "</details>"
+    )
+
+
+def _build_project_check_html(payload_src: str | None = None) -> str:
+    """The Check-a-project surface as one self-contained fragment.
+
+    ``payload_src`` works exactly as in :func:`_build_explore_html`: ``None``
+    inlines the engine payload (Streamlit's iframe has no origin to fetch
+    from); a URL leaves ``#project-data`` empty with ``data-src`` and the page
+    fetches it on first open. The worked examples are pre-rendered here, so
+    the no-JS page is a complete document and the examples' analyses are
+    searchable text.
+    """
+    esc = html.escape
+    payload = "" if payload_src else precedent_payload_json()
+    src_attr = f' data-src="{esc(payload_src)}"' if payload_src else ""
+    examples = load_project_examples().get("examples", [])
+
+    state_options = "".join(
+        f'<option value="{code}">{esc(name)}</option>' for code, name in sorted(US_STATE_NAMES.items(), key=lambda kv: kv[1])
+    )
+    example_buttons = "".join(
+        f'<button type="button" class="pcheck-btn pcheck-example" data-example="{esc(e["id"])}">{esc(e["name"])}</button>'
+        for e in examples
+    )
+    facet_fields = ""
+    for dim, dim_label in FACT_DIMENSION_LABELS.items():
+        chips = "".join(
+            f'<label class="pcheck-chip" title="{esc(f["description"])}"><input type="checkbox" class="pcheck-facet-box" value="{fid}"> {esc(f["label"])}</label>'
+            for fid, f in FACT_FACETS.items()
+            if f["dimension"] == dim
+        )
+        facet_fields += f'<fieldset class="pcheck-dim"><legend>{esc(dim_label)}</legend>{chips}</fieldset>'
+
+    worked = "".join(_project_example_html(e) for e in examples)
+    # What the page script needs to render a result the way _project_result_html
+    # does, handed over as data so the two cannot drift (section titles, pill
+    # colours, case-type labels).
+    strings = json.dumps(
+        {
+            "sections": PROJECT_CHECK_SECTIONS,
+            "statute_colors": WATER_STATUTE_COLORS,
+            "case_types": CWA_CASE_TYPE_LABELS,
+            "status_colors": LEGISLATION_STATUS_BADGE_COLORS,
+            "applies_to_all": PROJECT_CHECK_APPLIES_TO_ALL,
+        },
+        separators=(",", ":"),
+    ).replace("</", "<\\/")
+
+    return f"""<div class="pcheck" id="project-check">
+<div class="pcheck-grid">
+  <div class="pcheck-input">
+    <label class="pcheck-label" for="pcheck-text">Describe the project</label>
+    <textarea id="pcheck-text" rows="6" placeholder="{esc(PROJECT_CHECK_PLACEHOLDER)}"></textarea>
+    <div class="pcheck-examples"><span class="pcheck-examples-k">Try a real 2026 proposal:</span> {example_buttons}</div>
+    <div class="pcheck-row">
+      <label for="pcheck-state">State</label>
+      <select id="pcheck-state"><option value="">Not stated</option>{state_options}</select>
+      <label for="pcheck-mw">MW</label><input id="pcheck-mw" type="number" min="0" step="1" inputmode="numeric">
+      <label for="pcheck-mgd">MGD</label><input id="pcheck-mgd" type="number" min="0" step="0.1" inputmode="decimal">
+    </div>
+    <p class="pcheck-read" id="pcheck-read" aria-live="polite"></p>
+    <details class="pcheck-facets" id="pcheck-facets">
+      <summary>Facts about the project <span class="pcheck-facets-n" id="pcheck-facets-n"></span></summary>
+      <p class="pcheck-muted">Ticked from the words you wrote. Untick what does not apply; tick what it missed.</p>
+      {facet_fields}
+    </details>
+    <div class="pcheck-actions">
+      <button type="button" class="pcheck-btn pcheck-btn-primary" id="pcheck-run">Check this project</button>
+      <button type="button" class="pcheck-btn" id="pcheck-clear">Clear</button>
+    </div>
+  </div>
+  <div class="pcheck-output" id="pcheck-output" aria-live="polite">
+    <div class="pcheck-empty" id="pcheck-status">{esc(PROJECT_CHECK_EMPTY_STATE)}</div>
+  </div>
+</div>
+<section class="pcheck-worked" id="pcheck-worked">
+  <h3 class="solution-cat-header">Worked examples — {len(examples)} real 2026 proposals</h3>
+  <p class="pcheck-muted">Each was written from public coverage and run through the same engine. The ticked
+  facts are the record; the description is what you could paste. Open one to see the analysis.</p>
+  {worked}
+</section>
+<script type="application/json" id="pcheck-strings">{strings}</script>
+<script type="application/json" id="project-data"{src_attr}>{payload}</script>
+<style>{_project_check_css()}</style>
+<script>{_project_check_js()}</script>
+</div>"""
+
+
+def _project_check_css() -> str:
+    """Scoped styles for the Check-a-project fragment — under ``.pcheck`` for the
+    same two-document reason as ``_explore_css``. Chips and pills follow
+    DESIGN.md §8 (outline chip for facts, filled pill for status)."""
+    return """
+.pcheck{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#1a1a2e;line-height:1.5;font-size:.92rem}
+.pcheck-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:1.1rem;align-items:start}
+@media (max-width:900px){.pcheck-grid{grid-template-columns:minmax(0,1fr)}}
+.pcheck-input,.pcheck-output{min-width:0}
+.pcheck-label{display:block;font-weight:600;font-size:.88rem;margin:0 0 .3rem}
+.pcheck textarea{width:100%;font:inherit;font-size:.9rem;padding:.6rem .75rem;border:1px solid #cbd5e1;border-radius:.4rem;background:#fff;resize:vertical;box-sizing:border-box}
+.pcheck-examples{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin:.55rem 0}
+.pcheck-examples-k{font-size:.82rem;font-weight:600;color:#4b5563}
+.pcheck-row{display:flex;flex-wrap:wrap;gap:.4rem .6rem;align-items:center;margin:.5rem 0}
+.pcheck-row label{font-size:.84rem;font-weight:600}
+.pcheck select,.pcheck input[type=number]{font:inherit;font-size:.86rem;padding:.3rem .45rem;border:1px solid #bdd7e7;border-radius:.4rem;background:#fff;color:#1a1a2e;max-width:100%;min-width:0}
+.pcheck input[type=number]{width:5.5rem}
+.pcheck-read{font-size:.84rem;color:#4b5563;margin:.3rem 0;min-height:1.2em}
+.pcheck-facets{border:1px solid #d6e4f0;border-radius:.5rem;background:#fff;padding:.4rem .7rem;margin:.4rem 0}
+.pcheck-facets>summary{cursor:pointer;font-weight:600;font-size:.88rem;color:#08519c}
+.pcheck-facets-n{font-weight:500;color:#4b5563;font-size:.8rem}
+.pcheck-dim{border:0;border-top:1px solid #eef2f7;margin:.4rem 0 0;padding:.45rem 0 .2rem;display:flex;flex-wrap:wrap;gap:.3rem}
+.pcheck-dim legend{font-size:.78rem;font-weight:700;color:#08519c;text-transform:uppercase;letter-spacing:.02em;padding:0;margin-bottom:.2rem;width:100%}
+.pcheck-chip{display:inline-flex;align-items:center;gap:.35rem;font-size:.8rem;background:#fff;border:1px solid #bdd7e7;border-radius:999px;padding:.25rem .6rem;cursor:pointer;min-height:30px}
+.pcheck-chip:has(input:checked){background:#eff3ff;border-color:#08519c}
+.pcheck-chip input{accent-color:#08519c;margin:0}
+.pcheck-actions{display:flex;gap:.5rem;flex-wrap:wrap;margin:.6rem 0}
+.pcheck-btn{appearance:none;font:inherit;font-size:.82rem;font-weight:600;color:#08519c;background:#fff;border:1px solid #bdd7e7;border-radius:999px;padding:.35rem .75rem;cursor:pointer;min-height:34px}
+.pcheck-btn:hover{background:#eff3ff}
+.pcheck-btn-primary{background:#08519c;color:#fff;border-color:#08519c}
+.pcheck-btn-primary:hover{background:#06407d}
+.pcheck-empty{border:1px solid #cbd5e1;border-radius:.5rem;background:#fff;padding:.8rem .95rem;font-size:.88rem;color:#333}
+.pcheck-result{display:flex;flex-direction:column;gap:.8rem}
+.pcheck-sec{border:1px solid #d6e4f0;border-radius:.5rem;background:#fff;padding:.7rem .9rem}
+.pcheck-sec h4{margin:0 0 .45rem;font-size:.95rem;color:#08519c}
+.pcheck-sub{font-size:.8rem;font-weight:700;color:#4b5563;margin:.5rem 0 .2rem;text-transform:uppercase;letter-spacing:.02em}
+.pcheck-dim-row{display:flex;gap:.6rem;align-items:baseline;flex-wrap:wrap;margin:.2rem 0}
+.pcheck-dim-k{font-size:.78rem;font-weight:600;color:#4b5563;min-width:9rem}
+.pcheck-dim-v{display:flex;flex-wrap:wrap;gap:.3rem}
+.pcheck-facet{display:inline-block;font-size:.76rem;font-weight:600;background:#eff3ff;color:#1a1a2e;border:1px solid #bdd7e7;border-radius:999px;padding:.12rem .55rem;margin:.1rem .15rem .1rem 0}
+.pcheck-chips{display:flex;flex-wrap:wrap;gap:.35rem}
+.pcheck-activity{display:inline-block;font-size:.8rem;font-weight:600;color:#08519c;background:#fff;border:1px solid #08519c;border-radius:999px;padding:.2rem .65rem;text-decoration:none}
+.pcheck-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.55rem}
+.pcheck-item{border-top:1px solid #eef2f7;padding-top:.5rem}
+.pcheck-item:first-child{border-top:0;padding-top:0}
+.pcheck-item-tight{padding-top:.3rem}
+.pcheck-item a{color:#08519c;text-decoration:none}
+.pcheck-item a:hover{text-decoration:underline}
+.pcheck-meta{font-size:.8rem;color:#4b5563}
+.pcheck-why{font-size:.8rem;color:#4b5563;margin:.2rem 0}
+.pcheck-trigger{font-size:.84rem;color:#1a1a2e;margin:.15rem 0}
+.pcheck-take{font-size:.84rem;color:#1a1a2e;margin:.25rem 0 0;border-left:3px solid #bdd7e7;padding-left:.6rem}
+.pcheck-pills{display:flex;flex-wrap:wrap;gap:.25rem;margin:.2rem 0}
+.pcheck-outcome{font-size:.74rem;font-weight:600;color:#4b5563;background:#f9fafb;border:1px solid #e5e7eb;border-radius:999px;padding:.1rem .5rem}
+.pcheck-flag{display:inline-block;font-size:.74rem;font-weight:600;border-radius:999px;padding:.1rem .5rem;margin-left:.35rem}
+.pcheck-flag-limit{color:#b45309;background:#fffbeb;border:1px solid #fde68a}
+.pcheck-flag-else{color:#6b7280;background:#f9fafb;border:1px solid #e5e7eb}
+.pcheck-neg{color:#6b7280;font-size:.84rem}
+.pcheck .pcheck-item.pcheck-neg a{color:#4b5563}
+.pcheck .statute-pill.pcheck-neg-pill{background:#6b7280}
+.pcheck-bars{display:flex;flex-direction:column;gap:.3rem}
+.pcheck-bar-row{display:grid;grid-template-columns:minmax(0,11rem) minmax(0,1fr) 2rem;gap:.5rem;align-items:center;font-size:.82rem}
+.pcheck-bar{height:8px;background:#eff3ff;border-radius:4px;overflow:hidden}
+.pcheck-bar>span{display:block;height:100%;background:#3182bd}
+.pcheck-bar-n{text-align:right;color:#4b5563}
+.pcheck-muted{font-size:.82rem;color:#4b5563;margin:.25rem 0}
+.pcheck-worked{margin-top:1.2rem}
+.pcheck-example-card{border:1px solid #cbd5e1;border-radius:.5rem;background:#fff;padding:.5rem .8rem;margin:.5rem 0}
+.pcheck-example-card>summary{cursor:pointer;font-size:.92rem}
+.pcheck-desc{font-size:.88rem;margin:.5rem 0}
+.pcheck .statute-pill{display:inline-block;color:#fff;font-size:.72rem;font-weight:700;border-radius:999px;padding:.1rem .5rem;margin-right:.2rem}
+.pcheck .cwa-status-pill{display:inline-block;color:#fff;font-size:.72rem;font-weight:700;border-radius:999px;padding:.1rem .5rem}
+@media (max-width:760px){
+  .pcheck-dim-k{min-width:100%}
+  .pcheck-bar-row{grid-template-columns:minmax(0,7.5rem) minmax(0,1fr) 2rem}
+  .pcheck-examples{gap:.3rem}
+}
+@media print{.pcheck-input{display:none}}
+"""
+
+
+def _project_check_js() -> str:
+    """The client half of Check a project — contract in docs/specs/project-check-js.md.
+
+    The engine half (``parseProject``/``matchProject``) is a 1:1 port of
+    ``refdata.precedent`` parametrised entirely by the payload, and the IIFE
+    returns it so ``tests/test_precedent.py`` can run it under node against
+    the Python answer. The page half builds the result with ``createElement``
+    in the exact shape of :func:`_project_result_html`; section titles come
+    from the ``#pcheck-strings`` block rather than being restated here.
+    """
+    return r"""
+(function(){
+  // ===== Engine: a 1:1 port of refdata/precedent.py, parametrised by the payload =====
+
+  var NOT_BEFORE = /\b(?:port|fort|lake|mount|new)\s+$/i;
+  var NOT_AFTER = /^\s+(?:river|street|avenue|road|county\s+water)\b/i;
+  var CITY_AFTER = /^\s+city\b/i;
+  var DC_SRC = '\\bwashington,?\\s*d\\.?\\s?c\\b\\.?';
+  var STATE_EXACT = {'New York': 1, 'New Mexico': 1, 'New Jersey': 1, 'New Hampshire': 1,
+    'West Virginia': 1, 'North Carolina': 1, 'North Dakota': 1, 'South Carolina': 1,
+    'South Dakota': 1};
+  var NUM = '(?:^|[^A-Za-z0-9_.,])(\\d{1,3}(?:,\\d{3})+(?:\\.\\d+)?|\\d+(?:\\.\\d+)?)(?![\\d,]*,\\d)';
+  var MW_SRC = NUM + '[\\s-]*(gigawatts?|gw|megawatts?|mw)\\b(?![\\s-]*h(?:ours?|rs?)?\\b)';
+  var MGD_SRC = NUM + '[\\s-]*(?:mgd|million[\\s-]*gallons?[\\s-]*(?:per|a|/|each)[\\s-]*day)\\b';
+  var GPD_SRC = NUM + '[\\s-]*(gallons?|gal)[\\s-]*(?:per|a|/|each)[\\s-]*day\\b';
+
+  function has(o, k){ return Object.prototype.hasOwnProperty.call(o, k); }
+
+  // Python's round(x, d) on a computed float.
+  function roundTo(x, d){ return Number(x.toFixed(d)); }
+
+  // Lookup tables derived once per payload.
+  var prepFor = null, prepped = null;
+  function prep(D){
+    if (prepFor === D) return prepped;
+    var P = {stop: {}, vocabPos: {}, facetOrder: Object.keys(D.facets), byName: {}, names: []};
+    var i;
+    for (i = 0; i < D.stopwords.length; i++) P.stop[D.stopwords[i]] = 1;
+    for (i = 0; i < D.index.vocab.length; i++) P.vocabPos[D.index.vocab[i]] = i;
+    var codes = Object.keys(D.states);
+    for (i = 0; i < codes.length; i++){
+      P.byName[D.states[codes[i]]] = codes[i];
+      P.names.push(D.states[codes[i]]);
+    }
+    // Longest first; equal lengths keep payload order, as Python's stable sort does.
+    var order = {};
+    P.names.forEach(function(n, idx){ order[n] = idx; });
+    P.names.sort(function(a, b){ return (b.length - a.length) || (order[a] - order[b]); });
+    prepFor = D; prepped = P;
+    return P;
+  }
+
+  // Mirrors refdata.graph.tokenize: unigrams, then bigrams of surviving unigrams.
+  function tokenize(text, D){
+    var P = prep(D);
+    var raw = String(text == null ? '' : text)
+      .replace(/[^A-Za-z0-9]+/g, ' ').toLowerCase().split(' ');
+    var words = [];
+    for (var j = 0; j < raw.length; j++){
+      if (raw[j].length >= D.min_token_len && !P.stop[raw[j]]) words.push(raw[j]);
+    }
+    var out = words.slice();
+    for (var k = 0; k + 1 < words.length; k++) out.push(words[k] + ' ' + words[k + 1]);
+    return out;
+  }
+
+  // Mirrors refdata.precedent.live_tokens: a negator silences the next
+  // NEG_SCOPE surviving words of the same sentence.
+  var NEGATORS = {no: 1, not: 1, without: 1, never: 1, neither: 1, nor: 1, cannot: 1};
+  var NEG_SCOPE = 3;
+  function isNegator(item){
+    var low = item.toLowerCase();
+    return has(NEGATORS, low) || /n['\u2019]t$/.test(low);
+  }
+  function liveTokens(text, D){
+    var P = prep(D);
+    var re = /[A-Za-z0-9]+(?:['\u2019][A-Za-z0-9]+)*|[.;!?]/g, m, surviving = [], since = NEG_SCOPE;
+    var src = String(text == null ? '' : text);
+    while ((m = re.exec(src)) !== null){
+      var item = m[0];
+      if (item.length === 1 && '.;!?'.indexOf(item) >= 0){ since = NEG_SCOPE; continue; }
+      var pieces = item.toLowerCase().split(/['\u2019]/);
+      for (var p = 0; p < pieces.length; p++){
+        var w = pieces[p];
+        if (w.length >= D.min_token_len && !P.stop[w]){
+          surviving.push([w, since < NEG_SCOPE]);
+          since += 1;
+        }
+      }
+      if (isNegator(item)) since = 0;
+    }
+    var live = {};
+    for (var i = 0; i < surviving.length; i++){
+      if (surviving[i][1]) continue;
+      live[surviving[i][0]] = 1;
+      if (i + 1 < surviving.length) live[surviving[i][0] + ' ' + surviving[i + 1][0]] = 1;
+    }
+    return live;
+  }
+
+  function escapeRe(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+  function stateCodeFor(text, D){
+    var P = prep(D);
+    text = String(text || '').trim();
+    if (!text || text === 'Federal (US)' || text === 'United States') return null;
+    if (has(P.byName, text)) return P.byName[text];
+    var counts = {}, first = {}, seen = [], taken = [];
+    function count(code, start, end){
+      taken.push([start, end]);
+      var before = text.slice(0, start).replace(/\s+$/, '');
+      if (!has(counts, code)){ counts[code] = 0; first[code] = start; seen.push(code); }
+      counts[code] += before.charAt(before.length - 1) === ',' ? 2 : 1;
+    }
+    var dcRe = new RegExp(DC_SRC, 'gi'), dm;
+    while ((dm = dcRe.exec(text)) !== null) count('DC', dm.index, dm.index + dm[0].length);
+    P.names.forEach(function(name){
+      var re = new RegExp('\\b' + escapeRe(name) + '\\b', 'gi'), m;
+      while ((m = re.exec(text)) !== null){
+        var start = m.index, end = start + m[0].length, inside = false;
+        for (var t = 0; t < taken.length; t++){
+          if (taken[t][0] <= start && start < taken[t][1]){ inside = true; break; }
+        }
+        if (inside) continue;
+        if (!STATE_EXACT[name] && NOT_BEFORE.test(text.slice(0, start))) continue;
+        if (NOT_AFTER.test(text.slice(end))) continue;
+        if (name !== 'New York' && CITY_AFTER.test(text.slice(end))) continue;
+        count(P.byName[name], start, end);
+      }
+    });
+    if (seen.length){
+      var best = seen[0];
+      for (var s = 1; s < seen.length; s++){
+        var c = seen[s];
+        if (counts[c] > counts[best] || (counts[c] === counts[best] && first[c] < first[best])) best = c;
+      }
+      return best;
+    }
+    var codeRe = /,\s*([A-Z]{2})\b/g, mm;
+    while ((mm = codeRe.exec(text)) !== null){
+      if (has(D.states, mm[1])) return mm[1];
+    }
+    return null;
+  }
+
+  function num(s){ return parseFloat(s.replace(/,/g, '')); }
+  function fmtG(n){ return String(Number(n.toPrecision(6))); }
+
+  function parseProject(text, D){
+    var P = prep(D);
+    var tokens = {}, toks = tokenize(text, D), i;
+    for (i = 0; i < toks.length; i++) tokens[toks[i]] = 1;
+    var live = liveTokens(text, D);
+    var matched = {};
+    P.facetOrder.forEach(function(fid){
+      var f = D.facets[fid];
+      var blockers = f.blockers || [];
+      for (var b = 0; b < blockers.length; b++) if (tokens[blockers[b]]) return;
+      var hits = f.triggers.filter(function(t){ return live[t] === 1; });
+      if (hits.length) matched[fid] = hits;
+    });
+
+    var src = String(text || ''), m, re, n, mw = null, mgd = null;
+    re = new RegExp(MW_SRC, 'gi');
+    while ((m = re.exec(src)) !== null){
+      n = num(m[1]) * (m[2].toLowerCase().charAt(0) === 'g' ? 1000 : 1);
+      mw = mw === null ? n : Math.max(mw, n);
+    }
+    re = new RegExp(MGD_SRC, 'gi');
+    while ((m = re.exec(src)) !== null){
+      n = num(m[1]);
+      mgd = mgd === null ? n : Math.max(mgd, n);
+    }
+    re = new RegExp(GPD_SRC, 'gi');
+    while ((m = re.exec(src)) !== null){
+      n = num(m[1]) / 1000000;
+      mgd = mgd === null ? n : Math.max(mgd, n);
+    }
+    var C = D.constants;
+    if ((mw !== null && mw >= C.hyperscale_mw) || (mgd !== null && mgd >= C.hyperscale_mgd)){
+      if (!has(matched, 'scale-hyperscale')) matched['scale-hyperscale'] = [];
+      matched['scale-hyperscale'].push(
+        mw !== null && mw >= C.hyperscale_mw ? fmtG(mw) + ' MW' : fmtG(mgd) + ' MGD');
+    }
+    return {
+      facets: P.facetOrder.filter(function(f){ return has(matched, f); }),
+      matched: matched,
+      state: stateCodeFor(text, D),
+      mw: mw,
+      mgd: mgd
+    };
+  }
+
+  function overlap(a, b, D){
+    var P = prep(D), dec = D.constants.score_decimals;
+    var sa = {}, sb = {}, i;
+    for (i = 0; i < a.length; i++) sa[a[i]] = 1;
+    for (i = 0; i < b.length; i++) sb[b[i]] = 1;
+    var shared = P.facetOrder.filter(function(f){ return sa[f] && sb[f]; });
+    if (!shared.length) return [0, []];
+    function w(f){ return D.facets[f] ? D.facets[f].weight : 1.0; }
+    function total(set){
+      var sum = 0;
+      P.facetOrder.forEach(function(f){ if (set[f]) sum += w(f); });
+      for (var k in set) if (has(set, k) && !D.facets[k]) sum += 1.0;
+      return sum;
+    }
+    var numr = 0;
+    for (i = 0; i < shared.length; i++) numr += w(shared[i]);
+    return [roundTo(numr / Math.sqrt(total(sa) * total(sb)), dec), shared];
+  }
+
+  // The Explore search's TF-IDF cosine (runSearch), restricted to cases and sites.
+  function lexicalScores(text, D){
+    var out = {};
+    if (!String(text || '').trim()) return out;
+    var P = prep(D), X = D.index, dec = D.constants.score_decimals;
+    var counts = {}, order = [];
+    tokenize(text, D).forEach(function(tok){
+      var p = P.vocabPos[tok];
+      if (p === undefined) return;
+      if (!has(counts, p)){ counts[p] = 0; order.push(p); }
+      counts[p] += 1;
+    });
+    if (!order.length) return out;
+    var qw = {}, norm = 0;
+    order.forEach(function(p){
+      var wq = counts[p] * Math.log(X.n_docs / X.df[p]);
+      qw[p] = wq; norm += wq * wq;
+    });
+    norm = Math.sqrt(norm) || 1;
+    for (var id in X.docs){
+      if (!has(X.docs, id)) continue;
+      var doc = X.docs[id], sum = 0;
+      for (var j = 0; j < doc.t.length; j++){
+        var q = qw[doc.t[j]];
+        if (q === undefined) continue;
+        sum += (q / norm) * (doc.w[j] / X.weight_scale);
+      }
+      if (sum > 0) out[id] = roundTo(sum, dec);
+    }
+    return out;
+  }
+
+  function byScoreThenId(x, y){
+    if (x.score !== y.score) return y.score - x.score;
+    return x.id < y.id ? -1 : (x.id > y.id ? 1 : 0);
+  }
+
+  function copy(o){ var r = {}; for (var k in o) if (has(o, k)) r[k] = o[k]; return r; }
+
+  function matchProject(facets, state, text, D){
+    var P = prep(D), C = D.constants, dec = C.score_decimals;
+    var want = {};
+    (facets || []).forEach(function(f){ want[f] = 1; });
+    facets = P.facetOrder.filter(function(f){ return want[f]; });
+    state = state || null;
+
+    var lexical = String(text || '').trim() ? lexicalScores(text, D) : {};
+    function ranked(items, top){
+      var rows = [];
+      items.forEach(function(item){
+        var ov = overlap(facets, item.facets, D);
+        var lex = has(lexical, item.id) ? lexical[item.id] : 0;
+        var total = roundTo(ov[0] + C.lexical_weight * lex, dec);
+        if (total > 0){
+          var row = copy(item);
+          row.score = total; row.facet_score = ov[0]; row.lexical = lex; row.shared = ov[1];
+          rows.push(row);
+        }
+      });
+      rows.sort(byScoreThenId);
+      return rows.slice(0, top);
+    }
+    var cases = ranked(D.cases, C.top_cases);
+    var sites = ranked(D.sites, C.top_sites);
+
+    // fact_requires gates, fact_triggers scores.
+    var present = {};
+    facets.forEach(function(f){ present[f] = 1; });
+    function admitted(row){
+      var req = row.requires || [];
+      for (var q = 0; q < req.length; q++) if (!has(present, req[q])) return false;
+      return true;
+    }
+    var readings = [];
+    D.readings.forEach(function(r){
+      if (!admitted(r)) return;
+      var ov = overlap(facets, r.triggers, D), score = ov[0];
+      if (score > 0){
+        var juris = r.jurisdictions || [];
+        var elsewhere = juris.length > 0 && (!state || juris.indexOf(state) < 0);
+        if (elsewhere) score = roundTo(score * C.elsewhere_factor, dec);
+        var row = copy(r);
+        row.score = score; row.shared = ov[1]; row.elsewhere = elsewhere;
+        readings.push(row);
+      }
+    });
+    readings.sort(byScoreThenId);
+    readings = readings.slice(0, C.top_readings);
+
+    var actSeen = {};
+    readings.forEach(function(r){ (r.activities || []).forEach(function(a){ actSeen[a] = 1; }); });
+    var activities = Object.keys(D.activities).filter(function(a){ return actSeen[a]; });
+    Object.keys(actSeen).forEach(function(a){ if (!has(D.activities, a)) activities.push(a); });
+
+    var sample = cases.slice(0, C.outcome_sample), tally = {}, tallyOrder = [];
+    sample.forEach(function(c){
+      (c.outcome_type || []).forEach(function(o){
+        if (!has(tally, o)){ tally[o] = 0; tallyOrder.push(o); }
+        tally[o] += 1;
+      });
+    });
+    var outcomes = tallyOrder.map(function(o){
+      return {outcome: o, label: has(D.outcomes, o) ? D.outcomes[o] : o, count: tally[o]};
+    });
+    outcomes.sort(function(x, y){
+      if (x.count !== y.count) return y.count - x.count;
+      return x.outcome < y.outcome ? -1 : (x.outcome > y.outcome ? 1 : 0);
+    });
+
+    // Instruments rank like readings: overlap with the instrument's fact_triggers.
+    function scored(i){
+      var ov = overlap(facets, i.triggers || [], D), row = copy(i);
+      row.score = ov[0]; row.shared = ov[1];
+      return row;
+    }
+    var instruments = [], localActions = [];
+    if (state){
+      instruments = D.instruments.filter(function(i){ return i.state === state && admitted(i); }).map(scored);
+      instruments.sort(function(x, y){
+        var rx = x.status === 'enacted' ? 0 : 1, ry = y.status === 'enacted' ? 0 : 1;
+        if (rx !== ry) return rx - ry;
+        return byScoreThenId(x, y);
+      });
+      localActions = D.local_actions
+        .map(function(a, idx){ return [a, idx]; })
+        .filter(function(p){ return p[0].state === state; });
+      // Python's sorted(reverse=True) is stable: equal dates keep file order.
+      localActions.sort(function(x, y){
+        var dx = x[0].date || '', dy = y[0].date || '';
+        if (dx !== dy) return dx < dy ? 1 : -1;
+        return x[1] - y[1];
+      });
+      localActions = localActions.map(function(p){ return p[0]; });
+    }
+    var federal = D.instruments
+      .filter(function(i){ return i.level === 'federal' && admitted(i); })
+      .map(scored)
+      .filter(function(i){ return i.score > 0; });
+    federal.sort(byScoreThenId);
+    federal = federal.slice(0, C.top_federal);
+
+    // What the record assessed as NOT reaching the closest sites.
+    var readingById = {};
+    D.readings.forEach(function(r){ readingById[r.id] = r; });
+    var negatives = [], negSeen = {};
+    sites.slice(0, C.negative_sites).forEach(function(site){
+      (site.negatives || []).forEach(function(neg){
+        var key = site.id + '|' + neg.reading_id;
+        if (negSeen[key]) return;
+        negSeen[key] = 1;
+        var r = has(readingById, neg.reading_id) ? readingById[neg.reading_id] : {};
+        negatives.push({
+          site_id: site.id, site_label: site.label, site_anchor: site.anchor,
+          reading_id: neg.reading_id,
+          reading_label: r.label != null ? r.label : neg.reading_id,
+          statute: r.statute != null ? r.statute : '',
+          anchor: r.anchor != null ? r.anchor : '',
+          how: neg.how
+        });
+      });
+    });
+
+    return {
+      facets: facets,
+      state: state,
+      readings: readings,
+      activities: activities,
+      cases: cases,
+      sites: sites,
+      outcomes: outcomes,
+      outcome_sample: Math.min(C.outcome_sample, cases.length),
+      instruments: instruments,
+      federal_instruments: federal,
+      local_actions: localActions,
+      negatives: negatives
+    };
+  }
+
+  var engine = {parseProject: parseProject, matchProject: matchProject, stateCodeFor: stateCodeFor};
+
+  // ===== Page wiring — skipped under node and wherever the fragment is absent =====
+  if (typeof document === 'undefined') return engine;
+  var root = document.getElementById('project-check');
+  var blob = root && root.querySelector('#project-data');
+  if (!root || !blob || root.getAttribute('data-booted')) return engine;
+  root.setAttribute('data-booted', '1');
+
+  var stringsEl = root.querySelector('#pcheck-strings');
+  var S = stringsEl ? JSON.parse(stringsEl.textContent) : {};
+  var SEC = S.sections || {};
+  // On a standalone tab page the other tabs are not in this document; index.html
+  // resolves any record id through its anchor map.
+  var LINK_BASE = document.querySelector('.tab-page-nav') ? 'index.html#' : '#';
+
+  var textBox = root.querySelector('#pcheck-text');
+  var stateSel = root.querySelector('#pcheck-state');
+  var mwBox = root.querySelector('#pcheck-mw');
+  var mgdBox = root.querySelector('#pcheck-mgd');
+  var readLine = root.querySelector('#pcheck-read');
+  var countN = root.querySelector('#pcheck-facets-n');
+  var output = root.querySelector('#pcheck-output');
+  var status = root.querySelector('#pcheck-status');
+  var runBtn = root.querySelector('#pcheck-run');
+  var clearBtn = root.querySelector('#pcheck-clear');
+  var boxes = Array.prototype.slice.call(root.querySelectorAll('.pcheck-facet-box'));
+  var exampleBtns = Array.prototype.slice.call(root.querySelectorAll('.pcheck-example'));
+  var idle = status ? status.textContent : '';
+
+  function el(tag, cls, text){
+    var node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text != null) node.textContent = text;
+    return node;
+  }
+  function link(anchor, child){
+    var a = document.createElement('a');
+    a.href = LINK_BASE + anchor;
+    if (typeof child === 'string') a.textContent = child; else a.appendChild(child);
+    return a;
+  }
+  function titleCase(s){
+    return s.replace(/[A-Za-z]+/g, function(w){ return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); });
+  }
+
+  // Everything below needs the payload: inline on Streamlit, fetched on the site.
+  function boot(D){
+    var touched = {};        // boxes the reader ticked or unticked by hand
+    var autoState = null;    // the state the parser last put in the select
+    var autoMw = null, autoMgd = null;
+    var autoRan = false;
+    // An example's curated facets, kept while its description is unedited:
+    // Run or a re-parse of that same text must not replace them with the parse.
+    var baseline = null;     // {text, on}
+
+    function facetChip(fid){
+      var f = D.facets[fid] || {};
+      var chip = el('span', 'pcheck-facet', f.label || fid);
+      if (f.description) chip.title = f.description;
+      return chip;
+    }
+    function section(key, suffix){
+      var sec = el('section', 'pcheck-sec');
+      sec.appendChild(el('h4', null, (SEC[key] || key) + (suffix || '')));
+      return sec;
+    }
+    function muted(text){ return el('p', 'pcheck-muted', text); }
+    function chipsLine(cls, label, ids){
+      var div = el('div', cls, label);
+      ids.forEach(function(f){ div.appendChild(facetChip(f)); });
+      return div;
+    }
+
+    function syncCount(){
+      var n = boxes.filter(function(b){ return b.checked; }).length;
+      if (countN) countN.textContent = n ? '(' + n + ' ticked)' : '';
+    }
+
+    function showStatus(text){
+      if (!status) return;
+      status.textContent = text;
+      output.replaceChildren(status);
+    }
+
+    function renderResult(result){
+      var wrap = el('div', 'pcheck-result');
+      var stateName = result.state ? (D.states[result.state] || result.state) : null;
+
+      // What we read
+      var sec = section('read'), dims = [], byDim = {};
+      result.facets.forEach(function(f){
+        var dim = (D.facets[f] || {}).dimension || '';
+        if (!has(byDim, dim)){ byDim[dim] = []; dims.push(dim); }
+        byDim[dim].push(f);
+      });
+      function dimRow(k, v){
+        var row = el('div', 'pcheck-dim-row');
+        row.appendChild(el('span', 'pcheck-dim-k', k));
+        var val = el('span', 'pcheck-dim-v');
+        if (typeof v === 'string') val.textContent = v;
+        else v.forEach(function(f){ val.appendChild(facetChip(f)); });
+        row.appendChild(val);
+        return row;
+      }
+      sec.appendChild(dimRow('State', stateName || 'not stated'));
+      if (dims.length) dims.forEach(function(d){ sec.appendChild(dimRow(D.dimensions[d] || d, byDim[d])); });
+      else sec.appendChild(muted('No facts recognised.'));
+      wrap.appendChild(sec);
+
+      // Activities
+      if (result.activities.length){
+        sec = section('activities');
+        var chips = el('div', 'pcheck-chips');
+        result.activities.forEach(function(a){
+          var chip = link('paths-' + a, D.activities[a] || a);
+          chip.className = 'pcheck-activity';
+          chips.appendChild(chip);
+        });
+        sec.appendChild(chips);
+        wrap.appendChild(sec);
+      }
+
+      // Readings. With no facts there is nothing to match; only the state's rules follow.
+      var anyFacts = result.facets.length > 0;
+      sec = section('readings');
+      if (result.readings.length){
+        var ol = el('ol', 'pcheck-list');
+        result.readings.forEach(function(r){
+          var li = el('li', 'pcheck-item');
+          var pill = el('span', 'statute-pill', r.statute || '');
+          pill.style.background = (S.statute_colors || {})[r.statute] || '#6b7280';
+          li.appendChild(pill);
+          li.appendChild(document.createTextNode(' '));
+          li.appendChild(link(r.anchor || '', el('strong', null, r.label || r.id)));
+          li.appendChild(el('span', 'pcheck-meta', ' · ' + (r.section || '')));
+          if (r.role === 'limit'){
+            li.appendChild(el('span', 'pcheck-flag pcheck-flag-limit', 'Limit — marks where a theory stops'));
+          }
+          if (r.elsewhere){
+            var names = (r.jurisdictions || []).map(function(j){ return D.states[j] || j; }).join(', ');
+            li.appendChild(el('span', 'pcheck-flag pcheck-flag-else',
+              result.state ? names + ' regime — an analogy here' : 'Applies only in ' + names));
+          }
+          li.appendChild(chipsLine('pcheck-why', 'Because: ', r.shared));
+          if (r.trigger) li.appendChild(el('div', 'pcheck-trigger', 'Could reach a campus when ' + r.trigger + '.'));
+          ol.appendChild(li);
+        });
+        sec.appendChild(ol);
+      } else {
+        sec.appendChild(muted("No reading's triggers overlap these facts."));
+      }
+      if (anyFacts) wrap.appendChild(sec);
+
+      // Cases
+      sec = section('cases');
+      if (result.cases.length){
+        var ol2 = el('ol', 'pcheck-list');
+        result.cases.forEach(function(c){
+          var li = el('li', 'pcheck-item');
+          li.appendChild(link(c.anchor || '', el('strong', null, c.label || c.id)));
+          var typeLabel = (S.case_types || {})[c.case_type] || c.case_type || '';
+          li.appendChild(el('span', 'pcheck-meta', ' · ' + (c.year || '') + ' · ' + typeLabel));
+          li.appendChild(chipsLine('pcheck-why', 'In common: ', c.shared));
+          var pills = el('div', 'pcheck-pills');
+          (c.outcome_type || []).forEach(function(o){
+            pills.appendChild(el('span', 'pcheck-outcome', D.outcomes[o] || o));
+          });
+          li.appendChild(pills);
+          if (c.takeaway) li.appendChild(el('div', 'pcheck-take', c.takeaway));
+          ol2.appendChild(li);
+        });
+        sec.appendChild(ol2);
+      } else {
+        sec.appendChild(muted('No tracked case shares a facet with this project.'));
+      }
+      if (anyFacts) wrap.appendChild(sec);
+
+      // Sites
+      if (result.sites.length){
+        sec = section('sites');
+        var ol3 = el('ol', 'pcheck-list');
+        result.sites.forEach(function(s){
+          var li = el('li', 'pcheck-item');
+          li.appendChild(link(s.anchor || '', el('strong', null, s.label || s.id)));
+          li.appendChild(el('span', 'pcheck-meta', ' · ' + (s.location || '')));
+          li.appendChild(chipsLine('pcheck-why', 'In common: ', s.shared));
+          if (s.status) li.appendChild(el('div', 'pcheck-take', s.status));
+          ol3.appendChild(li);
+        });
+        sec.appendChild(ol3);
+        wrap.appendChild(sec);
+      }
+
+      // Negative mappings on the closest sites — grey: a limit, not a route
+      if (result.negatives.length){
+        sec = section('negatives');
+        var ul0 = el('ul', 'pcheck-list');
+        result.negatives.forEach(function(n){
+          var li = el('li', 'pcheck-item pcheck-neg');
+          li.appendChild(el('span', 'statute-pill pcheck-neg-pill', n.statute || ''));
+          li.appendChild(document.createTextNode(' '));
+          li.appendChild(link(n.anchor || '', el('strong', null, n.reading_label || n.reading_id)));
+          li.appendChild(document.createTextNode(' — at '));
+          li.appendChild(link(n.site_anchor || '', n.site_label || n.site_id));
+          li.appendChild(document.createTextNode(': ' + (n.how || '')));
+          ul0.appendChild(li);
+        });
+        sec.appendChild(ul0);
+        wrap.appendChild(sec);
+      }
+
+      // Outcomes
+      if (result.outcomes.length){
+        sec = section('outcomes');
+        sec.appendChild(muted('Outcome types across the ' + result.outcome_sample +
+          ' closest cases. A count of what happened in tracked matters, not a forecast for this one.'));
+        var top = Math.max.apply(null, result.outcomes.map(function(o){ return o.count; })) || 1;
+        var bars = el('div', 'pcheck-bars');
+        result.outcomes.forEach(function(o){
+          var row = el('div', 'pcheck-bar-row');
+          row.appendChild(el('span', 'pcheck-bar-k', o.label || o.outcome));
+          var bar = el('span', 'pcheck-bar'), fill = el('span');
+          fill.style.width = Math.round(100 * o.count / top) + '%';
+          bar.appendChild(fill);
+          row.appendChild(bar);
+          row.appendChild(el('span', 'pcheck-bar-n', String(o.count)));
+          bars.appendChild(row);
+        });
+        sec.appendChild(bars);
+        wrap.appendChild(sec);
+      }
+
+      // Rules in the state, then the federal instruments whose triggers overlap
+      function instrumentLi(i){
+        var li = el('li', 'pcheck-item pcheck-item-tight');
+        var colors = S.status_colors || {};
+        var pill = el('span', 'cwa-status-pill', titleCase((i.status || '').replace(/_/g, ' ')));
+        pill.style.background = colors[i.status] || colors.unknown || '#6b7280';
+        li.appendChild(pill);
+        li.appendChild(document.createTextNode(' '));
+        li.appendChild(link(i.anchor || '', i.label || i.id));
+        li.appendChild(el('span', 'pcheck-meta', ' — ' + (i.title || '')));
+        if (i.shared && i.shared.length) li.appendChild(chipsLine('pcheck-why', 'Because: ', i.shared));
+        else if (i.water_scoped && !(i.triggers || []).length && i.fact_scope !== 'narrow'){
+          var all = S.applies_to_all || {};
+          li.appendChild(el('div', 'pcheck-why', has(all, i.status) ? all[i.status] : (all.other || '')));
+        }
+        return li;
+      }
+      function instrumentList(rows){
+        var ul = el('ul', 'pcheck-list');
+        rows.forEach(function(i){ ul.appendChild(instrumentLi(i)); });
+        return ul;
+      }
+      var federal = result.federal_instruments || [];
+      if (result.state){
+        sec = section('rules', ' — ' + stateName);
+        if (result.instruments.length){
+          sec.appendChild(el('p', 'pcheck-sub', 'Tracked state instruments'));
+          sec.appendChild(instrumentList(result.instruments));
+        } else {
+          sec.appendChild(muted('No tracked ' + stateName + ' instrument yet.'));
+        }
+        var actions = result.local_actions;
+        if (actions.length){
+          sec.appendChild(el('p', 'pcheck-sub', 'County and city actions'));
+          var ul2 = el('ul', 'pcheck-list');
+          actions.slice(0, 8).forEach(function(a){
+            var li = el('li', 'pcheck-item pcheck-item-tight',
+              (a.jurisdiction || '') + ' — ' + (a.action_type || '') + ', ' + (a.status || ''));
+            li.appendChild(el('span', 'pcheck-meta', ' · ' + (a.date || '')));
+            ul2.appendChild(li);
+          });
+          sec.appendChild(ul2);
+          if (actions.length > 8){
+            var more = muted((actions.length - 8) + ' more on ');
+            more.appendChild(link('panel-states', 'States & Localities'));
+            more.appendChild(document.createTextNode('.'));
+            sec.appendChild(more);
+          }
+        } else {
+          sec.appendChild(muted('No tracked county or city action in ' + stateName + ' yet.'));
+        }
+        if (federal.length){
+          sec.appendChild(el('p', 'pcheck-sub', SEC.federal || 'federal'));
+          sec.appendChild(instrumentList(federal));
+        }
+        wrap.appendChild(sec);
+      } else if (federal.length){
+        sec = section('federal');
+        sec.appendChild(instrumentList(federal));
+        wrap.appendChild(sec);
+      }
+      return wrap;
+    }
+
+    function ticked(){
+      return boxes.filter(function(b){ return b.checked; }).map(function(b){ return b.value; });
+    }
+
+    function run(){
+      var facets = ticked();
+      if (!facets.length && !stateSel.value){ showStatus(idle); return; }
+      var result = matchProject(facets, stateSel.value || null, textBox.value, D);
+      output.replaceChildren(renderResult(result));
+    }
+
+    function sizeFacet(){
+      var C = D.constants;
+      var mw = parseFloat(mwBox.value), mgd = parseFloat(mgdBox.value);
+      return (mw >= C.hyperscale_mw) || (mgd >= C.hyperscale_mgd);
+    }
+
+    // The select and the size inputs follow the text until the reader sets
+    // them by hand: filled when the text names a value, cleared when an edit
+    // removes the value the parser had put there. A manual value stays.
+    function followText(p){
+      if (p.state){
+        if (stateSel.value === '' || stateSel.value === autoState){ stateSel.value = p.state; autoState = p.state; }
+      } else if (autoState !== null && stateSel.value === autoState){
+        stateSel.value = ''; autoState = null;
+      }
+      if (p.mw !== null){
+        if (mwBox.value === '' || mwBox.value === autoMw) mwBox.value = autoMw = fmtG(p.mw);
+      } else if (autoMw !== null && mwBox.value === autoMw){
+        mwBox.value = ''; autoMw = null;
+      }
+      if (p.mgd !== null){
+        if (mgdBox.value === '' || mgdBox.value === autoMgd) mgdBox.value = autoMgd = fmtG(p.mgd);
+      } else if (autoMgd !== null && mgdBox.value === autoMgd){
+        mgdBox.value = ''; autoMgd = null;
+      }
+    }
+
+    function parse(){
+      var text = textBox.value;
+      if (baseline && text === baseline.text){
+        boxes.forEach(function(b){ if (!touched[b.value]) b.checked = !!baseline.on[b.value]; });
+        syncCount();
+        return;
+      }
+      baseline = null;
+      if (!text.trim()){
+        followText({state: null, mw: null, mgd: null});
+        if (readLine) readLine.textContent = '';
+        boxes.forEach(function(b){ if (!touched[b.value]) b.checked = b.value === 'scale-hyperscale' && sizeFacet(); });
+        syncCount();
+        return;
+      }
+      var p = parseProject(text, D), on = {};
+      followText(p);
+      p.facets.forEach(function(f){ on[f] = 1; });
+      if (sizeFacet()) on['scale-hyperscale'] = 1;
+      boxes.forEach(function(b){ if (!touched[b.value]) b.checked = !!on[b.value]; });
+
+      var parts = p.facets.map(function(f){
+        return p.matched[f].join(', ') + ' → ' + (D.facets[f] || {}).label;
+      });
+      if (p.state) parts.push(p.state + ' → ' + (D.states[p.state] || p.state));
+      if (readLine){
+        readLine.textContent = parts.length
+          ? 'We read: ' + parts.join('; ')
+          : 'Nothing recognised yet — tick the facts that apply below.';
+      }
+      syncCount();
+      if (!autoRan && ticked().length){ autoRan = true; run(); }
+    }
+
+    function clearAll(){
+      textBox.value = ''; stateSel.value = ''; mwBox.value = ''; mgdBox.value = '';
+      boxes.forEach(function(b){ b.checked = false; });
+      touched = {}; autoState = autoMw = autoMgd = null; autoRan = false; baseline = null;
+      if (readLine) readLine.textContent = '';
+      syncCount();
+      showStatus(idle);
+    }
+
+    function loadExample(id){
+      var ex = null;
+      for (var i = 0; i < D.examples.length; i++) if (D.examples[i].id === id) ex = D.examples[i];
+      if (!ex) return;
+      textBox.value = ex.description || '';
+      stateSel.value = ex.state || '';
+      mwBox.value = ex.mw == null ? '' : String(ex.mw);
+      mgdBox.value = ex.mgd == null ? '' : String(ex.mgd);
+      autoState = autoMw = autoMgd = null;
+      // The curated facets are the record; the description's parse is not.
+      var on = {};
+      (ex.facets || []).forEach(function(f){ on[f] = 1; });
+      // Recorded as a baseline, not as clicks: an edit to the description
+      // re-parses as usual, and only boxes the reader clicks stay manual.
+      touched = {};
+      baseline = {text: textBox.value, on: on};
+      boxes.forEach(function(b){ b.checked = !!on[b.value]; });
+      if (readLine) readLine.textContent = 'Loaded ' + ex.name + ' — the ticked facts are its curated fact pattern.';
+      syncCount();
+      autoRan = true;
+      run();
+    }
+
+    var debounce;
+    textBox.addEventListener('input', function(){
+      clearTimeout(debounce);
+      debounce = setTimeout(parse, 250);
+    });
+    textBox.addEventListener('keydown', function(e){
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)){
+        e.preventDefault();
+        clearTimeout(debounce);
+        parse();
+        run();
+      }
+    });
+    boxes.forEach(function(b){
+      b.addEventListener('change', function(){ touched[b.value] = 1; syncCount(); });
+    });
+    stateSel.addEventListener('change', function(){ autoState = null; });
+    mwBox.addEventListener('input', function(){ autoMw = null; });
+    mgdBox.addEventListener('input', function(){ autoMgd = null; });
+    runBtn.addEventListener('click', function(){ clearTimeout(debounce); parse(); run(); });
+    clearBtn.addEventListener('click', clearAll);
+    exampleBtns.forEach(function(btn){
+      btn.addEventListener('click', function(){ loadExample(btn.getAttribute('data-example')); });
+    });
+
+    // A browser that restored the form (Back, reload) gets its text read.
+    syncCount();
+    if (textBox.value.trim()) parse();
+  }
+
+  // --- Entry point: the Explore script's init(), for a ~0.3 MB payload ---
+  var src = blob.getAttribute('data-src');
+  var kicked = false;
+  function init(){
+    if (kicked) return;
+    kicked = true;
+    if (!src){ boot(JSON.parse(blob.textContent)); return; }
+    if (status) status.textContent = 'Loading the record…';
+    fetch(src).then(function(r){
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function(D){
+      if (status) status.textContent = idle;
+      boot(D);
+    }).catch(function(){
+      // Leave it retryable: switching away and back re-runs the fetch.
+      kicked = false;
+      if (!status) return;
+      status.textContent = 'The project checker could not load its data. Reload the page to try ' +
+        'again, or open the data file directly: ';
+      var a = document.createElement('a');
+      a.href = src;
+      a.textContent = 'project-data.json';
+      status.appendChild(a);
+      output.replaceChildren(status);
+    });
+  }
+  window.projectCheckInit = init;
+  var panel = root.closest ? root.closest('.tabpanel') : null;
+  if (!src || !panel || !panel.hidden) init();
+  return engine;
+})();
+"""
+
+
+def render_project_check():
+    """Streamlit surface: the same fragment ``build_site.py`` inlines."""
+    import streamlit.components.v1 as components
+
+    st.subheader("Check a project")
+    st.markdown(PROJECT_CHECK_LEAD)
+    components.html(_build_project_check_html(), height=900, scrolling=True)
+    st.caption(
+        "Matching is weighted overlap of fact-pattern facets, plus wording "
+        "similarity for cases and sites. Outcome counts describe tracked "
+        "matters, not this project."
+    )
+
+
 # --- Main App ---
 
 
@@ -6726,6 +8069,7 @@ def main():
 
     (
         tab_overview,
+        tab_check,
         tab_legislation,
         tab_states,
         tab_commitments,
@@ -6739,6 +8083,7 @@ def main():
     ) = st.tabs(
         [
             "Overview",
+            "Check a project",
             "Legislation",
             "States & Localities",
             "Commitments",
@@ -6755,6 +8100,10 @@ def main():
     # --- Overview tab (landing) ---
     with tab_overview:
         render_overview()
+
+    # --- Check a project tab ---
+    with tab_check:
+        render_project_check()
 
     # --- States & Localities tab ---
     with tab_states:
