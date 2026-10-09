@@ -277,6 +277,24 @@ the ~3-4× waste patterns. Score each run on:
 
 ### Agent-use evaluation log
 
+**2026-10-08 (final round) — one Sonnet review, one Opus fix pass, main
+session verified and merged PR #32. Verdict: both justified.**
+
+- *Sonnet review (inline, no sub-agents):* 156k tokens, 26 tool uses,
+  ~2.7 min → 12 findings, 11 acted on (~14k per accepted finding). Its
+  strongest catches were behavioral: MWh read as MW, mg/d read as MGD,
+  out-of-state regimes ranking first with no state named, and
+  "applies to every data center" on single-project instruments. One data
+  call was wrong: it doubted `cool-evaporative` at AWS Lake Anna, and one
+  WebSearch showed the discharge is evaporative-tower blowdown, so the facet stayed.
+- *Opus fix pass (12 decided items + slop sweep):* 212k tokens, 72 tool
+  uses, ~8 min → all items done, 20 new tests, parity extended. It went
+  beyond scope on Vantage sources but reported each change; three new URLs
+  were spot-checked (200, figures present). It missed that its node harness
+  passed a 380 KB argv string, which failed Linux CI (128 KB per-arg cap) and
+  cost one fix commit. Next time: say "run the node tests as CI would" or pass
+  payloads through files by default.
+
 **2026-10-08 — tiered fan-out at the user's instruction (WebSearch seeds →
 two Haiku search agents in parallel → one Sonnet annotation agent → one Opus
 coding agent), main session on design, review and verification. Verdict: the
