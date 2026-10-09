@@ -156,3 +156,10 @@ Format:
 - **Error:** a `recent_news` item carried `"date": "2026-07"` (the source gave only a month); the schema requires `YYYY-MM-DD`.
 - **Root cause:** data-entry error (not a code or test bug) — the test is right.
 - **Fix:** dropped the month-only item and kept the dated ABC6 report (2026-07-21). No code change.
+
+## 2026-10-08 — node parity tests fail on Linux CI: "Argument list too long"
+
+- **Where:** `tests/test_precedent.py::test_page_script_matches_the_engine_on_a_fixture` and `::test_page_parser_matches_on_edge_cases`, CI run 37876862816 (Python 3.12, ubuntu).
+- **Error:** `OSError: [Errno 7] Argument list too long: 'node'`.
+- **Root cause:** test bug. The harnesses passed the whole project-data payload (~380 KB) as one argv string; Linux caps a single argument at 128 KB (`MAX_ARG_STRLEN`), macOS does not, so it passed locally.
+- **Fix:** the payload is written to a temp file and the harness reads it with `fs.readFileSync`, as the DOM test already did. Test fix only.

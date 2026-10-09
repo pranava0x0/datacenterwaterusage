@@ -590,7 +590,7 @@ def test_page_script_matches_the_engine_on_a_fixture(tmp_path, text):
     js = dashboard._project_check_js()
     payload = precedent.payload_json()
     harness = (
-        "const D = JSON.parse(process.argv[2]);\n"
+        "const D = JSON.parse(require('fs').readFileSync(process.argv[2], 'utf8'));\n"
         "const text = process.argv[3];\n"
         + js.replace("(function(){", "const __engine = (function(){", 1)
         + "\nconst parsed = __engine.parseProject(text, D);\n"
@@ -603,10 +603,13 @@ def test_page_script_matches_the_engine_on_a_fixture(tmp_path, text):
         "negatives: m.negatives.map(n => [n.site_id, n.reading_id]), "
         "local_actions: m.local_actions.map(a => a.id), mw: parsed.mw, mgd: parsed.mgd}));\n"
     )
+    # The payload goes through a file: Linux caps one argv string at 128 KB.
+    payload_file = tmp_path / "payload.json"
+    payload_file.write_text(payload, encoding="utf-8")
     script = tmp_path / "harness.js"
     script.write_text(harness, encoding="utf-8")
     out = subprocess.run(
-        ["node", str(script), payload, text], capture_output=True, text=True, check=True
+        ["node", str(script), str(payload_file), text], capture_output=True, text=True, check=True
     )
     got = json.loads(out.stdout)
     parsed = precedent.parse_project(text)
@@ -672,16 +675,18 @@ def test_page_parser_matches_on_edge_cases(tmp_path):
     """State, size and negation parsing on the strings the review flagged, both sides."""
     js = dashboard._project_check_js()
     harness = (
-        "const D = JSON.parse(process.argv[2]);\n"
+        "const D = JSON.parse(require('fs').readFileSync(process.argv[2], 'utf8'));\n"
         "const texts = JSON.parse(process.argv[3]);\n"
         + js.replace("(function(){", "const __engine = (function(){", 1)
         + "\nprocess.stdout.write(JSON.stringify(texts.map(t => { const p = __engine.parseProject(t, D); "
         "return [p.state, p.mw, p.mgd, p.facets, p.matched]; })));\n"
     )
+    payload_file = tmp_path / "payload.json"
+    payload_file.write_text(precedent.payload_json(), encoding="utf-8")
     script = tmp_path / "edge.js"
     script.write_text(harness, encoding="utf-8")
     out = subprocess.run(
-        ["node", str(script), precedent.payload_json(), json.dumps(PARSER_EDGE_CASES + NEGATION_CASES)],
+        ["node", str(script), str(payload_file), json.dumps(PARSER_EDGE_CASES + NEGATION_CASES)],
         capture_output=True, text=True, check=True,
     )
     want = [
