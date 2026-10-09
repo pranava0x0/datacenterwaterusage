@@ -838,7 +838,7 @@ FACT_FACETS = {
     "proc-moratorium": {
         "dimension": "process",
         "label": "Moratorium or pause",
-        "description": "A temporary halt on approvals while rules are written.",
+        "description": "A temporary halt on approvals, enacted or formally proposed.",
         "triggers": ["moratorium", "moratoriums", "pause", "paused", "temporary ban", "interim ordinance"],
     },
     "proc-incentive": {
@@ -870,3 +870,12 @@ FACT_FACETS = {
 
 # Readings never carry scale; it ranks cases and sites only.
 FACT_FACET_LABELS = {fid: f["label"] for fid, f in FACT_FACETS.items()}
+
+# ``fact_scope`` on a water-scoped instrument. Absent means the instrument is
+# written to cover data centers in its jurisdiction. "narrow" marks one that
+# names a single project, only commissions a study or audit, or binds a small
+# population (incentive applicants, DoD procurement); the Check-a-project page
+# shows no applicability line for it.
+INSTRUMENT_FACT_SCOPES = {
+    "narrow": "A single project, a study or audit, or a narrow population",
+}

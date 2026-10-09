@@ -5,28 +5,24 @@ WHY THIS EXISTS
 The Explore tab answers "which records use the same words as this text?".
 That is wording, not law: a paragraph about an Arizona campus matches every
 record that says "Arizona" and nothing that says "groundwater management
-area". What a reader with a project in front of them actually wants is the
-chain the Water Cases tab draws by hand for nineteen sites — *this fact
-pattern → these statutory readings could reach it → these cases are the
-closest history → this is what usually happened* — computed for a project
-the tracker has never seen.
+area". A reader with a project wants the chain the Water Cases tab draws by
+hand for nineteen sites (this fact pattern, the statutory readings that could
+reach it, the closest cases, what those cases recorded) for a project the
+tracker has not seen.
 
-The computation is deliberately shallow and showable. Every case and
-conflict site carries ``fact_pattern``, a list of facets from the closed
-:data:`refdata.taxonomies.FACT_FACETS` vocabulary (where the water comes
-from, how it is used, where it goes, what the site is, what powers it, what
-chemicals it holds, how the approval runs). Every statutory reading carries
-``fact_triggers``: the facets whose presence makes it potentially reach a
-project. A project is parsed into the same facets — trigger words in a
-pasted description, or chips a reader ticks — and matched by weighted
-overlap, so the result is always explained by the facets in common. No
-embeddings, no model call, no server: the browser runs the same arithmetic
-this module does, from a payload this module emits, and a build test holds
-the two to the same answer on a fixture.
+The computation is deliberately simple: a weighted overlap of facets you can
+inspect. Every case and conflict site carries ``fact_pattern``, a list of
+facets from the closed :data:`refdata.taxonomies.FACT_FACETS` vocabulary
+(water source, cooling, discharge route, site, power, chemicals, process,
+scale). Every statutory reading carries ``fact_triggers``, the facets whose
+presence could bring it into play. A project is parsed into the same facets,
+from trigger words in a pasted description or from chips a reader ticks, and
+the facets in common are the explanation. The browser runs the same
+arithmetic from a payload this module emits, and a test holds the two to the
+same answer on fixtures.
 
-Copy discipline carries into the code: nothing here predicts an outcome.
-``outcomes`` is a tally of what the closest tracked cases recorded, and the
-page says so.
+Nothing here predicts an outcome: ``outcomes`` is a tally of what the closest
+tracked cases recorded.
 
 Purity rule: no ``streamlit`` import.
 """
@@ -99,13 +95,20 @@ SCORE_DECIMALS = 6
 # scored down and flagged, so a Texas reader is not told SGMA reaches them.
 ELSEWHERE_FACTOR = 0.25
 
-_NUMBER = r"(\d[\d,]*(?:\.\d+)?)"
+# A comma is a thousands separator only when three digits follow it: "1,5 MW"
+# is a European 1.5, not 15, and is left unread. A number glued to a letter,
+# digit, point or comma ("1e3 MW") is not read either.
+_NUMBER = r"(?:^|[^A-Za-z0-9_.,])(\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?)(?![\d,]*,\d)"
 # "[\s-]*" between number and unit: "300-megawatt", "1.2-gigawatt", "100-MW".
-MW_RE = re.compile(_NUMBER + r"[\s-]*(gigawatts?|gw|megawatts?|mw)\b", re.IGNORECASE)
+# Not an energy figure: "300 MWh", "300 megawatt-hours per year".
+MW_RE = re.compile(
+    _NUMBER + r"[\s-]*(gigawatts?|gw|megawatts?|mw)\b(?![\s-]*h(?:ours?|rs?)?\b)", re.IGNORECASE
+)
 # A per-day figure only. "78 million gallons over two years" and "31 million
 # gallons a year" say nothing about daily demand, and "mgd" already means it.
+# No "mg/d": that is milligrams a day.
 MGD_RE = re.compile(
-    _NUMBER + r"[\s-]*(?:mgd|mg/d|million[\s-]*gallons?[\s-]*(?:per|a|/|each)[\s-]*day)\b", re.IGNORECASE
+    _NUMBER + r"[\s-]*(?:mgd|million[\s-]*gallons?[\s-]*(?:per|a|/|each)[\s-]*day)\b", re.IGNORECASE
 )
 # "5,000,000 gallons a day" / "750,000 gallons per day" — read in gallons, then
 # scaled to MGD. Only a per-day figure counts; "per year" says little about
@@ -119,13 +122,22 @@ def _number(text: str) -> float:
     return float(text.replace(",", ""))
 
 
+def _fmt_g(n: float) -> str:
+    """Six significant digits, never an exponent: the page's ``fmtG``.
+    ``f"{n:g}"`` would print a million megawatts as ``1e+06``."""
+    return f"{float(f'{n:.6g}'):f}".rstrip("0").rstrip(".")
+
+
 # A state name that is really part of a place or river name: "Port Washington",
-# "Fort Worth"-style prefixes, "Colorado River" (Texas has one of its own).
+# "Fort Worth"-style prefixes, "Colorado River" (Texas has one of its own),
+# "Kansas City" and "Oklahoma City" (a city is not its namesake state; Kansas
+# City is mostly in Missouri). New York City is the one city that is.
 # No compass words: "West Texas" is Texas, and the compound states ("West
 # Virginia", "North Carolina") match first, longest-first, so their inner name
 # is already inside a taken range.
 _NOT_A_STATE_BEFORE = re.compile(r"(?:\b(?:port|fort|lake|mount|new)\s+)$", re.IGNORECASE)
 _NOT_A_STATE_AFTER = re.compile(r"^\s+(?:river|street|avenue|road|county\s+water)\b", re.IGNORECASE)
+_CITY_AFTER = re.compile(r"^\s+city\b", re.IGNORECASE)
 # "Washington, D.C." / "Washington DC" is the District, not Washington state.
 # Matched before the name scan so its "Washington" is already taken.
 _DC_RE = re.compile(r"\bwashington,?\s*d\.?\s?c\b\.?", re.IGNORECASE)
@@ -139,7 +151,8 @@ def state_code_for(text: str | None) -> str | None:
     Full names count, and the name mentioned most often wins, a name after a
     comma counting double — a passage on a campus in "Henderson County, Texas"
     by "a Kansas developer" is about Texas. A name that is part
-    of another place's name ("Port Washington", "Colorado River") is skipped.
+    of another place's name ("Port Washington", "Colorado River", "Kansas
+    City") is skipped.
     Ties go to the earliest mention. A bare two-letter code counts only when
     nothing else does, only right after a comma ("Tucson, AZ"), and only if it
     is a real code — so "US EPA", "a new DC campus" and a stray "OR" name no
@@ -171,6 +184,8 @@ def state_code_for(text: str | None) -> str | None:
             if name not in _STATE_EXACT and _NOT_A_STATE_BEFORE.search(text[: m.start()]):
                 continue
             if _NOT_A_STATE_AFTER.search(text[m.end():]):
+                continue
+            if name != "New York" and _CITY_AFTER.search(text[m.end():]):
                 continue
             count(by_name[name], m.start(), m.end())
     if counts:
@@ -256,7 +271,7 @@ def parse_project(text: str) -> dict:
 
     if (mw is not None and mw >= HYPERSCALE_MW) or (mgd is not None and mgd >= HYPERSCALE_MGD):
         matched.setdefault("scale-hyperscale", []).append(
-            f"{mw:g} MW" if mw is not None and mw >= HYPERSCALE_MW else f"{mgd:g} MGD"
+            f"{_fmt_g(mw)} MW" if mw is not None and mw >= HYPERSCALE_MW else f"{_fmt_g(mgd)} MGD"
         )
 
     return {
@@ -320,7 +335,7 @@ def _records() -> dict:
                 "state": state_code_for(s.get("location", "")),
                 "status": _short(s.get("status_2026", "")),
                 # Mappings the record assessed as *not* reaching this site
-                # (``reaches: false``) — the limits a similar project meets too.
+                # (``reaches: false``), limits a similar project may meet too.
                 "negatives": [
                     {"reading_id": ar.get("reading_id", ""), "how": _short(ar.get("how", ""))}
                     for ar in s.get("applicable_readings") or []
@@ -485,7 +500,8 @@ def match_project(
             continue
         score, shared = overlap(facets, r["triggers"], weights)
         if score > 0:
-            elsewhere = bool(state and r["jurisdictions"] and state not in r["jurisdictions"])
+            # No state named is not a pass: an AMA rule reaches only Arizona.
+            elsewhere = bool(r["jurisdictions"]) and state not in r["jurisdictions"]
             if elsewhere:
                 score = round(score * ELSEWHERE_FACTOR, SCORE_DECIMALS)
             readings.append({**r, "score": score, "shared": shared, "elsewhere": elsewhere})
@@ -505,8 +521,9 @@ def match_project(
     ]
 
     # Instruments rank like readings: overlap of the project's facets with the
-    # instrument's fact_triggers. Empty triggers score 0 — such an instrument
-    # applies to every data center in its jurisdiction, and the page says so.
+    # instrument's fact_triggers. Empty triggers score 0; the page says the
+    # instrument is written to cover data centers in its jurisdiction, unless
+    # its fact_scope is "narrow".
     def scored(inst: dict) -> dict:
         score, shared = overlap(facets, inst["triggers"], weights)
         return {**inst, "score": score, "shared": shared}
@@ -591,6 +608,7 @@ def _instruments() -> list[dict]:
                 # "every data center in the jurisdiction"); energy-only ones do
                 # not, and must not be shown as applying to every campus.
                 "water_scoped": "fact_triggers" in b,
+                "fact_scope": b.get("fact_scope", ""),
                 "tab": ref.tab,
                 "anchor": ref.anchor,
             }

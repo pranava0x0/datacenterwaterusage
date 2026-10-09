@@ -20,12 +20,12 @@ states:      {code: name}
 readings:    [{id,label,statute,section,activities[],role,trigger,triggers[],requires[],jurisdictions[],example_case_ids[],tab,anchor}]
 cases:       [{id,label,facets[],outcome_type[],case_type,category,year,cwa_applied,instrument,takeaway,tab,anchor}]
 sites:       [{id,label,facets[],issue_types[],location,state,status,tab,anchor}]
-instruments: [{id,label,title,jurisdiction,state,level,status,triggers[],requires[],principles[],water_scoped,tab,anchor}]
+instruments: [{id,label,title,jurisdiction,state,level,status,triggers[],requires[],principles[],water_scoped,fact_scope,tab,anchor}]
 local_actions: [{id,jurisdiction,state,action_type,status,date,water_related}]
 examples:    [{id,name,operator,location,state,status,status_date,mw,mgd,description,facets[],sources[]}]
 index:       {vocab[], df[], n_docs, docs:{record_id:{t:[vocab positions], w:[int weights]}}, weight_scale}
 stopwords[], min_token_len
-constants:   {hyperscale_mw, hyperscale_mgd, lexical_weight, outcome_sample, top_cases, top_sites, top_readings, score_decimals, elsewhere_factor}
+constants:   {hyperscale_mw, hyperscale_mgd, lexical_weight, outcome_sample, top_cases, top_sites, top_readings, top_federal, negative_sites, score_decimals, elsewhere_factor}
 ```
 
 ## Functions the script must expose (the parity test calls them under node)
@@ -40,14 +40,19 @@ The IIFE must `return {parseProject, matchProject}` so the test can rewrite
     `min_token_len` or in `stopwords`, then unigrams + adjacent bigrams of the
     *surviving* unigrams);
   - a facet fires when any trigger is in the token set and no blocker is;
-  - MW: regex `(\d[\d,]*(?:\.\d+)?)\s*(gigawatts?|gw|megawatts?|mw)\b` (case-insensitive, GW ×1000, max of matches);
-    MGD: `(\d[\d,]*(?:\.\d+)?)\s*(?:mgd|mg/d|million gallons?\s*(?:per|a|/|each)\s*day)\b`
-    and gallons-per-day `(\d[\d,]*(?:\.\d+)?)\s*(gallons?|gal)\s*(?:per|a|/|each)\s*day\b` ÷ 1,000,000 (max);
+  - numbers: `NUM = (?:^|[^A-Za-z0-9_.,])(\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?)(?![\d,]*,\d)` — a comma
+    is a thousands separator only before three digits ("1,5 MW" and "1e3 MW" are not read);
+  - MW: `NUM[\s-]*(gigawatts?|gw|megawatts?|mw)\b(?![\s-]*h(?:ours?|rs?)?\b)` (case-insensitive, GW ×1000,
+    max of matches; "300 MWh" and "megawatt-hours" are energy, not capacity);
+    MGD: `NUM[\s-]*(?:mgd|million[\s-]*gallons?[\s-]*(?:per|a|/|each)[\s-]*day)\b` (no `mg/d`: milligrams)
+    and gallons-per-day `NUM[\s-]*(gallons?|gal)[\s-]*(?:per|a|/|each)[\s-]*day\b` ÷ 1,000,000 (max);
+    the `scale-hyperscale` label prints the figure with six significant digits and no exponent (`fmtG`);
   - `scale-hyperscale` is added when mw ≥ hyperscale_mw or mgd ≥ hyperscale_mgd;
   - `state`: implement `stateCodeFor(text)` exactly as `precedent.state_code_for`
     (full names, longest first, skip a name preceded by `port|fort|lake|mount|new|west|north|south|east` + space
     unless the name is itself one of the compound state names, skip a name followed by
-    ` river| street| avenue| road| county water`; count mentions, a name right after a comma counts 2;
+    ` river| street| avenue| road| county water`, and skip a name followed by ` city` unless it is
+    New York ("Kansas City" alone names no state); count mentions, a name right after a comma counts 2;
     most mentions wins, ties to the earliest; else a bare two-letter code);
   - facets are returned in payload (taxonomy) order.
 - `matchProject(facets, state, text, D)` → the same keys as `precedent.match_project`:
@@ -60,8 +65,8 @@ The IIFE must `return {parseProject, matchProject}` so the test can rewrite
     `score_decimals`, computed only when text is non-blank; keep rows with score > 0,
     sort by (−score, id), take `top_cases` / `top_sites`. Each row carries
     `score, facet_score, lexical, shared`.
-  - readings: `overlap(facets, triggers)`; if `state` and `jurisdictions` non-empty and
-    state ∉ jurisdictions, `score = round(score × elsewhere_factor)` and `elsewhere = true`;
+  - readings: `overlap(facets, triggers)`; if `jurisdictions` is non-empty and the state is
+    not in it (including no state named), `score = round(score × elsewhere_factor)` and `elsewhere = true`;
     keep score > 0, sort by (−score, id), take `top_readings`.
   - activities: union of the kept readings' activities in `activities` key order.
   - outcomes: tally of `outcome_type` over the first `outcome_sample` cases, sorted by
@@ -103,8 +108,12 @@ The IIFE must `return {parseProject, matchProject}` so the test can rewrite
   `createElement`/`textContent`; never innerHTML with record text.
 - Record links are `href="#" + anchor` — the page's anchor handler already opens the owning
   tab. Activity chips link to `#paths-<activity>`.
-- Empty states: no facets → `#pcheck-status` text (already present); no readings/cases →
-  the same "No …" sentences the Python renderer uses.
+- Empty states: no facets and no state → `#pcheck-status` text (already present); a state
+  but no facets → the "What we read" and rules sections only, as the Python renderer does;
+  no readings/cases → the same "No …" sentences the Python renderer uses.
+- Reading flags: `elsewhere` with a state named → "<names> regime — an analogy here"; with no
+  state → "Applies only in <names>". An instrument with empty `triggers` gets the
+  `applies_to_all` line for its status unless `fact_scope` is `narrow`.
 - Payload loading: identical pattern to the Explore script's `init()` — if `#project-data`
   has `data-src`, fetch on first activation of the tab (`tabpanel` becomes visible or the
   fragment is in the document on a standalone page), show a "Loading …" line in

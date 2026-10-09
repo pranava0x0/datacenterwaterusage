@@ -1026,7 +1026,7 @@ SOURCES_DATA: dict = {
             ),
             "workaround": (
                 "Add WWTP permits as DC clusters grow. Ohio EPA withdrew the OHD000001 "
-                "general permit on 2026-07-21, so the unlock is now per-facility NPDES "
+                "general permit on 2026-07-21; the remaining route is per-facility NPDES "
                 "permits with their own DMRs."
             ),
             "kind": "structural",
@@ -6738,7 +6738,7 @@ PROJECT_CHECK_LEAD = (
     "Describe a proposed data center, or pick a real 2026 proposal. The tracker "
     "turns it into a fact pattern and shows which laws could reach it, the closest "
     "cases and community fights, how those cases ended, and the rules in its state. "
-    "It maps exposure from the record. It does not predict a result or recommend a suit."
+    "It maps exposure from the record; it does not predict a result."
 )
 
 PROJECT_CHECK_EMPTY_STATE = (
@@ -6767,16 +6767,17 @@ PROJECT_CHECK_SECTIONS = {
     "federal": "Federal instruments that could apply",
 }
 
-# What an instrument row says when the instrument names no fact pattern: its
-# terms reach every data center in its jurisdiction, however it uses water.
-# Keyed by status, so a bill that died is not described as applying, and
-# "jurisdiction" rather than "state" because federal rows use it too. Shipped
-# to the page whole in #pcheck-strings; "other" covers any status not listed.
+# What an instrument row says when the instrument names no fact pattern and
+# is not marked ``fact_scope: "narrow"``. Keyed by status, so a bill that died
+# is not described as covering anything, and "jurisdiction" rather than
+# "state" because federal rows use it too. Shipped to the page whole in
+# #pcheck-strings; "other" covers any status not listed.
+_NOT_ASSESSED = "; thresholds and exemptions not assessed"
 PROJECT_CHECK_APPLIES_TO_ALL = {
-    "enacted": "Applies to every data center in its jurisdiction",
-    "introduced": "Would apply to every data center in its jurisdiction",
-    "failed": "Would have applied to every data center in its jurisdiction",
-    "other": "Covers every data center in its jurisdiction",
+    "enacted": "Written to cover data centers in its jurisdiction" + _NOT_ASSESSED,
+    "introduced": "Would cover data centers in its jurisdiction" + _NOT_ASSESSED,
+    "failed": "Would have covered data centers in its jurisdiction" + _NOT_ASSESSED,
+    "other": "Written to cover data centers in its jurisdiction" + _NOT_ASSESSED,
 }
 
 
@@ -6840,9 +6841,11 @@ def _project_result_html(result: dict, state_name: str | None = None) -> str:
         if r.get("role") == "limit":
             flags += '<span class="pcheck-flag pcheck-flag-limit">Limit — marks where a theory stops</span>'
         if r.get("elsewhere"):
+            names = ", ".join(US_STATE_NAMES.get(j, j) for j in r.get("jurisdictions", []))
             flags += (
                 '<span class="pcheck-flag pcheck-flag-else">'
-                f'{esc(", ".join(US_STATE_NAMES.get(j, j) for j in r.get("jurisdictions", [])))} regime — an analogy here</span>'
+                + esc(f"{names} regime — an analogy here" if result.get("state") else f"Applies only in {names}")
+                + "</span>"
             )
         rows.append(
             '<li class="pcheck-item">'
@@ -6850,14 +6853,16 @@ def _project_result_html(result: dict, state_name: str | None = None) -> str:
             f'<a href="#{esc(r.get("anchor", ""))}"><strong>{esc(r.get("label", r.get("id", "")))}</strong></a>'
             f'<span class="pcheck-meta"> · {esc(r.get("section", ""))}</span>{flags}'
             f'<div class="pcheck-why">Because: {"".join(_facet_chip_html(f) for f in r.get("shared", []))}</div>'
-            + (f'<div class="pcheck-trigger">Reaches a campus when {esc(r["trigger"])}.</div>' if r.get("trigger") else "")
+            + (f'<div class="pcheck-trigger">Could reach a campus when {esc(r["trigger"])}.</div>' if r.get("trigger") else "")
             + "</li>"
         )
-    parts.append(
-        f'<section class="pcheck-sec"><h4>{esc(PROJECT_CHECK_SECTIONS["readings"])}</h4>'
-        + (f'<ol class="pcheck-list">{"".join(rows)}</ol>' if rows else "<p class=pcheck-muted>No reading's triggers overlap these facts.</p>")
-        + "</section>"
-    )
+    # With no facts there is nothing to match; only the state's rules follow.
+    if facets:
+        parts.append(
+            f'<section class="pcheck-sec"><h4>{esc(PROJECT_CHECK_SECTIONS["readings"])}</h4>'
+            + (f'<ol class="pcheck-list">{"".join(rows)}</ol>' if rows else "<p class=pcheck-muted>No reading's triggers overlap these facts.</p>")
+            + "</section>"
+        )
 
     # Cases
     rows = []
@@ -6874,11 +6879,12 @@ def _project_result_html(result: dict, state_name: str | None = None) -> str:
             + (f'<div class="pcheck-take">{esc(c["takeaway"])}</div>' if c.get("takeaway") else "")
             + "</li>"
         )
-    parts.append(
-        f'<section class="pcheck-sec"><h4>{esc(PROJECT_CHECK_SECTIONS["cases"])}</h4>'
-        + (f'<ol class="pcheck-list">{"".join(rows)}</ol>' if rows else "<p class=pcheck-muted>No tracked case shares a facet with this project.</p>")
-        + "</section>"
-    )
+    if facets:
+        parts.append(
+            f'<section class="pcheck-sec"><h4>{esc(PROJECT_CHECK_SECTIONS["cases"])}</h4>'
+            + (f'<ol class="pcheck-list">{"".join(rows)}</ol>' if rows else "<p class=pcheck-muted>No tracked case shares a facet with this project.</p>")
+            + "</section>"
+        )
 
     # Sites
     rows = []
@@ -6968,7 +6974,7 @@ def _project_instrument_li(i: dict) -> str:
     esc = html.escape
     if i.get("shared"):
         why = f'<div class="pcheck-why">Because: {"".join(_facet_chip_html(f) for f in i["shared"])}</div>'
-    elif i.get("water_scoped") and not i.get("triggers"):
+    elif i.get("water_scoped") and not i.get("triggers") and i.get("fact_scope") != "narrow":
         why = f'<div class="pcheck-why">{esc(_applies_to_all_line(i.get("status", "")))}</div>'
     else:
         why = ""
@@ -7183,25 +7189,22 @@ def _project_check_js() -> str:
     return r"""
 (function(){
   // ===== Engine: a 1:1 port of refdata/precedent.py, parametrised by the payload =====
-  // Pure — no DOM — so tests/test_precedent.py can run it under node and hold
-  // it to the Python answer on a fixture.
 
   var NOT_BEFORE = /\b(?:port|fort|lake|mount|new)\s+$/i;
   var NOT_AFTER = /^\s+(?:river|street|avenue|road|county\s+water)\b/i;
+  var CITY_AFTER = /^\s+city\b/i;
   var DC_SRC = '\\bwashington,?\\s*d\\.?\\s?c\\b\\.?';
   var STATE_EXACT = {'New York': 1, 'New Mexico': 1, 'New Jersey': 1, 'New Hampshire': 1,
     'West Virginia': 1, 'North Carolina': 1, 'North Dakota': 1, 'South Carolina': 1,
     'South Dakota': 1};
-  var NUM = '(\\d[\\d,]*(?:\\.\\d+)?)';
-  var MW_SRC = NUM + '[\\s-]*(gigawatts?|gw|megawatts?|mw)\\b';
-  var MGD_SRC = NUM + '[\\s-]*(?:mgd|mg/d|million[\\s-]*gallons?[\\s-]*(?:per|a|/|each)[\\s-]*day)\\b';
+  var NUM = '(?:^|[^A-Za-z0-9_.,])(\\d{1,3}(?:,\\d{3})+(?:\\.\\d+)?|\\d+(?:\\.\\d+)?)(?![\\d,]*,\\d)';
+  var MW_SRC = NUM + '[\\s-]*(gigawatts?|gw|megawatts?|mw)\\b(?![\\s-]*h(?:ours?|rs?)?\\b)';
+  var MGD_SRC = NUM + '[\\s-]*(?:mgd|million[\\s-]*gallons?[\\s-]*(?:per|a|/|each)[\\s-]*day)\\b';
   var GPD_SRC = NUM + '[\\s-]*(gallons?|gal)[\\s-]*(?:per|a|/|each)[\\s-]*day\\b';
 
   function has(o, k){ return Object.prototype.hasOwnProperty.call(o, k); }
 
-  // Python's round(x, d) on a computed float. toFixed rounds the exact binary
-  // value, as Python does; the two differ only on exact decimal ties, which a
-  // cosine never produces.
+  // Python's round(x, d) on a computed float.
   function roundTo(x, d){ return Number(x.toFixed(d)); }
 
   // Lookup tables derived once per payload.
@@ -7299,6 +7302,7 @@ def _project_check_js() -> str:
         if (inside) continue;
         if (!STATE_EXACT[name] && NOT_BEFORE.test(text.slice(0, start))) continue;
         if (NOT_AFTER.test(text.slice(end))) continue;
+        if (name !== 'New York' && CITY_AFTER.test(text.slice(end))) continue;
         count(P.byName[name], start, end);
       }
     });
@@ -7375,7 +7379,6 @@ def _project_check_js() -> str:
     function w(f){ return D.facets[f] ? D.facets[f].weight : 1.0; }
     function total(set){
       var sum = 0;
-      // Taxonomy order first, then anything outside it, so the sum is stable.
       P.facetOrder.forEach(function(f){ if (set[f]) sum += w(f); });
       for (var k in set) if (has(set, k) && !D.facets[k]) sum += 1.0;
       return sum;
@@ -7464,7 +7467,7 @@ def _project_check_js() -> str:
       var ov = overlap(facets, r.triggers, D), score = ov[0];
       if (score > 0){
         var juris = r.jurisdictions || [];
-        var elsewhere = !!(state && juris.length && juris.indexOf(state) < 0);
+        var elsewhere = juris.length > 0 && (!state || juris.indexOf(state) < 0);
         if (elsewhere) score = roundTo(score * C.elsewhere_factor, dec);
         var row = copy(r);
         row.score = score; row.shared = ov[1]; row.elsewhere = elsewhere;
@@ -7686,7 +7689,8 @@ def _project_check_js() -> str:
         wrap.appendChild(sec);
       }
 
-      // Readings
+      // Readings. With no facts there is nothing to match; only the state's rules follow.
+      var anyFacts = result.facets.length > 0;
       sec = section('readings');
       if (result.readings.length){
         var ol = el('ol', 'pcheck-list');
@@ -7703,17 +7707,18 @@ def _project_check_js() -> str:
           }
           if (r.elsewhere){
             var names = (r.jurisdictions || []).map(function(j){ return D.states[j] || j; }).join(', ');
-            li.appendChild(el('span', 'pcheck-flag pcheck-flag-else', names + ' regime — an analogy here'));
+            li.appendChild(el('span', 'pcheck-flag pcheck-flag-else',
+              result.state ? names + ' regime — an analogy here' : 'Applies only in ' + names));
           }
           li.appendChild(chipsLine('pcheck-why', 'Because: ', r.shared));
-          if (r.trigger) li.appendChild(el('div', 'pcheck-trigger', 'Reaches a campus when ' + r.trigger + '.'));
+          if (r.trigger) li.appendChild(el('div', 'pcheck-trigger', 'Could reach a campus when ' + r.trigger + '.'));
           ol.appendChild(li);
         });
         sec.appendChild(ol);
       } else {
         sec.appendChild(muted("No reading's triggers overlap these facts."));
       }
-      wrap.appendChild(sec);
+      if (anyFacts) wrap.appendChild(sec);
 
       // Cases
       sec = section('cases');
@@ -7737,7 +7742,7 @@ def _project_check_js() -> str:
       } else {
         sec.appendChild(muted('No tracked case shares a facet with this project.'));
       }
-      wrap.appendChild(sec);
+      if (anyFacts) wrap.appendChild(sec);
 
       // Sites
       if (result.sites.length){
@@ -7805,7 +7810,7 @@ def _project_check_js() -> str:
         li.appendChild(link(i.anchor || '', i.label || i.id));
         li.appendChild(el('span', 'pcheck-meta', ' — ' + (i.title || '')));
         if (i.shared && i.shared.length) li.appendChild(chipsLine('pcheck-why', 'Because: ', i.shared));
-        else if (i.water_scoped && !(i.triggers || []).length){
+        else if (i.water_scoped && !(i.triggers || []).length && i.fact_scope !== 'narrow'){
           var all = S.applies_to_all || {};
           li.appendChild(el('div', 'pcheck-why', has(all, i.status) ? all[i.status] : (all.other || '')));
         }
@@ -7864,7 +7869,7 @@ def _project_check_js() -> str:
 
     function run(){
       var facets = ticked();
-      if (!facets.length){ showStatus(idle); return; }
+      if (!facets.length && !stateSel.value){ showStatus(idle); return; }
       var result = matchProject(facets, stateSel.value || null, textBox.value, D);
       output.replaceChildren(renderResult(result));
     }

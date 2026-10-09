@@ -97,21 +97,30 @@
       "operator": "Vantage Data Centers (OpenAI / Oracle Stargate)",
       "location": "Port Washington, Ozaukee County, Wisconsin",
       "state": "WI",
-      "status": "proposed",
-      "status_date": "2026-04-08",
+      "status": "under construction",
+      "status_date": "2025-12-17",
       "mw": null,
       "mgd": 1.2,
-      "description": "Vantage Data Centers is building a $15 billion AI campus for the Stargate program in Port Washington, Wisconsin, on the Lake Michigan shore inside the Great Lakes basin. The campus is to use closed-loop cooling with dry coolers, averaging about 35,000 gallons a day of city water, but its agreement with the city allows up to 1.2 million gallons per day from Port Washington's water plant on the hottest days. Residents have demanded transparency on water and environmental impacts, and in April 2026 voters passed a referendum requiring voter approval for tax incremental financing districts over $10 million.",
+      "description": "Vantage Data Centers is building a $15 billion AI campus for the Stargate program in Port Washington, Wisconsin, on the Lake Michigan shore inside the Great Lakes basin; construction began with a groundbreaking in December 2025. The campus is to use closed-loop cooling with dry chillers, and its agreement with the city allows up to 1.2 million gallons per day from Port Washington's water plant on the hottest days. Residents have demanded transparency on water and environmental impacts, and in April 2026 voters passed a referendum requiring voter approval for development incentives of $10 million or more.",
       "facets": [
         "src-utility",
         "cool-closed",
         "cool-air",
-        "ctx-small-system",
         "ctx-interstate",
         "proc-records",
         "scale-hyperscale"
       ],
       "sources": [
+        {
+          "title": "Ozaukee Press: $175M TIF district to help finance data center",
+          "url": "https://ozaukeepress.com/content/175m-tif-district-help-finance-data-center",
+          "date": "2025-08-13"
+        },
+        {
+          "title": "Spectrum News 1: Port Washington data center water agreement",
+          "url": "https://spectrumnews1.com/wi/madison/news/2025/09/23/data-center-port-washington",
+          "date": "2025-09-23"
+        },
         {
           "title": "TMJ4: Residents demand transparency on Port Washington's $15B AI data center's water and environmental impact",
           "url": "https://www.tmj4.com/news/local-news/residents-demand-transparency-on-port-washingtons-15b-ai-data-centers-water-and-environmental-impact",
@@ -120,12 +129,17 @@
         {
           "title": "WUWM: Are there rules governing data center water usage?",
           "url": "https://www.wuwm.com/are-there-rules-governing-data-center-water-usage",
-          "date": "2025"
+          "date": "2025-11-14"
         },
         {
           "title": "Urban Milwaukee: Port Washington passes referendum on data center deals",
           "url": "https://urbanmilwaukee.com/2026/04/08/port-washington-passes-referendum-on-data-center-deals/",
           "date": "2026-04-08"
+        },
+        {
+          "title": "BizTimes: Groundbreaking held as construction begins on $15B Port Washington data center",
+          "url": "https://biztimes.com/groundbreaking-held-as-construction-begins-on-15b-port-washington-data-center/",
+          "date": "2025-12-17"
         }
       ]
     },
@@ -139,7 +153,7 @@
       "status_date": "2026-05-22",
       "mw": null,
       "mgd": null,
-      "description": "After the Tucson City Council rejected water service in 2025 for the Project Blue data center — a campus first negotiated under a code name and nondisclosure agreements — an affiliate of the developer applied to the Arizona Department of Water Resources for two commercial groundwater wells under existing grandfathered rights inside the Tucson Active Management Area. In May 2026 the department approved pumping up to about 31 million gallons a year from the aquifer in a desert region under long-term drought, taking the campus off city water and outside the city's leverage — a state-level route around a local water refusal.",
+      "description": "After the Tucson City Council rejected water service in 2025 for the Project Blue data center — a campus first negotiated under a code name and nondisclosure agreements — an affiliate of the developer applied to the Arizona Department of Water Resources for two commercial groundwater wells under existing grandfathered rights inside the Tucson Active Management Area. In May 2026 the department approved pumping up to about 31 million gallons a year from the aquifer in a desert region under long-term drought, which takes the campus off city water.",
       "facets": [
         "src-wells",
         "ctx-stressed-aquifer",

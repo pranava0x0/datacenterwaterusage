@@ -523,6 +523,10 @@
         {
           "title": "Lake Anna Life: DEQ issues VPDES permit for the AWS site",
           "url": "https://lakeannalife.com/vdeg-issues-vpdes-permit-for-aws-site/"
+        },
+        {
+          "title": "The Central Virginian: Lake Anna residents object to VPDES permit for AWS campus",
+          "url": "https://www.thecentralvirginian.com/news/lake-anna-residents-object-to-vpdes-permit-for-aws-campus/article_cf21bdf3-bce7-4b8b-b064-638622898ffd.html"
         }
       ],
       "issue_types": [
@@ -533,7 +537,6 @@
         "cool-evaporative",
         "out-surface",
         "ctx-city-reservoir",
-        "chem-pfas",
         "chem-treatment",
         "proc-records",
         "scale-hyperscale"

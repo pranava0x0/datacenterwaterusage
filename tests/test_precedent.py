@@ -26,7 +26,13 @@ from refdata.loaders import (
     load_legislation,
     load_water_authorities,
 )
-from refdata.taxonomies import DC_ACTIVITY_LABELS, FACT_DIMENSION_LABELS, FACT_FACETS, OUTCOME_TYPE_LABELS
+from refdata.taxonomies import (
+    DC_ACTIVITY_LABELS,
+    FACT_DIMENSION_LABELS,
+    FACT_FACETS,
+    INSTRUMENT_FACT_SCOPES,
+    OUTCOME_TYPE_LABELS,
+)
 
 
 # --- Vocabulary -------------------------------------------------------------------
@@ -95,6 +101,29 @@ class TestInstrumentTriggers:
                 assert isinstance(triggers, list), b["bill_id"]
                 assert set(triggers) <= set(FACT_FACETS), (b["bill_id"], sorted(set(triggers) - set(FACT_FACETS)))
 
+    def test_fact_scope_is_a_known_value_on_a_water_scoped_instrument(self):
+        used = set()
+        for b in load_legislation()["bills"]:
+            if "fact_scope" in b:
+                assert b["fact_scope"] in INSTRUMENT_FACT_SCOPES, b["bill_id"]
+                assert "fact_triggers" in b, b["bill_id"]
+                used.add(b["fact_scope"])
+        assert used == set(INSTRUMENT_FACT_SCOPES)
+
+    def test_single_project_and_study_instruments_are_narrow(self):
+        bills = {b["bill_id"]: b for b in load_legislation()["bills"]}
+        for bill_id in (
+            "QTS Richmond Technology Park DC5 (FAST-41)",
+            "TX EO 2026-08 (data center audit)",
+            "NE EO 26-17",
+            "NY DPS Data Center Impact Report (EO 62)",
+            "US NDAA FY2026 Sec. 1531 (P.L. 119-60)",
+        ):
+            assert bills[bill_id].get("fact_scope") == "narrow", bill_id
+        rows = {i["id"]: i for i in precedent.build_payload()["instruments"]}
+        assert rows["NE EO 26-17"]["fact_scope"] == "narrow"
+        assert rows["CA AB 1577"]["fact_scope"] == ""
+
     def test_a_non_water_instrument_carries_none(self):
         non_water = [b for b in load_legislation()["bills"] if "water" not in (b.get("scope") or [])]
         assert non_water
@@ -157,6 +186,30 @@ class TestParseProject:
         assert precedent.parse_project(text)[key] == value
 
     @pytest.mark.parametrize(
+        "text",
+        [
+            "300 MWh a year",
+            "300 megawatt-hours per year",
+            "a 300-MW-hour battery",
+            "1,5 MW",  # European decimal: not 15, not 5
+            "1e3 MW",
+        ],
+    )
+    def test_energy_and_malformed_numbers_are_not_capacity(self, text):
+        assert precedent.parse_project(text)["mw"] is None
+
+    def test_thousands_separators_still_read(self):
+        assert precedent.parse_project("a 1,500 MW campus")["mw"] == 1500.0
+        assert precedent.parse_project("1,500,000 gallons a day")["mgd"] == 1.5
+
+    def test_mg_per_day_is_milligrams(self):
+        assert precedent.parse_project("2 mg/d of chlorine")["mgd"] is None
+
+    def test_size_label_has_no_exponent(self):
+        parsed = precedent.parse_project("a 1,000,000 MW campus")
+        assert parsed["matched"]["scale-hyperscale"] == ["1000000 MW"]
+
+    @pytest.mark.parametrize(
         "text, facet",
         [
             ("The campus will not use groundwater or wells.", "src-wells"),
@@ -205,6 +258,12 @@ class TestStateCode:
             ("a new DC campus using 2 MGD", None),
             ("OR the county may refuse", None),
             ("", None),
+            # A "<State> City" is a city, not the state.
+            ("a campus in Kansas City", None),
+            ("Kansas City, Missouri", "MO"),
+            ("Oklahoma City", None),
+            ("Carson City, Nevada", "NV"),
+            ("New York City", "NY"),
         ],
     )
     def test_names_the_state_a_passage_is_about(self, text, code):
@@ -277,6 +336,16 @@ class TestMatchProject:
         assert rows["gwmgmt-az-ama"]["elsewhere"] is False
         sgma = rows.get("gwmgmt-sgma")
         assert sgma is None or (sgma["elsewhere"] is True and sgma["score"] < rows["gwmgmt-az-ama"]["score"])
+
+    def test_a_state_specific_reading_is_demoted_when_no_state_is_named(self):
+        facets = ["src-wells", "ctx-stressed-aquifer"]
+        nowhere = {r["id"]: r for r in precedent.match_project(facets, None)["readings"]}
+        arizona = {r["id"]: r for r in precedent.match_project(facets, "AZ")["readings"]}
+        ama_none, ama_az = nowhere["gwmgmt-az-ama"], arizona["gwmgmt-az-ama"]
+        assert ama_none["elsewhere"] is True and ama_az["elsewhere"] is False
+        assert ama_none["score"] == round(ama_az["score"] * precedent.ELSEWHERE_FACTOR, precedent.SCORE_DECIMALS)
+        page = dashboard._project_result_html(precedent.match_project(facets, None))
+        assert "Applies only in Arizona" in page and "an analogy here" not in page
 
     def test_activities_follow_path_order(self, arizona):
         order = list(DC_ACTIVITY_LABELS)
@@ -504,11 +573,15 @@ FIXTURE_INJECTION = (
 )
 
 
+# No state named: the Arizona AMA reading must come back demoted and flagged.
+FIXTURE_NO_STATE = "A campus would pump groundwater from wells in a basin already in overdraft."
+
+
 @pytest.mark.skipif(shutil.which("node") is None, reason="node not installed")
 @pytest.mark.parametrize(
     "text",
-    [FIXTURE, FIXTURE_INSTRUMENTS, FIXTURE_WELLS_ONLY, FIXTURE_INJECTION],
-    ids=["jupiter", "idaho", "wells-only", "injection"],
+    [FIXTURE, FIXTURE_INSTRUMENTS, FIXTURE_WELLS_ONLY, FIXTURE_INJECTION, FIXTURE_NO_STATE],
+    ids=["jupiter", "idaho", "wells-only", "injection", "no-state"],
 )
 def test_page_script_matches_the_engine_on_a_fixture(tmp_path, text):
     """The browser runs the same arithmetic from the same payload. This runs
@@ -523,7 +596,7 @@ def test_page_script_matches_the_engine_on_a_fixture(tmp_path, text):
         + "\nconst parsed = __engine.parseProject(text, D);\n"
         "const m = __engine.matchProject(parsed.facets, parsed.state, text, D);\n"
         "process.stdout.write(JSON.stringify({facets: parsed.facets, state: parsed.state, "
-        "readings: m.readings.map(r => [r.id, r.score]), cases: m.cases.map(c => [c.id, c.score]), "
+        "readings: m.readings.map(r => [r.id, r.score, r.elsewhere]), cases: m.cases.map(c => [c.id, c.score]), "
         "sites: m.sites.map(s => [s.id, s.score]), outcomes: m.outcomes.map(o => [o.outcome, o.count]), "
         "instruments: m.instruments.map(i => [i.id, i.score]), "
         "federal: m.federal_instruments.map(i => [i.id, i.score]), "
@@ -542,7 +615,7 @@ def test_page_script_matches_the_engine_on_a_fixture(tmp_path, text):
     assert got["state"] == parsed["state"]
     # Scores too, not just order: a drifting lexical term would keep the
     # order for a long time before it flipped a rank.
-    assert got["readings"] == [[r["id"], r["score"]] for r in want["readings"]]
+    assert got["readings"] == [[r["id"], r["score"], r["elsewhere"]] for r in want["readings"]]
     assert got["cases"] == [[c["id"], c["score"]] for c in want["cases"]]
     assert got["sites"] == [[s["id"], s["score"]] for s in want["sites"]]
     assert got["outcomes"] == [[o["outcome"], o["count"]] for o in want["outcomes"]]
@@ -567,6 +640,19 @@ PARSER_EDGE_CASES = [
     "Washington, DC",
     "Washington, D.C.",
     "a campus near Washington, D.C., in Loudoun County, Virginia",
+    "300 MWh a year",
+    "300 megawatt-hours per year",
+    "a 300-MW-hour battery",
+    "1,5 MW",
+    "1e3 MW",
+    "a 1,500 MW campus",
+    "1,500,000 gallons a day",
+    "2 mg/d of chlorine",
+    "a 1,000,000 MW campus",
+    "a campus in Kansas City",
+    "Kansas City, Missouri",
+    "Oklahoma City",
+    "New York City",
 ]
 
 
@@ -603,6 +689,72 @@ def test_page_parser_matches_on_edge_cases(tmp_path):
         for p in map(precedent.parse_project, PARSER_EDGE_CASES + NEGATION_CASES)
     ]
     assert json.loads(out.stdout) == want
+
+
+# A minimal DOM: enough of document/element for the page wiring to boot from an
+# inline payload, so a click on Run can be driven under node.
+FAKE_DOM = r"""
+function El(tag){ this.tagName = tag; this.children = []; this.attrs = {}; this.handlers = {};
+  this.style = {}; this.className = ''; this.value = ''; this.checked = false; this._text = ''; }
+Object.defineProperty(El.prototype, 'textContent', {
+  get: function(){ return this._text + this.children.map(function(c){ return c.textContent; }).join(''); },
+  set: function(v){ this._text = String(v); this.children = []; }
+});
+El.prototype.appendChild = function(c){ this.children.push(c); return c; };
+El.prototype.replaceChildren = function(){ this._text = ''; this.children = Array.prototype.slice.call(arguments); };
+El.prototype.setAttribute = function(k, v){ this.attrs[k] = String(v); };
+El.prototype.getAttribute = function(k){ return Object.prototype.hasOwnProperty.call(this.attrs, k) ? this.attrs[k] : null; };
+El.prototype.addEventListener = function(t, f){ this.handlers[t] = f; };
+function Text(t){ this._t = t; } Object.defineProperty(Text.prototype, 'textContent', {get: function(){ return this._t; }});
+const byId = {};
+['project-data', 'pcheck-strings', 'pcheck-text', 'pcheck-state', 'pcheck-mw', 'pcheck-mgd', 'pcheck-read',
+ 'pcheck-facets-n', 'pcheck-output', 'pcheck-status', 'pcheck-run', 'pcheck-clear'].forEach(function(id){ byId[id] = new El('div'); });
+const root = new El('div');
+root.querySelector = function(sel){ return byId[sel.slice(1)] || null; };
+root.querySelectorAll = function(){ return []; };
+global.document = {
+  getElementById: function(id){ return id === 'project-check' ? root : null; },
+  querySelector: function(){ return null; },
+  createElement: function(tag){ return new El(tag); },
+  createTextNode: function(t){ return new Text(t); }
+};
+global.window = {};
+function headings(node, out){ out = out || [];
+  if (node.tagName === 'h4') out.push(node.textContent);
+  (node.children || []).forEach(function(c){ headings(c, out); }); return out; }
+"""
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node not installed")
+def test_page_runs_the_state_rules_with_no_facets(tmp_path):
+    """A reader who picks a state and presses Run, with nothing ticked, gets
+    the state's rules rather than the idle line."""
+    js = dashboard._project_check_js()
+    strings = json.dumps({"sections": dashboard.PROJECT_CHECK_SECTIONS})
+    harness = (
+        FAKE_DOM
+        + "byId['project-data'].textContent = require('fs').readFileSync(process.argv[2], 'utf8');\n"
+        + f"byId['pcheck-strings'].textContent = {json.dumps(strings)};\n"
+        + "byId['pcheck-status'].textContent = 'IDLE';\n"
+        + js
+        + "\nconst out = {};\n"
+        "byId['pcheck-run'].handlers.click();\n"
+        "out.none = byId['pcheck-output'].textContent;\n"
+        "byId['pcheck-state'].value = 'TX';\n"
+        "byId['pcheck-run'].handlers.click();\n"
+        "out.texas = headings(byId['pcheck-output']);\n"
+        "process.stdout.write(JSON.stringify(out));\n"
+    )
+    payload = tmp_path / "payload.json"
+    payload.write_text(precedent.payload_json(), encoding="utf-8")
+    script = tmp_path / "dom.js"
+    script.write_text(harness, encoding="utf-8")
+    got = json.loads(
+        subprocess.run(["node", str(script), str(payload)], capture_output=True, text=True, check=True).stdout
+    )
+    sections = dashboard.PROJECT_CHECK_SECTIONS
+    assert got["none"] == "IDLE"
+    assert got["texas"] == [sections["read"], f'{sections["rules"]} — Texas']
 
 
 # --- Site integration ---------------------------------------------------------------
@@ -654,22 +806,27 @@ class TestSiteIntegration:
         page = dashboard._project_result_html(nowhere)
         assert f'<h4>{dashboard.PROJECT_CHECK_SECTIONS["federal"]}</h4>' in page
         assert dashboard.PROJECT_CHECK_SECTIONS["rules"] not in page
-        # An instrument with empty triggers applies to every campus in its jurisdiction.
+        # An instrument with empty triggers is written to cover data centers in
+        # its jurisdiction, unless it is marked narrow (the TX audit directive).
         texas = precedent.match_project(["src-wells"], "TX")
         rows = [i for i in texas["instruments"] if i["water_scoped"] and not i["triggers"]]
-        assert rows
-        page = dashboard._project_result_html(texas)
+        assert {i["fact_scope"] for i in rows} == {"", "narrow"}
         for i in rows:
-            assert dashboard._applies_to_all_line(i["status"]) in page
+            li = dashboard._project_instrument_li(i)
+            lines = set(dashboard.PROJECT_CHECK_APPLIES_TO_ALL.values())
+            if i["fact_scope"] == "narrow":
+                assert not any(line in li for line in lines), i["id"]
+            else:
+                assert dashboard._applies_to_all_line(i["status"]) in li, i["id"]
 
     @pytest.mark.parametrize(
         "status, line",
         [
-            ("enacted", "Applies to every data center in its jurisdiction"),
-            ("introduced", "Would apply to every data center in its jurisdiction"),
-            ("failed", "Would have applied to every data center in its jurisdiction"),
-            ("unknown", "Covers every data center in its jurisdiction"),
-            ("", "Covers every data center in its jurisdiction"),
+            ("enacted", "Written to cover data centers in its jurisdiction; thresholds and exemptions not assessed"),
+            ("introduced", "Would cover data centers in its jurisdiction; thresholds and exemptions not assessed"),
+            ("failed", "Would have covered data centers in its jurisdiction; thresholds and exemptions not assessed"),
+            ("unknown", "Written to cover data centers in its jurisdiction; thresholds and exemptions not assessed"),
+            ("", "Written to cover data centers in its jurisdiction; thresholds and exemptions not assessed"),
         ],
     )
     def test_applies_to_all_line_follows_status(self, status, line):
@@ -679,7 +836,23 @@ class TestSiteIntegration:
         assert line in li
         others = set(dashboard.PROJECT_CHECK_APPLIES_TO_ALL.values()) - {line}
         assert not any(o in li for o in others)
-        assert "in the state" not in li
+        assert "in the state" not in li and "every data center" not in li
+
+    def test_a_narrow_instrument_gets_no_applicability_line(self):
+        row = {"id": "X", "label": "X", "anchor": "bill-x", "title": "t", "status": "enacted",
+               "water_scoped": True, "triggers": [], "shared": [], "fact_scope": "narrow"}
+        li = dashboard._project_instrument_li(row)
+        assert "pcheck-why" not in li
+        js = dashboard._project_check_js()
+        assert "i.fact_scope !== 'narrow'" in js
+
+    def test_no_facets_with_a_state_renders_only_the_rules(self):
+        result = precedent.match_project([], "TX")
+        assert result["instruments"] and result["readings"] == []
+        page = dashboard._project_result_html(result)
+        assert f'{dashboard.PROJECT_CHECK_SECTIONS["rules"]} — Texas' in page
+        assert dashboard.PROJECT_CHECK_SECTIONS["readings"] not in page
+        assert dashboard.PROJECT_CHECK_SECTIONS["cases"] not in page
 
     def test_applies_to_all_strings_ship_to_the_page(self):
         fragment = dashboard._build_project_check_html()

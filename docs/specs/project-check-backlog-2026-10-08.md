@@ -28,7 +28,9 @@ Engine (`match_project`):
 
 Renderer + script: in the rules section, each state instrument shows its
 `shared` facets as "Because: …" when non-empty, or the text "Applies to every
-data center in the state" when its triggers are empty. Below the state list a
+data center in the state" when its triggers are empty. (Superseded in review:
+the line is now status-keyed and modal, `PROJECT_CHECK_APPLIES_TO_ALL`, and an
+instrument marked `fact_scope: "narrow"` gets none.) Below the state list a
 sub-list "Federal instruments that could apply" renders `federal_instruments`
 the same way; when there is no state, the rules section still renders if
 `federal_instruments` is non-empty, titled "Federal instruments that could

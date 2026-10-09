@@ -1147,7 +1147,8 @@
         }
       ],
       "instrument_type": "bill",
-      "fact_triggers": []
+      "fact_triggers": [],
+      "fact_scope": "narrow"
     },
     {
       "bill_id": "US S. 4213",
@@ -2685,7 +2686,8 @@
         }
       ],
       "instrument_type": "bill",
-      "fact_triggers": []
+      "fact_triggers": [],
+      "fact_scope": "narrow"
     },
     {
       "bill_id": "WA HB 2515",
@@ -4012,7 +4014,8 @@
       ],
       "recent_news": [],
       "public_sentiment": "Watched as the test of whether the moratorium produces enforceable water standards or expires with a report on a shelf.",
-      "fact_triggers": []
+      "fact_triggers": [],
+      "fact_scope": "narrow"
     },
     {
       "bill_id": "VA DEQ waterworks data-center reporting regulations",
@@ -4132,7 +4135,8 @@
         }
       ],
       "public_sentiment": "Local attention has focused on the campus's scale in Henrico County rather than on the federal designation itself.",
-      "fact_triggers": []
+      "fact_triggers": [],
+      "fact_scope": "narrow"
     },
     {
       "bill_id": "MI SB 1046-1050",
@@ -4626,7 +4630,8 @@
           "milestone": "Texas Tribune reports audit scope: ~250-300 projects"
         }
       ],
-      "fact_triggers": []
+      "fact_triggers": [],
+      "fact_scope": "narrow"
     },
     {
       "bill_id": "WRDA 2026 (H.R. 9497)",
@@ -4736,7 +4741,8 @@
           "detail": "Signed as P.L. 119-60; Sec. 1531 amends the FY2025 NDAA's computing roadmap"
         }
       ],
-      "fact_triggers": []
+      "fact_triggers": [],
+      "fact_scope": "narrow"
     },
     {
       "bill_id": "US H.R. 2940 (Advancing Water Reuse Act)",
@@ -5201,7 +5207,8 @@
         }
       ],
       "public_sentiment": "Landry paired the order with a defense of Louisiana's data-center strategy, including the Meta campus in Richland Parish, and coverage framed it as ratepayer protection rather than restraint. The water language is a commitment to efficiency 'standards' the order leaves undefined, which is the gap critics of the incentive program point to.",
-      "fact_triggers": []
+      "fact_triggers": [],
+      "fact_scope": "narrow"
     },
     {
       "bill_id": "MA EO 658",
@@ -5307,7 +5314,8 @@
         }
       ],
       "public_sentiment": "Coverage centered on the end of tax incentives, which Pillen first described as applying to large projects and then clarified applies to all new data-center applications, and on protecting Nebraska's public-power system. Water appears as one of the task force's study areas rather than as a live controversy.",
-      "fact_triggers": []
+      "fact_triggers": [],
+      "fact_scope": "narrow"
     },
     {
       "bill_id": "PA EO 2026-05",
@@ -5531,7 +5539,8 @@
       ],
       "recent_news": [],
       "public_sentiment": "Coverage of the law has centered on the size of the exemption and its investment and jobs thresholds, plus the Kansas Intelligence Fusion Center security review each applicant faces. The water-plan condition is an eligibility requirement, and no public controversy over it was found in sources reviewed for this entry.",
-      "fact_triggers": []
+      "fact_triggers": [],
+      "fact_scope": "narrow"
     },
     {
       "bill_id": "ID H 897",

@@ -165,14 +165,14 @@ the renderer emitted the anchor.
 ### Check a project — the precedent engine (`refdata/precedent.py`, added 2026-10-08)
 
 The tab the user asked for by name: *given a project description, apply the
-past cases to it*. It is computed, not essayed, and explainable by construction:
+past cases to it*. The computation is a weighted overlap of facets you can inspect:
 
 - **`FACT_FACETS`** (`refdata/taxonomies.py`) — a closed vocabulary of 40
   fact-pattern facets in 8 dimensions (water source · cooling · discharge route ·
   site/watershed · power · chemicals · process · scale). Every **case** and
   **conflict site** carries `fact_pattern` (what the project *is*); every
   **statutory reading** carries `fact_triggers` (the facets whose presence makes
-  it potentially reach a project). Each facet carries the trigger words the
+  it could reach a project). Each facet carries the trigger words the
   parser looks for; triggers are tokens exactly as `refdata.graph.tokenize`
   emits them (a test proves it), so the browser's parser and Python's agree.
   A drafted zero-liquid-discharge facet was held back because no case or site
@@ -180,11 +180,12 @@ past cases to it*. It is computed, not essayed, and explainable by construction:
   with the Pima County Project Blue agreement on the site record.
 - **`parse_project(text)`** reads a pasted description into facets, a state
   (`state_code_for`: most-mentioned full name wins, a name after a comma counts
-  double, "Port Washington"/"Colorado River" are not states but "West Texas" is
-  Texas, "Washington, D.C." is DC, a bare two-letter code counts only after a
-  comma), MW and MGD (per-day figures only — "78 million gallons over two years"
-  is not 78 MGD; hyphenated "300-megawatt" reads); ≥100 MW or ≥1 MGD sets the
-  scale facet. A negator ("no", "not", "without", "never", "neither", "nor",
+  double, "Port Washington"/"Colorado River"/"Kansas City" are not states but
+  "West Texas" is Texas and "New York City" is New York, "Washington, D.C." is
+  DC, a bare two-letter code counts only after a comma), MW and MGD (per-day
+  figures only, so "78 million gallons over two years" is not 78 MGD; hyphenated
+  "300-megawatt" reads; "300 MWh", "mg/d", "1,5 MW" and "1e3 MW" do not); ≥100 MW
+  or ≥1 MGD sets the scale facet. A negator ("no", "not", "without", "never", "neither", "nor",
   "cannot", "…n't") silences the next 3 surviving words of its sentence
   (`live_tokens`), so "will not use groundwater or wells" sets no facet.
 - **`fact_requires` gates, `fact_triggers` scores**: a reading or instrument
@@ -195,14 +196,18 @@ past cases to it*. It is computed, not essayed, and explainable by construction:
   sites by facet cosine + 0.35 × TF-IDF wording cosine, tallies `outcome_type`
   over the 10 closest cases, and lists the state's instruments and local
   actions. A reading that names `jurisdictions` (AZ AMA, CA SGMA) is demoted ×0.25
-  and flagged *elsewhere* for another state. `role: limit` readings are flagged,
-  never hidden. Copy is modal throughout ("could reach", "what the closest cases
-  recorded") — it maps exposure, it does not predict.
+  and flagged *elsewhere* for another state or when no state is named.
+  `role: limit` readings are flagged, never hidden. Copy is modal ("could
+  reach", "what the closest cases recorded"): it maps exposure and does not predict.
 - **Instruments rank like readings** (2026-10-08 second pass): every
   water-scoped instrument in `legislation.json` carries `fact_triggers` (empty =
-  "applies to every data center in its jurisdiction"; energy-only instruments
-  carry none, and the payload's `water_scoped` flag keeps them from being shown
-  as applying to everyone). The state's instruments sort (enacted first,
+  "written to cover data centers in its jurisdiction; thresholds and exemptions
+  not assessed"; energy-only instruments carry none, and the payload's
+  `water_scoped` flag keeps them from being shown as covering anyone). An
+  instrument that names one project, only orders a study or audit, or binds a
+  small population (incentive applicants, DoD procurement) carries
+  `fact_scope: "narrow"` (`INSTRUMENT_FACT_SCOPES`) and gets no applicability
+  line. A state picked with no facts ticked shows only the state's rules. The state's instruments sort (enacted first,
   −overlap score, id) and show "Because: …" facets; `federal_instruments` are the
   `TOP_FEDERAL` (6) `level: federal` instruments (not a jurisdiction string —
   EO 14318 says "United States") whose triggers overlap, shown whatever the
