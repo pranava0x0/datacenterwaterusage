@@ -340,6 +340,25 @@ Haiku and Sonnet runs were justified and used; the Opus run is scored below.**
   fixture, where the site ranks 11th). It flagged a stale CLAUDE.md sentence
   outside its task instead of silently editing it. Same lesson as the first
   pass: spec + parity test = safe delegation.
+- *Sonnet code review of the PR (posted as one GitHub review with 9 inline
+  comments):* 185.6k tokens, 30 tool uses, ~4 min. Five of nine were real
+  and verified by running the code (status-blind "applies to every data
+  center" copy; federal filter keyed on one jurisdiction string, hiding EO
+  14318; "North Texas" → no state; "DC"/"OR" read as states; hyphenated
+  sizes missed), two were data (unsupported example facets, generic trigger
+  words), two were judgment calls (one accepted, one answered). Codex, run
+  free in parallel, found the same compass-word and bare-code bugs plus four
+  it alone caught (negated facts, the example-load locking every checkbox,
+  stale auto-inferred state/size, and the P1: a single incidental facet
+  surfacing a reading whose legal trigger needs more — now `fact_requires`).
+  Verdict: both reviews earned their cost; neither alone would have done.
+- *Opus fix pass (13 items from both reviews, one message mid-run to add
+  the Codex batch):* 154.0k tokens, 40 tool uses, ~6.7 min → 972 → 1003
+  tests, parity holding on four fixtures. It improved one rule it was given
+  (a 3-word negation window missed "wells" in the spec's own test sentence;
+  it silenced the next three kept words instead) and reported the one
+  pre-existing failure as a data issue rather than patching data — which it
+  was (Project Blue's site record lacked the AMA overdraft facets).
 
 **2026-08-24 — ten agents (3 Sonnet research, 5 Opus implementation, Haiku +
 Sonnet checkers) through two usage-limit walls. Verdict: the fleet was
