@@ -7,7 +7,7 @@ import urllib.request
 
 import pytest
 
-from scripts.uat_site import budgets, geometry, idle_failures, serve_snapshot
+from scripts.uat_site import budgets, geometry, idle_failures, search_while_graph_loads, serve_snapshot
 
 
 def test_known_good_browser_row_passes() -> None:
@@ -61,3 +61,23 @@ def test_browser_geometry_rejects_overflow_depth_and_missing_content() -> None:
         page.locator("#key").evaluate("e=>e.remove()")
         assert "key content missing" in budgets(geometry(page, "#key"))
         browser.close()
+
+
+@pytest.fixture(scope="module")
+def uat_rebuilt_pages(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    from build_site import build_site_files
+    root = tmp_path_factory.mktemp("uat-site")
+    for name, content in build_site_files().items():
+        (root / name).write_text(content, encoding="utf-8")
+    return root
+
+
+@pytest.mark.parametrize("viewport", ["mobile", "desktop"])
+def test_search_entered_while_graph_loads(uat_rebuilt_pages: Path, viewport: str) -> None:
+    playwright = pytest.importorskip("playwright.sync_api")
+    with playwright.sync_playwright() as pw:
+        if not Path(pw.chromium.executable_path).exists():
+            pytest.skip("Playwright Chromium is not installed")
+        with serve_snapshot(uat_rebuilt_pages) as (base, _), pw.chromium.launch() as browser:
+            result = search_while_graph_loads(browser, base, viewport)
+            assert result["result_cards"] > 0 and result["first_result"]
