@@ -3795,13 +3795,22 @@ def _build_statute_paths_html() -> str:
             f'in play at {group["n_sites"]} tracked '
             f'{"site" if group["n_sites"] == 1 else "sites"}</span></summary>'
         )
+        measures = "".join(
+            f'<li>{ref_link(b["bill_id"], b["bill_id"])} '
+            f'({esc(LEGISLATION_STATUS_LABELS[b["status"]])}): {esc(b["summary"])}</li>'
+            for b in group["instruments"]
+        )
+        related = (
+            f'<h4>Selected bills and laws for this activity</h4><ul>{measures}</ul>'
+            if measures else ""
+        )
         collapsed = ' data-collapsed="1"' if i else ""
         blocks.append(
             f'<details class="path-group" id="{esc(group["anchor"])}" '
             f'data-activity="{esc(group["activity"])}" open{collapsed}>'
             f"{summary}"
             f'<p class="path-group-desc">{esc(group["description"])}</p>'
-            f'{"".join(rows)}</details>'
+            f'{related}{"".join(rows)}</details>'
         )
     blocks.append("</div>")
     return "".join(blocks)

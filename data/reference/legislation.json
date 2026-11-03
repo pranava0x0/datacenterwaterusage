@@ -195,6 +195,10 @@
       "instrument_type": "bill",
       "fact_triggers": [
         "src-utility"
+      ],
+      "dc_activities": [
+        "supply",
+        "disclose"
       ]
     },
     {
@@ -2471,14 +2475,14 @@
       "level": "state",
       "title": "Data Center Water Transparency Amendments",
       "sponsor": "Rep. Jill Koford (R-Ogden)",
-      "summary": "Large data centers (redefined as 10,000+ sq ft, down from 50,000) must notify water providers of their projected water demand and report their actual water consumption to the state. A committee substitute made the water data more publicly transparent after criticism that the original version would have shielded individual facilities' use from public records.",
+      "summary": "A new Utah facility must meet both thresholds: at least 10,000 square feet and at least 75 acre-feet of annual withdrawals. Covered operators notify the provider and file a withdrawal estimate before construction. After opening, they report actual withdrawals for the previous calendar year.",
       "scope": [
         "water"
       ],
       "status": "enacted",
-      "status_detail": "Signed by Gov. Spencer Cox March 23, 2026 (among 87 bills signed that session); lowers the 'large data center' threshold to 10,000 sq ft. Default effective date ~60 days after the 2026 session adjourned (early May 2026).",
-      "source_url": "https://le.utah.gov/~2026/bills/static/HB0076.html",
-      "last_verified": "2026-06-22",
+      "status_detail": "The act took effect May 6, 2026. The new-facility provisions use July 1, 2026 as the operating-date cutoff. Annual filings are due July 1, unless another state-engineer reporting rule applies; the division publishes withdrawal data by September 1.",
+      "source_url": "https://le.utah.gov/~2026/bills/hbillenr/HB0076.pdf",
+      "last_verified": "2026-11-03",
       "verified": true,
       "confidence": "high",
       "recent_news": [
@@ -2509,7 +2513,7 @@
         },
         {
           "tag": "Permit oversight",
-          "note": "Lowers the 'large data center' threshold to 10,000 sq ft so more facilities fall under the reporting regime."
+          "note": "The local land-use authority notifies water agencies and the relevant provider before approving a covered application."
         }
       ],
       "timeline": [
@@ -2519,20 +2523,35 @@
           "detail": "HB 76 by Rep. Jill Koford; substitute adopted in committee during week one after public criticism."
         },
         {
-          "date": "2026-03-07",
+          "date": "2026-03-05",
           "milestone": "Passed Legislature",
-          "detail": "Cleared both chambers as the 2026 general session closed."
+          "detail": "The House concurred in the Senate amendment, 62–2."
         },
         {
           "date": "2026-03-23",
           "milestone": "Signed into law",
           "detail": "Signed by Gov. Spencer Cox among 87 bills."
+        },
+        {
+          "date": "2026-07-01",
+          "milestone": "New-facility reporting provisions begin",
+          "detail": "Preconstruction filings cover projected withdrawals; subsequent annual reports cover actual withdrawals."
         }
       ],
       "instrument_type": "bill",
       "fact_triggers": [
         "src-utility"
-      ]
+      ],
+      "dc_activities": [
+        "build",
+        "withdraw",
+        "disclose"
+      ],
+      "monitor": {
+        "kind": "url-watch",
+        "key": "https://www.waterrights.utah.gov/data-centers/",
+        "note": "Check changes for published withdrawal reports. A form or an expected publication date is not an observation."
+      }
     },
     {
       "bill_id": "WV HB 4983",
@@ -2960,14 +2979,14 @@
       "level": "state",
       "title": "Water Resources: Data Centers — Water Use Disclosure",
       "sponsor": "Assemblymember Diane Papan",
-      "summary": "Requires data center operators to disclose projected water use, source, and volumes to their water supplier before obtaining a business license; upon renewal, requires reporting of actual annual water consumption. Directs DWR and CEC to develop water efficiency best practices by Jan 1, 2029. Successor to vetoed CA AB 93 (2025).",
+      "summary": "When seeking an initial city or county business license or equivalent permit, operators give their supplier and the licensing authority projected demand and water sources. On renewal they report prior-year total and direct water use, including on-site sources and cooling type.",
       "scope": [
         "water"
       ],
       "status": "enacted",
       "status_detail": "Signed by Governor Newsom and chaptered 2026-09-21. Before initial local licensing, operators must disclose projected water demand and source; renewals require prior-year total and direct water use, source categories, and cooling-system type. Urban water suppliers must include data-center demand in annual supply-demand assessments.",
       "source_url": "https://leginfo.legislature.ca.gov/faces/billTextClient.xhtml?bill_id=202520260AB2619",
-      "last_verified": "2026-09-21",
+      "last_verified": "2026-11-03",
       "verified": true,
       "confidence": "high",
       "recent_news": [
@@ -2990,18 +3009,18 @@
       "general_principles": [
         {
           "tag": "Transparency",
-          "note": "Requires data centers ≥10,000 sq ft to publicly report projected and actual water consumption annually."
+          "note": "The initial filing forecasts demand; the renewal reports use during the preceding calendar year."
         },
         {
           "tag": "Permit oversight",
-          "note": "Successor to vetoed AB 93 with narrowed scope; reporting threshold lowered to match water-district metering capabilities."
+          "note": "City and county licensing applications carry the disclosure requirement."
         }
       ],
       "timeline": [
         {
-          "date": "2025-12-01",
+          "date": "2026-02-20",
           "milestone": "Introduced",
-          "detail": "Re-introduced by Asm. Papan for 2025-26 session; successor to vetoed AB 93"
+          "detail": "Assemblymember Papan introduced AB 2619."
         },
         {
           "date": "2026-04-01",
@@ -3020,6 +3039,10 @@
       "instrument_type": "bill",
       "fact_triggers": [
         "src-utility"
+      ],
+      "dc_activities": [
+        "supply",
+        "disclose"
       ]
     },
     {
@@ -4707,15 +4730,15 @@
       "level": "federal",
       "title": "NDAA FY2026 — DoD computing roadmap water-impact reporting (Section 1531)",
       "sponsor": "House/Senate Armed Services Committees",
-      "summary": "Section 1531 amends the DoD high-performance computing roadmap (Sec. 1532 of the FY2025 NDAA) to cover commercially procured cloud and infrastructure-as-a-service capacity as well as DoD-owned assets, and to require, for any new or expanded data center on a military installation, estimates of additional physical space, electricity and water usage, effects on the installation and surrounding community, mitigation measures, and steps to prevent local utility disruption in coordination with local, state and federal agencies.",
+      "summary": "For a data center built or expanded on a military installation, the Defense Department’s computing roadmap calls for estimates of additional water and electricity demand and effects on nearby communities. The Secretary includes estimates to the extent they will not delay the triennial update. This is a planning duty, not a public meter-reporting requirement for commercial campuses.",
       "scope": [
         "water",
         "energy"
       ],
       "status": "enacted",
       "status_detail": "Enacted 2025-12-18 as part of P.L. 119-60 (FY2026 NDAA). The water clause is confirmed in two Congressional Research Service products — IF13197 on the NDAA's cyber and AI provisions and R49057 on data centers and water — which describe Section 1531 as requiring electricity and water usage estimates for installation data centers, to the extent the estimates do not delay the roadmap's triennial updates. Law-firm NDAA client alerts describe Section 1531 as a computing-capability and commercial-cloud roadmap requirement without foregrounding water, which is why the water framing is cited to CRS rather than to the alerts. The roadmap itself is an internal DoD document, so this produces no public water dataset unless a roadmap update is released or requested.",
-      "source_url": "https://www.congress.gov/119/plaws/publ60/PLAW-119publ60.pdf",
-      "last_verified": "2026-08-24",
+      "source_url": "https://www.govinfo.gov/content/pkg/PLAW-119publ60/html/PLAW-119publ60.htm",
+      "last_verified": "2026-11-03",
       "verified": true,
       "confidence": "high",
       "recent_news": [
@@ -4749,7 +4772,12 @@
         }
       ],
       "fact_triggers": [],
-      "fact_scope": "narrow"
+      "fact_scope": "narrow",
+      "dc_activities": [
+        "build",
+        "power",
+        "disclose"
+      ]
     },
     {
       "bill_id": "US H.R. 2940 (Advancing Water Reuse Act)",
@@ -4984,14 +5012,14 @@
       "level": "state",
       "title": "Data Centers: Water Use Disclosures (permit-stage water supply assessment)",
       "sponsor": "Asm. Diane Papan",
-      "summary": "Bars a city or county from approving any discretionary or ministerial permit for a new data center, or for an expansion that raises peak water use, unless the applicant gives local governments and water suppliers a water supply assessment (Water Code §10910 et seq.), projected water use and efficiency measures. From January 1, 2028 applicants must also file a water scarcity plan describing how the facility would cut use in drought, and the data center pays for any water conveyance, treatment, storage or distribution upgrades its supply requires.",
+      "summary": "For new construction or an expansion that raises peak water use, the applicant must give the city or county a supply assessment and demand and efficiency information, and pay for necessary supply upgrades. A water scarcity plan is also required starting January 1, 2028.",
       "scope": [
         "water"
       ],
       "status": "enacted",
       "status_detail": "Signed by Governor Newsom on 2026-09-21 as one of seven data-center bills (Senate 28-9 on 2026-08-30; Assembly concurrence 61-12 on 2026-08-31). Of the rest of the package, AB 2619, AB 1577 and SB 887 are tracked separately; AB 2383, SB 886 and SB 1168 contain no water provisions (electricity ratemaking and interconnection only).",
       "source_url": "https://leginfo.legislature.ca.gov/faces/billTextClient.xhtml?bill_id=202520260AB2469",
-      "last_verified": "2026-09-26",
+      "last_verified": "2026-11-03",
       "verified": true,
       "confidence": "high",
       "general_principles": [
@@ -5049,6 +5077,10 @@
       "fact_triggers": [
         "src-utility",
         "proc-zoning"
+      ],
+      "dc_activities": [
+        "build",
+        "supply"
       ]
     },
     {
@@ -5678,6 +5710,64 @@
         "cool-evaporative",
         "chem-pfas",
         "scale-hyperscale"
+      ]
+    },
+    {
+      "bill_id": "IN HB 1043",
+      "jurisdiction": "Indiana",
+      "level": "state",
+      "instrument_type": "bill",
+      "title": "Proposed data center water consumption permit",
+      "sponsor": "Rep. Alex Burton; coauthor Rep. Matt Commons",
+      "summary": "Would have required a separate DNR permit before operating a data center capable of consuming at least 10 million gallons in one month. Applicants would estimate peak-day, peak-month and average-year volumes, identify their water source and describe conservation measures.",
+      "scope": [
+        "water"
+      ],
+      "status": "failed",
+      "status_detail": "Did not advance from House Natural Resources in the 2026 session. No permit or reporting duty took effect under this bill.",
+      "source_url": "https://iga.in.gov/legislative/2026/bills/house/1043",
+      "last_verified": "2026-11-03",
+      "verified": true,
+      "confidence": "high",
+      "recent_news": [
+        {
+          "date": "2026-02-05",
+          "title": "HB 1043: Regulating data centers’ water use",
+          "source": "Hoosier Environmental Council",
+          "url": "https://www.hecweb.org/hec-bill/hb-1043-data-center-water-regulation/",
+          "takeaway": "The council supported the proposal and reported that the committee had not held a hearing."
+        }
+      ],
+      "public_sentiment": "The Hoosier Environmental Council supported disclosure of projected demand and water sources. Its February update reported that the bill had not received a hearing.",
+      "general_principles": [
+        {
+          "tag": "Permit oversight",
+          "note": "A proposed operating permit, with the trigger based on capacity rather than measured consumption."
+        },
+        {
+          "tag": "Disclosure",
+          "note": "The proposed application asked for forecasts. It would not have created a metered usage series."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "2025-12-02",
+          "milestone": "Introduced and referred to House Natural Resources"
+        },
+        {
+          "date": "2026-01-08",
+          "milestone": "Rep. Commons added as coauthor"
+        }
+      ],
+      "fact_triggers": [
+        "src-utility",
+        "src-wells",
+        "src-surface"
+      ],
+      "dc_activities": [
+        "withdraw",
+        "supply",
+        "disclose"
       ]
     }
   ]

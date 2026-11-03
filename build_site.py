@@ -2639,6 +2639,8 @@ def build_llms_txt() -> str:
     ]
     for group in dash.build_statute_paths():
         lines += ["", f"### {group['label']} ({len(group['paths'])} paths)", "", group["description"], ""]
+        for bill in group["instruments"]:
+            lines.append(f"- {bill['bill_id']} ({bill['status']}): {bill['summary']}")
         for path in group["paths"]:
             precedents = ", ".join(c["case_id"] for c in path["precedents"])
             if path["more_cases"]:

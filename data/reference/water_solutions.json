@@ -59,9 +59,9 @@
           "status": "deployed",
           "actor_type": "state",
           "actor": "Utah Legislature / Governor Spencer Cox",
-          "description": "HB 76 (enacted March 2026) mandates projected and actual water consumption disclosure from facilities ≥10,000 sq ft. EO 2026-03 (May 2026) directs agencies to require water-impact review before approvals and evaluate cost-attribution models.",
-          "example": "Disclosure threshold set to match existing utility metering capabilities, making reporting immediately actionable rather than dependent on new infrastructure.",
-          "source_url": null,
+          "description": "A new Utah facility must meet both thresholds: at least 10,000 square feet and at least 75 acre-feet of annual withdrawals. Covered operators notify the provider and file a withdrawal estimate before construction. After opening, they report actual withdrawals for the previous calendar year. EO 2026-03 separately directs agencies to review water impacts.",
+          "example": "Utah’s Division of Water Rights posts the preconstruction form. It asks for projected withdrawals, treatment and temperature plans for discharges, and reuse plans. Operators submit it 90–360 days before construction.",
+          "source_url": "https://www.waterrights.utah.gov/data-centers/",
           "cross_ref_tab": "legislation",
           "cross_ref_note": "UT HB 76 and UT EO 2026-03 in Legislation tab",
           "cross_ref_targets": [
