@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-10-08",
+  "last_updated": "2026-11-03",
   "description": "Curated headlines about data center water use, regulation, enforcement, and solutions — linked to the tracker's datasets where possible.",
   "items": [
     {
@@ -736,13 +736,13 @@
       "id": "virginia-hb496-enacted-2026-04",
       "date": "2026-04",
       "title": "Virginia Enacts First Mandatory Data Center Water Reporting Law",
-      "outlet": "Virginia Governor's Office",
-      "summary": "Gov. Spanberger signed HB 496 (companion SB 553) on April 13, 2026, amending Va. Code § 62.1-44.38 to require water utilities to report monthly aggregate water volumes delivered to data centers. The law is effective July 1, 2026; first published data is expected late 2026. It is the first enacted state law mandating utility-level DC water reporting in the US.",
+      "outlet": "Virginia General Assembly",
+      "summary": "Starting January 1, 2027, registered water users supplying water off site must separately report potable and reclaimed deliveries to data centers with a DEQ air permit. They report on their regular schedule, using monthly volumes or quarterly totals if monthly data are unavailable.",
       "tags": [
         "regulation",
         "policy"
       ],
-      "source_url": "https://lis.virginia.gov/cgi-bin/legp604.exe?ses=251&typ=bil&val=hb496",
+      "source_url": "https://law.lis.virginia.gov/vacode/title62.1/chapter3.1/section62.1-44.38/",
       "cross_ref_tab": "legislation",
       "cross_ref_note": "VA HB 496 / SB 553 in Legislation tab",
       "cross_ref_targets": [
@@ -1021,6 +1021,24 @@
       "cross_ref_tab": "legislation",
       "cross_ref_note": "The tracked instrument, now withdrawn",
       "source_url": "https://abc6onyourside.com/news/local/ohio-epa-drops-plan-statewide-data-center-wastewater-permit-shifts-national-pollutant-discharge-elimination-system-environmental-protection-agency-case-by-case"
+    },
+    {
+      "id": "virginia-scc-rd637-water-2026-10",
+      "date": "2026-10-01",
+      "title": "Virginia’s first SCC data center report has no water volumes",
+      "outlet": "Virginia State Corporation Commission",
+      "summary": "Under budget Item 477 D, the State Corporation Commission requested utility data. No responding regulated water utility identified data center customers; municipal responses did not arrive in time. RD637 contains no water volume. The commission said it would update the report as information arrived.",
+      "tags": [
+        "data",
+        "policy"
+      ],
+      "source_url": "https://rga.lis.virginia.gov/Published/2026/RD637/PDF",
+      "cross_ref_tab": "legislation",
+      "cross_ref_note": "Separate from the January 2027 supplier rule.",
+      "cross_ref_targets": [
+        "VA DEQ waterworks data-center reporting regulations",
+        "VA HB 496 / SB 553"
+      ]
     }
   ]
 }

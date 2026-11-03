@@ -835,8 +835,8 @@ TRANSPARENCY_GAPS = [
     },
     {
         "gap": "Virginia DC water reporting (HB 496 / SB 553)",
-        "impact": "ENACTED 2026 — water utilities must report monthly DC water volumes; data not yet published",
-        "status": "signed by Gov. Spanberger 2026; first reports pending",
+        "impact": "RD637 contained no water volumes; municipal responses had not arrived by publication.",
+        "status": "Separate supplier reporting rule starts January 1, 2027",
     },
     {
         "gap": "California AB 93 — vetoed Oct 2024",
@@ -930,8 +930,8 @@ TIMELINE_EVENTS = [
         "label": "Virginia Enacts DC Water Reporting (HB 496)",
         "category": "policy",
         "detail": "Gov. Spanberger signs HB 496 (SB 553 companion), amending "
-        "Code § 62.1-44.38 to require monthly reporting of water volumes "
-        "delivered to data centers — Virginia's first mandatory DC water-disclosure law.",
+        "Code § 62.1-44.38 to require suppliers to report potable and reclaimed volumes "
+        "delivered to air-permitted data centers beginning January 1, 2027.",
     },
 ]
 
@@ -994,7 +994,9 @@ SOURCES_DATA: dict = {
         # Virginia
         {"level": "Virginia", "name": "Loudoun Water ACFR", "note": "~1.6B gal/yr aggregate · annual only · no per-DC breakdown", "status": "working", "action": "Expand utilities"},
         {"level": "Virginia", "name": "PWC Water IUS", "note": "56 DCs · ERU proxy, not metered consumption", "status": "working", "action": "Annual update"},
-        {"level": "Virginia", "name": "HB 496 / SB 553 reports", "note": "Monthly utility DC volumes · reporting channel unconfirmed", "status": "coming", "action": "Watch SWCB / DEQ"},
+        {"level": "Virginia", "name": "JLARC water-use estimate (2023)", "note": "Estimated 2.1 billion gallons statewide; just over one-third reclaimed. Utility records covered most, not all, buildings.", "status": "partial", "action": "Read chapter 5, p. 62", "url": "https://jlarc.virginia.gov/pdfs/reports/Rpt598-2.pdf"},
+        {"level": "Virginia", "name": "SCC report RD637 (October 2026)", "note": "No water volumes reported. Municipal responses were outstanding; no responding regulated utility reported serving data centers.", "status": "partial", "action": "Read report, p. 2", "url": "https://rga.lis.virginia.gov/Published/2026/RD637/PDF"},
+        {"level": "Virginia", "name": "HB 496 / SB 553 reports", "note": "Potable and reclaimed deliveries to air-permitted facilities · categories start January 2027", "status": "coming", "action": "Read reporting rule", "url": "https://law.lis.virginia.gov/admincode/title9/agency25/chapter200/section40/"},
         {"level": "Virginia", "name": "DEQ ArcGIS / VWP", "note": "Permit metadata only · no flow in ArcGIS layers", "status": "partial", "action": "Metadata only"},
         {"level": "Virginia", "name": "DEQ VPDES Excel", "note": "WAF 403 block · stormwater-only permits anyway", "status": "blocked", "action": "Wait / retry"},
         # Ohio
@@ -1032,7 +1034,7 @@ SOURCES_DATA: dict = {
                 "targets, and rate structures are contractually shielded. FOIA "
                 "exemptions apply in Virginia."
             ),
-            "workaround": "Utility ACFRs (aggregate) + HB 496 / SB 553 monthly reports (aggregate, July 2026).",
+            "workaround": "Utility annual reports provide historical totals. From January 2027, look for supplier totals under HB 496 / SB 553.",
             "kind": "legal",
         },
         {
@@ -1048,11 +1050,11 @@ SOURCES_DATA: dict = {
     ],
     "timeline": [
         {
-            "date": "Jul 2026",
-            "title": "HB 496 / SB 553 effective",
+            "date": "Jan 2027",
+            "title": "HB 496 / SB 553 reporting starts",
             "desc": (
-                "VA utilities must report monthly DC water volumes. First reports expected "
-                "Aug–Sept. Confirm channel (SWCB vs. DEQ) before building scraper."
+                "Covered suppliers report deliveries to air-permitted data centers on their regular schedule. "
+                "The October 2026 SCC report did not provide a baseline."
             ),
             "color": "purple",
         },
@@ -1878,8 +1880,8 @@ def _build_legislation_themes_html(bills: list[dict]) -> str:
         '<div class="insights" style="margin-top:.8rem">'
         '<h4>What solutions are emerging</h4><ul>'
         '<li><strong>Utility-level monthly reporting</strong> — Virginia HB 496 (enacted April 2026) '
-        'is the first state law requiring utilities to report monthly water volumes to data centers. '
-        'Several states are watching for the first published data, expected late 2026.</li>'
+        'requires suppliers to separate potable and reclaimed deliveries to covered facilities. '
+        'The new reporting categories start January 1, 2027.</li>'
         '<li><strong>Closed-loop cooling mandates</strong> — Idaho H895 (enacted) and South Carolina '
         'HB 4583 (pending) are first movers on banning open evaporative cooling for new facilities, '
         'eliminating the largest consumptive water-loss pathway.</li>'
@@ -2673,9 +2675,8 @@ def render_water_solutions():
         f'<li>All {n_mandate} state/federal mandates and all {n_utility} utility programs have at least '
         f'one deployed or active-pilot example. Voluntary industry solutions ({n_industry}) have no '
         f'independent verification path.</li>'
-        f'<li>The critical unlock is closing the measurement gap: per-facility NPDES permits in Ohio (the OHD000001 general permit was withdrawn 2026-07-21) '
-        f'and HB 496 monthly utility reports (Virginia, eff. July 2026) are the two pending mandates '
-        f'that would make operator claims checkable.</li>'
+        '<li>Ohio facility permits can document discharges. Virginia HB 496 will document supplier deliveries '
+        'from January 2027. Neither measure alone tells us how much water a campus consumes.</li>'
         f'</ul></div>',
         unsafe_allow_html=True,
     )
@@ -4713,6 +4714,12 @@ _BARRIER_COLORS = {
 }
 
 
+def _source_action_html(src: dict) -> str:
+    label = html.escape(src["action"])
+    url = src.get("url", "")
+    return f'<a href="{html.escape(url)}">{label}</a>' if url.startswith("https://") else label
+
+
 def render_sources_tab():
     st.subheader("Data Access & Coverage")
     st.markdown(
@@ -4759,7 +4766,7 @@ def render_sources_tab():
             f'<span style="{badge_style};border-radius:999px;padding:.12rem .55rem;'
             f'font-size:.75rem;font-weight:700;white-space:nowrap;">{badge_label}</span>'
             f'<span style="color:#6b7280;font-size:.78rem;flex:0 0 8rem;'
-            f'text-align:right;">{html.escape(src["action"])}</span>'
+            f'text-align:right;">{_source_action_html(src)}</span>'
             f'</div>'
         )
     st.markdown("".join(rows), unsafe_allow_html=True)

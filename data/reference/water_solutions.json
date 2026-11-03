@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-07-06",
+  "last_updated": "2026-11-03",
   "description": "Solutions to data center water challenges, organized by actor type. Drawn from enacted legislation, utility programs, enforcement outcomes, and industry practice documented across the tracker's datasets.",
   "categories": [
     {
@@ -9,13 +9,13 @@
       "solutions": [
         {
           "id": "va-hb496-monthly-reporting",
-          "title": "Virginia Monthly DC Water Reporting Mandate",
+          "title": "Virginia supplier reporting by water type",
           "status": "deployed",
           "actor_type": "state",
           "actor": "Virginia General Assembly / Dept. of Environmental Quality",
-          "description": "HB 496 / SB 553 (enacted April 2026) requires water utilities to report monthly aggregate volumes delivered to data centers to the State Water Control Board. Creates the first mandatory utility-level data stream for DC water use in the US.",
-          "example": "Loudoun Water (serving ~1.635B gal/yr to data centers) must file monthly reports beginning ~July 2026. First published data will be the only facility-aggregated DC water series in any US state.",
-          "source_url": "https://lis.virginia.gov/cgi-bin/legp604.exe?ses=251&typ=bil&val=hb496",
+          "description": "Starting January 1, 2027, registered water users supplying water off site must separately report potable and reclaimed deliveries to data centers with a DEQ air permit. They report on their regular schedule, using monthly volumes or quarterly totals if monthly data are unavailable.",
+          "example": "A supplier can report how much potable and reclaimed water it delivered to covered customers. Those deliveries do not measure any one campus’s consumptive use.",
+          "source_url": "https://law.lis.virginia.gov/admincode/title9/agency25/chapter200/section40/",
           "cross_ref_tab": "legislation",
           "cross_ref_note": "VA HB 496 / SB 553 tracked in Legislation tab",
           "cross_ref_targets": [
@@ -149,7 +149,7 @@
           "actor_type": "utility",
           "actor": "Loudoun Water, Fairfax Water (Virginia)",
           "description": "Utilities publish aggregate data center water deliveries in annual financial reports (ACFRs), providing the only publicly available utility-level DC water volumes in Virginia — currently the primary Tier 1 data source for this tracker.",
-          "example": "Loudoun Water ACFR 2023: 1.635B gal to data centers (~15% of total utility sales). Fairfax Water supplies ~18 MGD wholesale to Loudoun. Virginia HB 496 will formalize and extend this to monthly reports.",
+          "example": "Loudoun Water ACFR 2023: 1.635B gal to data centers (~15% of total utility sales). Fairfax Water supplies ~18 MGD wholesale to Loudoun.",
           "source_url": "https://www.loudounwater.org/about/comprehensive-annual-financial-reports",
           "cross_ref_tab": "data",
           "cross_ref_note": "Loudoun Water and Fairfax Water data in Sources tab"
