@@ -882,4 +882,4 @@ class TestSiteIntegration:
         fragment = dashboard._build_project_check_html()
         for banned in ("will be sued", "will face", "is liable", "you should sue"):
             assert banned not in fragment.lower()
-        assert "could reach" in dashboard.PROJECT_CHECK_LEAD
+        assert "applicability depends on project evidence" in dashboard.PROJECT_CHECK_LEAD

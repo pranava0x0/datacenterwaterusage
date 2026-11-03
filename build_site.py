@@ -39,6 +39,7 @@ import pandas as pd
 
 import dashboard as dash
 from refdata.graph import payload_json as graph_payload_json
+from refdata.dockets import dataset_files
 from utils.device import _RESPONSIVE_CSS
 
 BASE_DIR = Path(__file__).parent
@@ -1589,7 +1590,7 @@ body{
     url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 120'><g fill='none' stroke-linecap='round'><path d='M0 20 Q 10 15,20 20 T 40 20 T 60 20 T 80 20 T 100 20 T 120 20 T 140 20 T 160 20 T 180 20 T 200 20 T 220 20 T 240 20' stroke='%2308519c' stroke-opacity='0.07' stroke-width='1.6'/><path d='M-20 60 Q -10 53,0 60 T 20 60 T 40 60 T 60 60 T 80 60 T 100 60 T 120 60 T 140 60 T 160 60 T 180 60 T 200 60 T 220 60 T 240 60 T 260 60' stroke='%233182bd' stroke-opacity='0.08' stroke-width='2'/><path d='M0 100 Q 10 93,20 100 T 40 100 T 60 100 T 80 100 T 100 100 T 120 100 T 140 100 T 160 100 T 180 100 T 200 100 T 220 100 T 240 100' stroke='%2308519c' stroke-opacity='0.06' stroke-width='1.4'/></g><g fill='%233182bd' fill-opacity='0.06'><circle cx='34' cy='42' r='2'/><circle cx='142' cy='12' r='1.6'/><circle cx='202' cy='84' r='2.4'/><circle cx='72' cy='104' r='1.8'/><circle cx='182' cy='50' r='1.4'/><circle cx='10' cy='90' r='1.5'/></g></svg>");
   background-repeat:no-repeat, no-repeat, repeat;
   background-position:center top, center top, left top;
-  background-attachment:fixed, fixed, fixed;
+  background-attachment:scroll, scroll, scroll;
 }
 .wrap{max-width:1040px;margin:0 auto;padding:1.25rem 1.25rem 4rem}
 h1{font-size:1.9rem;margin:0 0 .2rem;padding-bottom:.4rem;
@@ -2596,7 +2597,7 @@ def build_llms_txt() -> str:
             continue
         terms = "; ".join(t.get("text", "") for t in c.get("terms") or [])
         lines.append(
-            f"- {c['id']} — {c.get('jurisdiction')}: {c.get('instrument')} ({c.get('date')};"
+            f"- {c['id']} — {c.get('jurisdiction')}: {c.get('instrument')} ({dash._commitment_date_label(c)};"
             f" {dash.COMMITMENT_BINDING_LABELS.get(c.get('binding'), c.get('binding'))})."
             f" {c.get('summary', '')} Terms: {terms}"
             + (f" Source: {c['sources'][0]['url']}" if c.get("sources") else "")
@@ -2609,13 +2610,13 @@ def build_llms_txt() -> str:
             if ids
         ]
         lines.append(f"- {row['state']} — " + "; ".join(parts))
-    lines += ["", "### Local agreements", ""]
+    lines += ["", "### Local agreements and infrastructure", ""]
     for c in commitments:
         if c.get("level") != "local":
             continue
         terms = "; ".join(t.get("text", "") for t in c.get("terms") or [])
         lines.append(
-            f"- {c['id']} — {c.get('jurisdiction')}: {c.get('instrument')} ({c.get('date')},"
+            f"- {c['id']} — {c.get('jurisdiction')}: {c.get('instrument')} ({dash._commitment_date_label(c)},"
             f" {dash.COMMITMENT_STATUS_LABELS.get(c.get('status'), c.get('status'))}). Terms: {terms}"
             + (f" Source: {c['sources'][0]['url']}" if c.get("sources") else "")
         )
@@ -2809,6 +2810,11 @@ def build_llms_txt() -> str:
         f"- Water infrastructure security: {REPO_URL}/blob/main/data/reference/water_security.json",
         "",
     ]
+    lines.extend(["", "## Docket dataset preview", "",
+                  "Case records: docket-records.jsonl; schema: docket-record.schema.json; "
+                  "coverage and hashes: docket-manifest.json; documentation: docket-dataset.md.",
+                  "Applicability questions: applicability-checklists.json. Shared facts retrieve candidates; "
+                  "legal applicability and project evidence remain unassessed."])
     return "\n".join(lines)
 
 
@@ -3068,6 +3074,7 @@ def build_site_files(bodies: dict[str, str] | None = None) -> dict[str, str]:
     files[GRAPH_DATA_PATH.name] = build_graph_data_json()
     files[PROJECT_DATA_PATH.name] = build_project_data_json()
     files[LLMS_TXT_PATH.name] = build_llms_txt()
+    files.update(dataset_files())
     return files
 
 

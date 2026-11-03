@@ -49,6 +49,7 @@ streamlit-js-eval==1.0.0
 # Static site build (build_site.py pre-renders the dashboard to static HTML
 # for GitHub Pages; markdown converts the few markdown blobs at build time).
 markdown==3.10.3
+jsonschema==4.25.1
 
 # Testing
 pyyaml==6.0.3

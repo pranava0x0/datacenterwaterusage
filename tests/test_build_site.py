@@ -787,11 +787,10 @@ class TestInfrastructureVisuals:
 
     def test_schematic_carries_the_two_facts_it_exists_for(self):
         html = _html()
-        assert "evaporation is the consumptive loss" in html
-        assert "this water leaves the basin, not the sewer" in html
-        assert "the sewer leg is metered on the receiving plant" in html
-        assert "NPDES permit" in html
-        assert "that is where the data shows up" in html
+        assert "evaporation consumes water" in html
+        assert "WWTP outfall flow combines users; site consumption needs separate meters" in html
+        assert "https://echo.epa.gov/help/loading-tool/monitoring-data-download-help" in html
+        assert "this water leaves the basin, not the sewer" not in dashboard._build_water_loop_svg()
 
     def test_streamlit_and_static_share_one_schematic(self):
         """Same contract as the Explore fragment: one builder, two surfaces."""
@@ -809,7 +808,7 @@ class TestInfrastructureVisuals:
         assert body, "no body rule in the page CSS"
         rule = body.group(1)
         assert "url(\"data:image/svg+xml" in rule, "texture is not an inline data: URI"
-        assert "background-attachment:fixed" in rule
+        assert "background-attachment:scroll" in rule
         # Texture strokes/fills stay at texture strength (DESIGN.md §1).
         opacities = [float(v) for v in re.findall(r"opacity='([0-9.]+)'", rule)]
         assert opacities and max(opacities) <= 0.12, opacities
@@ -817,16 +816,14 @@ class TestInfrastructureVisuals:
         assert "@media print{" in html
         assert "body{background-image:none" in html
 
-    def test_one_animation_only_and_it_switches_itself_off(self):
-        """DESIGN.md §12: the schematic's flow line is the only thing that
-        moves. A second @keyframes block is the regression this catches."""
+    def test_schematic_is_static_and_has_a_narrow_screen_route(self):
+        """Idle SVG animation repainted even when the header was offscreen."""
         html = _html()
-        assert html.count("@keyframes") == 1
-        assert "@keyframes wl-drift" in html
+        assert "@keyframes" not in html
         svg = dashboard._build_water_loop_svg()
-        assert "animation:" in svg
-        assert "@media (prefers-reduced-motion:reduce)" in svg
-        # The moving dashes stay under the ornament ceiling.
+        assert "animation:" not in svg
+        assert 'class="water-route"' in svg
+        assert ".schematic .water-route-full { display: none; }" in html
         assert 'class="wl-flow"' in svg and 'stroke-opacity="0.35"' in svg
 
     def test_active_tab_underline_is_a_pipe_with_end_fittings(self):

@@ -4,6 +4,10 @@
 
 Python-based scraping and data extraction pipeline that finds documents related to data center water usage from public utility and environmental portals in Virginia and Ohio. Extracts water consumption metrics into structured CSV/JSON output.
 
+## Docket evidence preview
+
+`refdata/dockets.py` generates the public JSONL, schema, checklist, card and manifest through `build_site.py`. The [dataset card](docs/docket-dataset.md) defines evidence gaps and release limits. Keep normalized metadata separate from unverified display labels; a source-checked annotation does not certify legacy prose. Project downloads preserve raw inputs, facet origins, example lineage and a canonical retrieval-payload hash. `scripts/uat_site.py` verifies real browser downloads and responsive flows.
+
 ## Core Principles
 
 ### 1. Resource-Efficient Scraping
