@@ -1,6 +1,6 @@
 {
   "schema_version": "0.1.0",
-  "checked_at": "2026-11-02",
+  "checked_at": "2026-11-03",
   "purpose": "Questions for source review. A matched facet does not answer a question.",
   "checklists": [
     {
@@ -34,6 +34,21 @@
       "questions": [
         {"id": "stormwater-discharge", "question": "Will construction activity produce a regulated stormwater discharge?", "evidence_needed": "Drainage plan, discharge routes and jurisdictional review.", "source_ids": ["epa-construction"]},
         {"id": "disturbance-threshold", "question": "Will disturbance reach at least one acre, including a larger common plan of development or sale?", "evidence_needed": "Disturbed acreage and the full common-development-plan boundary; a smaller individual parcel can still qualify.", "source_ids": ["epa-construction"]}
+      ]
+    },
+    {
+      "checklist_id": "industrial-sewer-v1",
+      "reading_id": "cwa-307-pretreatment",
+      "scope": "CWA §307: industrial wastewater sent to a publicly owned treatment works. Screen the discharge route, local limits and significant industrial user status separately.",
+      "limitations": "Water purchased or evaporated at the campus is not process wastewater sent to the plant. A project below the flow threshold can still face local limits and federal discharge prohibitions.",
+      "sources": [
+        {"source_id": "part403-prohibitions", "url": "https://www.ecfr.gov/current/title-40/chapter-I/subchapter-N/part-403/section-403.5", "title": "40 CFR 403.5: Prohibited discharges", "locator": "Paragraphs (a), (b) and (c)", "retrieved_at": "2026-11-03", "content_sha256": null},
+        {"source_id": "epa-industrial-users", "url": "https://www.epa.gov/npdes/pretreatment-roles-and-responsibilities-industrial-users", "title": "EPA: Pretreatment roles and responsibilities for industrial users", "locator": "Criteria for significant industrial users", "retrieved_at": "2026-11-03", "content_sha256": null}
+      ],
+      "questions": [
+        {"id": "industrial-route", "question": "Which industrial streams, if any, enter the public treatment plant?", "evidence_needed": "Process diagram, sewer connections and operator records distinguishing tower blowdown, sanitary flow and direct outfalls.", "source_ids": ["part403-prohibitions"]},
+        {"id": "local-controls", "question": "Which discharge prohibitions and local limits govern this connection?", "evidence_needed": "Receiving plant, local ordinance, industrial-user control documents and samples for pollutants of concern.", "source_ids": ["part403-prohibitions"]},
+        {"id": "significant-user", "question": "Does the authority classify the campus as a significant industrial user?", "evidence_needed": "Check categorical status, designation by the authority, average process flow (25,000 gallons/day threshold), and the 5% dry-weather hydraulic or organic capacity test. Exclude sanitary, noncontact cooling and boiler blowdown from the process-flow threshold.", "source_ids": ["epa-industrial-users"]}
       ]
     }
   ]

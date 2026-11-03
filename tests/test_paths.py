@@ -204,3 +204,22 @@ class TestStaticSurface:
         for part in ("cwa-p1", "cwa-p2", "cwa-p3"):
             assert f'<div class="subtabpanel" id="panel-{part}" hidden>' in tab
         assert 'id="statute-paths"' in tab
+
+
+def test_instrument_activity_links_are_explicit_and_keep_legal_status():
+    from bs4 import BeautifulSoup
+    from dashboard import _build_statute_paths_html
+    from refdata.loaders import load_legislation
+
+    bills = load_legislation()["bills"]
+    for bill in bills:
+        acts = bill.get("dc_activities", [])
+        assert set(acts) <= DC_ACTIVITY_LABELS.keys() and len(acts) == len(set(acts))
+    for group in P.build_statute_paths():
+        expected = {b["bill_id"] for b in bills if group["activity"] in b.get("dc_activities", [])}
+        assert {b["bill_id"] for b in group["instruments"]} == expected
+    dom = BeautifulSoup(_build_statute_paths_html(), "html.parser")
+    link = dom.select_one('#paths-supply a[href="#bill-in-hb-1043"]')
+    assert link and "failed" in link.parent.get_text().lower() and "10 million" in link.parent.get_text()
+    assert not dom.select_one('#paths-chemicals a[href="#bill-in-hb-1043"]')
+    assert "75 acre-feet" in dom.select_one('#paths-withdraw a[href="#bill-ut-hb-76"]').parent.get_text()

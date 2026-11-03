@@ -192,7 +192,7 @@ Watched automatically (step 1), listed here so a human refresh doesn't miss them
 
 | What | Expected |
 |---|---|
-| VA DEQ first aggregate data-center water report | **2026-10-01** — unlocks the Tier-1 scraper build |
+| Virginia water reporting | [October SCC report, p. 2](https://rga.lis.virginia.gov/Published/2026/RD637/PDF): no water volumes. Watch for supplements and the separate DEQ platform targeted for **2027-01-01**. Verify units, period and coverage before ingestion. |
 | VA categorized monthly reporting begins | 2027-01-01 |
 | Ohio EPA OHD000001 general permit finalized | unscheduled — makes data centers direct DMR filers |
 | NY EO 62 moratorium expiry / DEC withdrawal rulemaking | ~2027-07-14 |

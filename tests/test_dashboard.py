@@ -1907,3 +1907,14 @@ class TestStatesAndLocalities:
         assert html_out.count('class="state-card"') == len(rollup)
         virginia = next(r for r in rollup if r["state"] == "VA")
         assert f'href="#{virginia["instruments"][0]["anchor"]}"' in html_out
+
+
+def test_virginia_public_sources_distinguish_estimate_missing_and_future_data():
+    from dashboard import SOURCES_DATA
+    rows = {r["name"]: r for r in SOURCES_DATA["sources"]}
+    estimate = rows["JLARC water-use estimate (2023)"]
+    assert "2.1 billion gallons" in estimate["note"] and estimate["url"].endswith(".pdf")
+    report = rows["SCC report RD637 (October 2026)"]
+    assert "No water volumes" in report["note"] and report["url"].endswith("RD637/PDF")
+    law = rows["HB 496 / SB 553 reports"]
+    assert law["status"] == "coming" and "January 2027" in law["note"]

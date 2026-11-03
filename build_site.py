@@ -1302,9 +1302,8 @@ def build_solutions_tab() -> str:
         f'<li>All {n_mandate} state/federal mandates and all {n_utility} utility programs have '
         f'at least one deployed or active-pilot example. Voluntary industry solutions ({n_industry}) '
         f'have no independent verification path.</li>'
-        f'<li>The critical unlock: per-facility NPDES permits in Ohio (the OHD000001 general permit was withdrawn 2026-07-21) and HB&nbsp;496 monthly utility '
-        f'reports (Virginia, eff. July 2026) are the two pending mandates that would make '
-        f'operator claims independently checkable.</li>'
+        '<li>Ohio facility permits can document discharges. Virginia HB 496 will document supplier deliveries '
+        'from January 2027. Neither measure alone tells us how much water a campus consumes.</li>'
         f'</ul></div>'
         f'<hr>'
     )
@@ -1393,7 +1392,7 @@ def build_sources_tab() -> str:
             f'<td class="src-name">{esc(src["name"])}'
             f'<span class="src-note-inline"> — {esc(src["note"])}</span></td>'
             f'<td><span class="src-badge {esc(badge_cls)}">{esc(badge_lbl)}</span></td>'
-            f'<td class="src-action">{esc(src["action"])}</td>'
+            f'<td class="src-action">{dash._source_action_html(src)}</td>'
             f'</tr>'
         )
 
@@ -2640,6 +2639,8 @@ def build_llms_txt() -> str:
     ]
     for group in dash.build_statute_paths():
         lines += ["", f"### {group['label']} ({len(group['paths'])} paths)", "", group["description"], ""]
+        for bill in group["instruments"]:
+            lines.append(f"- {bill['bill_id']} ({bill['status']}): {bill['summary']}")
         for path in group["paths"]:
             precedents = ", ".join(c["case_id"] for c in path["precedents"])
             if path["more_cases"]:
