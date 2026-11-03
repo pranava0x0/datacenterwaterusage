@@ -2,27 +2,27 @@
   "schema_version": "0.1.0",
   "release_status": "research_preview",
   "record_count": 123,
-  "checklist_count": 3,
+  "checklist_count": 4,
   "normalized_docket_count": 2,
   "claim_verified_record_count": 0,
   "source_rights": "No blanket license for linked third-party source material. Rights review pending.",
   "splits": null,
   "files": {
     "docket-records.jsonl": {
-      "sha256": "c8a6eef1a7b5ce9355b44fd4a6ea63e1f2260063d67d42c17549963ea461e3d3",
-      "bytes": 639986
+      "sha256": "6dab2bf6adebd26322cd40ddd4aa43a4adcc6e21e06b48e70f23b3713aa9b443",
+      "bytes": 640133
     },
     "docket-record.schema.json": {
       "sha256": "1d49b4878fc4b73f6357bbf6ed723feea40ce1528f8fa4f9ca9ae1c1d14ae684",
       "bytes": 8122
     },
     "applicability-checklists.json": {
-      "sha256": "aea1de0b59ad560df53c9469c126c84fe106fd13eeebd45dd3a6918f8c46eded",
-      "bytes": 4415
+      "sha256": "473cbf1eb76d6ddbd59ae8cb1fdc2c1a1640c7fbaced7862339446cc34c1d4f6",
+      "bytes": 6617
     },
     "docket-dataset.md": {
-      "sha256": "1374e66b1a38f7103b6090a07415e2c108b4ce9eddc55cc1aaa3dbf6e115c355",
-      "bytes": 5024
+      "sha256": "f64cf28f7fef257643219b5a589cc5c10c9ae478718188373f8f1dda7e16899c",
+      "bytes": 5394
     }
   }
 }

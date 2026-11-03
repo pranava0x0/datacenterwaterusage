@@ -129,3 +129,19 @@ def test_dataset_card_links_resolve_in_repo_and_published_directory():
         assert (card_path.parent / link).is_file()
         assert "](" + link.removeprefix("../pages/") + ")" in public_card
         assert link.removeprefix("../pages/") in files
+
+
+def test_pretreatment_worksheet_needs_an_industrial_sewer_route():
+    def worksheets(facets):
+        matches = precedent.match_project(facets, None)
+        return {c["reading_id"]: c for c in dockets.project_assessment(matches, "")["checklists"]}
+
+    for description in ("Cooling tower blowdown to the river", "A storm sewer carries runoff",
+                        "An on-site wastewater treatment plant reuses the blowdown"):
+        assert "out-sewer" not in precedent.parse_project(description)["facets"]
+    assert "out-sewer" in precedent.parse_project("Tower blowdown goes to the city sewer")["facets"]
+    facts = ["cool-evaporative", "chem-treatment"]
+    assert "cwa-307-pretreatment" not in worksheets(facts)
+    checklist = worksheets(facts + ["out-sewer"])["cwa-307-pretreatment"]
+    assert {q["id"] for q in checklist["questions"]} == {"industrial-route", "local-controls", "significant-user"}
+    assert all(q["answer"] == "unknown" for q in checklist["questions"])
