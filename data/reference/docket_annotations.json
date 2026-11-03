@@ -1,0 +1,29 @@
+{
+  "schema_version": "0.1.0",
+  "annotations": {
+    "County-of-Maui-v-Hawaii-Wildlife-Fund-2020": {
+      "docket_number": "18-260",
+      "decision_date": "2020-04-23",
+      "decision_maker": "Supreme Court of the United States",
+      "procedural_posture": "vacated_and_remanded",
+      "holding": "A discharge through groundwater can require an NPDES permit when it is the functional equivalent of a direct discharge. The inquiry depends on the circumstances; time and distance usually matter most.",
+      "source_url": "https://www.supremecourt.gov/opinions/19pdf/18-260_jifl.pdf",
+      "locator": "Opinion pp. 1, 15-18 (PDF pp. 5, 19-22)",
+      "retrieved_at": "2026-11-02",
+      "content_sha256": "361d945d4c6db6e9e756b39fbd3e409ae9c602b639e021b6c8f0750cf0acc499",
+      "scope": "Docket metadata, disposition and this holding checked against the opinion. Legacy source_record prose and subsequent history have not been reverified."
+    },
+    "Sackett-v-EPA-2023": {
+      "docket_number": "21-454",
+      "decision_date": "2023-05-25",
+      "decision_maker": "Supreme Court of the United States",
+      "procedural_posture": "reversed_and_remanded",
+      "holding": "Federal jurisdiction over adjacent wetlands requires a qualifying relatively permanent water body and a continuous surface connection making the wetland indistinguishable from that water. The opinion addresses temporary interruptions and unlawful barriers.",
+      "source_url": "https://www.supremecourt.gov/opinions/22pdf/21-454_4g15.pdf",
+      "locator": "Opinion pp. 1, 21-22, 28 (PDF pp. 7, 27-28, 34)",
+      "retrieved_at": "2026-11-02",
+      "content_sha256": "cc0a5edfe7d2504974604d2f68da62170f317e1a2438faa74f667c635eff1a5d",
+      "scope": "Docket metadata, disposition and this holding checked against the opinion. Legacy source_record prose and subsequent history have not been reverified."
+    }
+  }
+}

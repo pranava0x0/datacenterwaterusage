@@ -847,3 +847,10 @@ These are large data-center water stories with no formal CWA enforcement action 
 - **(Low) A size facet below hyperscale.** Eight instruments set thresholds of 5-40 MW or 100,000 gal/day; `scale-hyperscale` was stripped from them because the facet means ~100 MW. A "mid-size (10 MW / 100,000 gal/day and up)" facet would let them rank on size. *Prompt:* "Add scale-midsize to FACT_FACETS with MW/MGD parsing, tag the low-threshold instruments and any case with a stated size in that band."
 - **(Low) Semantic matching as a second signal.** Facets explain; embeddings would catch paraphrase the trigger words miss (e.g. 'sitting below conservation pool' → drought). Build-time embeddings need an API key; a small on-page model is out (no third-party assets). Park until a cost-free path exists.
 - **(Low) Example projects refresh.** Re-check the six worked examples' statuses quarterly (Big Sky comment period closed 2026-10-29; Amazon Wharton surface-water application pending).
+
+## Docket dataset follow-up (2026-11-02)
+
+- **High:** obtain and review source agreements for the [new water investments](data/reference/water_commitments.json), confirm current permitting terms and delivery evidence before claiming enforceable duties or measured savings.
+- **Medium:** extend [claim-level evidence and current-law review](docs/docket-dataset.md) beyond the historical opinion pilot; normalize proceedings separately from opinions and resolve redistribution rights.
+- **Medium:** build an adjudicated evaluation set with related dockets/projects in one partition, unknown and contradicted examples, and versioned TypeSafe Jev passage-entailment trials. No model accuracy result exists yet. [Research](docs/research-docket-sources-2026-11-02.md).
+- **Low:** obtain permitted access to PermitTEC/NEPATEC files and verify the versioned join; their cards alone do not establish join coverage or redistribution rights.

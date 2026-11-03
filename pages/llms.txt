@@ -2,7 +2,7 @@
 
 > Tracking how US data centers draw, discharge, and disclose cooling water — permits, enforcement, statutes, and state and local policy, from public records. Scraped sources are EPA ECHO DMR flow at receiving wastewater treatment plants, state permit portals and utility financial reports; alongside them are curated national datasets: data-center water legislation, water-law cases relevant to data centers mapped to a registry of statutory and doctrinal readings, county and city measures, data-center sites with documented water conflicts, and company water claims.
 
-Static build 2026-10-09. Dashboard: https://pranava0x0.github.io/datacenterwaterusage/ · Source: https://github.com/pranava0x0/datacenterwaterusage
+Static build 2026-11-03. Dashboard: https://pranava0x0.github.io/datacenterwaterusage/ · Source: https://github.com/pranava0x0/datacenterwaterusage
 
 ## Key numbers
 
@@ -123,7 +123,7 @@ The dashboard's States & Localities tab covers 42 states with at least one track
 
 State activity, newest first: Virginia (2026-10-01), Florida (2026-10), Texas (2026-09-24), California (2026-09-21), Nevada (2026-09-18), Oregon (2026-09-08), Massachusetts (2026-09-08), Maryland (2026-09-01), South Carolina (2026-09), Ohio (2026-09), Minnesota (2026-09), Illinois (2026-09), Georgia (2026-09), Alabama (2026-09), Nebraska (2026-08-19), Pennsylvania (2026-08-18), Kentucky (2026-08-18), Wisconsin (2026-08), New York (2026-08), North Carolina (2026-08), Michigan (2026-08), Indiana (2026-08), New Mexico (2026-07-02), Washington (2026-07), Mississippi (2026-07), Missouri (2026-07), Iowa (2026-07), Colorado (2026-07), Louisiana (2026-06-25), Wyoming (2026-06-03), Utah (2026-06), Arkansas (2026-06), Vermont (2026-05-29), New Jersey (2026-05-27), Connecticut (2026-05-06), Kansas (2026-05-01), Rhode Island (2026-05), Idaho (2026-05), Maine (2026-04-29), Oklahoma (2026-04), West Virginia (2026-03-27), South Dakota (2026-03-24).
 
-### Moved in the last 120 days (93 movements)
+### Moved in the last 120 days (55 movements)
 
 - 2026-10-01 — Virginia — VA DEQ waterworks data-center reporting regulations — Enacted — First aggregate report due
 - 2026-10 — Manatee County, FL — Manatee County — In force — The article states plainly: "Large-scale data centers are known to require substantial water and electrical resources to power and cool specialized computer servers."
@@ -181,7 +181,7 @@ Who has committed to what on data-center water, and how binding it is. The Unite
 - Texas — Disclose water use: TX EO 2026-08 (data center audit); Review before building: TX EO 2026-08 (data center audit)
 - West Virginia — Disclose water use: WV HB 4983; Review before building: WV HB 4983
 
-### Local agreements
+### Local agreements and infrastructure
 
 - pima-county-project-blue-moa-2025 — Pima County, AZ: Memorandum of Agreement (Project Blue), approved 3-2 (2025-12-16, In force). Terms: A closed-loop air-cooling system keeps the facility from overheating.; Water consumption limited to domestic necessities such as bathrooms and kitchens.; Water sources must be approved by the Arizona Department of Water Resources. Source: https://azluminaria.org/2025/12/16/pima-county-supervisors-approve-agreement-outlining-beales-commitments-on-project-blue/
 - lancaster-pa-coreweave-cba-2025 — Lancaster, PA: Community benefits agreement (2025-11, In force). Terms: Water use restricted to 20,000 gallons a day. Source: https://www.brookings.edu/articles/why-community-benefit-agreements-are-necessary-for-data-centers/
@@ -189,6 +189,10 @@ Who has committed to what on data-center water, and how binding it is. The Unite
 - dona-ana-nm-project-jupiter-2025 — Doña Ana County, NM: Industrial revenue bond and PILOT agreement (Ordinance 367-2025) (2025-09-15, In force). Terms: $50 million for public water and wastewater infrastructure in Doña Ana County.; $10 million of it routed to Sunland Park as a metrics-driven water-quality grant program.; $250,000 to evaluate a desalination plant as a long-term drinking-water source. Source: https://www.stackinfra.com/about/news-press/press-releases/stack-infrastructure-and-borderplex-digital-announce-cumulative-56-9-million-in-water-and-community-commitments-for-dona-ana-county-through-project-jupiter/
 - saline-township-mi-consent-judgment-2025 — Saline Township, MI: Consent judgment, Washtenaw County Circuit Court (2025-10, In force). Terms: No design containing high-water-use evaporative cooling (Section 3(g)).; Water use limited to restrooms and domestic uses, humidity, landscaping, fire protection and maintenance; about 20,000 gallons a day anticipated.; 47.5 acres of wetlands protected by a conservation easement. Source: https://salinetownship.org/go.php?id=731&table=page_uploads
 - frederick-county-md-quantum-cba-2026 — Frederick County, MD: Community benefits agreement ($110 million, never executed) (2026-09-15, Rejected). Terms: Cut potable water use 80% once a reclaimed-water system came online (offered, not adopted). Source: https://www.wypr.org/wypr-news/2026-09-15/frederick-county-rejects-agreement-with-data-center-developer-amidst-public-outcry
+- quincy-wa-reuse-utility-2021 — Quincy, Washington: Quincy Water Reuse Utility (Operation began: 2021-06-30, In force). Terms: EPA describes $31 million in capital costs paid by Microsoft; future connecting companies must cover their share of construction, upgrades and operations.; EPA estimates 138 million gallons per year in water savings. This is estimated savings, not measured site consumption. Source: https://www.epa.gov/waterreuse/water-reuse-case-study-quincy-washington
+- loudoun-va-reclaimed-water-program — Loudoun County, Virginia: Reclaimed water and wastewater connections (Reuse investment began: 2010, Reported undertaking). Terms: The county dates the reclaimed-water investment to 2010.; Where nearby wastewater capacity was insufficient, data centers constructed connections to mains that could handle the flows. Source: https://www.loudoun.gov/6402/Water-Considerations
+- fort-wayne-in-east-transmission-main — Fort Wayne, Indiana: East transmission main (Undertaking date not reported, Reported undertaking). Terms: The utility says this replaces a planned utility-funded main and will provide public connections at four locations. Benefits remain prospective until completion. Source: https://utilities.cityoffortwayne.org/projects/east-transmission-main/
+- douglas-county-ga-google-reuse-2012 — Douglas County, Georgia: Recycled industrial-water cooling (Reuse began: 2012, Reported undertaking). Terms: An operating reuse example reported by the operator; site-specific reuse volume and water-infrastructure spending are not established by the cited page. Source: https://datacenters.google/locations/georgia/
 
 ### Company pledges
 
@@ -705,3 +709,9 @@ The dashboard's Explore tab renders every record above as one graph and ranks al
 - Company water claims: https://github.com/pranava0x0/datacenterwaterusage/blob/main/data/reference/company_water_claims.json
 - County & city actions: https://github.com/pranava0x0/datacenterwaterusage/blob/main/data/reference/local_actions.json
 - Water infrastructure security: https://github.com/pranava0x0/datacenterwaterusage/blob/main/data/reference/water_security.json
+
+
+## Docket dataset preview
+
+Case records: docket-records.jsonl; schema: docket-record.schema.json; coverage and hashes: docket-manifest.json; documentation: docket-dataset.md.
+Applicability questions: applicability-checklists.json. Shared facts retrieve candidates; legal applicability and project evidence remain unassessed.

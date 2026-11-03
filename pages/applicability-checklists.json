@@ -1,0 +1,40 @@
+{
+  "schema_version": "0.1.0",
+  "checked_at": "2026-11-02",
+  "purpose": "Questions for source review. A matched facet does not answer a question.",
+  "checklists": [
+    {
+      "checklist_id": "maui-groundwater-v1",
+      "reading_id": "cwa-402-maui-groundwater",
+      "scope": "Historical holding: County of Maui, Supreme Court, No. 18-260, April 23, 2020. CWA discharge through groundwater.",
+      "limitations": "The Court vacated and remanded. It did not decide whether a new project needs a permit. Check current law, receiving-water jurisdiction, permit coverage and site evidence separately.",
+      "sources": [{"source_id": "maui-opinion", "url": "https://www.supremecourt.gov/opinions/19pdf/18-260_jifl.pdf", "title": "County of Maui v. Hawaii Wildlife Fund, opinion of the Court", "locator": "Opinion pp. 15-18", "retrieved_at": "2026-11-02", "content_sha256": "361d945d4c6db6e9e756b39fbd3e409ae9c602b639e021b6c8f0750cf0acc499"}],
+      "questions": [
+        {"id": "point-source", "question": "Does a pollutant leave an identified point source and reach jurisdictional surface water?", "evidence_needed": "Outfall or injection plans, pollutant evidence and receiving-water determination.", "source_ids": ["maui-opinion"]},
+        {"id": "functional-equivalent", "question": "Does the groundwater route satisfy the functional-equivalent test?", "evidence_needed": "Transit time, distance, intervening material, dilution or chemical change, relative quantity reaching water, manner or area of entry, and retained identity. Time and distance usually matter most.", "source_ids": ["maui-opinion"]}
+      ]
+    },
+    {
+      "checklist_id": "sackett-wetlands-v1",
+      "reading_id": "cwa-404-dredge-fill",
+      "scope": "Historical holding: Sackett, Supreme Court, No. 21-454, May 25, 2023. Federal jurisdiction over adjacent wetlands.",
+      "limitations": "This checklist covers the adjacent-wetlands holding, not every Section 404 condition or state wetland law. Seasonal interruptions, unlawful barriers, current regulations, exemptions and permit coverage need separate review.",
+      "sources": [{"source_id": "sackett-opinion", "url": "https://www.supremecourt.gov/opinions/22pdf/21-454_4g15.pdf", "title": "Sackett v. EPA, opinion of the Court", "locator": "Opinion pp. 21-22 (PDF pp. 27-28)", "retrieved_at": "2026-11-02", "content_sha256": "cc0a5edfe7d2504974604d2f68da62170f317e1a2438faa74f667c635eff1a5d"}],
+      "questions": [
+        {"id": "adjacent-water", "question": "Is the adjacent water a relatively permanent body connected to traditional interstate navigable waters?", "evidence_needed": "Jurisdictional determination, hydrology and maps.", "source_ids": ["sackett-opinion"]},
+        {"id": "surface-connection", "question": "Does the wetland have a continuous surface connection that makes it indistinguishable from that water?", "evidence_needed": "Wetland delineation and connection evidence, including seasonal conditions and barriers.", "source_ids": ["sackett-opinion"]}
+      ]
+    },
+    {
+      "checklist_id": "construction-stormwater-v1",
+      "reading_id": "cwa-402-construction-stormwater",
+      "scope": "EPA construction-stormwater screening guidance, checked November 2, 2026.",
+      "limitations": "Confirm the permitting authority, applicable permit version, discharge jurisdiction and any waiver. The proposed 2027 EPA CGP is a proposal; delegated state permits must be checked separately.",
+      "sources": [{"source_id": "epa-construction", "url": "https://www.epa.gov/npdes/stormwater-discharges-construction-activities", "title": "EPA: Stormwater Discharges from Construction Activities", "locator": "Background on Permitting Protections: What Construction Activities Are Regulated", "retrieved_at": "2026-11-02", "content_sha256": null}],
+      "questions": [
+        {"id": "stormwater-discharge", "question": "Will construction activity produce a regulated stormwater discharge?", "evidence_needed": "Drainage plan, discharge routes and jurisdictional review.", "source_ids": ["epa-construction"]},
+        {"id": "disturbance-threshold", "question": "Will disturbance reach at least one acre, including a larger common plan of development or sale?", "evidence_needed": "Disturbed acreage and the full common-development-plan boundary; a smaller individual parcel can still qualify.", "source_ids": ["epa-construction"]}
+      ]
+    }
+  ]
+}

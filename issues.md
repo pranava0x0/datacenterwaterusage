@@ -35,7 +35,7 @@ _None._ SEC-001 (the home-directory PII leak) is now **fully resolved and verifi
   - `data/output/results.csv` / `results.json`: scrubbed the affected rows in-place (`<home>/.../data/downloads/...` → `data/downloads/...`).
   - **History rewrite: done.** The old pre-rewrite HEAD `99c8bba` is no longer an ancestor of `main` and is absent from a fresh clone — the classic signature of a completed filter/force-push.
 - **Verification (2026-06-01)** — fresh `git clone` of `pranava0x0/datacenterwaterusage` + pickaxe (`git log --all -S`) across all 44 commits, all refs, all tags:
-  - `/Users/pranava` and `/Users/` → **0 occurrences anywhere** in history (the real username path is gone everywhere).
+  - Local home-directory paths: the earlier history scan reported no occurrences after removal.
   - `com~apple` / `CloudDocs` / `Mobile Documents` in `data/output/` → **0 commits**. The data files are clean across their entire history.
   - The sole repo-wide hit for those markers is **this issues.md file** (commit `3ac1a38`), where the iCloud fragment is quoted with a `<home>` placeholder as documentation — it never contained the real username, so it is not itself a leak.
   - `99c8bba` is **not present** in a fresh clone (fully orphaned / not served).
@@ -308,3 +308,11 @@ All resolved on the branch unless noted.
 ### [TEST-003] News tags were a closed taxonomy nobody enforced
 - **Severity**: low · **Root cause**: test gap (pre-existing) · **Status**: resolved (bac174b)
 - Two spring-2026 items shipped invented tags ("permits", "settlements") that no filter chip could match — CLAUDE.md called the 6-value set test-enforced, but only sites/principles/case-types actually were. `TestNewsTags` now enforces membership both directions, same idiom as `TestIssueTypes`.
+
+## 2026-11-02 — Docket evidence and responsive UAT
+
+- **Code bug, Fixed (a77dbe3):** continuous SVG pipe dashes painted while offscreen. Static direction marks and a compact narrow layout remove the idle animation. [Measured baseline and final UAT](docs/uat-2026-11-02.md).
+- **Data bug, Fixed (a77dbe3):** schematic suggested a wastewater-plant outfall meter isolated a data center's sewer flow. Labels now distinguish combined outflow and site metering, with an EPA source.
+- **Test bug, Fixed (a77dbe3):** the copy test required the phrase “could reach” even after the lead was rewritten. It now checks the new evidence qualification and retains prohibited legal-certainty assertions.
+- **Code/data bugs, Fixed in PR #37 review corrections:** preserve raw size inputs, example lineage and facet origins in downloads; export respondent prose as a display label; reject unannotated normalized docket metadata; classify two reported investments' legal strength as unknown. [Inline review and fixes](https://github.com/pranava0x0/datacenterwaterusage/pull/37).
+- **Code bug, Fixed in PR #37 second-review corrections:** a saved example retained its old size facet after numeric overrides; free-text numeric parsing also overrode smaller manual values. Both paths now use edited size fields while explicit checkbox choices retain priority. Browser UAT covers both directions and checkbox overrides. Repository and published dataset-card links now resolve on their respective surfaces.

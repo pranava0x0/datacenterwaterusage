@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-09-26",
+  "last_updated": "2026-11-02",
   "note": "Water commitments that no other dataset in this tracker holds: the U.S. federal layer that is not a bill or an executive order (EPA's Water Reuse Action Plan 2.0; the USGS national water availability assessment), international comparators with a real national instrument (the EU's data-centre rating scheme and Water Resilience Strategy; Singapore's Green Data Centre Roadmap), and local agreements with water terms (community benefits and development agreements, a consent judgment, and one rejected agreement). State commitments are not duplicated here: the Commitments view derives them from the principle tags on enacted state instruments in legislation.json, and company pledges from company_water_claims.json. Researched 2026-09-26 from the Data Center Community Benefits project's water-themed policies (a lead list) plus primary sources; every term was re-read in its source, and records resting on secondary reporting carry confidence 'medium' with a note saying why. Netherlands and Chile were checked and left out: neither has a national data-centre water instrument.",
   "commitments": [
     {
@@ -357,6 +357,147 @@
         }
       ],
       "confidence": "high"
+    },
+    {
+      "id": "quincy-wa-reuse-utility-2021",
+      "actor": "City of Quincy and Microsoft",
+      "jurisdiction": "Quincy, Washington",
+      "instrument": "Quincy Water Reuse Utility",
+      "date": "2021-06-30",
+      "date_kind": "Operation began",
+      "status": "in-force",
+      "binding": "binding",
+      "delivery_status": "operating",
+      "summary": "EPA reports that the city owns and operates the reuse utility while Microsoft finances its capital and operating costs under an agreement. Cooling blowdown is treated and returned for cooling.",
+      "terms": [
+        {
+          "type": "infrastructure-funding",
+          "text": "EPA describes $31 million in capital costs paid by Microsoft; future connecting companies must cover their share of construction, upgrades and operations."
+        },
+        {
+          "type": "reclaimed-source",
+          "text": "EPA estimates 138 million gallons per year in water savings. This is estimated savings, not measured site consumption."
+        }
+      ],
+      "sources": [
+        {
+          "title": "EPA: Quincy water reuse case study",
+          "url": "https://www.epa.gov/waterreuse/water-reuse-case-study-quincy-washington",
+          "locator": "Solution; Financial and Contractual Agreements; Benefits",
+          "retrieved_at": "2026-11-02"
+        }
+      ],
+      "note": "Operation date is not agreement execution date. Review questions: which residual-disposal permits govern the brine, and what treatment obligations would a new connection assume? Agreement text and subsequent amendments remain to be reviewed.",
+      "cross_ref_targets": [
+        "reclaimed-water-sourcing"
+      ],
+      "level": "local",
+      "dc_specific": true,
+      "confidence": "medium",
+      "verified_at": "2026-11-02"
+    },
+    {
+      "id": "loudoun-va-reclaimed-water-program",
+      "actor": "Loudoun Water",
+      "jurisdiction": "Loudoun County, Virginia",
+      "instrument": "Reclaimed water and wastewater connections",
+      "date": "2010",
+      "date_kind": "Reuse investment began",
+      "status": "reported",
+      "binding": "strategy",
+      "delivery_status": "operating",
+      "summary": "The county reports over 750 million gallons of reclaimed water delivered to roughly 40 customers in 2025. This is annual delivery across customers, not consumption by one data center.",
+      "terms": [
+        {
+          "type": "reclaimed-source",
+          "text": "The county dates the reclaimed-water investment to 2010."
+        },
+        {
+          "type": "infrastructure-funding",
+          "text": "Where nearby wastewater capacity was insufficient, data centers constructed connections to mains that could handle the flows."
+        }
+      ],
+      "sources": [
+        {
+          "title": "Loudoun County: Water considerations",
+          "url": "https://www.loudoun.gov/6402/Water-Considerations",
+          "locator": "Water Use and Conservation; Wastewater Management",
+          "retrieved_at": "2026-11-02"
+        }
+      ],
+      "note": "Individual facility names, project costs and executed developer obligations are not supplied. Review questions: what sewer capacity and pretreatment conditions would apply to a new connection?",
+      "cross_ref_targets": [
+        "reclaimed-water-sourcing"
+      ],
+      "level": "local",
+      "dc_specific": true,
+      "confidence": "medium",
+      "verified_at": "2026-11-02"
+    },
+    {
+      "id": "fort-wayne-in-east-transmission-main",
+      "actor": "Fort Wayne City Utilities and Google",
+      "jurisdiction": "Fort Wayne, Indiana",
+      "instrument": "East transmission main",
+      "date": null,
+      "date_kind": "Undertaking date not reported",
+      "status": "reported",
+      "binding": "unknown",
+      "delivery_status": "under-construction",
+      "summary": "City Utilities reports construction of approximately 22,000 feet of 30-inch water transmission main, fully funded by Google. Public ownership follows completion and formal acceptance.",
+      "terms": [
+        {
+          "type": "infrastructure-funding",
+          "text": "The utility says this replaces a planned utility-funded main and will provide public connections at four locations. Benefits remain prospective until completion."
+        }
+      ],
+      "sources": [
+        {
+          "title": "Fort Wayne City Utilities: East transmission main",
+          "url": "https://utilities.cityoffortwayne.org/projects/east-transmission-main/",
+          "locator": "30-Inch Water Transmission Main; Public Ownership and Oversight",
+          "retrieved_at": "2026-11-02"
+        }
+      ],
+      "note": "The undertaking date, enforceability of the funding contract and measured water demand are unverified. Diameter and length are asset dimensions, not hydraulic capacity. Review questions: who bears future expansion and maintenance costs, and what acceptance conditions apply?",
+      "level": "local",
+      "dc_specific": true,
+      "confidence": "medium",
+      "verified_at": "2026-11-02"
+    },
+    {
+      "id": "douglas-county-ga-google-reuse-2012",
+      "actor": "Google",
+      "jurisdiction": "Douglas County, Georgia",
+      "instrument": "Recycled industrial-water cooling",
+      "date": "2012",
+      "date_kind": "Reuse began",
+      "status": "reported",
+      "binding": "unknown",
+      "delivery_status": "operating",
+      "summary": "Google dates the start of recycled industrial-water cooling in Douglas County to 2012.",
+      "terms": [
+        {
+          "type": "reclaimed-source",
+          "text": "An operating reuse example reported by the operator; site-specific reuse volume and water-infrastructure spending are not established by the cited page."
+        }
+      ],
+      "sources": [
+        {
+          "title": "Google: Georgia data center milestones",
+          "url": "https://datacenters.google/locations/georgia/",
+          "locator": "Milestones of progress: 2012",
+          "retrieved_at": "2026-11-02"
+        }
+      ],
+      "note": "Operator-reported operation does not establish independently measured performance or contractual obligations. Review questions: what water-quality, backup-supply and discharge terms govern a similar reuse connection?",
+      "cross_ref_targets": [
+        "reclaimed-water-sourcing"
+      ],
+      "level": "local",
+      "dc_specific": true,
+      "confidence": "medium",
+      "verified_at": "2026-11-02"
     }
   ]
 }

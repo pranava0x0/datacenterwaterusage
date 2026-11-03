@@ -53,6 +53,7 @@ from refdata.loaders import (
     load_water_authorities,
 )
 from refdata.registry import build_registry
+from refdata.dockets import CHECKLIST_PATH, canonical_hash, load_checklists
 from refdata.taxonomies import (
     DC_ACTIVITY_LABELS,
     DC_ROLE_LABELS,
@@ -316,6 +317,7 @@ def _records() -> dict:
                 "cwa_applied": c.get("cwa_applied", ""),
                 "instrument": _short(c.get("cwa_instrument", ""), 120),
                 "takeaway": _short(c.get("takeaway", "")),
+                "sources": list(c.get("sources") or []),
                 "tab": ref.tab,
                 "anchor": ref.anchor,
             }
@@ -676,7 +678,7 @@ def build_payload() -> dict:
         }
         for rid, vec in sorted(docs_raw.items())
     }
-    return {
+    payload = {
         "facets": {
             fid: {
                 "dimension": f["dimension"],
@@ -700,6 +702,7 @@ def build_payload() -> dict:
         "instruments": _instruments(),
         "local_actions": _local_actions(),
         "examples": load_project_examples().get("examples", []),
+        "checklists": load_checklists(),
         "index": {
             "vocab": vocab,
             "df": [index["df"][t] for t in vocab],
@@ -723,6 +726,8 @@ def build_payload() -> dict:
             "elsewhere_factor": ELSEWHERE_FACTOR,
         },
     }
+    payload["payload_sha256"] = canonical_hash(payload)
+    return payload
 
 
 _PAYLOAD_CACHE: dict = {"sig": None, "json": ""}
@@ -731,7 +736,7 @@ _PAYLOAD_CACHE: dict = {"sig": None, "json": ""}
 def _signature() -> tuple:
     from refdata.registry import _signature as registry_signature
 
-    return (registry_signature(), file_signature(PROJECT_EXAMPLES_PATH), file_signature(REFERENCE_DIR / "local_actions.json"))
+    return (registry_signature(), file_signature(PROJECT_EXAMPLES_PATH), file_signature(REFERENCE_DIR / "local_actions.json"), file_signature(CHECKLIST_PATH))
 
 
 def payload_json() -> str:

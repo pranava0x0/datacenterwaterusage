@@ -65,8 +65,7 @@ the static site inlines that same file as `build_site.COMPONENT_CSS` and
 adds its page-level rules in `build_site.CSS`. Nothing here loads from a
 network — every asset is an inline `data:` URI or inline SVG.
 
-**Page background** — three layers, back to front, `background-attachment:
-fixed` on all three so scrolling doesn't shear them:
+**Page background** — three layers, back to front, with `background-attachment: scroll`:
 
 1. a soft radial white highlight top-center — light on a water surface;
 2. a top-to-bottom depth wash, `#f2f9fd → #e6f2fa → #d8ebf6`;
@@ -108,33 +107,9 @@ It is the one piece of art on either surface that is data-ink, because it
 explains the project's own architecture: **river/wellfield intake →
 treatment plant → data center hall (three slotted racks) → closed chiller
 loop → cooling tower → blowdown → sewer → wastewater plant → treated
-effluent back to the river.** Two annotations carry the two facts the
-whole tracker rests on:
+effluent back to the river.** The labels distinguish evaporation from the wastewater route. A receiving plant's discharge record covers its combined outfall; site meters are needed to attribute an individual customer's water use. The graphic links to [EPA's monitoring-data definitions](https://echo.epa.gov/help/loading-tool/monitoring-data-download-help).
 
-- *evaporation is the consumptive loss — this water leaves the basin, not
-  the sewer* (at the cooling-tower drift), and
-- *the sewer leg is metered on the receiving plant's NPDES permit — that
-  is where the data shows up* (under the sewer→WWTP leg), which is why
-  the pipeline's primary source is EPA ECHO DMR data from receiving WWTPs
-  rather than anything a data center files itself.
-
-Conventions: a 960×124 viewBox so one unit ≈ one pixel at content width;
-station labels 11 units (≈0.7rem) in `#4b5563` under each element — the
-river's sits above it, because the return leg runs underneath;
-annotations 10 units in `#08519c`. The pipe run is an **open** path
-(intake → outfall → back up into the river): the river closes the loop,
-not a pipe. Below ~900px of drawing width the labels stop being legible,
-so `.schematic` scrolls horizontally rather than shrinking the type
-(print drops that minimum so the diagram fits the sheet). Everything but
-the animation uses presentation attributes, so a surface that strips
-`<style>` still gets a correct diagram — it just stops moving.
-
-**The one sanctioned animation.** Pale dashes (`stroke-opacity` 0.35)
-drift along the pipe: `stroke-dasharray:6 22`, `stroke-dashoffset` to
-`-1680` over 24s linear, infinite. The offset is a whole number of dash
-periods so the loop has no visible jump. Off entirely under
-`@media (prefers-reduced-motion: reduce)`, which leaves the dashes as
-static direction ticks. Nothing else on either surface animates (§12).
+The desktop diagram uses a 960×124 viewBox. At widths up to 900px, a compact text route replaces the SVG so labels fit without horizontal swiping. Pipe direction marks stay static. No continuous decorative animation is permitted: the [November UAT](docs/uat-2026-11-02.md) measured repeated offscreen painting from the former flow animation.
 
 ---
 
@@ -251,8 +226,7 @@ JavaScript off gets one link per tab to a styled page of its own.
 **Back to top** — `#to-top`, a fixed outline chip bottom-right carrying a
 drawn caret and the word "Top" (no emoji, §12). It gets `.is-visible`
 past two viewport heights and fades with a *transition*, not an
-animation: the page is allowed exactly one `@keyframes` block and the
-header schematic has it. Honors `prefers-reduced-motion` for the scroll.
+animation. The page has no decorative `@keyframes` blocks. Scroll behavior honors `prefers-reduced-motion`.
 
 **Per-tab jump rows** — `.jumpnav` / `.jump-link`, the same pill idiom as
 the Part 1 statute jump-nav, on any tab with several stacked sections
@@ -469,11 +443,7 @@ easier to restyle without touching every call site.
 ## 12. Don'ts
 
 - No animated rain, falling droplets, wave loops, or parallax.
-- **One animation is sanctioned: the header schematic's flow line
-  (§3). Nothing else moves.** It is CSS `@keyframes`, so the page must
-  contain exactly one `@keyframes` block — a build test asserts that.
-  (The Explore graph's force layout settles once on load and honors
-  `prefers-reduced-motion`; a layout computation is not decoration.)
+- No continuous decorative animation. Build tests reject `@keyframes` in the static page. The Explore graph settles once after loading and honors `prefers-reduced-motion`.
 - No turquoise / aqua / teal. Stay in the blue family of the palette.
 - No backtick code marks (`` `status` ``) for status badges — use
   styled HTML spans with the tinted-pill pattern.
