@@ -446,7 +446,7 @@ COMMITMENT_TERM_LABELS = {
 COMMITMENT_LEVEL_LABELS = {
     "federal": "U.S. federal",
     "international": "Other countries",
-    "local": "Local agreements",
+    "local": "Local agreements and infrastructure",
 }
 
 # How hard the promise is. A reader comparing a Singapore target to a county
@@ -462,10 +462,12 @@ COMMITMENT_BINDING_LABELS = {
 COMMITMENT_STATUS_LABELS = {
     "in-force": "In force",
     "rejected": "Rejected",
+    "reported": "Reported undertaking",
 }
 COMMITMENT_STATUS_COLORS = {
     "in-force": COLORS["success"],
     "rejected": COLORS["danger"],
+    "reported": "#4b5563",
 }
 
 # How the state-commitments matrix reads legislation.json. Each column is a

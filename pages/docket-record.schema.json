@@ -1,0 +1,310 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pranava0x0.github.io/datacenterwaterusage/docket-record.schema.json",
+  "title": "Water docket research record, preview 0.1.0",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "record_kind": {
+      "const": "case"
+    },
+    "caption": {
+      "type": "string",
+      "minLength": 1
+    },
+    "docket_number": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "decision_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "decision_maker": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "procedural_posture": {
+      "enum": [
+        "not_normalized",
+        "vacated_and_remanded",
+        "reversed_and_remanded"
+      ]
+    },
+    "jurisdiction": {
+      "type": "object",
+      "properties": {
+        "country": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "binding_scope": {
+          "const": "not_assessed"
+        }
+      },
+      "required": [
+        "country",
+        "binding_scope"
+      ],
+      "additionalProperties": false
+    },
+    "checked_annotation": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "docket_number": {
+              "type": "string",
+              "minLength": 1
+            },
+            "decision_date": {
+              "type": "string",
+              "format": "date"
+            },
+            "decision_maker": {
+              "type": "string",
+              "minLength": 1
+            },
+            "procedural_posture": {
+              "enum": [
+                "vacated_and_remanded",
+                "reversed_and_remanded"
+              ]
+            },
+            "holding": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_url": {
+              "type": "string",
+              "format": "uri",
+              "pattern": "^https?://"
+            },
+            "locator": {
+              "type": "string",
+              "minLength": 1
+            },
+            "retrieved_at": {
+              "type": "string",
+              "format": "date"
+            },
+            "content_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "scope": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "docket_number",
+            "decision_date",
+            "decision_maker",
+            "procedural_posture",
+            "holding",
+            "source_url",
+            "locator",
+            "retrieved_at",
+            "content_sha256",
+            "scope"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "facts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "facet_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "basis": {
+            "const": "curator_tag"
+          },
+          "evidence_refs": {
+            "type": "array",
+            "maxItems": 0
+          }
+        },
+        "required": [
+          "facet_id",
+          "basis",
+          "evidence_refs"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "reading_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "outcome_tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "source_record": {
+      "type": "object",
+      "required": [
+        "case_id",
+        "respondent",
+        "sources",
+        "fact_pattern"
+      ],
+      "description": "Unmodified legacy record; its prose is not certified by export."
+    },
+    "source_refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https?://"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "citation_scope": {
+            "const": "record"
+          },
+          "locator": {
+            "type": "null"
+          },
+          "retrieved_at": {
+            "type": "null"
+          },
+          "content_sha256": {
+            "type": "null"
+          },
+          "verification": {
+            "const": "not_reverified_for_export"
+          }
+        },
+        "required": [
+          "source_id",
+          "url",
+          "title",
+          "citation_scope",
+          "locator",
+          "retrieved_at",
+          "content_sha256",
+          "verification"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "applicability": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "const": "not_assessed"
+        },
+        "checklist_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "missing_evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "status",
+        "checklist_ids",
+        "missing_evidence"
+      ],
+      "additionalProperties": false
+    },
+    "lineage": {
+      "type": "object",
+      "properties": {
+        "dataset": {
+          "const": "cwa_investigations.json"
+        },
+        "record_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "record_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "dataset_updated_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        }
+      },
+      "required": [
+        "dataset",
+        "record_id",
+        "record_sha256",
+        "dataset_updated_at"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "record_kind",
+    "caption",
+    "docket_number",
+    "decision_date",
+    "decision_maker",
+    "procedural_posture",
+    "jurisdiction",
+    "checked_annotation",
+    "facts",
+    "reading_ids",
+    "outcome_tags",
+    "source_record",
+    "source_refs",
+    "applicability",
+    "lineage"
+  ],
+  "additionalProperties": false
+}

@@ -39,7 +39,7 @@ jobs:
           # new pins on 3.12 and diffing — byte-identical, 373 render tests
           # green). When dependabot bumps requirements.txt, bump these too.
           python -m pip install --upgrade pip
-          pip install streamlit==1.61.1 plotly==6.9.0 pandas==3.0.5 markdown==3.10.3
+          pip install streamlit==1.62.0 plotly==6.9.0 pandas==3.0.5 markdown==3.10.3 numpy==2.5.3 jsonschema==4.25.1
 
       - name: Build static site
         run: |

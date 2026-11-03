@@ -34,7 +34,10 @@ class TestCommitmentsDataset:
             missing = required - set(rec)
             assert not missing, (rec.get("id"), missing)
             ids.append(rec["id"])
-            assert re.fullmatch(r"\d{4}-\d{2}(-\d{2})?", rec["date"]), rec["id"]
+            if rec["date"] is None:
+                assert rec.get("date_kind") and rec.get("note"), rec["id"]
+            else:
+                assert re.fullmatch(r"\d{4}(-\d{2}(-\d{2})?)?", rec["date"]), rec["id"]
             assert rec["terms"], rec["id"]
             assert all(s["url"].startswith("http") for s in rec["sources"]), rec["id"]
             assert rec["confidence"] in {"high", "medium"}, rec["id"]
@@ -86,6 +89,18 @@ class TestCommitmentsDataset:
     def test_the_rejected_agreement_is_not_counted_as_a_commitment(self):
         frederick = next(r for r in _records() if r["id"] == "frederick-county-md-quantum-cba-2026")
         assert frederick["status"] == "rejected"
+
+    def test_investment_dates_and_measurement_scope(self):
+        rows = {r["id"]: r for r in _records()}
+        loudoun = rows["loudoun-va-reclaimed-water-program"]
+        assert loudoun["date"] == "2010"
+        assert "across customers" in loudoun["summary"]
+        fort_wayne = rows["fort-wayne-in-east-transmission-main"]
+        assert fort_wayne["date"] is None
+        assert fort_wayne["status"] == "reported"
+        assert fort_wayne["delivery_status"] == "under-construction"
+        assert "not reported" in dashboard._commitment_date_label(fort_wayne)
+        assert "2010" in dashboard._commitment_date_label(loudoun)
 
 
 class TestStateMatrix:

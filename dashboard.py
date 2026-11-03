@@ -367,11 +367,8 @@ def render_sidebar(df: pd.DataFrame) -> pd.DataFrame:
 
 # --- Header water-loop schematic (shared with build_site.py) ---
 
-# One diagram, two surfaces. It answers the question every visitor asks before
-# the first card ("how does a data center use water, and where is it measured?")
-# and, in the same picture, explains why this project's primary source is EPA
-# ECHO DMR data from *receiving* wastewater plants rather than anything filed
-# by the operator: the sewer leg is the only leg with a permit on it.
+# Shared schematic of one cooling-water route. Receiving-plant DMR data
+# describes combined effluent; allocating it to a site needs separate meters.
 #
 # Drawing notes:
 #  - Coordinates are a 960x124 box, so 1 unit ~= 1 px at the site's content
@@ -386,16 +383,7 @@ _WL_FONT = (
     "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"
 )
 
-# The one sanctioned animation on either surface (DESIGN.md §3/§12): pale
-# dashes drifting along the pipe. The offset is a whole number of dash periods
-# (28 = 6 + 22) so the loop has no visible jump, and 24 s over ~1,700 units is
-# roughly a slow walk — present in peripheral vision, never competing with the
-# data. Reduced-motion parks it as static direction ticks.
-_WL_ANIM_CSS = (
-    ".wl-flow{stroke-dasharray:6 22;animation:wl-drift 24s linear infinite}"
-    "@keyframes wl-drift{to{stroke-dashoffset:-1680}}"
-    "@media (prefers-reduced-motion:reduce){.wl-flow{animation:none}}"
-)
+_WL_ANIM_CSS = ".wl-flow{stroke-dasharray:6 22}"
 
 
 def _build_water_loop_svg() -> str:
@@ -405,13 +393,18 @@ def _build_water_loop_svg() -> str:
     string it returns, so the deployed page and the local app cannot drift.
     """
     return f"""<div class="schematic">
-<svg viewBox="0 0 960 124" role="img" aria-labelledby="wl-title wl-desc"
+<div class="water-route" aria-label="Example cooling-water route">
+  <span>Source &amp; treatment</span><span aria-hidden="true">&#8594;</span><span>Data center cooling</span>
+  <span class="water-route-return">Blowdown &#8594; sewer &#8594; wastewater treatment</span>
+  <small>Evaporation consumes water. WWTP flow combines connected users.</small>
+</div>
+<svg class="water-route-full" viewBox="0 0 960 124" role="img" aria-labelledby="wl-title wl-desc"
      xmlns="http://www.w3.org/2000/svg" font-family="{_WL_FONT}">
-<title id="wl-title">How water moves through a data center</title>
+<title id="wl-title">Example cooling-water route through a data center</title>
 <desc id="wl-desc">River or wellfield intake, drinking-water treatment, the data
-center hall, a closed chiller loop, a cooling tower where evaporation leaves the
-basin, then blowdown to the sewer, the wastewater plant, and treated effluent
-back to the river.</desc>
+center hall, a closed chiller loop, evaporation at a cooling tower, then blowdown
+to the sewer and wastewater plant. Outfall flow combines connected users;
+separate meters are needed to measure site consumption.</desc>
 <style>{_WL_ANIM_CSS}</style>
 <g fill="none" stroke-linecap="round" stroke-linejoin="round">
   <!-- Sewer main drawn under the pipe run so the flow dashes ride over it:
@@ -478,12 +471,13 @@ back to the river.</desc>
   <text x="230" y="113" font-size="10">treated effluent returns to the river</text>
 </g>
 <g font-size="10" fill="#08519c" font-weight="600">
-  <text x="634" y="16">evaporation is the consumptive loss &#8212;</text>
-  <text x="634" y="28">this water leaves the basin, not the sewer</text>
+  <text x="634" y="16">evaporation consumes water</text>
+  <text x="634" y="28">rather than returning it through the sewer</text>
   <circle cx="422" cy="110" r="3" fill="#08519c"/>
-  <text x="432" y="113">the sewer leg is metered on the receiving plant&#8217;s NPDES permit &#8212; that is where the data shows up</text>
+  <text x="432" y="113">WWTP outfall flow combines users; site consumption needs separate meters</text>
 </g>
 </svg>
+<p class="schematic-source"><a href="https://echo.epa.gov/help/loading-tool/monitoring-data-download-help" target="_blank" rel="noopener">EPA DMR measurement scope</a></p>
 </div>"""
 
 
@@ -5145,6 +5139,13 @@ def _company_pledges(payload: dict | None = None) -> list[dict]:
     return sorted(rows, key=lambda r: (-len(r["pledges"]), r["name"]))
 
 
+def _commitment_date_label(rec: dict) -> str:
+    value = rec.get("date")
+    if value is None:
+        return rec.get("date_kind") or "Date not reported"
+    return f'{rec["date_kind"]}: {value}' if rec.get("date_kind") else value
+
+
 def _commitment_card_html(rec: dict, reg: dict) -> str:
     esc = html.escape
     status = rec.get("status", "")
@@ -5176,7 +5177,7 @@ def _commitment_card_html(rec: dict, reg: dict) -> str:
         f'<div class="commit-card" id="commitment-{esc(rec.get("id", ""))}">'
         f'<div class="commit-head"><span class="commit-actor">{esc(rec.get("jurisdiction", ""))}</span> '
         f"{pill} {binding}</div>"
-        f'<div class="commit-instrument">{esc(rec.get("instrument", ""))} · {esc(rec.get("date", ""))}</div>'
+        f'<div class="commit-instrument">{esc(rec.get("instrument", ""))} · {esc(_commitment_date_label(rec))}</div>'
         f'<p class="commit-summary">{esc(rec.get("summary", ""))}</p>'
         f'<ul class="commit-terms">{terms}</ul>{related}{note}'
         f'<div class="commit-sources">Sources: {sources}</div></div>'
@@ -5200,7 +5201,7 @@ def _build_commitments_html() -> str:
     international = [c for c in commitments if c.get("level") == "international"]
     n_pledges = sum(len(r["pledges"]) for r in pledges)
     n_assessed = sum(1 for r in pledges for c in r["pledges"] if c.get("delivered"))
-    in_force_local = sum(1 for c in local if c.get("status") == "in-force")
+    in_force_local = sum(1 for c in local if c.get("status") == "in-force" and c.get("binding") == "binding")
 
     def bill_link(bill_id: str) -> str:
         ref = reg.get(bill_id)
@@ -5224,7 +5225,7 @@ def _build_commitments_html() -> str:
         '<nav class="paths-jumpnav" aria-label="Commitment levels">'
         '<a class="paths-jump" href="#commitments-national">National strategy</a>'
         '<a class="paths-jump" href="#commitments-states">States</a>'
-        '<a class="paths-jump" href="#commitments-local">Local agreements</a>'
+        '<a class="paths-jump" href="#commitments-local">Local infrastructure</a>'
         '<a class="paths-jump" href="#commitments-companies">Companies</a>'
         "</nav>"
     )
@@ -5296,10 +5297,9 @@ def _build_commitments_html() -> str:
     local_sorted = sorted(local, key=lambda c: (c.get("status") != "in-force", c.get("jurisdiction", "")))
     local_html = (
         '<section id="commitments-local">'
-        '<h3 class="solution-cat-header">Local agreements</h3>'
-        "<p>The most specific water commitments in this record are in deals between a locality and a "
-        "developer: gallon-a-day caps, cooling-technology bans, restoration money. They bind only the one "
-        "project, which is exactly why they can be precise.</p>"
+        '<h3 class="solution-cat-header">Local agreements and infrastructure</h3>'
+        "<p>Project agreements can set water limits and allocate infrastructure costs. "
+        "Reported reuse programs and construction projects appear alongside them with their evidence limits.</p>"
         f'<div class="commit-grid">{"".join(_commitment_card_html(c, reg) for c in local_sorted)}</div>'
         "</section>"
     )
@@ -6735,10 +6735,9 @@ def render_explore():
 # --- Check a project (precedent engine surface) ---
 
 PROJECT_CHECK_LEAD = (
-    "Describe a proposed data center, or pick a real 2026 proposal. The tracker "
-    "turns it into a fact pattern and shows which laws could reach it, the closest "
-    "cases and community fights, how those cases ended, and the rules in its state. "
-    "It maps exposure from the record; it does not predict a result."
+    "Find relevant water laws and past cases from a project description. "
+    "Matches identify shared facts; applicability depends on project evidence, "
+    "jurisdiction and current law."
 )
 
 PROJECT_CHECK_EMPTY_STATE = (
@@ -6854,6 +6853,7 @@ def _project_result_html(result: dict, state_name: str | None = None) -> str:
             f'<span class="pcheck-meta"> · {esc(r.get("section", ""))}</span>{flags}'
             f'<div class="pcheck-why">Because: {"".join(_facet_chip_html(f) for f in r.get("shared", []))}</div>'
             + (f'<div class="pcheck-trigger">Could reach a campus when {esc(r["trigger"])}.</div>' if r.get("trigger") else "")
+            + _project_questions_html(r["id"])
             + "</li>"
         )
     # With no facts there is nothing to match; only the state's rules follow.
@@ -6968,6 +6968,27 @@ def _project_result_html(result: dict, state_name: str | None = None) -> str:
     return f'<div class="pcheck-result">{"".join(parts)}</div>'
 
 
+def _project_questions_html(reading_id: str) -> str:
+    """Source-linked review questions shared by pre-rendered examples."""
+    from refdata.dockets import load_checklists
+
+    checklist = next((c for c in load_checklists()["checklists"] if c["reading_id"] == reading_id), None)
+    if checklist is None:
+        return ""
+    esc = html.escape
+    questions = "".join(
+        f'<p>{esc(q["question"])}</p><p class="pcheck-muted">Unknown. Needed: {esc(q["evidence_needed"])}</p>'
+        for q in checklist["questions"]
+    )
+    sources = " ".join(
+        f'<a href="{esc(s["url"], quote=True)}" target="_blank" rel="noopener">{esc(s["title"])} · {esc(s["locator"])}</a>'
+        for s in checklist["sources"]
+    )
+    return ('<details class="pcheck-evidence"><summary>Evidence to check</summary>'
+            f'<p class="pcheck-muted">{esc(checklist["scope"])}</p>{questions}{sources}'
+            f'<p class="pcheck-muted">{esc(checklist["limitations"])}</p></details>')
+
+
 def _project_instrument_li(i: dict) -> str:
     """One instrument row in the rules section: status pill, link, title, and
     why it is listed — the facets in common, or that it names no fact pattern."""
@@ -7023,6 +7044,7 @@ def _build_project_check_html(payload_src: str | None = None) -> str:
     payload = "" if payload_src else precedent_payload_json()
     src_attr = f' data-src="{esc(payload_src)}"' if payload_src else ""
     examples = load_project_examples().get("examples", [])
+    download_base = "" if payload_src else "https://pranava0x0.github.io/datacenterwaterusage/"
 
     state_options = "".join(
         f'<option value="{code}">{esc(name)}</option>' for code, name in sorted(US_STATE_NAMES.items(), key=lambda kv: kv[1])
@@ -7076,12 +7098,22 @@ def _build_project_check_html(payload_src: str | None = None) -> str:
     <div class="pcheck-actions">
       <button type="button" class="pcheck-btn pcheck-btn-primary" id="pcheck-run">Check this project</button>
       <button type="button" class="pcheck-btn" id="pcheck-clear">Clear</button>
+      <button type="button" class="pcheck-btn" id="pcheck-export" disabled>Download assessment</button>
     </div>
   </div>
   <div class="pcheck-output" id="pcheck-output" aria-live="polite">
     <div class="pcheck-empty" id="pcheck-status">{esc(PROJECT_CHECK_EMPTY_STATE)}</div>
   </div>
 </div>
+<section class="pcheck-dataset" id="docket-dataset">
+  <h3 class="solution-cat-header">Docket dataset preview</h3>
+  <p class="pcheck-muted">Versioned case records preserve source links and unresolved evidence.
+  The assessment download includes your description and unanswered review questions.</p>
+  <p><a href="{download_base}docket-records.jsonl">Case records (JSONL)</a> ·
+  <a href="{download_base}docket-record.schema.json">Schema</a> ·
+  <a href="{download_base}docket-dataset.md">Dataset card</a> ·
+  <a href="{download_base}docket-manifest.json">Coverage and hashes</a></p>
+</section>
 <section class="pcheck-worked" id="pcheck-worked">
   <h3 class="solution-cat-header">Worked examples — {len(examples)} real 2026 proposals</h3>
   <p class="pcheck-muted">Each was written from public coverage and run through the same engine. The ticked
@@ -7124,6 +7156,11 @@ def _project_check_css() -> str:
 .pcheck-actions{display:flex;gap:.5rem;flex-wrap:wrap;margin:.6rem 0}
 .pcheck-btn{appearance:none;font:inherit;font-size:.82rem;font-weight:600;color:#08519c;background:#fff;border:1px solid #bdd7e7;border-radius:999px;padding:.35rem .75rem;cursor:pointer;min-height:34px}
 .pcheck-btn:hover{background:#eff3ff}
+.pcheck-btn:disabled{color:#6b7280;cursor:default;background:#f9fafb}
+.pcheck-evidence{margin-top:.5rem;border-left:2px solid #bdd7e7;padding-left:.6rem;font-size:.84rem}
+.pcheck-evidence summary{cursor:pointer;color:#08519c}
+.pcheck-evidence p{margin:.4rem 0}
+.pcheck-dataset a{color:#08519c}
 .pcheck-btn-primary{background:#08519c;color:#fff;border-color:#08519c}
 .pcheck-btn-primary:hover{background:#06407d}
 .pcheck-empty{border:1px solid #cbd5e1;border-radius:.5rem;background:#fff;padding:.8rem .95rem;font-size:.88rem;color:#333}
@@ -7173,6 +7210,8 @@ def _project_check_css() -> str:
   .pcheck-examples{gap:.3rem}
 }
 @media print{.pcheck-input{display:none}}
+@media (pointer:coarse){.pcheck-btn,.pcheck-chip,.pcheck-facets>summary,.pcheck-evidence>summary{min-height:44px}}
+@media (max-width:760px){.pcheck textarea,.pcheck select,.pcheck input[type=number]{font-size:16px}}
 """
 
 
@@ -7566,7 +7605,26 @@ def _project_check_js() -> str:
     };
   }
 
-  var engine = {parseProject: parseProject, matchProject: matchProject, stateCodeFor: stateCodeFor};
+  function projectAssessment(result, description, D){
+    var selected = result.readings.map(function(r){ return r.id; });
+    var checks = ((D.checklists || {}).checklists || []).filter(function(c){
+      return selected.indexOf(c.reading_id) !== -1;
+    }).map(function(c){
+      return {checklist_id:c.checklist_id, reading_id:c.reading_id, status:'not_assessed',
+        scope:c.scope, limitations:c.limitations, sources:c.sources,
+        questions:c.questions.map(function(q){
+          return Object.assign({}, q, {answer:'unknown', project_evidence:[]});
+        })};
+    });
+    return JSON.parse(JSON.stringify({schema_version:'0.1.0', assessment_type:'retrieval_worksheet',
+      legal_applicability:'not_assessed',
+      project:{description:description, state:result.state, facets:result.facets, evidence_status:'user_supplied'},
+      retrieval:result, checklists:checks,
+      unreviewed_reading_ids:selected.filter(function(id){ return !checks.some(function(c){ return c.reading_id === id; }); }),
+      score_meaning:'Similarity for retrieval; not a probability or legal determination.'}));
+  }
+  var engine = {parseProject: parseProject, matchProject: matchProject, stateCodeFor: stateCodeFor,
+    projectAssessment: projectAssessment};
 
   // ===== Page wiring — skipped under node and wherever the fragment is absent =====
   if (typeof document === 'undefined') return engine;
@@ -7592,6 +7650,7 @@ def _project_check_js() -> str:
   var status = root.querySelector('#pcheck-status');
   var runBtn = root.querySelector('#pcheck-run');
   var clearBtn = root.querySelector('#pcheck-clear');
+  var exportBtn = root.querySelector('#pcheck-export');
   var boxes = Array.prototype.slice.call(root.querySelectorAll('.pcheck-facet-box'));
   var exampleBtns = Array.prototype.slice.call(root.querySelectorAll('.pcheck-example'));
   var idle = status ? status.textContent : '';
@@ -7614,6 +7673,11 @@ def _project_check_js() -> str:
 
   // Everything below needs the payload: inline on Streamlit, fetched on the site.
   function boot(D){
+    var latestAssessment = null;
+    function invalidateAssessment(){
+      latestAssessment = null;
+      if (exportBtn) exportBtn.disabled = true;
+    }
     var touched = {};        // boxes the reader ticked or unticked by hand
     var autoState = null;    // the state the parser last put in the select
     var autoMw = null, autoMgd = null;
@@ -7712,6 +7776,23 @@ def _project_check_js() -> str:
           }
           li.appendChild(chipsLine('pcheck-why', 'Because: ', r.shared));
           if (r.trigger) li.appendChild(el('div', 'pcheck-trigger', 'Could reach a campus when ' + r.trigger + '.'));
+          var checklist = ((D.checklists || {}).checklists || []).find(function(c){ return c.reading_id === r.id; });
+          if (checklist){
+            var details = el('details', 'pcheck-evidence');
+            details.appendChild(el('summary', null, 'Evidence to check'));
+            details.appendChild(muted(checklist.scope));
+            checklist.questions.forEach(function(q){
+              details.appendChild(el('p', null, q.question));
+              details.appendChild(muted('Unknown. Needed: ' + q.evidence_needed));
+            });
+            checklist.sources.forEach(function(s){
+              var a = el('a', null, s.title + ' · ' + s.locator);
+              a.href = s.url; a.target = '_blank'; a.rel = 'noopener';
+              details.appendChild(a);
+            });
+            details.appendChild(muted(checklist.limitations));
+            li.appendChild(details);
+          }
           ol.appendChild(li);
         });
         sec.appendChild(ol);
@@ -7869,8 +7950,10 @@ def _project_check_js() -> str:
 
     function run(){
       var facets = ticked();
-      if (!facets.length && !stateSel.value){ showStatus(idle); return; }
+      if (!facets.length && !stateSel.value){ invalidateAssessment(); showStatus(idle); return; }
       var result = matchProject(facets, stateSel.value || null, textBox.value, D);
+      latestAssessment = projectAssessment(result, textBox.value, D);
+      if (exportBtn) exportBtn.disabled = false;
       output.replaceChildren(renderResult(result));
     }
 
@@ -7936,6 +8019,7 @@ def _project_check_js() -> str:
     }
 
     function clearAll(){
+      invalidateAssessment();
       textBox.value = ''; stateSel.value = ''; mwBox.value = ''; mgdBox.value = '';
       boxes.forEach(function(b){ b.checked = false; });
       touched = {}; autoState = autoMw = autoMgd = null; autoRan = false; baseline = null;
@@ -7969,6 +8053,7 @@ def _project_check_js() -> str:
 
     var debounce;
     textBox.addEventListener('input', function(){
+      invalidateAssessment();
       clearTimeout(debounce);
       debounce = setTimeout(parse, 250);
     });
@@ -7981,11 +8066,18 @@ def _project_check_js() -> str:
       }
     });
     boxes.forEach(function(b){
-      b.addEventListener('change', function(){ touched[b.value] = 1; syncCount(); });
+      b.addEventListener('change', function(){ invalidateAssessment(); touched[b.value] = 1; syncCount(); });
     });
-    stateSel.addEventListener('change', function(){ autoState = null; });
-    mwBox.addEventListener('input', function(){ autoMw = null; });
-    mgdBox.addEventListener('input', function(){ autoMgd = null; });
+    stateSel.addEventListener('change', function(){ invalidateAssessment(); autoState = null; });
+    mwBox.addEventListener('input', function(){ invalidateAssessment(); autoMw = null; });
+    mgdBox.addEventListener('input', function(){ invalidateAssessment(); autoMgd = null; });
+    if (exportBtn) exportBtn.addEventListener('click', function(){
+      if (!latestAssessment) return;
+      var url = URL.createObjectURL(new Blob([JSON.stringify(latestAssessment, null, 2)], {type:'application/json'}));
+      var a = el('a'); a.href = url; a.download = 'water-project-assessment.json';
+      a.click();
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    });
     runBtn.addEventListener('click', function(){ clearTimeout(debounce); parse(); run(); });
     clearBtn.addEventListener('click', clearAll);
     exampleBtns.forEach(function(btn){

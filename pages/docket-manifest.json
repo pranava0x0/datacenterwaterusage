@@ -1,0 +1,28 @@
+{
+  "schema_version": "0.1.0",
+  "release_status": "research_preview",
+  "record_count": 123,
+  "checklist_count": 3,
+  "normalized_docket_count": 2,
+  "claim_verified_record_count": 0,
+  "source_rights": "No blanket license for linked third-party source material. Rights review pending.",
+  "splits": null,
+  "files": {
+    "docket-records.jsonl": {
+      "sha256": "b60936f68aa57aa626165190faf77e515d4856993d782ef76af361502977a452",
+      "bytes": 639248
+    },
+    "docket-record.schema.json": {
+      "sha256": "670925330854e7b1343f753522ec9b87f66e4605a382a6680067ed547e9f3737",
+      "bytes": 6773
+    },
+    "applicability-checklists.json": {
+      "sha256": "aea1de0b59ad560df53c9469c126c84fe106fd13eeebd45dd3a6918f8c46eded",
+      "bytes": 4415
+    },
+    "docket-dataset.md": {
+      "sha256": "8256a52513c23a7a96924792b45e8c22142273d3d09e433b268957c2364e7b42",
+      "bytes": 4856
+    }
+  }
+}
