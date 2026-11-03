@@ -137,9 +137,12 @@ def test_pretreatment_worksheet_needs_an_industrial_sewer_route():
         return {c["reading_id"]: c for c in dockets.project_assessment(matches, "")["checklists"]}
 
     for description in ("Cooling tower blowdown to the river", "A storm sewer carries runoff",
-                        "An on-site wastewater treatment plant reuses the blowdown"):
+                        "An on-site wastewater treatment plant reuses the blowdown",
+                        "The campus buys reclaimed municipal wastewater for cooling"):
         assert "out-sewer" not in precedent.parse_project(description)["facets"]
-    assert "out-sewer" in precedent.parse_project("Tower blowdown goes to the city sewer")["facets"]
+    for description in ("Tower blowdown goes to the city sewer", "The campus discharges to sewer",
+                        "Cooling water is piped to a sewer"):
+        assert "out-sewer" in precedent.parse_project(description)["facets"]
     facts = ["cool-evaporative", "chem-treatment"]
     assert "cwa-307-pretreatment" not in worksheets(facts)
     checklist = worksheets(facts + ["out-sewer"])["cwa-307-pretreatment"]
