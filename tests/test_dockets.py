@@ -138,10 +138,12 @@ def test_pretreatment_worksheet_needs_an_industrial_sewer_route():
 
     for description in ("Cooling tower blowdown to the river", "A storm sewer carries runoff",
                         "An on-site wastewater treatment plant reuses the blowdown",
-                        "The campus buys reclaimed municipal wastewater for cooling"):
+                        "The campus buys reclaimed municipal wastewater for cooling",
+                        "Cooling blowdown goes to an on-site wastewater treatment plant"):
         assert "out-sewer" not in precedent.parse_project(description)["facets"]
     for description in ("Tower blowdown goes to the city sewer", "The campus discharges to sewer",
-                        "Cooling water is piped to a sewer"):
+                        "Cooling water is piped to a sewer", "Cooling blowdown goes to the local sewer",
+                        "Cooling tower blowdown goes to the wastewater treatment plant"):
         assert "out-sewer" in precedent.parse_project(description)["facets"]
     facts = ["cool-evaporative", "chem-treatment"]
     assert "cwa-307-pretreatment" not in worksheets(facts)

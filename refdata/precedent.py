@@ -241,6 +241,16 @@ def live_tokens(text: str) -> set[str]:
 
 
 
+# For the sewer facet only, shorten explicit destinations so the existing
+# direction + destination bigrams still work. Leave on-site plants and storm
+# sewers untouched. The browser receives this same pattern in its payload.
+SEWER_DESTINATION_RE = re.compile(
+    r"\b(?:to|into)\s+(?:(?:a|the)\s+)?(?:"
+    r"(?:(?:local|municipal|public|city|county|regional)\s+)?(?:wastewater|sewage)\s+treatment\s+plant"
+    r"|(?:local|municipal|public|city|county|regional)\s+sewer)\b", re.IGNORECASE
+)
+
+
 def parse_project(text: str) -> dict:
     """Read a pasted description into facets, a state and a size.
 
@@ -250,11 +260,14 @@ def parse_project(text: str) -> dict:
     """
     tokens = set(tokenize(text))
     live = live_tokens(text)
+    routed = SEWER_DESTINATION_RE.sub("to sewer", text or "")
+    sewer_live = live | live_tokens(routed) if routed != (text or "") else live
     matched: dict[str, list[str]] = {}
     for facet_id, facet in FACT_FACETS.items():
         if any(b in tokens for b in facet.get("blockers", [])):
             continue
-        hits = [t for t in facet["triggers"] if t in live]
+        candidates = sewer_live if facet_id == "out-sewer" else live
+        hits = [t for t in facet["triggers"] if t in candidates]
         if hits:
             matched[facet_id] = hits
 
@@ -713,6 +726,7 @@ def build_payload() -> dict:
         "stopwords": sorted(STOPWORDS),
         "min_token_len": MIN_TOKEN_LEN,
         "constants": {
+            "sewer_destination_pattern": SEWER_DESTINATION_RE.pattern,
             "hyperscale_mw": HYPERSCALE_MW,
             "hyperscale_mgd": HYPERSCALE_MGD,
             "lexical_weight": LEXICAL_WEIGHT,

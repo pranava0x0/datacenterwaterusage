@@ -7386,12 +7386,16 @@ def _project_check_js() -> str:
     var tokens = {}, toks = tokenize(text, D), i;
     for (i = 0; i < toks.length; i++) tokens[toks[i]] = 1;
     var live = liveTokens(text, D);
+    var raw = String(text || '');
+    var routed = raw.replace(new RegExp(D.constants.sewer_destination_pattern, 'gi'), 'to sewer');
+    var sewerLive = routed === raw ? live : Object.assign({}, live, liveTokens(routed, D));
     var matched = {};
     P.facetOrder.forEach(function(fid){
       var f = D.facets[fid];
       var blockers = f.blockers || [];
       for (var b = 0; b < blockers.length; b++) if (tokens[blockers[b]]) return;
-      var hits = f.triggers.filter(function(t){ return live[t] === 1; });
+      var candidates = fid === 'out-sewer' ? sewerLive : live;
+      var hits = f.triggers.filter(function(t){ return candidates[t] === 1; });
       if (hits.length) matched[fid] = hits;
     });
 
