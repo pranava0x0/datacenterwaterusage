@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-09-26",
+  "last_updated": "2026-11-03",
   "note": "Registry of federal water-authority 'readings' — specific statutory hooks under the CWA, SDWA, TSCA, RCRA, and Rivers & Harbors Act, each mapped to (a) what it historically covered, (b) how it could reach a data-center fact pattern, and (c) the historical cases in cwa_investigations.json that show the hook in use. Readings deliberately overlap: one fact pattern (e.g., PFAS in cooling blowdown reaching a drinking-water well) can trigger several readings at once. reading_ids are referenced from cwa_investigations.json (authorities) and dc_water_conflicts.json (applicable_readings). August 24, 2026: eight supply-side families — NEPA, CERCLA, the Water Supply Act (with the 33 U.S.C. §408 alteration permission folded into its reading), the Wild and Scenic Rivers Act, the Federal Power Act, Reclamation law, EPCRA, and the ratified interstate basin compacts (Great Lakes, Delaware, Susquehanna). These reach a data center through storage, withdrawal and licensing rather than through a discharge permit. WRDA, the Oil Pollution Act and the Fish and Wildlife Coordination Act were considered and dropped — §408 has no citable standalone case law and rides inside the WSA reading, OPA's Facility Response Plan duty is codified at CWA §311(j)(5) and already sits under cwa-311-spills, and FWCA generates no litigation independent of the NEPA or §404 action it rides on.",
   "statutes": {
     "CWA": {
@@ -305,12 +305,12 @@
       "section": "§307(b) / 33 U.S.C. §1317 (40 C.F.R. Part 403)",
       "name": "Pretreatment — industrial users of sewers",
       "agency": "Receiving POTW (locally enforced), EPA/state oversight",
-      "what_it_covers": "Industrial users discharging to a municipal sewer must meet national prohibitions (no pass-through or interference) and locally issued industrial-user permits with local limits. The POTW enforces; EPA enforces against POTWs whose pretreatment programs fail.",
-      "dc_applicability": "The regime that most directly governs operating data centers: cooling-tower blowdown (concentrated dissolved solids, biocides, corrosion inhibitors) goes to the sewer under an industrial-user permit. High-volume DC loading can cause POTW pass-through — putting the plant in violation of its own NPDES permit, as at Port of Morrow OR. IU permits and local limits are FOIA-able.",
+      "what_it_covers": "Federal prohibitions protect publicly owned treatment works from industrial discharges that pass through or interfere with treatment. Local limits and control mechanisms depend on the receiving system and the industrial user.",
+      "dc_applicability": "If a campus sends cooling-tower blowdown to a public treatment plant, check its wastewater composition, the plant’s sewer ordinance and the authority’s industrial-user determination. A cooling tower or a utility water bill alone does not establish the discharge route.",
       "dc_activities": [
         "discharge"
       ],
-      "dc_trigger": "cooling-tower blowdown goes to the municipal sewer under an industrial-user permit, which is the normal case for an operating campus",
+      "dc_trigger": "the campus sends industrial wastewater to a publicly owned treatment works",
       "example_case_ids": [
         "Swift-Beef-Grand-Island-2011",
         "Yuengling-Pottsville-2016",
@@ -322,6 +322,9 @@
         "cool-evaporative",
         "out-sewer",
         "chem-treatment"
+      ],
+      "fact_requires": [
+        "out-sewer"
       ]
     },
     {

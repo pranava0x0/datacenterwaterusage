@@ -19,7 +19,7 @@ Last reviewed: 2026-05-28 (External Tracker Survey added — see section below t
 ### ✅ National Data Center Water Legislation Tracker (May 2026)
 **Status**: Built — `data/reference/legislation.json` (now **38** state + federal + local/regulatory entries) + `render_legislation_tracker()` dashboard panel (sorted by status, flags verified vs. unconfirmed entries). 10 tests in test_dashboard.py. VA HB 496/SB 553 and MN HF 16 confirmed enacted; remaining entries flagged "Unconfirmed" pending primary-source verification.
 **June 2026 expansion (31 → 38)**: added the four 2026 state laws with newly *enacted* data-center water provisions — Idaho H 895 (closed-loop/non-consumptive cooling mandate, eff. July 1 2026), South Dakota SB 135 ("Data Center Bill of Rights," ≥10 MW cost-causation + water-supply compatibility), Utah HB 76 (Water Transparency Amendments; projected + actual water disclosure, 10,000-sq-ft threshold), West Virginia HB 4983 (Dept.-of-Commerce certification rule where binding water-protection amendments were rejected) — plus Maryland HB 270/SB 116 (veto-overridden impact study), failed Washington HB 2515 and Indiana SB 79, and upgraded the federal Durbin entry to its confirmed number **S. 4213**.
-**Follow-ups**: confirm the remaining unconfirmed bill statuses against legislature records; add a scheduled re-verification monitor; optional US choropleth map. **Resolved 2026-07-05**: Florida hyperscale data-center regulatory framework confirmed as **FL SB 484** — enacted (signed May 7, 2026, effective July 1, 2026), added to `data/reference/legislation.json`. **Candidates to verify + add next pass** (surfaced June 2026, not yet primary-verified): Iowa HF 2261 (separate water-utility customer class for ≥20 MW loads); Virginia SB 417 (conditions Cloud Computing Cluster grant eligibility on reclaimed-water cooling; did not advance, 2027 carryover); Indiana HB 1043 (data-center water regulation — confirm contents/status).
+**Follow-ups**: confirm the remaining unconfirmed bill statuses against legislature records; add a scheduled re-verification monitor; optional US choropleth map. **Resolved 2026-07-05**: Florida hyperscale data-center regulatory framework confirmed as **FL SB 484** — enacted (signed May 7, 2026, effective July 1, 2026), added to `data/reference/legislation.json`. **Candidates to verify + add next pass** (surfaced June 2026, not yet primary-verified): Iowa HF 2261 (separate water-utility customer class for ≥20 MW loads); Virginia SB 417 (conditions Cloud Computing Cluster grant eligibility on reclaimed-water cooling; did not advance, 2027 carryover); Indiana HB 1043 (verified and added 2026-11-03; failed in committee).
 
 ### ✅ EPA ECHO NAICS Facility Discovery (Federal)
 **Status**: Built — `scrapers/epa_echo_naics.py` (18 tests)
@@ -79,8 +79,8 @@ Last reviewed: 2026-05-28 (External Tracker Survey added — see section below t
 ### Follow-ups from the 2026-09-26 session (statute paths, lazy tabs, commitments, overview)
 
 - **(High) Re-check the three proposed local actions on their dates.** Fort Worth TX (first public hearing due by 2026-11-10; adoption vote needs a supermajority, set for 2027-02-16), Leon County FL and Manatee County FL (proposed 2026-09). *Prompt:* "Re-verify local_actions.json records still marked proposed whose hearing dates have passed; update status/date/summary from primary coverage and pin in test_refdata."
-- **(High) Virginia HB 496's first aggregate report is due 2026-10-01** — convert it into data the day it lands (Tier 1 source). *Prompt:* "Find the first HB 496 monthly aggregate data-center water report (SWCB/DEQ or utility), record it on the VA HB 496 / SB 553 timeline, and add a Sources-tab row."
-- **(Medium) Map policy instruments to data-center activities** so the statute-paths view can show the new state laws on an activity (ID H 895 on 'Pumping or diverting water', AB 2469 on 'Buying water from a utility') beside the doctrines. Needs an explicit `dc_activities` on instruments, not a guess from principle tags. *Prompt:* "Add dc_activities to legislation.json instruments with water scope (closed DC_ACTIVITY_LABELS taxonomy), render 'New laws on this activity' in each statute-paths group, and test both-ways membership."
+- **Virginia water data follow-up (checked 2026-11-03):** RD637 under budget Item 477 D contains no water volumes. Watch for SCC supplements and for the separate DEQ reporting platform targeted for 2027-01-01. Ingest only published volumes with a period, unit and coverage.
+- **Activity mapping started (2026-11-03):** California licensing and supply assessments, Virginia supplier reporting, Utah withdrawals, Indiana’s failed permit and the federal military-installation roadmap now appear under their verified activities. Extend optional `dc_activities` only after checking the governing text. Keep bills separate from precedent counts.
 - **(Medium) Promote water_commitments.json into the registry** once something links *in* (a news item or solution citing a commitment). Adds Explore nodes and inbound edges. *Prompt:* "Add a 'commitment' registry kind (tab commitments, anchor commitment-<id>), wire commitment.cross_ref_targets into refdata.integrity and the graph, and update the stays-out-of-registry tests into registry tests."
 - **(Medium) Company pledges without assessments** — OpenAI Stargate, Crusoe (Abilene closed-loop: 1M gal fill per building, ~50k gal/building/yr, company-reported), Anthropic; and a verbatim Prologis claim (prologis.com 403s scripted clients — read it in a browser). *Prompt:* "Assess the unassessed pledge claims in company_water_claims.json only where independent evidence exists; add Prologis's water commitment verbatim with a companies entry."
 - **(Low) International comparators not yet investigated:** UK and Ireland (Netherlands and Chile were checked and have no national data-center water instrument).
@@ -120,13 +120,13 @@ Named blockers at each level with plain-English explanation and best available w
 
 **D — Coming Data (new)**
 Timeline of confirmed upcoming unlocks:
-- HB 496/SB 553 monthly reports — est. Aug/Sept 2026 (monitor SWCB/DEQ portal)
+- HB 496/SB 553 delivery totals — monitor DEQ from January 2027
 - Ohio OHD000001 finalization — pending (watch EPA ECHO for new permit numbers)
 - EIA Form 923 §8D indirect water — buildable now (2024 data available)
 - EPA FRS cross-reference — buildable now (API confirmed)
 
 **Dependencies before building:**
-1. Confirm HB 496/SB 553 reporting channel (SWCB vs. DEQ vs. local zoning) — first step
+1. Check whether DEQ has published a downloadable series under HB 496/SB 553
 2. Build EIA 923 scraper (backlog: "Dashboard Panel 1: The Two Water Footprints")
 3. Build EPA FRS utility (backlog: "EPA FRS Cross-Reference Module")
 4. FracTracker CSV ingest for cooling type field
@@ -159,10 +159,9 @@ Virginia **enacted** data center water reporting in the 2026 session. HB 496 (si
 
 **URLs:** `https://lis.virginia.gov/bill-details/20261/SB553` · `https://legiscan.com/VA/bill/SB553/2026`
 
-**Data status:** ENACTED 2026 (confirmed via B&D Law and Virginia Mercury 2026 session recaps). Effective ~July 1, 2026 (standard for VA regular-session bills). The conference reconciled a Senate version (report aggregate volumes to the State Water Control Board / DEQ) with a House version (water-use disclosure during local zoning), so **verify the exact reporting channel and first-report date before building** — reports may land at DEQ/SWCB, in a new portal, or in local rezoning filings. First monthly reports will follow once the mechanism is established.
+**Data status (2026-11-03):** The [reporting rule](https://law.lis.virginia.gov/admincode/title9/agency25/chapter200/section40/) starts January 1, 2027. Suppliers file on their regular schedule. The separate October SCC budget report contains no water totals.
 
-**Sample prompt:**
-> Virginia HB 496 / SB 553 (2026) now requires water utilities to report monthly data center water volumes. First, investigate where these reports are published (State Water Control Board, DEQ portal, or local zoning records). Until the first reports appear, build a lightweight status monitor (LegiScan API / Virginia LIS) that watches for the reporting portal going live and the first data drop. Then build a scraper for the reports following the BaseScraper pattern, map the new fields to DocumentRecord, and integrate with the dedup pipeline. Add the source to the dashboard Transparency Scorecard once data is flowing.
+**Sample prompt:** Check DEQ for published deliveries to air-permitted data centers. Preserve potable/reclaimed categories, the reporting period and any missing values. Test against one report before building a scraper.
 
 ### Per-Query Reality-Check Panel (Andy Masley framing)
 Extend the existing Per-Query Explainer (`render_per_query_explainer`) with Andy Masley's plain-English comparisons, which anchor the "skeptic" pole of the debate: an individual AI query's water use is trivial (~2 mL including electricity). The point isn't that AI water doesn't matter — it's *why this tracker measures facilities and aggregates, not chatbots*.

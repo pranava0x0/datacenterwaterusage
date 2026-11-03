@@ -35,6 +35,7 @@ import re
 from refdata.loaders import (
     load_cwa_investigations,
     load_dc_water_conflicts,
+    load_legislation,
     load_water_authorities,
 )
 from refdata.registry import case_caption
@@ -75,7 +76,7 @@ def build_statute_paths() -> list[dict]:
     Shape::
 
         [{"activity", "label", "description", "anchor",
-          "n_families", "n_sites",
+          "n_families", "n_sites", "instruments",
           "paths": [{"reading_id", "name", "section", "statute", "statute_name",
                      "color", "when", "role", "anchor",
                      "precedents": [{"case_id", "caption", "instrument"}],
@@ -140,6 +141,7 @@ def build_statute_paths() -> list[dict]:
         ]
         return shown, max(0, len(ordered) - MAX_PRECEDENTS)
 
+    bills = load_legislation().get("bills", [])
     out = []
     for activity, label in DC_ACTIVITY_LABELS.items():
         members = [r for r in readings if activity in (r.get("dc_activities") or [])]
@@ -185,6 +187,10 @@ def build_statute_paths() -> list[dict]:
                 "n_families": len({p["statute"] for p in paths}),
                 "n_sites": len(site_ids),
                 "paths": paths,
+                "instruments": [
+                    {key: b[key] for key in ("bill_id", "jurisdiction", "status", "summary")}
+                    for b in bills if activity in b.get("dc_activities", [])
+                ],
             }
         )
     return out

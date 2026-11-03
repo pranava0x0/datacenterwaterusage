@@ -14,6 +14,11 @@ Format:
 
 ---
 
+### [2026-11-03] Water supply language selected the industrial sewer reading
+- **Module:** Project checker, `refdata/taxonomies.py`.
+- **Root cause:** Code bug in the trigger vocabulary. Buying reclaimed municipal wastewater selected the sewer discharge facet, while “discharges to sewer” missed it.
+- **Resolution:** Use sewer destination phrases instead of the supply phrase. An external review also found that longer destinations (“goes to the wastewater treatment plant”) were lost between tokens. Python and the browser now share a destination pattern. Coverage includes reclaimed supply, on-site treatment, storm sewers and affirmative sewer discharges.
+
 ### [2026-09-26] `_instrument_movement_date` reported movement dated after `today`
 - **Module**: dashboard.py `_instrument_movement_date` (used by the States tab's what's-new and the new Overview feed)
 - **Error**: `tests/test_overview.py::TestOverviewFeed::test_a_different_today_moves_the_window` — with `today=2026-07-01` the feed listed instruments "moved" on 2026-09-26.

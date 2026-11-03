@@ -630,6 +630,10 @@ def test_page_script_matches_the_engine_on_a_fixture(tmp_path, text):
 
 
 PARSER_EDGE_CASES = [
+    "Cooling tower blowdown goes to the wastewater treatment plant.",
+    "Cooling blowdown goes to the local sewer.",
+    "The campus does not discharge to the wastewater treatment plant.",
+    "Cooling blowdown goes to an on-site wastewater treatment plant.",
     "a campus in North Texas",
     "West Virginia",
     "West Virginia and Virginia",

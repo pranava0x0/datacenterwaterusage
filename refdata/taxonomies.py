@@ -682,7 +682,7 @@ FACT_FACETS = {
         "dimension": "discharge",
         "label": "Blowdown to a sewer or treatment plant",
         "description": "Cooling blowdown and process water go to a publicly owned treatment works.",
-        "triggers": ["sewer", "sewers", "potw", "wastewater treatment", "treatment plant", "sanitary", "pretreatment", "blowdown", "wastewater plant", "sewage"],
+        "triggers": ["potw", "city sewer", "municipal sewer", "sanitary sewer", "public sewer", "blowdown sewer", "sewer blowdown", "wastewater sewer", "discharge sewer", "discharged sewer", "discharges sewer", "piped sewer", "sent sewer", "goes sewer"],
     },
     "out-surface": {
         "dimension": "discharge",
