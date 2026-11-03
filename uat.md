@@ -1,4 +1,6 @@
-# UAT Baseline — Data Center Water Use Tracker
+# UAT — Data Center Water Use Tracker
+
+The current static-site procedure, measurements and limitations are in [the November report](docs/uat-2026-11-02.md). Run `python3 scripts/uat_site.py --help` for the repeatable browser harness. The earlier Streamlit baseline below is retained as history.
 
 _Created: 2026-05-26_
 _Last run: 2026-06-02_

@@ -1,10 +1,10 @@
 # Water docket dataset
 
-Research preview, schema version 0.1.0. [Manifest](docket-manifest.json) reports coverage and SHA-256 hashes. [JSONL](docket-records.jsonl) contains one row for each tracked case; [JSON Schema](docket-record.schema.json) describes the record contract. [Applicability checklists](applicability-checklists.json) supply source-linked questions for selected statutory readings.
+Research preview, schema version 0.1.0. [Manifest](../pages/docket-manifest.json) reports coverage and SHA-256 hashes. [JSONL](../pages/docket-records.jsonl) contains one row for each tracked case; [JSON Schema](../pages/docket-record.schema.json) describes the record contract. [Applicability checklists](../pages/applicability-checklists.json) supply source-linked questions for selected statutory readings.
 
 ## Intended use
 
-Retrieve candidate precedents for a proposed water-intensive project, inspect their sources, and record the facts still needed for review. The Check a project page downloads a project worksheet containing its input, shared facts, ranked candidates and unanswered questions. Computation stays in the browser; the download contains the description the user supplied.
+Retrieve candidate precedents for a proposed water-intensive project, inspect their sources, and record the facts still needed for review. The Check a project page downloads a project worksheet containing its raw description and size fields, facet selections and origins, source example, retrieval payload hash, ranked candidates and unanswered questions. Computation stays in the browser; the download contains the description the user supplied.
 
 Shared facts are retrieval signals. They do not establish jurisdiction, a violation, a permit obligation or the probability of an outcome. Every new-project assessment starts as `not_assessed`; unanswered questions remain `unknown` even when a case ranks first. A checklist is a scoped review aid, not an exhaustive statement of current law.
 
@@ -12,6 +12,7 @@ Shared facts are retrieval signals. They do not establish jurisdiction, a violat
 
 | Field | Meaning |
 | --- | --- |
+| `display_label` | Curated respondent description, not a normalized legal caption. |
 | `record_id` | Stable tracker case ID; it is not a court docket number. |
 | `docket_number`, `decision_date`, `decision_maker` | Null unless source-checked in the annotation file. |
 | `checked_annotation` | A separately cited holding and disposition, with the exact review scope. Its review does not certify the legacy prose. |

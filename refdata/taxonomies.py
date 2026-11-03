@@ -452,6 +452,7 @@ COMMITMENT_LEVEL_LABELS = {
 # How hard the promise is. A reader comparing a Singapore target to a county
 # memorandum needs this before anything else.
 COMMITMENT_BINDING_LABELS = {
+    "unknown": "Legal strength not established",
     "binding": "Binding",
     "reporting": "Reporting duty",
     "voluntary": "Voluntary",

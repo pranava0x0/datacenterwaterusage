@@ -26,8 +26,18 @@ The preview includes a machine-readable schema, a dataset card, a manifest with 
 ## Completion ledger
 
 - Recent history: reviewed feature PRs linked above; dependency PRs remain separate.
-- Comparative dataset research: in progress.
-- Case schema, export and applicability workflow: planned.
-- Water investment evidence: in progress.
-- Responsive UAT and graphics: baseline in progress.
-- Reviews, merge and live verification: pending.
+- Comparative dataset research: complete for PermitTEC v0.1, NEPATEC 3.0, Breakthrough, ELI, CEQ and TypeSafe Jev; [sources and unresolved access/license questions](research-docket-sources-2026-11-02.md).
+- Case schema, export and applicability workflow: implemented as a research preview; broader claim verification and model evaluation remain in the backlog.
+- Water investment evidence: four additions with source locators and reporting/delivery distinctions.
+- Responsive UAT and graphics: [baseline and final measurements](uat-2026-11-02.md); graphics changed after the idle-paint finding.
+- Reviews: first pass found four provenance/classification issues; corrections made with regression checks. Second pass found size-input precedence and repository-card link issues; fixes and final verification are tracked in [PR #37](https://github.com/pranava0x0/datacenterwaterusage/pull/37).
+
+## Delegation
+
+The requested lightweight research model failed at startup because its provider authentication was unavailable. Two available agents completed source research and browser UAT, then reviewed the changes. The main session integrated the code and reviewed their sources and results. No paid TypeSafe service or bulk upstream dataset download ran.
+
+The user confirmed the matcher extension and dataset preview scope during implementation. A separate hosted service is outside this release.
+
+## Verification before merge
+
+Both inline review rounds are complete. The corrected source passes 1,055 tests and 104 browser flows, including numeric input precedence and the actual worksheet download. A clean copied checkout reproduced all generated files; Streamlit rendered without exceptions. [UAT evidence](uat-2026-11-02.md) records performance limits and inherited checker findings. The [PR](https://github.com/pranava0x0/datacenterwaterusage/pull/37) records CI, merge and published-surface verification.

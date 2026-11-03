@@ -53,7 +53,7 @@ from refdata.loaders import (
     load_water_authorities,
 )
 from refdata.registry import build_registry
-from refdata.dockets import CHECKLIST_PATH, load_checklists
+from refdata.dockets import CHECKLIST_PATH, canonical_hash, load_checklists
 from refdata.taxonomies import (
     DC_ACTIVITY_LABELS,
     DC_ROLE_LABELS,
@@ -678,7 +678,7 @@ def build_payload() -> dict:
         }
         for rid, vec in sorted(docs_raw.items())
     }
-    return {
+    payload = {
         "facets": {
             fid: {
                 "dimension": f["dimension"],
@@ -726,6 +726,8 @@ def build_payload() -> dict:
             "elsewhere_factor": ELSEWHERE_FACTOR,
         },
     }
+    payload["payload_sha256"] = canonical_hash(payload)
+    return payload
 
 
 _PAYLOAD_CACHE: dict = {"sig": None, "json": ""}

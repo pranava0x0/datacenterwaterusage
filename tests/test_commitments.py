@@ -98,6 +98,8 @@ class TestCommitmentsDataset:
         fort_wayne = rows["fort-wayne-in-east-transmission-main"]
         assert fort_wayne["date"] is None
         assert fort_wayne["status"] == "reported"
+        assert fort_wayne["binding"] == "unknown"
+        assert rows["douglas-county-ga-google-reuse-2012"]["binding"] == "unknown"
         assert fort_wayne["delivery_status"] == "under-construction"
         assert "not reported" in dashboard._commitment_date_label(fort_wayne)
         assert "2010" in dashboard._commitment_date_label(loudoun)

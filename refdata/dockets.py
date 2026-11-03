@@ -44,7 +44,7 @@ def build_docket_records() -> list[dict]:
             "schema_version": SCHEMA_VERSION,
             "record_id": case["case_id"],
             "record_kind": "case",
-            "caption": case["respondent"],
+            "display_label": case["respondent"],
             "docket_number": annotation.get("docket_number"),
             "decision_date": annotation.get("decision_date"),
             "decision_maker": annotation.get("decision_maker"),
@@ -82,7 +82,8 @@ def build_docket_records() -> list[dict]:
     return rows
 
 
-def project_assessment(result: dict, description: str, checklists: dict | None = None) -> dict:
+def project_assessment(result: dict, description: str, checklists: dict | None = None,
+                       inputs: dict | None = None) -> dict:
     """Create a review worksheet; retrieval never satisfies a legal question."""
     catalog = checklists if checklists is not None else load_checklists()
     selected = {r["id"] for r in result.get("readings", [])}
@@ -99,7 +100,8 @@ def project_assessment(result: dict, description: str, checklists: dict | None =
         "assessment_type": "retrieval_worksheet",
         "legal_applicability": "not_assessed",
         "project": {"description": description, "state": result.get("state"),
-                    "facets": list(result.get("facets", [])), "evidence_status": "user_supplied"},
+                    "facets": list(result.get("facets", [])), "evidence_status": "unverified_inputs",
+                    "inputs": deepcopy(inputs)},
         "retrieval": deepcopy(result),
         "checklists": questions,
         "unreviewed_reading_ids": [r["id"] for r in result.get("readings", [])
@@ -119,7 +121,7 @@ def dataset_files() -> dict[str, str]:
         "docket-records.jsonl": corpus,
         "docket-record.schema.json": SCHEMA_PATH.read_text(encoding="utf-8"),
         "applicability-checklists.json": CHECKLIST_PATH.read_text(encoding="utf-8"),
-        "docket-dataset.md": (SCHEMA_PATH.parent.parent / "docs" / "docket-dataset.md").read_text(encoding="utf-8"),
+        "docket-dataset.md": (SCHEMA_PATH.parent.parent / "docs" / "docket-dataset.md").read_text(encoding="utf-8").replace("](../pages/", "]("),
     }
     manifest = {
         "schema_version": SCHEMA_VERSION,

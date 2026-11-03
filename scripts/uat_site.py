@@ -159,6 +159,32 @@ def click(page: Any, selector: str, ready: str) -> dict[str, Any]:
     return row
 
 
+def worksheet_download(page: Any) -> tuple[dict[str, Any], str]:
+    with page.expect_download() as download_event:
+        page.locator("#pcheck-export").click()
+    download = download_event.value
+    assert download.failure() is None, "Assessment download failed"
+    return json.loads(Path(download.path()).read_text()), download.suggested_filename
+
+
+def check_downloaded_inputs(page: Any, worksheet: dict[str, Any], expected_hash: str,
+                            source_example: dict[str, Any] | None) -> dict[str, str]:
+    """Match the exported worksheet to what the reader actually saw and selected."""
+    project = worksheet["project"]
+    assert project["evidence_status"] == "unverified_inputs"
+    inputs = project["inputs"]
+    assert inputs["source_example"] == source_example, "Example record or lineage changed"
+    assert inputs["retrieval_payload_sha256"] == expected_hash, "Worksheet references a different retrieval corpus"
+    for field, selector in (("state", "state"), ("description", "text"), ("mw", "mw"), ("mgd", "mgd")):
+        assert inputs[field] == page.locator(f"#pcheck-{selector}").input_value(), f"Wrong raw input: {field}"
+    checkboxes = page.locator(".pcheck-facet-box").evaluate_all("es=>Object.fromEntries(es.map(e=>[e.value,e.checked]))")
+    assert checkboxes, "Missing project facet controls"
+    selections = inputs["facet_selections"]
+    assert len(selections) == len(checkboxes), "Missing or duplicate facet selections"
+    assert {s["facet_id"]: s["selected"] for s in selections} == checkboxes
+    return {s["facet_id"]: s["origin"] for s in selections}
+
+
 def run(root: Path, out: Path, screenshot_dir: Path | None = None) -> dict[str, Any]:
     from playwright.sync_api import sync_playwright
     result: dict[str, Any] = {"timestamp_utc": datetime.now(timezone.utc).isoformat(), "rows": [], "profiles": {},
@@ -183,6 +209,11 @@ def run(root: Path, out: Path, screenshot_dir: Path | None = None) -> dict[str, 
                            for name, body in files.items() if name.endswith((".html", ".css", ".js", ".json", ".jsonl", ".md"))}
         browser = pw.chromium.launch()
         result["browser_version"] = browser.version
+        payload = json.loads(files["project-data.json"])
+        published_hash = payload.pop("payload_sha256", None)
+        canonical_bytes = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        expected_hash = hashlib.sha256(canonical_bytes).hexdigest()
+        example_by_id = {e["id"]: e for e in payload["examples"]}
         for viewport, (width, height) in VIEWPORTS.items():
             context = browser.new_context(viewport={"width": width, "height": height})
             context.add_init_script(INIT)
@@ -219,6 +250,9 @@ def run(root: Path, out: Path, screenshot_dir: Path | None = None) -> dict[str, 
                     row["content_chars"] = len(page.locator(f"#panel-{tab}").inner_text())
                     row["page_errors"] = list(errors)
                     if screenshot_dir:
+                        if tab in ("check", "explore"):
+                            payload_name = "project-data.json" if tab == "check" else "graph-data.json"
+                            page.wait_for_function("name=>performance.getEntriesByType('resource').some(e=>new URL(e.name).pathname.endsWith('/'+name))", arg=payload_name)
                         screenshot_dir.mkdir(parents=True, exist_ok=True)
                         page.screenshot(path=str(screenshot_dir / f"{viewport}-{tab}.png"))
                     return row
@@ -242,12 +276,27 @@ def run(root: Path, out: Path, screenshot_dir: Path | None = None) -> dict[str, 
                     return row
                 record(f"check-example-{example}", viewport, example_flow)
 
+            def loaded_example_flow() -> dict[str, Any]:
+                assert published_hash == expected_hash, "Published retrieval digest does not identify the served payload"
+                original = example_by_id[examples[-1]]
+                worksheet, _ = worksheet_download(page)
+                origins = check_downloaded_inputs(page, worksheet, expected_hash, original)
+                selected = {s["facet_id"] for s in worksheet["project"]["inputs"]["facet_selections"] if s["selected"]}
+                assert selected == set(original["facets"]), "Loaded example differs from its curated facts"
+                assert all(origins[facet] == "curated_example" for facet in selected)
+                return {"source_example": original["id"], "curated_facets": len(selected), "payload_digest_verified": True}
+            record("assessment-example-provenance", viewport, loaded_example_flow)
+
             def edit_flow() -> dict[str, Any]:
                 page.locator("#pcheck-text").fill("A 300 MW Arizona campus pumps groundwater wells for evaporative cooling and discharges blowdown to city sewer.")
                 page.locator("#pcheck-state").select_option("AZ")
                 row = click(page, "#pcheck-run", "document.querySelector('#pcheck-state').value==='AZ' && !!document.querySelector('#pcheck-output .pcheck-sec')")
                 row.update(geometry(page, "#pcheck-output"))
                 row["interactions_from_overview"] = 4
+                worksheet, _ = worksheet_download(page)
+                origins = check_downloaded_inputs(page, worksheet, expected_hash, example_by_id[examples[-1]])
+                assert set(origins.values()) == {"derived_from_inputs"}, "Edited prose still carries curated origins"
+                row["source_example_retained_after_edit"] = True
                 return row
             record("check-edit-run", viewport, edit_flow)
 
@@ -269,10 +318,8 @@ def run(root: Path, out: Path, screenshot_dir: Path | None = None) -> dict[str, 
                 assert page.locator("#pcheck-export").is_disabled(), "Clear must invalidate export"
                 page.locator("#pcheck-text").fill("A data center uses injection wells into groundwater.")
                 click(page, "#pcheck-run", "!document.querySelector('#pcheck-export').disabled")
-                with page.expect_download() as download_event:
-                    page.locator("#pcheck-export").click()
-                download = download_event.value
-                assessment = json.loads(Path(download.path()).read_text())
+                assessment, download_name = worksheet_download(page)
+                check_downloaded_inputs(page, assessment, expected_hash, None)
                 assert assessment["legal_applicability"] == "not_assessed"
                 assert assessment["assessment_type"] == "retrieval_worksheet"
                 assert assessment["checklists"], "Maui input must yield an evidence checklist"
@@ -299,10 +346,52 @@ def run(root: Path, out: Path, screenshot_dir: Path | None = None) -> dict[str, 
                     mutate()
                     assert page.locator("#pcheck-export").is_disabled(), "Input change left stale export enabled"
                     click(page, "#pcheck-run", "!document.querySelector('#pcheck-export').disabled")
+                manual, _ = worksheet_download(page)
+                origins = check_downloaded_inputs(page, manual, expected_hash, None)
+                inputs = manual["project"]["inputs"]
+                assert (inputs["mw"], inputs["mgd"], inputs["state"]) == ("350", "2", "AZ")
+                assert origins["src-wells"] == "manual_selection", "Manual facet edit lost its provenance"
                 click(page, "#pcheck-clear", "document.querySelector('#pcheck-export').disabled")
-                return {"download_filename": download.suggested_filename, "unknown_questions": len(questions),
+                return {"download_filename": download_name, "unknown_questions": len(questions),
+                        "manual_export_values": {"mw": inputs["mw"], "mgd": inputs["mgd"], "state": inputs["state"]},
                         "unreviewed_readings": len(assessment["unreviewed_reading_ids"]), "stale_mutations_checked": len(mutations)}
             record("assessment-export-evidence-stale", viewport, assessment_flow)
+
+            def example_size_flow() -> dict[str, Any]:
+                original = example_by_id["big-sky-broadview-mt-2026"]
+                scale = "scale-hyperscale"
+                assert scale not in original["facets"], "Big Sky must start below the size threshold"
+                click(page, f'[data-example="{original["id"]}"]', "!document.querySelector('#pcheck-export').disabled")
+                page.locator("#pcheck-mw").fill("350")
+                page.locator("#pcheck-mgd").fill("2")
+                click(page, "#pcheck-run", "!document.querySelector('#pcheck-export').disabled")
+                worksheet, _ = worksheet_download(page)
+                origins = check_downloaded_inputs(page, worksheet, expected_hash, original)
+                assert set(worksheet["retrieval"]["facets"]) == set(original["facets"]) | {scale}, "Manual size must update only the size facet"
+                assert origins[scale] == "derived_from_inputs"
+                assert all(origin == "curated_example" for facet, origin in origins.items() if facet != scale)
+                if not page.locator("#pcheck-facets").evaluate("e=>e.open"):
+                    page.locator("#pcheck-facets summary").click()
+                page.locator(f'.pcheck-facet-box[value="{scale}"]').uncheck()
+                page.locator("#pcheck-mw").fill("400")
+                click(page, "#pcheck-run", "!document.querySelector('#pcheck-export').disabled")
+                overridden, _ = worksheet_download(page)
+                origins = check_downloaded_inputs(page, overridden, expected_hash, original)
+                assert origins[scale] == "manual_selection" and scale not in overridden["retrieval"]["facets"]
+                click(page, "#pcheck-clear", "document.querySelector('#pcheck-export').disabled")
+                page.locator("#pcheck-text").fill("A 300 MW Arizona campus pumps groundwater from wells.")
+                click(page, "#pcheck-run", "!document.querySelector('#pcheck-export').disabled")
+                assert page.locator(f'.pcheck-facet-box[value="{scale}"]').is_checked()
+                page.locator("#pcheck-mw").fill("10")
+                page.locator("#pcheck-mgd").fill("0.2")
+                click(page, "#pcheck-run", "!document.querySelector('#pcheck-export').disabled")
+                smaller, _ = worksheet_download(page)
+                origins = check_downloaded_inputs(page, smaller, expected_hash, None)
+                assert origins[scale] == "derived_from_inputs" and scale not in smaller["retrieval"]["facets"], "Manual size below threshold must supersede the number in the prose"
+                click(page, "#pcheck-clear", "document.querySelector('#pcheck-export').disabled")
+                return {"example": original["id"], "size_updated_without_prose_edit": True, "explicit_checkbox_precedence": True,
+                        "smaller_manual_size_overrides_description": True}
+            record("assessment-size-override", viewport, example_size_flow)
             click(page, 'button[data-tab="explore"]', "!!document.querySelector('#explore-q')")
 
             def explore_flow() -> dict[str, Any]:

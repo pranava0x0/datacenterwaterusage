@@ -7605,7 +7605,7 @@ def _project_check_js() -> str:
     };
   }
 
-  function projectAssessment(result, description, D){
+  function projectAssessment(result, description, D, inputs){
     var selected = result.readings.map(function(r){ return r.id; });
     var checks = ((D.checklists || {}).checklists || []).filter(function(c){
       return selected.indexOf(c.reading_id) !== -1;
@@ -7618,7 +7618,7 @@ def _project_check_js() -> str:
     });
     return JSON.parse(JSON.stringify({schema_version:'0.1.0', assessment_type:'retrieval_worksheet',
       legal_applicability:'not_assessed',
-      project:{description:description, state:result.state, facets:result.facets, evidence_status:'user_supplied'},
+      project:{description:description, state:result.state, facets:result.facets, evidence_status:'unverified_inputs', inputs:inputs || null},
       retrieval:result, checklists:checks,
       unreviewed_reading_ids:selected.filter(function(id){ return !checks.some(function(c){ return c.reading_id === id; }); }),
       score_meaning:'Similarity for retrieval; not a probability or legal determination.'}));
@@ -7674,6 +7674,8 @@ def _project_check_js() -> str:
   // Everything below needs the payload: inline on Streamlit, fetched on the site.
   function boot(D){
     var latestAssessment = null;
+    var loadedExample = null;
+    var sizeTouched = false;
     function invalidateAssessment(){
       latestAssessment = null;
       if (exportBtn) exportBtn.disabled = true;
@@ -7952,7 +7954,15 @@ def _project_check_js() -> str:
       var facets = ticked();
       if (!facets.length && !stateSel.value){ invalidateAssessment(); showStatus(idle); return; }
       var result = matchProject(facets, stateSel.value || null, textBox.value, D);
-      latestAssessment = projectAssessment(result, textBox.value, D);
+      latestAssessment = projectAssessment(result, textBox.value, D, {
+        description:textBox.value, state:stateSel.value, mw:mwBox.value, mgd:mgdBox.value,
+        source_example:loadedExample, retrieval_payload_sha256:D.payload_sha256,
+        facet_selections:boxes.map(function(b){
+          return {facet_id:b.value, selected:b.checked,
+            origin:touched[b.value] ? 'manual_selection' :
+              (baseline && !(b.value === 'scale-hyperscale' && sizeTouched) ? 'curated_example' : 'derived_from_inputs')};
+        })
+      });
       if (exportBtn) exportBtn.disabled = false;
       output.replaceChildren(renderResult(result));
     }
@@ -7987,7 +7997,10 @@ def _project_check_js() -> str:
     function parse(){
       var text = textBox.value;
       if (baseline && text === baseline.text){
-        boxes.forEach(function(b){ if (!touched[b.value]) b.checked = !!baseline.on[b.value]; });
+        boxes.forEach(function(b){
+          if (!touched[b.value]) b.checked = b.value === 'scale-hyperscale' && sizeTouched
+            ? sizeFacet() : !!baseline.on[b.value];
+        });
         syncCount();
         return;
       }
@@ -8002,7 +8015,8 @@ def _project_check_js() -> str:
       var p = parseProject(text, D), on = {};
       followText(p);
       p.facets.forEach(function(f){ on[f] = 1; });
-      if (sizeFacet()) on['scale-hyperscale'] = 1;
+      if (sizeTouched) on['scale-hyperscale'] = sizeFacet() ? 1 : 0;
+      else if (sizeFacet()) on['scale-hyperscale'] = 1;
       boxes.forEach(function(b){ if (!touched[b.value]) b.checked = !!on[b.value]; });
 
       var parts = p.facets.map(function(f){
@@ -8021,6 +8035,7 @@ def _project_check_js() -> str:
     function clearAll(){
       invalidateAssessment();
       textBox.value = ''; stateSel.value = ''; mwBox.value = ''; mgdBox.value = '';
+      loadedExample = null; sizeTouched = false;
       boxes.forEach(function(b){ b.checked = false; });
       touched = {}; autoState = autoMw = autoMgd = null; autoRan = false; baseline = null;
       if (readLine) readLine.textContent = '';
@@ -8032,6 +8047,7 @@ def _project_check_js() -> str:
       var ex = null;
       for (var i = 0; i < D.examples.length; i++) if (D.examples[i].id === id) ex = D.examples[i];
       if (!ex) return;
+      loadedExample = ex; sizeTouched = false;
       textBox.value = ex.description || '';
       stateSel.value = ex.state || '';
       mwBox.value = ex.mw == null ? '' : String(ex.mw);
@@ -8069,8 +8085,8 @@ def _project_check_js() -> str:
       b.addEventListener('change', function(){ invalidateAssessment(); touched[b.value] = 1; syncCount(); });
     });
     stateSel.addEventListener('change', function(){ invalidateAssessment(); autoState = null; });
-    mwBox.addEventListener('input', function(){ invalidateAssessment(); autoMw = null; });
-    mgdBox.addEventListener('input', function(){ invalidateAssessment(); autoMgd = null; });
+    mwBox.addEventListener('input', function(){ invalidateAssessment(); autoMw = null; sizeTouched = true; });
+    mgdBox.addEventListener('input', function(){ invalidateAssessment(); autoMgd = null; sizeTouched = true; });
     if (exportBtn) exportBtn.addEventListener('click', function(){
       if (!latestAssessment) return;
       var url = URL.createObjectURL(new Blob([JSON.stringify(latestAssessment, null, 2)], {type:'application/json'}));

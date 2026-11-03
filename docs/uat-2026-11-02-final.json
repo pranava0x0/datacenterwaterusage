@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-11-03T02:48:43.133404+00:00",
+  "timestamp_utc": "2026-11-03T03:08:37.550216+00:00",
   "rows": [
     {
       "key_depth_screens": 0.321,
@@ -8,18 +8,18 @@
       "page_screens": 1.66,
       "content_chars": 1932,
       "dom_nodes": 216,
-      "content_ms": 52.30000019073486,
+      "content_ms": 40.5,
       "resources": [
         {
           "path": "/",
-          "transfer_bytes": 36734,
-          "encoded_bytes": 36434,
+          "transfer_bytes": 36736,
+          "encoded_bytes": 36436,
           "decoded_bytes": 127842,
-          "duration_ms": 33.5
+          "duration_ms": 21.09999990463257
         }
       ],
-      "fcp_ms": 48,
-      "lcp_ms": 48,
+      "fcp_ms": 40,
+      "lcp_ms": 40,
       "heap_bytes": 2811412,
       "page_errors": [],
       "name": "cold-overview",
@@ -28,7 +28,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 7.099999904632568,
+      "interaction_ms": 6.900000095367432,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -46,7 +46,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 11.399999618530273,
+      "interaction_ms": 8.599999904632568,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -64,7 +64,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 10.099999904632568,
+      "interaction_ms": 10.399999618530273,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -82,7 +82,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 17.5,
+      "interaction_ms": 14.599999904632568,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -100,7 +100,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 9.700000286102295,
+      "interaction_ms": 10.5,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -108,7 +108,7 @@
       "key_viewport_top": 455.34375,
       "overflow_px": 0,
       "page_screens": 8.959,
-      "content_chars": 20622,
+      "content_chars": 20664,
       "dom_nodes": 10659,
       "key_selector": ".commit-metrics",
       "page_errors": [],
@@ -118,7 +118,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 33.200000286102295,
+      "interaction_ms": 11.599999904632568,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -136,7 +136,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 6.799999713897705,
+      "interaction_ms": 7.5,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -154,7 +154,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 4.400000095367432,
+      "interaction_ms": 4.5,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -172,7 +172,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 5.900000095367432,
+      "interaction_ms": 5.700000286102295,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -190,7 +190,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 10.199999809265137,
+      "interaction_ms": 8.800000190734863,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -208,7 +208,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 5.199999809265137,
+      "interaction_ms": 7.200000286102295,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -226,7 +226,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 6.300000190734863,
+      "interaction_ms": 6.599999904632568,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -251,7 +251,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 13.5,
+      "interaction_ms": 11.200000286102295,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -262,16 +262,16 @@
       "content_chars": 12134,
       "dom_nodes": 22026,
       "clicks_from_overview": 2,
-      "heap_bytes": 8893456,
-      "renderer_task_ms": 17.531,
-      "script_ms": 5.565,
+      "heap_bytes": 7701480,
+      "renderer_task_ms": 14.928,
+      "script_ms": 3.589,
       "name": "check-example-cedar-creek-lake-tx-2026",
       "viewport": "tablet",
       "depth_budget": 2,
       "failures": []
     },
     {
-      "interaction_ms": 6,
+      "interaction_ms": 6.299999713897705,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -282,16 +282,16 @@
       "content_chars": 12354,
       "dom_nodes": 22030,
       "clicks_from_overview": 2,
-      "heap_bytes": 7036736,
-      "renderer_task_ms": 10.999,
-      "script_ms": 1.657,
+      "heap_bytes": 9103476,
+      "renderer_task_ms": 11.381,
+      "script_ms": 1.726,
       "name": "check-example-amazon-wharton-county-tx-2026",
       "viewport": "tablet",
       "depth_budget": 2,
       "failures": []
     },
     {
-      "interaction_ms": 5,
+      "interaction_ms": 5.300000190734863,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -302,16 +302,16 @@
       "content_chars": 10516,
       "dom_nodes": 21961,
       "clicks_from_overview": 2,
-      "heap_bytes": 8324436,
-      "renderer_task_ms": 10.145,
-      "script_ms": 1.247,
+      "heap_bytes": 7018460,
+      "renderer_task_ms": 11.301,
+      "script_ms": 1.272,
       "name": "check-example-big-sky-broadview-mt-2026",
       "viewport": "tablet",
       "depth_budget": 2,
       "failures": []
     },
     {
-      "interaction_ms": 5.400000095367432,
+      "interaction_ms": 5.699999809265137,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -322,16 +322,16 @@
       "content_chars": 13107,
       "dom_nodes": 22028,
       "clicks_from_overview": 2,
-      "heap_bytes": 9738624,
-      "renderer_task_ms": 10.579,
-      "script_ms": 1.414,
+      "heap_bytes": 8435308,
+      "renderer_task_ms": 11.146,
+      "script_ms": 1.466,
       "name": "check-example-vantage-port-washington-wi-2026",
       "viewport": "tablet",
       "depth_budget": 2,
       "failures": []
     },
     {
-      "interaction_ms": 5.199999809265137,
+      "interaction_ms": 5.5,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -342,16 +342,16 @@
       "content_chars": 12649,
       "dom_nodes": 22008,
       "clicks_from_overview": 2,
-      "heap_bytes": 7150808,
-      "renderer_task_ms": 10.277,
-      "script_ms": 1.269,
+      "heap_bytes": 9768616,
+      "renderer_task_ms": 11.183,
+      "script_ms": 1.424,
       "name": "check-example-project-blue-wells-tucson-az-2026",
       "viewport": "tablet",
       "depth_budget": 2,
       "failures": []
     },
     {
-      "interaction_ms": 5.099999904632568,
+      "interaction_ms": 4.900000095367432,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -362,16 +362,25 @@
       "content_chars": 12252,
       "dom_nodes": 21997,
       "clicks_from_overview": 2,
-      "heap_bytes": 8405472,
-      "renderer_task_ms": 10.044,
-      "script_ms": 1.108,
+      "heap_bytes": 7183492,
+      "renderer_task_ms": 10.574,
+      "script_ms": 1.098,
       "name": "check-example-bt-aycock-princeton-tx-2026",
       "viewport": "tablet",
       "depth_budget": 2,
       "failures": []
     },
     {
-      "interaction_ms": 6.300000190734863,
+      "source_example": "bt-aycock-princeton-tx-2026",
+      "curated_facets": 1,
+      "payload_digest_verified": true,
+      "name": "assessment-example-provenance",
+      "viewport": "tablet",
+      "depth_budget": 2,
+      "failures": []
+    },
+    {
+      "interaction_ms": 6.200000286102295,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -382,13 +391,14 @@
       "content_chars": 11918,
       "dom_nodes": 21988,
       "interactions_from_overview": 4,
+      "source_example_retained_after_edit": true,
       "name": "check-edit-run",
       "viewport": "tablet",
       "depth_budget": 2,
       "failures": []
     },
     {
-      "interaction_ms": 5.5,
+      "interaction_ms": 5.800000190734863,
       "longtasks": [],
       "automated_scroll_screens": 0.699,
       "clicks": 1,
@@ -401,7 +411,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 2.200000286102295,
+      "interaction_ms": 2.5999999046325684,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -413,6 +423,11 @@
     {
       "download_filename": "water-project-assessment.json",
       "unknown_questions": 2,
+      "manual_export_values": {
+        "mw": "350",
+        "mgd": "2",
+        "state": "AZ"
+      },
       "unreviewed_readings": 11,
       "stale_mutations_checked": 5,
       "name": "assessment-export-evidence-stale",
@@ -421,7 +436,17 @@
       "failures": []
     },
     {
-      "interaction_ms": 185.5,
+      "example": "big-sky-broadview-mt-2026",
+      "size_updated_without_prose_edit": true,
+      "explicit_checkbox_precedence": true,
+      "smaller_manual_size_overrides_description": true,
+      "name": "assessment-size-override",
+      "viewport": "tablet",
+      "depth_budget": 2,
+      "failures": []
+    },
+    {
+      "interaction_ms": 196,
       "clicks_from_overview": 1,
       "interactions_from_overview": 2,
       "key_depth_screens": 0.798,
@@ -437,7 +462,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 2.9000000953674316,
+      "interaction_ms": 3.5999999046325684,
       "longtasks": [],
       "automated_scroll_screens": 0.717,
       "clicks": 1,
@@ -476,14 +501,14 @@
       "page_screens": 2.994,
       "content_chars": 1932,
       "dom_nodes": 216,
-      "content_ms": 30.59999990463257,
+      "content_ms": 32.09999990463257,
       "resources": [
         {
           "path": "/",
-          "transfer_bytes": 36734,
-          "encoded_bytes": 36434,
+          "transfer_bytes": 36736,
+          "encoded_bytes": 36436,
           "decoded_bytes": 127842,
-          "duration_ms": 16.90000009536743
+          "duration_ms": 17.699999809265137
         }
       ],
       "fcp_ms": 28,
@@ -496,7 +521,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 8.599999904632568,
+      "interaction_ms": 14.099999904632568,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -514,7 +539,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 7.699999809265137,
+      "interaction_ms": 68.10000038146973,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -522,7 +547,7 @@
       "key_viewport_top": 512.03125,
       "overflow_px": 0,
       "page_screens": 3.083,
-      "content_chars": 2602,
+      "content_chars": 2681,
       "dom_nodes": 2728,
       "key_selector": ".pcheck-input",
       "page_errors": [],
@@ -532,7 +557,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 8.300000190734863,
+      "interaction_ms": 13.100000381469727,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -550,7 +575,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 14.800000190734863,
+      "interaction_ms": 24.09999990463257,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -568,15 +593,15 @@
       "failures": []
     },
     {
-      "interaction_ms": 9.099999904632568,
+      "interaction_ms": 13.699999809265137,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
       "key_depth_screens": 0.722,
       "key_viewport_top": 586.421875,
       "overflow_px": 0,
-      "page_screens": 17.989,
-      "content_chars": 20622,
+      "page_screens": 18.021,
+      "content_chars": 20664,
       "dom_nodes": 10659,
       "key_selector": ".commit-metrics",
       "page_errors": [],
@@ -586,7 +611,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 10.5,
+      "interaction_ms": 23.59999990463257,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -604,7 +629,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 6.700000286102295,
+      "interaction_ms": 13.5,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -622,7 +647,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 3.9000000953674316,
+      "interaction_ms": 5.800000190734863,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -640,7 +665,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 5,
+      "interaction_ms": 6.799999713897705,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -658,7 +683,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 8.599999904632568,
+      "interaction_ms": 10.200000286102295,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -676,7 +701,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 4.900000095367432,
+      "interaction_ms": 6,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -694,7 +719,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 5.799999713897705,
+      "interaction_ms": 10.099999904632568,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -719,7 +744,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 8.900000095367432,
+      "interaction_ms": 10.700000286102295,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -730,16 +755,16 @@
       "content_chars": 12134,
       "dom_nodes": 22026,
       "clicks_from_overview": 2,
-      "heap_bytes": 7587868,
-      "renderer_task_ms": 13.713,
-      "script_ms": 3.433,
+      "heap_bytes": 7697980,
+      "renderer_task_ms": 16.305,
+      "script_ms": 3.976,
       "name": "check-example-cedar-creek-lake-tx-2026",
       "viewport": "mobile",
       "depth_budget": 2,
       "failures": []
     },
     {
-      "interaction_ms": 5.700000286102295,
+      "interaction_ms": 7.699999809265137,
       "longtasks": [],
       "automated_scroll_screens": 0.004,
       "clicks": 1,
@@ -750,16 +775,16 @@
       "content_chars": 12354,
       "dom_nodes": 22030,
       "clicks_from_overview": 2,
-      "heap_bytes": 8972516,
-      "renderer_task_ms": 11.101,
-      "script_ms": 1.676,
+      "heap_bytes": 9108784,
+      "renderer_task_ms": 14.558,
+      "script_ms": 2.089,
       "name": "check-example-amazon-wharton-county-tx-2026",
       "viewport": "mobile",
       "depth_budget": 2,
       "failures": []
     },
     {
-      "interaction_ms": 5,
+      "interaction_ms": 5.699999809265137,
       "longtasks": [],
       "automated_scroll_screens": 0.527,
       "clicks": 1,
@@ -770,16 +795,16 @@
       "content_chars": 10516,
       "dom_nodes": 21961,
       "clicks_from_overview": 2,
-      "heap_bytes": 7030720,
-      "renderer_task_ms": 10.73,
-      "script_ms": 1.216,
+      "heap_bytes": 7000240,
+      "renderer_task_ms": 12.375,
+      "script_ms": 1.381,
       "name": "check-example-big-sky-broadview-mt-2026",
       "viewport": "mobile",
       "depth_budget": 2,
       "failures": []
     },
     {
-      "interaction_ms": 5.599999904632568,
+      "interaction_ms": 6.5,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -790,16 +815,16 @@
       "content_chars": 13107,
       "dom_nodes": 22028,
       "clicks_from_overview": 2,
-      "heap_bytes": 8427040,
-      "renderer_task_ms": 10.366,
-      "script_ms": 1.441,
+      "heap_bytes": 8415816,
+      "renderer_task_ms": 11.953,
+      "script_ms": 1.585,
       "name": "check-example-vantage-port-washington-wi-2026",
       "viewport": "mobile",
       "depth_budget": 2,
       "failures": []
     },
     {
-      "interaction_ms": 5,
+      "interaction_ms": 5.699999809265137,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -810,16 +835,16 @@
       "content_chars": 12649,
       "dom_nodes": 22008,
       "clicks_from_overview": 2,
-      "heap_bytes": 9742124,
-      "renderer_task_ms": 9.715,
-      "script_ms": 1.278,
+      "heap_bytes": 9748960,
+      "renderer_task_ms": 11.891,
+      "script_ms": 1.415,
       "name": "check-example-project-blue-wells-tucson-az-2026",
       "viewport": "mobile",
       "depth_budget": 2,
       "failures": []
     },
     {
-      "interaction_ms": 5.399999618530273,
+      "interaction_ms": 5.900000095367432,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -830,16 +855,25 @@
       "content_chars": 12252,
       "dom_nodes": 21997,
       "clicks_from_overview": 2,
-      "heap_bytes": 7186212,
-      "renderer_task_ms": 10.645,
-      "script_ms": 1.276,
+      "heap_bytes": 7184044,
+      "renderer_task_ms": 11.514,
+      "script_ms": 1.823,
       "name": "check-example-bt-aycock-princeton-tx-2026",
       "viewport": "mobile",
       "depth_budget": 2,
       "failures": []
     },
     {
-      "interaction_ms": 6.100000381469727,
+      "source_example": "bt-aycock-princeton-tx-2026",
+      "curated_facets": 1,
+      "payload_digest_verified": true,
+      "name": "assessment-example-provenance",
+      "viewport": "mobile",
+      "depth_budget": 2,
+      "failures": []
+    },
+    {
+      "interaction_ms": 7.800000190734863,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -850,15 +884,16 @@
       "content_chars": 11918,
       "dom_nodes": 21988,
       "interactions_from_overview": 4,
+      "source_example_retained_after_edit": true,
       "name": "check-edit-run",
       "viewport": "mobile",
       "depth_budget": 2,
       "failures": []
     },
     {
-      "interaction_ms": 5.5,
+      "interaction_ms": 5.700000286102295,
       "longtasks": [],
-      "automated_scroll_screens": 1.097,
+      "automated_scroll_screens": 0.597,
       "clicks": 1,
       "target": "#paths-build",
       "target_top_px": 363.78125,
@@ -869,7 +904,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 2.1999998092651367,
+      "interaction_ms": 2.6999998092651367,
       "longtasks": [],
       "automated_scroll_screens": 0.606,
       "clicks": 1,
@@ -881,6 +916,11 @@
     {
       "download_filename": "water-project-assessment.json",
       "unknown_questions": 2,
+      "manual_export_values": {
+        "mw": "350",
+        "mgd": "2",
+        "state": "AZ"
+      },
       "unreviewed_readings": 11,
       "stale_mutations_checked": 5,
       "name": "assessment-export-evidence-stale",
@@ -889,7 +929,17 @@
       "failures": []
     },
     {
-      "interaction_ms": 199.89999961853027,
+      "example": "big-sky-broadview-mt-2026",
+      "size_updated_without_prose_edit": true,
+      "explicit_checkbox_precedence": true,
+      "smaller_manual_size_overrides_description": true,
+      "name": "assessment-size-override",
+      "viewport": "mobile",
+      "depth_budget": 2,
+      "failures": []
+    },
+    {
+      "interaction_ms": 202,
       "clicks_from_overview": 1,
       "interactions_from_overview": 2,
       "key_depth_screens": 1.415,
@@ -912,7 +962,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 3,
+      "interaction_ms": 2.6999998092651367,
       "longtasks": [],
       "automated_scroll_screens": 0.637,
       "clicks": 1,
@@ -922,7 +972,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 3.5,
+      "interaction_ms": 2.700000286102295,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -961,19 +1011,19 @@
       "page_screens": 1.696,
       "content_chars": 1932,
       "dom_nodes": 216,
-      "content_ms": 33,
+      "content_ms": 35.700000286102295,
       "resources": [
         {
           "path": "/",
-          "transfer_bytes": 36734,
-          "encoded_bytes": 36434,
+          "transfer_bytes": 36736,
+          "encoded_bytes": 36436,
           "decoded_bytes": 127842,
-          "duration_ms": 18
+          "duration_ms": 19.5
         }
       ],
-      "fcp_ms": 36,
-      "lcp_ms": 36,
-      "heap_bytes": 2811096,
+      "fcp_ms": 40,
+      "lcp_ms": 40,
+      "heap_bytes": 2811412,
       "page_errors": [],
       "name": "cold-overview",
       "viewport": "desktop",
@@ -981,7 +1031,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 8.800000190734863,
+      "interaction_ms": 10.100000381469727,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -999,7 +1049,7 @@
       "failures": []
     },
     {
-      "interaction_ms": 7.800000190734863,
+      "interaction_ms": 50,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
@@ -1007,7 +1057,7 @@
       "key_viewport_top": 481.28125,
       "overflow_px": 0,
       "page_screens": 2.063,
-      "content_chars": 2602,
+      "content_chars": 2681,
       "dom_nodes": 2728,
       "key_selector": ".pcheck-input",
       "page_errors": [],
@@ -1017,8 +1067,13 @@
       "failures": []
     },
     {
-      "interaction_ms": 8.299999713897705,
-      "longtasks": [],
+      "interaction_ms": 124,
+      "longtasks": [
+        {
+          "start": 1213.5999999046326,
+          "duration": 107
+        }
+      ],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
       "key_depth_screens": 0.535,
@@ -1035,8 +1090,17 @@
       "failures": []
     },
     {
-      "interaction_ms": 14.200000286102295,
-      "longtasks": [],
+      "interaction_ms": 85.30000019073486,
+      "longtasks": [
+        {
+          "start": 1213.5999999046326,
+          "duration": 107
+        },
+        {
+          "start": 2054.5999999046326,
+          "duration": 78
+        }
+      ],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
       "key_depth_screens": 0.535,
@@ -1053,15 +1117,24 @@
       "failures": []
     },
     {
-      "interaction_ms": 9.5,
-      "longtasks": [],
+      "interaction_ms": 16,
+      "longtasks": [
+        {
+          "start": 1213.5999999046326,
+          "duration": 107
+        },
+        {
+          "start": 2054.5999999046326,
+          "duration": 78
+        }
+      ],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
       "key_depth_screens": 0.562,
       "key_viewport_top": 506.078125,
       "overflow_px": 0,
-      "page_screens": 8.663,
-      "content_chars": 20622,
+      "page_screens": 8.692,
+      "content_chars": 20664,
       "dom_nodes": 10659,
       "key_selector": ".commit-metrics",
       "page_errors": [],
@@ -1071,8 +1144,17 @@
       "failures": []
     },
     {
-      "interaction_ms": 10.699999809265137,
-      "longtasks": [],
+      "interaction_ms": 39.89999961853027,
+      "longtasks": [
+        {
+          "start": 1213.5999999046326,
+          "duration": 107
+        },
+        {
+          "start": 2054.5999999046326,
+          "duration": 78
+        }
+      ],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
       "key_depth_screens": 0.901,
@@ -1089,8 +1171,17 @@
       "failures": []
     },
     {
-      "interaction_ms": 6.800000190734863,
-      "longtasks": [],
+      "interaction_ms": 12.299999713897705,
+      "longtasks": [
+        {
+          "start": 1213.5999999046326,
+          "duration": 107
+        },
+        {
+          "start": 2054.5999999046326,
+          "duration": 78
+        }
+      ],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
       "key_depth_screens": 0.562,
@@ -1107,8 +1198,17 @@
       "failures": []
     },
     {
-      "interaction_ms": 3.9000000953674316,
-      "longtasks": [],
+      "interaction_ms": 7.800000190734863,
+      "longtasks": [
+        {
+          "start": 1213.5999999046326,
+          "duration": 107
+        },
+        {
+          "start": 2054.5999999046326,
+          "duration": 78
+        }
+      ],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
       "key_depth_screens": 0.623,
@@ -1125,8 +1225,17 @@
       "failures": []
     },
     {
-      "interaction_ms": 5.199999809265137,
-      "longtasks": [],
+      "interaction_ms": 7.100000381469727,
+      "longtasks": [
+        {
+          "start": 1213.5999999046326,
+          "duration": 107
+        },
+        {
+          "start": 2054.5999999046326,
+          "duration": 78
+        }
+      ],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
       "key_depth_screens": 0.535,
@@ -1143,8 +1252,17 @@
       "failures": []
     },
     {
-      "interaction_ms": 10.099999904632568,
-      "longtasks": [],
+      "interaction_ms": 11.700000286102295,
+      "longtasks": [
+        {
+          "start": 1213.5999999046326,
+          "duration": 107
+        },
+        {
+          "start": 2054.5999999046326,
+          "duration": 78
+        }
+      ],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
       "key_depth_screens": 0.578,
@@ -1161,8 +1279,17 @@
       "failures": []
     },
     {
-      "interaction_ms": 5.300000190734863,
-      "longtasks": [],
+      "interaction_ms": 6.300000190734863,
+      "longtasks": [
+        {
+          "start": 1213.5999999046326,
+          "duration": 107
+        },
+        {
+          "start": 2054.5999999046326,
+          "duration": 78
+        }
+      ],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
       "key_depth_screens": 0.507,
@@ -1179,8 +1306,17 @@
       "failures": []
     },
     {
-      "interaction_ms": 6.299999713897705,
-      "longtasks": [],
+      "interaction_ms": 8.099999904632568,
+      "longtasks": [
+        {
+          "start": 1213.5999999046326,
+          "duration": 107
+        },
+        {
+          "start": 2054.5999999046326,
+          "duration": 78
+        }
+      ],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
       "key_depth_screens": 0.562,
@@ -1204,8 +1340,17 @@
       "failures": []
     },
     {
-      "interaction_ms": 10.5,
-      "longtasks": [],
+      "interaction_ms": 15.5,
+      "longtasks": [
+        {
+          "start": 1213.5999999046326,
+          "duration": 107
+        },
+        {
+          "start": 2054.5999999046326,
+          "duration": 78
+        }
+      ],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
       "key_depth_screens": 0.535,
@@ -1215,17 +1360,26 @@
       "content_chars": 12134,
       "dom_nodes": 22026,
       "clicks_from_overview": 2,
-      "heap_bytes": 6616900,
-      "renderer_task_ms": 14.946,
-      "script_ms": 3.402,
+      "heap_bytes": 7121724,
+      "renderer_task_ms": 17.649,
+      "script_ms": 3.97,
       "name": "check-example-cedar-creek-lake-tx-2026",
       "viewport": "desktop",
       "depth_budget": 1.5,
       "failures": []
     },
     {
-      "interaction_ms": 6,
-      "longtasks": [],
+      "interaction_ms": 7.599999904632568,
+      "longtasks": [
+        {
+          "start": 1213.5999999046326,
+          "duration": 107
+        },
+        {
+          "start": 2054.5999999046326,
+          "duration": 78
+        }
+      ],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
       "key_depth_screens": 0.535,
@@ -1235,17 +1389,26 @@
       "content_chars": 12354,
       "dom_nodes": 22030,
       "clicks_from_overview": 2,
-      "heap_bytes": 8007152,
-      "renderer_task_ms": 10.997,
-      "script_ms": 1.658,
+      "heap_bytes": 8532660,
+      "renderer_task_ms": 13.249,
+      "script_ms": 2.107,
       "name": "check-example-amazon-wharton-county-tx-2026",
       "viewport": "desktop",
       "depth_budget": 1.5,
       "failures": []
     },
     {
-      "interaction_ms": 5.199999809265137,
-      "longtasks": [],
+      "interaction_ms": 6.299999713897705,
+      "longtasks": [
+        {
+          "start": 1213.5999999046326,
+          "duration": 107
+        },
+        {
+          "start": 2054.5999999046326,
+          "duration": 78
+        }
+      ],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
       "key_depth_screens": 0.535,
@@ -1255,17 +1418,26 @@
       "content_chars": 10516,
       "dom_nodes": 21961,
       "clicks_from_overview": 2,
-      "heap_bytes": 9317244,
-      "renderer_task_ms": 10.703,
-      "script_ms": 1.249,
+      "heap_bytes": 6564068,
+      "renderer_task_ms": 12.724,
+      "script_ms": 1.485,
       "name": "check-example-big-sky-broadview-mt-2026",
       "viewport": "desktop",
       "depth_budget": 1.5,
       "failures": []
     },
     {
-      "interaction_ms": 5.299999713897705,
-      "longtasks": [],
+      "interaction_ms": 6.900000095367432,
+      "longtasks": [
+        {
+          "start": 1213.5999999046326,
+          "duration": 107
+        },
+        {
+          "start": 2054.5999999046326,
+          "duration": 78
+        }
+      ],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
       "key_depth_screens": 0.535,
@@ -1275,17 +1447,26 @@
       "content_chars": 13107,
       "dom_nodes": 22028,
       "clicks_from_overview": 2,
-      "heap_bytes": 7113644,
-      "renderer_task_ms": 10.702,
-      "script_ms": 1.369,
+      "heap_bytes": 7986768,
+      "renderer_task_ms": 13.314,
+      "script_ms": 1.836,
       "name": "check-example-vantage-port-washington-wi-2026",
       "viewport": "desktop",
       "depth_budget": 1.5,
       "failures": []
     },
     {
-      "interaction_ms": 5,
-      "longtasks": [],
+      "interaction_ms": 6.299999713897705,
+      "longtasks": [
+        {
+          "start": 1213.5999999046326,
+          "duration": 107
+        },
+        {
+          "start": 2054.5999999046326,
+          "duration": 78
+        }
+      ],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
       "key_depth_screens": 0.535,
@@ -1295,17 +1476,26 @@
       "content_chars": 12649,
       "dom_nodes": 22008,
       "clicks_from_overview": 2,
-      "heap_bytes": 8427568,
-      "renderer_task_ms": 10.057,
-      "script_ms": 1.309,
+      "heap_bytes": 9324972,
+      "renderer_task_ms": 12.453,
+      "script_ms": 1.561,
       "name": "check-example-project-blue-wells-tucson-az-2026",
       "viewport": "desktop",
       "depth_budget": 1.5,
       "failures": []
     },
     {
-      "interaction_ms": 4.699999809265137,
-      "longtasks": [],
+      "interaction_ms": 7.300000190734863,
+      "longtasks": [
+        {
+          "start": 1213.5999999046326,
+          "duration": 107
+        },
+        {
+          "start": 2054.5999999046326,
+          "duration": 78
+        }
+      ],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
       "key_depth_screens": 0.535,
@@ -1315,38 +1505,66 @@
       "content_chars": 12252,
       "dom_nodes": 21997,
       "clicks_from_overview": 2,
-      "heap_bytes": 9682312,
-      "renderer_task_ms": 9.684,
-      "script_ms": 1.129,
+      "heap_bytes": 7170560,
+      "renderer_task_ms": 12.745,
+      "script_ms": 1.425,
       "name": "check-example-bt-aycock-princeton-tx-2026",
       "viewport": "desktop",
       "depth_budget": 1.5,
       "failures": []
     },
     {
-      "interaction_ms": 6.099999904632568,
-      "longtasks": [],
-      "automated_scroll_screens": 0.672,
+      "source_example": "bt-aycock-princeton-tx-2026",
+      "curated_facets": 1,
+      "payload_digest_verified": true,
+      "name": "assessment-example-provenance",
+      "viewport": "desktop",
+      "depth_budget": 1.5,
+      "failures": []
+    },
+    {
+      "interaction_ms": 9,
+      "longtasks": [
+        {
+          "start": 1213.5999999046326,
+          "duration": 107
+        },
+        {
+          "start": 2054.5999999046326,
+          "duration": 78
+        }
+      ],
+      "automated_scroll_screens": 0.0,
       "clicks": 1,
       "key_depth_screens": 0.535,
-      "key_viewport_top": -123.71875,
+      "key_viewport_top": -36.71875,
       "overflow_px": 0,
       "page_screens": 8.38,
       "content_chars": 11918,
       "dom_nodes": 21988,
       "interactions_from_overview": 4,
+      "source_example_retained_after_edit": true,
       "name": "check-edit-run",
       "viewport": "desktop",
       "depth_budget": 1.5,
       "failures": []
     },
     {
-      "interaction_ms": 5.199999809265137,
-      "longtasks": [],
+      "interaction_ms": 7.700000286102295,
+      "longtasks": [
+        {
+          "start": 1213.5999999046326,
+          "duration": 107
+        },
+        {
+          "start": 2054.5999999046326,
+          "duration": 78
+        }
+      ],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
       "target": "#paths-build",
-      "target_top_px": 367.4375,
+      "target_top_px": 454.4375,
       "back_restored": true,
       "name": "cross-tab-link-back",
       "viewport": "desktop",
@@ -1354,8 +1572,17 @@
       "failures": []
     },
     {
-      "interaction_ms": 2.1000003814697266,
-      "longtasks": [],
+      "interaction_ms": 3.5999999046325684,
+      "longtasks": [
+        {
+          "start": 1213.5999999046326,
+          "duration": 107
+        },
+        {
+          "start": 2054.5999999046326,
+          "duration": 78
+        }
+      ],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
       "name": "check-clear",
@@ -1366,6 +1593,11 @@
     {
       "download_filename": "water-project-assessment.json",
       "unknown_questions": 2,
+      "manual_export_values": {
+        "mw": "350",
+        "mgd": "2",
+        "state": "AZ"
+      },
       "unreviewed_readings": 11,
       "stale_mutations_checked": 5,
       "name": "assessment-export-evidence-stale",
@@ -1374,7 +1606,17 @@
       "failures": []
     },
     {
-      "interaction_ms": 186.80000019073486,
+      "example": "big-sky-broadview-mt-2026",
+      "size_updated_without_prose_edit": true,
+      "explicit_checkbox_precedence": true,
+      "smaller_manual_size_overrides_description": true,
+      "name": "assessment-size-override",
+      "viewport": "desktop",
+      "depth_budget": 1.5,
+      "failures": []
+    },
+    {
+      "interaction_ms": 189.40000009536743,
       "clicks_from_overview": 1,
       "interactions_from_overview": 2,
       "key_depth_screens": 1.043,
@@ -1390,8 +1632,17 @@
       "failures": []
     },
     {
-      "interaction_ms": 4.400000095367432,
-      "longtasks": [],
+      "interaction_ms": 4.099999904632568,
+      "longtasks": [
+        {
+          "start": 1213.5999999046326,
+          "duration": 107
+        },
+        {
+          "start": 2054.5999999046326,
+          "duration": 78
+        }
+      ],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
       "name": "explore-zoom",
@@ -1482,8 +1733,8 @@
       "key_depth_screens": 0.091,
       "key_viewport_top": 73.84375,
       "overflow_px": 0,
-      "page_screens": 17.483,
-      "content_chars": 20622,
+      "page_screens": 17.515,
+      "content_chars": 20664,
       "dom_nodes": 879,
       "name": "nojs-commitments",
       "viewport": "mobile",
@@ -1581,15 +1832,15 @@
       "page_screens": 2.994,
       "content_chars": 1972,
       "dom_nodes": 216,
-      "content_ms": 392.40000009536743,
+      "content_ms": 393.5,
       "fcp_ms": 280,
       "resources": [
         {
           "path": "/",
-          "transfer_bytes": 36734,
-          "encoded_bytes": 36434,
+          "transfer_bytes": 36736,
+          "encoded_bytes": 36436,
           "decoded_bytes": 127842,
-          "duration_ms": 350.5
+          "duration_ms": 352
         }
       ],
       "longtasks": [],
@@ -1600,12 +1851,12 @@
       "failures": []
     },
     {
-      "interaction_ms": 8.299999713897705,
+      "interaction_ms": 7.900000095367432,
       "longtasks": [],
       "automated_scroll_screens": 0.0,
       "clicks": 1,
       "retry": {
-        "interaction_ms": 27.800000190734863,
+        "interaction_ms": 27.59999990463257,
         "longtasks": [],
         "automated_scroll_screens": 0.0,
         "clicks": 1
@@ -1618,112 +1869,112 @@
   ],
   "profiles": {
     "tablet-after-all": {
-      "heap_bytes": 7802228,
+      "heap_bytes": 9281880,
       "resources": [
         {
           "path": "/",
-          "transfer_bytes": 36734,
-          "encoded_bytes": 36434,
+          "transfer_bytes": 36736,
+          "encoded_bytes": 36436,
           "decoded_bytes": 127842,
-          "duration_ms": 33.5
+          "duration_ms": 21.09999990463257
         },
         {
           "path": "/tab-check.html",
-          "transfer_bytes": 47382,
-          "encoded_bytes": 47082,
-          "decoded_bytes": 254231,
-          "duration_ms": 5.800000190734863
+          "transfer_bytes": 47606,
+          "encoded_bytes": 47306,
+          "decoded_bytes": 255107,
+          "duration_ms": 6.399999618530273
         },
         {
           "path": "/project-data.json",
-          "transfer_bytes": 141558,
-          "encoded_bytes": 141258,
-          "decoded_bytes": 491102,
-          "duration_ms": 29.199999809265137
+          "transfer_bytes": 141623,
+          "encoded_bytes": 141323,
+          "decoded_bytes": 491186,
+          "duration_ms": 32.80000019073486
         },
         {
           "path": "/tab-legislation.html",
           "transfer_bytes": 73945,
           "encoded_bytes": 73645,
           "decoded_bytes": 367017,
-          "duration_ms": 7.699999809265137
+          "duration_ms": 7.599999904632568
         },
         {
           "path": "/tab-states.html",
           "transfer_bytes": 34443,
           "encoded_bytes": 34143,
           "decoded_bytes": 187640,
-          "duration_ms": 4.300000190734863
+          "duration_ms": 4.099999904632568
         },
         {
           "path": "/tab-commitments.html",
-          "transfer_bytes": 11923,
-          "encoded_bytes": 11623,
-          "decoded_bytes": 52715,
-          "duration_ms": 1.9000000953674316
+          "transfer_bytes": 11926,
+          "encoded_bytes": 11626,
+          "decoded_bytes": 52757,
+          "duration_ms": 1.8999996185302734
         },
         {
           "path": "/tab-cwa.html",
           "transfer_bytes": 174808,
           "encoded_bytes": 174508,
           "decoded_bytes": 766772,
-          "duration_ms": 16.40000009536743
+          "duration_ms": 16.300000190734863
         },
         {
           "path": "/tab-issues.html",
           "transfer_bytes": 37697,
           "encoded_bytes": 37397,
           "decoded_bytes": 172941,
-          "duration_ms": 4.199999809265137
+          "duration_ms": 5.299999713897705
         },
         {
           "path": "/tab-news.html",
           "transfer_bytes": 24834,
           "encoded_bytes": 24534,
           "decoded_bytes": 128552,
-          "duration_ms": 2.8999996185302734
+          "duration_ms": 2.6999998092651367
         },
         {
           "path": "/tab-solutions.html",
           "transfer_bytes": 7587,
           "encoded_bytes": 7287,
           "decoded_bytes": 23244,
-          "duration_ms": 1.5
+          "duration_ms": 1.5999999046325684
         },
         {
           "path": "/tab-security.html",
           "transfer_bytes": 11183,
           "encoded_bytes": 10883,
           "decoded_bytes": 34674,
-          "duration_ms": 1.8000001907348633
+          "duration_ms": 1.5999999046325684
         },
         {
           "path": "/tab-sources.html",
           "transfer_bytes": 3387,
           "encoded_bytes": 3087,
           "decoded_bytes": 11125,
-          "duration_ms": 1
+          "duration_ms": 1.0999999046325684
         },
         {
           "path": "/tab-explore.html",
           "transfer_bytes": 15840,
           "encoded_bytes": 15540,
           "decoded_bytes": 51516,
-          "duration_ms": 2.799999713897705
+          "duration_ms": 2.8000001907348633
         },
         {
           "path": "/graph-data.json",
           "transfer_bytes": 200052,
           "encoded_bytes": 199752,
           "decoded_bytes": 707126,
-          "duration_ms": 83.7999997138977
+          "duration_ms": 74.2999997138977
         }
       ],
       "longtasks": []
     },
     "mobile-overview-idle": {
       "seconds": 10,
-      "task_ms": 1.02,
+      "task_ms": 32.686,
       "script_ms": 0.0,
       "heap_bytes": 2813400,
       "trace_counts": {},
@@ -1740,235 +1991,244 @@
     },
     "mobile-explore-folded-idle": {
       "seconds": 10,
-      "task_ms": 14.363,
-      "script_ms": 2.719,
-      "heap_bytes": 7213904,
+      "task_ms": 9.468,
+      "script_ms": 0.261,
+      "heap_bytes": 7534160,
       "trace_counts": {
-        "PrePaint": 22,
-        "IntersectionObserverController::computeIntersections": 44,
-        "Layerize": 22,
-        "TimerFire": 1,
-        "FunctionCall": 1,
-        "HitTest": 16
+        "PrePaint": 23,
+        "IntersectionObserverController::computeIntersections": 45,
+        "Layerize": 23,
+        "TimerFire": 3,
+        "FunctionCall": 3,
+        "HitTest": 13
       },
       "trace_duration_ms": {
         "Paint": 0.0,
-        "PrePaint": 1.416,
+        "PrePaint": 0.902,
         "Layout": 0.0,
         "UpdateLayoutTree": 0.0,
-        "FunctionCall": 2.782,
+        "FunctionCall": 0.333,
         "FireAnimationFrame": 0.0
       },
       "dom_mutations": 0,
       "running_animations": []
     },
     "mobile-after-all": {
-      "heap_bytes": 10939548,
+      "heap_bytes": 12003616,
       "resources": [
         {
           "path": "/",
-          "transfer_bytes": 36734,
-          "encoded_bytes": 36434,
+          "transfer_bytes": 36736,
+          "encoded_bytes": 36436,
           "decoded_bytes": 127842,
-          "duration_ms": 16.90000009536743
+          "duration_ms": 17.699999809265137
         },
         {
           "path": "/tab-check.html",
-          "transfer_bytes": 47382,
-          "encoded_bytes": 47082,
-          "decoded_bytes": 254231,
-          "duration_ms": 5.900000095367432
+          "transfer_bytes": 47606,
+          "encoded_bytes": 47306,
+          "decoded_bytes": 255107,
+          "duration_ms": 8.399999618530273
         },
         {
           "path": "/project-data.json",
-          "transfer_bytes": 141558,
-          "encoded_bytes": 141258,
-          "decoded_bytes": 491102,
-          "duration_ms": 28.90000009536743
+          "transfer_bytes": 141623,
+          "encoded_bytes": 141323,
+          "decoded_bytes": 491186,
+          "duration_ms": 50.69999980926514
         },
         {
           "path": "/tab-legislation.html",
           "transfer_bytes": 73945,
           "encoded_bytes": 73645,
           "decoded_bytes": 367017,
-          "duration_ms": 7.699999809265137
+          "duration_ms": 11.299999713897705
         },
         {
           "path": "/tab-states.html",
           "transfer_bytes": 34443,
           "encoded_bytes": 34143,
           "decoded_bytes": 187640,
-          "duration_ms": 4.299999713897705
+          "duration_ms": 8.900000095367432
         },
         {
           "path": "/tab-commitments.html",
-          "transfer_bytes": 11923,
-          "encoded_bytes": 11623,
-          "decoded_bytes": 52715,
-          "duration_ms": 1.799999713897705
+          "transfer_bytes": 11926,
+          "encoded_bytes": 11626,
+          "decoded_bytes": 52757,
+          "duration_ms": 2.9000000953674316
         },
         {
           "path": "/tab-cwa.html",
           "transfer_bytes": 174808,
           "encoded_bytes": 174508,
           "decoded_bytes": 766772,
-          "duration_ms": 15.099999904632568
+          "duration_ms": 26.699999809265137
         },
         {
           "path": "/tab-issues.html",
           "transfer_bytes": 37697,
           "encoded_bytes": 37397,
           "decoded_bytes": 172941,
-          "duration_ms": 4.300000190734863
+          "duration_ms": 7.399999618530273
         },
         {
           "path": "/tab-news.html",
           "transfer_bytes": 24834,
           "encoded_bytes": 24534,
           "decoded_bytes": 128552,
-          "duration_ms": 2.799999713897705
+          "duration_ms": 4.400000095367432
         },
         {
           "path": "/tab-solutions.html",
           "transfer_bytes": 7587,
           "encoded_bytes": 7287,
           "decoded_bytes": 23244,
-          "duration_ms": 1.3999996185302734
+          "duration_ms": 1.8000001907348633
         },
         {
           "path": "/tab-security.html",
           "transfer_bytes": 11183,
           "encoded_bytes": 10883,
           "decoded_bytes": 34674,
-          "duration_ms": 1.799999713897705
+          "duration_ms": 2.299999713897705
         },
         {
           "path": "/tab-sources.html",
           "transfer_bytes": 3387,
           "encoded_bytes": 3087,
           "decoded_bytes": 11125,
-          "duration_ms": 1.200000286102295
+          "duration_ms": 1.1999998092651367
         },
         {
           "path": "/tab-explore.html",
           "transfer_bytes": 15840,
           "encoded_bytes": 15540,
           "decoded_bytes": 51516,
-          "duration_ms": 2.799999713897705
+          "duration_ms": 3.5
         },
         {
           "path": "/graph-data.json",
           "transfer_bytes": 200052,
           "encoded_bytes": 199752,
           "decoded_bytes": 707126,
-          "duration_ms": 73.30000019073486
+          "duration_ms": 94.59999990463257
         }
       ],
       "longtasks": []
     },
     "desktop-after-all": {
-      "heap_bytes": 7809868,
+      "heap_bytes": 9725924,
       "resources": [
         {
           "path": "/",
-          "transfer_bytes": 36734,
-          "encoded_bytes": 36434,
+          "transfer_bytes": 36736,
+          "encoded_bytes": 36436,
           "decoded_bytes": 127842,
-          "duration_ms": 18
+          "duration_ms": 19.5
         },
         {
           "path": "/tab-check.html",
-          "transfer_bytes": 47382,
-          "encoded_bytes": 47082,
-          "decoded_bytes": 254231,
-          "duration_ms": 5.699999809265137
+          "transfer_bytes": 47606,
+          "encoded_bytes": 47306,
+          "decoded_bytes": 255107,
+          "duration_ms": 8.299999713897705
         },
         {
           "path": "/project-data.json",
-          "transfer_bytes": 141558,
-          "encoded_bytes": 141258,
-          "decoded_bytes": 491102,
-          "duration_ms": 28.90000009536743
+          "transfer_bytes": 141623,
+          "encoded_bytes": 141323,
+          "decoded_bytes": 491186,
+          "duration_ms": 40.40000009536743
         },
         {
           "path": "/tab-legislation.html",
           "transfer_bytes": 73945,
           "encoded_bytes": 73645,
           "decoded_bytes": 367017,
-          "duration_ms": 8
+          "duration_ms": 15.700000286102295
         },
         {
           "path": "/tab-states.html",
           "transfer_bytes": 34443,
           "encoded_bytes": 34143,
           "decoded_bytes": 187640,
-          "duration_ms": 4.400000095367432
+          "duration_ms": 10.5
         },
         {
           "path": "/tab-commitments.html",
-          "transfer_bytes": 11923,
-          "encoded_bytes": 11623,
-          "decoded_bytes": 52715,
-          "duration_ms": 1.9000000953674316
+          "transfer_bytes": 11926,
+          "encoded_bytes": 11626,
+          "decoded_bytes": 52757,
+          "duration_ms": 3.3000001907348633
         },
         {
           "path": "/tab-cwa.html",
           "transfer_bytes": 174808,
           "encoded_bytes": 174508,
           "decoded_bytes": 766772,
-          "duration_ms": 16.09999990463257
+          "duration_ms": 25.59999990463257
         },
         {
           "path": "/tab-issues.html",
           "transfer_bytes": 37697,
           "encoded_bytes": 37397,
           "decoded_bytes": 172941,
-          "duration_ms": 4.199999809265137
+          "duration_ms": 7.600000381469727
         },
         {
           "path": "/tab-news.html",
           "transfer_bytes": 24834,
           "encoded_bytes": 24534,
           "decoded_bytes": 128552,
-          "duration_ms": 2.700000286102295
+          "duration_ms": 4.299999713897705
         },
         {
           "path": "/tab-solutions.html",
           "transfer_bytes": 7587,
           "encoded_bytes": 7287,
           "decoded_bytes": 23244,
-          "duration_ms": 1.4000000953674316
+          "duration_ms": 1.6999998092651367
         },
         {
           "path": "/tab-security.html",
           "transfer_bytes": 11183,
           "encoded_bytes": 10883,
           "decoded_bytes": 34674,
-          "duration_ms": 1.6000003814697266
+          "duration_ms": 1.9000000953674316
         },
         {
           "path": "/tab-sources.html",
           "transfer_bytes": 3387,
           "encoded_bytes": 3087,
           "decoded_bytes": 11125,
-          "duration_ms": 1.0999999046325684
+          "duration_ms": 1.299999713897705
         },
         {
           "path": "/tab-explore.html",
           "transfer_bytes": 15840,
           "encoded_bytes": 15540,
           "decoded_bytes": 51516,
-          "duration_ms": 2.5999999046325684
+          "duration_ms": 3.200000286102295
         },
         {
           "path": "/graph-data.json",
           "transfer_bytes": 200052,
           "encoded_bytes": 199752,
           "decoded_bytes": 707126,
-          "duration_ms": 75.59999990463257
+          "duration_ms": 100.59999990463257
         }
       ],
-      "longtasks": []
+      "longtasks": [
+        {
+          "start": 1213.5999999046326,
+          "duration": 107
+        },
+        {
+          "start": 2054.5999999046326,
+          "duration": 78
+        }
+      ]
     }
   },
   "method": "Headless Chromium; immutable localhost gzip HTTP snapshot; fresh contexts per viewport; one sample per flow. Click clocks start in capture listeners and end at asserted DOM state. Reading/typing time and manual scroll gestures excluded.",
@@ -1986,23 +2246,23 @@
     },
     "docket-manifest.json": {
       "raw_bytes": 903,
-      "gzip_bytes": 488,
-      "sha256": "f25c8d39e82e658ec75c01576866720893aff2c507c5685b9cf328758e4e88d2"
+      "gzip_bytes": 487,
+      "sha256": "15ec3653ea6881504325b86a3ef2e06388514b55eb0172fe4e7f8e9c4b214e5f"
     },
     "index.html": {
       "raw_bytes": 127842,
-      "gzip_bytes": 36434,
-      "sha256": "622979a9c3177cb7205a50e0bbec56bf6093b1b697d9fdc7c4f19418c449a0fa"
+      "gzip_bytes": 36436,
+      "sha256": "a025371736a5e398fc8ea3e3defa45044b674b53ce47611f28c8b0191a2618b1"
     },
     "tab-check.html": {
-      "raw_bytes": 254231,
-      "gzip_bytes": 47082,
-      "sha256": "fb91be5bf27e1781c02a4cc33f55371c5b8246ca1146237a4edfd0eeea627992"
+      "raw_bytes": 255107,
+      "gzip_bytes": 47306,
+      "sha256": "63b103f920547d4345e7ffdfb110884831f2827b9ba63740bbfd022712d4c2f3"
     },
     "docket-records.jsonl": {
-      "raw_bytes": 639248,
-      "gzip_bytes": 139365,
-      "sha256": "b60936f68aa57aa626165190faf77e515d4856993d782ef76af361502977a452"
+      "raw_bytes": 639986,
+      "gzip_bytes": 139382,
+      "sha256": "c8a6eef1a7b5ce9355b44fd4a6ea63e1f2260063d67d42c17549963ea461e3d3"
     },
     "tab-legislation.html": {
       "raw_bytes": 367017,
@@ -2015,9 +2275,9 @@
       "sha256": "70d7283030ec4bbb53ae6c1d4f299f1a8b7d3385ee7b6ac9fc89edfa0b85949b"
     },
     "docket-record.schema.json": {
-      "raw_bytes": 6773,
-      "gzip_bytes": 1200,
-      "sha256": "670925330854e7b1343f753522ec9b87f66e4605a382a6680067ed547e9f3737"
+      "raw_bytes": 8122,
+      "gzip_bytes": 1325,
+      "sha256": "1d49b4878fc4b73f6357bbf6ed723feea40ce1528f8fa4f9ca9ae1c1d14ae684"
     },
     "tab-cwa.html": {
       "raw_bytes": 766772,
@@ -2035,9 +2295,9 @@
       "sha256": "90b81f64d7e1fdd05e51755c57de867b4e70fb844ef91609caa22ca5a877eb04"
     },
     "tab-commitments.html": {
-      "raw_bytes": 52715,
-      "gzip_bytes": 11623,
-      "sha256": "7bfd6ca344957c5436152561b0c8429bb191cacb56193c116e523fc0a890c7aa"
+      "raw_bytes": 52757,
+      "gzip_bytes": 11626,
+      "sha256": "1c28b7951ba64fd0d639beaf742ac0850f254165f492b104f4afeec2390451dc"
     },
     "tab-solutions.html": {
       "raw_bytes": 23244,
@@ -2065,14 +2325,14 @@
       "sha256": "9d1a1aa0215df6e16903991aa661c22d80a2c49411df08fd7dace34c7af96294"
     },
     "docket-dataset.md": {
-      "raw_bytes": 4856,
-      "gzip_bytes": 2308,
-      "sha256": "8256a52513c23a7a96924792b45e8c22142273d3d09e433b268957c2364e7b42"
+      "raw_bytes": 5024,
+      "gzip_bytes": 2370,
+      "sha256": "1374e66b1a38f7103b6090a07415e2c108b4ce9eddc55cc1aaa3dbf6e115c355"
     },
     "project-data.json": {
-      "raw_bytes": 491102,
-      "gzip_bytes": 141258,
-      "sha256": "ef501881c5ee75ca85edd54a7b0785c21fdfa4c8d291f40834631a6a7a1d4bd3"
+      "raw_bytes": 491186,
+      "gzip_bytes": 141323,
+      "sha256": "aad047bf8a629db079384e8949c3e32954201abf559ca6426a638b43b353cf05"
     },
     "tab-states.html": {
       "raw_bytes": 187640,

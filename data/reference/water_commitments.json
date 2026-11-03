@@ -442,7 +442,7 @@
       "date": null,
       "date_kind": "Undertaking date not reported",
       "status": "reported",
-      "binding": "voluntary",
+      "binding": "unknown",
       "delivery_status": "under-construction",
       "summary": "City Utilities reports construction of approximately 22,000 feet of 30-inch water transmission main, fully funded by Google. Public ownership follows completion and formal acceptance.",
       "terms": [
@@ -473,7 +473,7 @@
       "date": "2012",
       "date_kind": "Reuse began",
       "status": "reported",
-      "binding": "voluntary",
+      "binding": "unknown",
       "delivery_status": "operating",
       "summary": "Google dates the start of recycled industrial-water cooling in Douglas County to 2012.",
       "terms": [

@@ -33,7 +33,7 @@ jobs:
         run: |
           set -eux
           # Only the deps build_site.py needs to import dashboard.py and render
-          # markdown — not the full scraper stack. These four pins MUST mirror
+          # markdown — not the full scraper stack. These pins MUST mirror
           # requirements.txt (they had silently drifted four versions behind by
           # 2026-08-24; the sync was verified by rebuilding the site under the
           # new pins on 3.12 and diffing — byte-identical, 373 render tests
