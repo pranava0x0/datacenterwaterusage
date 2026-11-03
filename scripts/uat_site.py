@@ -167,6 +167,35 @@ def worksheet_download(page: Any) -> tuple[dict[str, Any], str]:
     return json.loads(Path(download.path()).read_text()), download.suggested_filename
 
 
+def search_while_graph_loads(browser: Any, base: str, viewport: str) -> dict[str, Any]:
+    """Hold the graph request until a reader has entered a query, then release it."""
+    width, height = VIEWPORTS[viewport]
+    context = browser.new_context(viewport={"width": width, "height": height})
+    try:
+        page = context.new_page()
+        held: list[Any] = []
+        page.route("**/graph-data.json*", lambda route: held.append(route))
+        page.goto(base)
+        page.locator('button[data-tab="explore"]').click()
+        page.wait_for_function("document.querySelector('#explore-status')?.textContent.includes('Loading')")
+        query = "groundwater aquifer cooling discharge permit"
+        field = page.locator("#explore-q")
+        field.evaluate("e=>{window.__queryInputs=0;e.addEventListener('input',()=>window.__queryInputs++)}")
+        field.fill(query)
+        assert field.input_value() == query and len(held) == 1, "Query must be entered while the graph is held"
+        cards = page.locator("#explore-results .explore-result")
+        assert cards.count() == 0
+        held[0].continue_()
+        page.wait_for_function("document.querySelectorAll('#explore-edgelist input').length > 0")
+        cards.first.wait_for(state="visible", timeout=3000)
+        assert field.input_value() == query and page.evaluate("__queryInputs") == 1
+        assert page.locator("#explore-count").inner_text().startswith("Showing the closest")
+        return {"query": query, "input_events": 1, "graph_requests": len(held), "result_cards": cards.count(),
+                "first_result": cards.first.locator("a").first.inner_text()}
+    finally:
+        context.close()
+
+
 def check_downloaded_inputs(page: Any, worksheet: dict[str, Any], expected_hash: str,
                             source_example: dict[str, Any] | None) -> dict[str, str]:
     """Match the exported worksheet to what the reader actually saw and selected."""
@@ -500,6 +529,8 @@ def run(root: Path, out: Path, screenshot_dir: Path | None = None) -> dict[str, 
             return row
         record("lazy-failure-retry", "mobile", retry_flow)
         context.close()
+        for viewport in ("mobile", "desktop"):
+            record("explore-query-while-loading", viewport, lambda: search_while_graph_loads(browser, base, viewport))
         browser.close()
     result["failures"] = [f"{row['viewport']}/{row['name']}: {failure}" for row in result["rows"] for failure in row["failures"]]
     if not result["rows"]:

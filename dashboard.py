@@ -6671,6 +6671,8 @@ def _explore_js() -> str:
     draw();
   });
   start();
+  // Text can arrive while the lazy payload is still loading.
+  if (qBox.value.trim()) runSearch();
 
   }  // end boot()
 
