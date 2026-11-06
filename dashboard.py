@@ -1290,8 +1290,8 @@ def render_timeline():
     st.subheader("Policy & Disclosure Timeline")
 
     st.markdown(
-        "Key events shaping data center water transparency — "
-        "the data landscape is changing rapidly."
+        "Data releases, reporting requirements, and other events affecting "
+        "data-center water records."
     )
 
     category_colors = {
@@ -1808,7 +1808,7 @@ LEGISLATION_THEME_DEFINITIONS = [
         "tags": ("Preemptive review",),
         "label": "Pre-Construction Review",
         "color": "#2e8b57",
-        "description": "Force evaluation of water-supply and environmental impacts before construction is approved, not after.",
+        "description": "Require evaluation of water-supply and environmental impacts before construction approval.",
     },
     {
         "tags": ("Closed-loop cooling", "Conservation"),
@@ -1826,13 +1826,13 @@ LEGISLATION_THEME_DEFINITIONS = [
         "tags": ("Permit oversight", "Moratorium"),
         "label": "Permit Reform & Moratoria",
         "color": "#6b3fa0",
-        "description": "Impose construction moratoria or approval leverage over siting before new permits, giving regulators time to assess cumulative demand.",
+        "description": "Pause construction or require siting review while regulators assess cumulative demand.",
     },
     {
-        "tags": ("Anti-corporate-welfare",),
+        "tags": ("Subsidy conditions",),
         "label": "Subsidy Conditions & Repeal",
         "color": "#1a7a8a",
-        "description": "Condition or repeal the tax exemptions and subsidies that currently socialize data-center infrastructure costs.",
+        "description": "Condition or repeal data-center tax exemptions and subsidies.",
     },
 ]
 
@@ -2707,8 +2707,8 @@ def render_water_solutions():
 # realistically attach to a data center. Scoring (1–5, 5 = strongest) is on
 # public-interest merit ONLY — Impact (community/environmental harm averted),
 # Viability (legal strength post-Sackett/Maui), Tractability (can THIS tracker
-# source the evidence via ECHO DMR/SNC, public permits, FOIA). No data-center
-# CWA enforcement case exists yet; full write-up with primary-source citations
+# source the evidence via ECHO DMR/SNC, public permits, FOIA).
+# See the case registry for recorded actions; the analytical write-up
 # lives in docs/cwa-enforcement-and-data-centers.md. Kept module-level so the
 # builder stays pure and unit-testable, and so build_site.py reuses one source
 # of truth.
@@ -2718,9 +2718,9 @@ CWA_APPLICATION_THEORIES = [
         "theory": "Citizen suit against the receiving POTW",
         "hook": "CWA §505 (33 U.S.C. §1365)",
         "impact": 5, "viability": 5, "tractability": 5,
-        "why": "Turns the tracker's existing ECHO SNC/DMR pull into the predicate "
-               "for a citizen suit against the plant that actually carries data-center "
-               "cooling blowdown — not the DC's near-empty stormwater permit.",
+        "why": "ECHO SNC/DMR records can help identify ongoing NPDES violations at a treatment "
+               "plant receiving data-center cooling blowdown. A citizen suit requires the "
+               "applicable notice, standing, and other statutory conditions.",
         "analog": "Port of Morrow, OR (WWTP receiving DC wastewater)",
     },
     {
@@ -2728,9 +2728,9 @@ CWA_APPLICATION_THEORIES = [
         "theory": "Pretreatment / Industrial-User loading",
         "hook": "CWA §307 + §403",
         "impact": 5, "viability": 5, "tractability": 4,
-        "why": "Where DC blowdown actually goes; loading can force POTW pass-through "
-               "(putting the plant in violation) and raise every other ratepayer's "
-               "costs. Industrial-user permits and local limits are FOIA-able.",
+        "why": "Data-center blowdown discharged to a municipal treatment plant may be subject "
+               "to industrial-user permits and local pretreatment limits. Pass-through or "
+               "interference can affect plant compliance and treatment costs.",
         "analog": "Port of Morrow, OR; industrial pretreatment consent decrees",
     },
     {
@@ -2738,9 +2738,9 @@ CWA_APPLICATION_THEORIES = [
         "theory": "Construction stormwater",
         "hook": "CWA §402 (Construction General Permit)",
         "impact": 4, "viability": 5, "tractability": 4,
-        "why": "The single most-enforced real CWA violation against large "
-               "construction; acute turbidity and habitat impact during the "
-               "multi-hundred-acre build-out. NOIs and NOVs are ECHO-visible.",
+        "why": "Construction runoff can carry sediment into nearby waters. Construction "
+               "general-permit notices, inspection records, and notices of violation document "
+               "applicable controls and compliance.",
         "analog": "Arch Coal mining-site analog",
     },
     {
@@ -2748,9 +2748,9 @@ CWA_APPLICATION_THEORIES = [
         "theory": "Cooling-tower blowdown direct to surface water",
         "hook": "CWA §402 (NPDES numeric limits)",
         "impact": 4, "viability": 5, "tractability": 4,
-        "why": "The classic numeric-limit-exceedance pattern (thermal, chlorine, "
-               "biocides, conductivity); directly overlaps the flow metrics the "
-               "tracker already scrapes. Permit + DMR via ECHO.",
+        "why": "Direct discharges may be subject to numeric limits for heat, chlorine, "
+               "biocides, or other constituents. Permits and discharge monitoring reports "
+               "provide compliance evidence.",
         "analog": "West Penn Power (boron exceedance)",
     },
     {
@@ -2758,9 +2758,9 @@ CWA_APPLICATION_THEORIES = [
         "theory": "On-site package WWTP / greywater-recycle plant effluent",
         "hook": "CWA §402 (NPDES)",
         "impact": 4, "viability": 4, "tractability": 4,
-        "why": "Large campuses building their own treatment/reuse plant give it its "
-               "OWN NPDES permit + DMR — a clean, trackable point source distinct "
-               "from the data-center building.",
+        "why": "An on-site treatment or reuse plant may hold a separate NPDES permit. Its "
+               "discharge monitoring reports can provide data distinct from the data-center "
+               "building.",
         "analog": "xAI Colossus greywater plant, Memphis",
     },
     {
@@ -2768,9 +2768,9 @@ CWA_APPLICATION_THEORIES = [
         "theory": "Wetlands dredge-and-fill + state certification",
         "hook": "CWA §404 + §401",
         "impact": 5, "viability": 3, "tractability": 4,
-        "why": "Permanent habitat / flood-storage loss; the live enforcement edge. "
-               "Sackett narrowed FEDERAL reach, but §401 and retained VA/OH state "
-               "programs remain. Permit applications are public.",
+        "why": "Wetland fill can affect habitat and flood storage. Federal jurisdiction depends "
+               "on Sackett; applicable state wetland programs and certification requirements "
+               "also need review. Permit applications are public.",
         "analog": "New Carlisle IN; Project Raspberry/Loch VA; Port of Little Rock AR",
     },
     {
@@ -2778,9 +2778,9 @@ CWA_APPLICATION_THEORIES = [
         "theory": "Thermal discharge + cooling-water intake",
         "hook": "CWA §316(a)/(b)",
         "impact": 4, "viability": 4, "tractability": 3,
-        "why": "Heat is a regulated pollutant; intake impingement/entrainment. Bites "
-               "hardest where a DC pairs with on-site gas turbines (full power-plant "
-               "profile).",
+        "why": "Thermal discharges and cooling-water intakes may trigger separate requirements. "
+               "Applicability depends on the cooling system, intake, discharge, and any "
+               "associated generating plant.",
         "analog": "Greenidge Generation, NY (§316 thermal/intake)",
     },
     {
@@ -2788,9 +2788,9 @@ CWA_APPLICATION_THEORIES = [
         "theory": "Antidegradation / Tier 2 review of a new outfall",
         "hook": "CWA §303 / state water-quality standards",
         "impact": 4, "viability": 4, "tractability": 3,
-        "why": "A procedural lever that forces an alternatives analysis (e.g., dry or "
-               "closed-loop cooling) before a new or expanded discharge into "
-               "high-quality waters is permitted — high leverage at the siting stage.",
+        "why": "State antidegradation rules may require alternatives analysis before a new or "
+               "expanded discharge into high-quality waters is permitted. Review requirements "
+               "vary by state and receiving water.",
         "analog": "—",
     },
     {
@@ -2798,9 +2798,9 @@ CWA_APPLICATION_THEORIES = [
         "theory": "County of Maui “functional equivalent” discharge",
         "hook": "CWA §402 (Maui, 2020)",
         "impact": 4, "viability": 3, "tractability": 2,
-        "why": "The most novel theory: a cooling discharge, injection well, or land "
-               "application that reaches surface water VIA groundwater can still need "
-               "a permit. Closes a common DC discharge loophole; fact-intensive.",
+        "why": "A discharge reaching surface water through groundwater may require a permit "
+               "under the County of Maui functional-equivalent test. Applicability depends on "
+               "site-specific transport and hydrologic evidence.",
         "analog": "County of Maui v. Hawaii Wildlife Fund",
     },
     {
@@ -2808,9 +2808,9 @@ CWA_APPLICATION_THEORIES = [
         "theory": "PFAS in discharge",
         "hook": "CWA §402 (NPDES)",
         "impact": 4, "viability": 3, "tractability": 2,
-        "why": "AFFF fire-suppression systems + cooling-chemistry additives, as NPDES "
-               "PFAS limits tighten. Strong regulatory tailwind; sourceable once "
-               "effluent PFAS monitoring is permit-required.",
+        "why": "PFAS monitoring and discharge limits depend on the permit and applicable rules. "
+               "Potential sources include fire-suppression systems and cooling additives; "
+               "effluent data are needed to assess a particular facility.",
         "analog": "Industrial PFAS cases",
     },
     {
@@ -2818,9 +2818,9 @@ CWA_APPLICATION_THEORIES = [
         "theory": "Oil spill / SPCC from backup-diesel fuel farms",
         "hook": "CWA §311 (33 U.S.C. §1321)",
         "impact": 3, "viability": 5, "tractability": 3,
-        "why": "A release reaching a water of the U.S. is legally identical to the "
-               "pipeline-spill cases (incl. negligence-criminal exposure and the "
-               "duty-to-report trap); event-driven, so a lower base rate but settled law.",
+        "why": "An oil release from backup-fuel storage reaching covered waters may trigger "
+               "Section 311 liability and reporting duties. Applicability depends on the "
+               "release and facility circumstances.",
         "analog": "BP / Enbridge / Summit Midstream §311 line",
     },
     {
@@ -2828,8 +2828,9 @@ CWA_APPLICATION_THEORIES = [
         "theory": "Industrial stormwater",
         "hook": "CWA §402 (Multi-Sector General Permit)",
         "impact": 3, "viability": 4, "tractability": 3,
-        "why": "Exposed equipment yards and chemical/fuel storage areas; lower "
-               "per-event impact but routine. MSGP benchmark monitoring is public.",
+        "why": "Exposed equipment yards and chemical or fuel storage may require industrial "
+               "stormwater coverage. Permit coverage and benchmark monitoring records document "
+               "applicable requirements.",
         "analog": "—",
     },
 ]
@@ -2848,10 +2849,10 @@ DOCTRINE_APPLICATION_THEORIES = [
         "theory": "State environmental review — long-term supply not demonstrated",
         "hook": "State review statutes (CEQA-style); see sepa-supply-adequacy",
         "impact": 5, "viability": 5, "tractability": 5,
-        "why": "Needs no hydrologic proof — only that the approval document analysed "
-               "phase one and deferred build-out, which campus approvals routinely do. "
-               "The record is public by definition, and the remedy is the one opponents "
-               "actually want: approval vacated before construction, not damages after.",
+        "why": "State environmental review may require analysis of long-term water supply for a "
+               "campus build-out. An inadequate analysis can result in an approval being "
+               "vacated or remanded; requirements and remedies depend on state law and the "
+               "record.",
         "analog": "Vineyard v. Rancho Cordova (Cal. 2007); MCEA v. Pine Island (Minn. 2026)",
     },
     {
@@ -2859,10 +2860,9 @@ DOCTRINE_APPLICATION_THEORIES = [
         "theory": "High-capacity well permit — agency failed to weigh off-site impact",
         "hook": "State withdrawal permitting; see well-cumulative-impact",
         "impact": 5, "viability": 4, "tractability": 4,
-        "why": "Operates before the water is pumped rather than after the harm. The "
-               "catch is the trigger: the duty attaches only once concrete hydrologic "
-               "evidence is put in front of the agency, so it rewards exactly the "
-               "monitoring data this tracker collects.",
+        "why": "An agency reviewing a high-capacity well may need to consider off-site effects "
+               "when presented with scientific evidence of potential harm. The duty and "
+               "evidence threshold depend on state law.",
         "analog": "Lake Beulah Mgmt. Dist. v. DNR (Wis. 2011)",
     },
     {
@@ -2870,21 +2870,19 @@ DOCTRINE_APPLICATION_THEORIES = [
         "theory": "Public trust — groundwater pumping depleting a connected stream",
         "hook": "State public trust doctrine; see ptd-groundwater-nexus",
         "impact": 5, "viability": 4, "tractability": 3,
-        "why": "Reaches ordinary campus-well hydrology, which is otherwise regulated as "
-               "groundwater and never as the surface diversion it functionally is. Puts "
-               "the duty on the county issuing the permit — the level these fights are "
-               "already being fought at. Needs a demonstrated aquifer-stream connection.",
+        "why": "In jurisdictions recognizing this application of the public trust doctrine, "
+               "groundwater pumping that affects a connected stream may require review by the "
+               "permitting authority. A demonstrated aquifer-stream connection is necessary.",
         "analog": "ELF v. SWRCB (Cal. App. 2018); Nat'l Audubon (Cal. 1983)",
     },
     {
         "rank": 4,
-        "theory": "Consumer protection — published water claims are misleading",
+        "theory": "Consumer protection — alleged misleading water claims",
         "hook": "State deceptive-trade-practices law; see sl-greenwashing-udap",
         "impact": 4, "viability": 4, "tractability": 5,
-        "why": "The most tractable theory in either table: the evidence is FOIA'd "
-               "utility billing records, not expert hydrology. Gets more available every "
-               "time a disclosure law adds reporting. Impact is reputational and "
-               "corrective rather than a limit on withdrawal.",
+        "why": "Published water claims may be assessed under state consumer-protection law "
+               "using utility records and other evidence. A claim of misleading advertising "
+               "remains an allegation unless established by a ruling or admission.",
         "analog": "Wangusi v. AWS (Va. Cir. Ct. 2026)",
     },
     {
@@ -2892,10 +2890,9 @@ DOCTRINE_APPLICATION_THEORIES = [
         "theory": "Utility declines to serve a large new load",
         "hook": "Municipal service & shortage law; see util-shortage-moratorium",
         "impact": 4, "viability": 5, "tractability": 4,
-        "why": "The only entry here that runs FOR the defending institution. A utility "
-               "facing genuine supply constraint may refuse, reviewable only for fraud "
-               "or caprice — and a capacity admission already on the record is the "
-               "rational basis. Depends entirely on the utility choosing to say no.",
+        "why": "A utility facing supply constraints may have legal grounds to decline new "
+               "service. In the cited Swanson decision, review was limited to fraud or caprice. "
+               "Other cases depend on governing service obligations and capacity evidence.",
         "analog": "Swanson v. Marin MWD (Cal. App. 1976); Bessemer AL (2025-26)",
     },
     {
@@ -2903,10 +2900,9 @@ DOCTRINE_APPLICATION_THEORIES = [
         "theory": "Common-law negligence — subsidence or well interference",
         "hook": "State common law; see cl-negligent-subsidence",
         "impact": 4, "viability": 3, "tractability": 3,
-        "why": "The opening in rule-of-capture states: liability attaches to the manner "
-               "of withdrawal, not the fact of it. Strongest where drawdown produces "
-               "measurable subsidence. Needs an injured neighbour as plaintiff — a "
-               "coalition will hit the standing bar.",
+        "why": "In rule-of-capture states, negligence claims may concern the manner of "
+               "withdrawal, including subsidence or well interference. Liability and standing "
+               "depend on state law, the alleged injury, and causation evidence.",
         "analog": "Friendswood Dev. v. Smith-Southwest (Tex. 1978)",
     },
     {
@@ -2914,10 +2910,9 @@ DOCTRINE_APPLICATION_THEORIES = [
         "theory": "Interstate apportionment of a shared aquifer",
         "hook": "SCOTUS original jurisdiction; see eqap-interstate-aquifer",
         "impact": 5, "viability": 3, "tractability": 2,
-        "why": "Highest ceiling, hardest to reach. Settled law since 2021 and directly "
-               "on point for the Memphis Sand, but it needs a state willing to sue and "
-               "clear-and-convincing proof of injury — which is why utility-level "
-               "reporting laws are the precondition rather than a side issue.",
+        "why": "An interstate aquifer may be subject to equitable apportionment. A state "
+               "seeking relief must provide clear-and-convincing proof of injury; withdrawal "
+               "records may contribute to that showing.",
         "analog": "Mississippi v. Tennessee (2021)",
     },
     {
@@ -2925,9 +2920,9 @@ DOCTRINE_APPLICATION_THEORIES = [
         "theory": "Inter-basin transfer junior-priority challenge",
         "hook": "Area-of-origin statutes; see xfer-area-of-origin",
         "impact": 3, "viability": 4, "tractability": 4,
-        "why": "Underused and statutory rather than litigated: water piped out of basin "
-               "is junior to every right granted there first, so it is cut first in "
-               "drought. Applies only where supply actually crosses a basin line.",
+        "why": "Texas law assigns certain inter-basin transfers a junior priority relative to "
+               "existing rights in the basin of origin. Permit terms, transfer dates, and "
+               "supply routes determine whether the rule applies.",
         "analog": "Tex. Water Code §11.085",
     },
 ]
@@ -2944,7 +2939,7 @@ def _build_cwa_theories_html(theories: list[dict]) -> str:
 
     Shared by the Streamlit panel (``render_cwa_application_theories``) and the
     static site (``build_site``) so the scored ranking has a single source of
-    truth. Forward-looking analysis — scoring is merit-only (Impact / Viability
+    truth. Forward-looking analysis — scores are editorial estimates (Impact / Viability
     / Tractability), deliberately not keyed to any operator's or official's
     identity or politics.
     """
@@ -2968,12 +2963,12 @@ def _build_cwa_theories_html(theories: list[dict]) -> str:
             "</tr>"
         )
     return (
-        '<p class="theory-note">Forward-looking analysis — <strong>no data-center CWA '
-        "enforcement case exists yet</strong>. Scored on public-interest merit only: "
+        '<p class="theory-note">Potential legal applications. '
+        "Scores are editorial estimates, not predictions of legal outcomes: "
         "<strong>I</strong>mpact (community/environmental harm averted), "
         "<strong>V</strong>iability (legal strength post-<em>Sackett</em>/<em>Maui</em>), "
         "<strong>T</strong>ractability (can this tracker source the evidence via ECHO "
-        "DMR/SNC, public permits, FOIA). 5 = strongest; sorted by priority.</p>"
+        "DMR/SNC, public permits, FOIA). 5 = highest estimated score. Applicability depends on site facts and jurisdiction.</p>"
         '<div class="table-wrap"><table class="theory-table"><thead><tr>'
         "<th>#</th><th>Theory (CWA hook)</th><th>I</th><th>V</th><th>T</th>"
         "<th>Why it matters</th></tr></thead>"
@@ -2990,7 +2985,7 @@ def render_cwa_application_theories():
     this project can source the evidence.
     """
     with st.expander(
-        "Prioritized application theories — what could attach to a data center"
+        "Potential legal applications and evidence requirements"
     ):
         st.markdown(
             _build_cwa_theories_html(CWA_APPLICATION_THEORIES),
@@ -2999,7 +2994,7 @@ def render_cwa_application_theories():
         st.markdown("##### Beyond the Clean Water Act — state and doctrine theories")
         st.caption(
             "Most tracked conflicts are about *getting* water, which the Clean "
-            "Water Act barely addresses. Same merit-only scoring, applied to the "
+            "Water Act barely addresses. Same analytical scoring, applied to the "
             "non-CWA families in the Part 1 toolkit."
         )
         st.markdown(
@@ -3107,8 +3102,8 @@ def _cwa_statute_explainer_md() -> str:
         "\"industrial\" category is the closest practical analog for what "
         "post-build enforcement looks like; \"precedent\" captures the "
         "Supreme Court and federal appellate rulings (Sackett, Maui, "
-        "Loper Bright, SF v. EPA) that set how aggressively any of this "
-        "can be enforced against a data center going forward.\n\n"
+        "Loper Bright, SF v. EPA) that set how these requirements "
+        "apply to a data center.\n\n"
         "**Primary sources:** "
         "[33 U.S.C. § 1251 (Cornell LII)]"
         "(https://www.law.cornell.edu/uscode/text/33/1251) · "
@@ -3256,7 +3251,7 @@ def render_cwa_datacenter_insights(
         return
     with st.expander("What this record tells data centers", expanded=False):
         st.markdown(
-            f"- **The permittee shield.** {stats['contractor_permittee']} of "
+            f"- **Permit holders.** {stats['contractor_permittee']} of "
             f"{total} resolved data-center enforcement cases name a construction "
             "contractor or subcontractor — not the hyperscaler — as the party "
             "on the permit. Operators routinely sit one entity removed from the "
@@ -3270,10 +3265,9 @@ def render_cwa_datacenter_insights(
             "far more than operational cooling-water discharge."
         )
         st.markdown(
-            "- **The liability frontier is moving.** The 2026 Amazon Boardman "
-            "settlement ($20.5M, Oregon nitrate) is the first eight-figure "
-            "direct-hyperscaler water settlement — pushing exposure beyond "
-            "stormwater into groundwater and nutrient contamination."
+            "- **Groundwater settlement.** The 2026 Amazon Boardman "
+            "settlement ($20.5M, Oregon nitrate) concerns groundwater and nutrient "
+            "contamination associated with cooling/process-water disposal."
         )
         st.markdown(
             "- **Why this tracker watches the WWTP, not the data center.** "
@@ -3288,7 +3282,7 @@ def render_cwa_datacenter_insights(
             if breadth["total"]:
                 st.markdown(
                     "- **Look beyond the CWA.** Of "
-                    f"{breadth['total']} data-center and adjacent water fights in "
+                    f"{breadth['total']} data-center and adjacent water disputes in "
                     f"this record, {breadth['sdwa']} carry an SDWA reading and "
                     f"{breadth['no_cwa']} have no CWA angle at all — including the "
                     "Amazon Boardman settlement above, which resolved under state "
@@ -4740,7 +4734,7 @@ def render_sources_tab():
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Sources accessible", sc["accessible"], help="Active data pipelines returning records")
     col2.metric("Hard-blocked", sc["blocked"], help="NDA · WAF · voluntary-only · no mandate")
-    col3.metric("Unlocking soon", sc["coming"], help="HB 496 · OHD000001 · EIA 923")
+    col3.metric("Pending data sources", sc["coming"], help="HB 496 · OHD000001 · EIA 923")
     col4.metric("Build queue", sc["build_queue"], help="Data available, scraper not yet built")
 
     st.divider()
@@ -4802,7 +4796,7 @@ def render_sources_tab():
             )
 
     st.divider()
-    st.markdown('<h3 class="solution-cat-header">Upcoming data unlocks</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 class="solution-cat-header">Upcoming data releases</h3>', unsafe_allow_html=True)
 
     timeline_html = []
     for item in SOURCES_DATA["timeline"]:
@@ -5366,7 +5360,7 @@ def _build_commitments_html() -> str:
 SECURITY_LEAD = (
     "A cited map of water-sector cyber and physical threats, the capabilities "
     "that reduce them, the public and private actors doing the work, what is "
-    "actually funded, and a concrete EPA–DOE operating model."
+    "funded, and a proposed EPA–DOE operating model."
 )
 
 

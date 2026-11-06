@@ -286,8 +286,8 @@ def build_timeline() -> str:
         )
     return (
         '<section class="panel"><h3>Policy &amp; Disclosure Timeline</h3>'
-        '<p class="lead">Key events shaping data center water transparency — '
-        'the data landscape is changing rapidly.</p>' + "".join(rows) + "</section>"
+        '<p class="lead">Data releases, reporting requirements, and other events affecting '
+        'data-center water records.</p>' + "".join(rows) + "</section>"
     )
 
 
@@ -558,7 +558,7 @@ def build_cwa_tab() -> str:
         if breadth["total"]:
             breadth_li = f"""
     <li><strong>Look beyond the CWA.</strong> Of {breadth['total']} data-center and adjacent
-      water fights in this record, {breadth['sdwa']} carry an SDWA reading and {breadth['no_cwa']}
+      water disputes in this record, {breadth['sdwa']} carry an SDWA reading and {breadth['no_cwa']}
       have no CWA angle at all — including the Amazon Boardman settlement above, which resolved
       under state tort law and SDWA/RCRA, not the Clean Water Act. Aquifer depletion, well
       failures, and public-water-system strain are consistently an SDWA story, not a CWA one.</li>"""
@@ -569,7 +569,7 @@ def build_cwa_tab() -> str:
   <summary>What this record tells data centers</summary>
   <div class="insights">
   <ul>
-    <li><strong>The permittee shield.</strong> {stats['contractor_permittee']} of {total}
+    <li><strong>Permit holders.</strong> {stats['contractor_permittee']} of {total}
       resolved data-center enforcement cases name a construction contractor or subcontractor —
       not the hyperscaler — as the party on the permit. Operators routinely sit one entity
       removed from the permittee, which is why direct enforcement against them is thin.</li>
@@ -577,9 +577,9 @@ def build_cwa_tab() -> str:
       sediment, and erosion under the §402 Construction General Permit is the most common
       touchpoint — it appears in {stats['construction_stormwater']} of {total} historical cases,
       far more than operational cooling-water discharge.</li>
-    <li><strong>The liability frontier is moving.</strong> The 2026 Amazon Boardman settlement
-      ($20.5M, Oregon nitrate) is the first eight-figure direct-hyperscaler water settlement —
-      pushing exposure beyond stormwater into groundwater and nutrient contamination.</li>
+    <li><strong>Groundwater settlement.</strong> The 2026 Amazon Boardman settlement
+      ($20.5M, Oregon nitrate) concerns groundwater and nutrient contamination associated
+      with cooling/process-water disposal.</li>
     <li><strong>Why this tracker watches the WWTP, not the data center.</strong> Cooling-water
       blowdown goes to the municipal sewer, so the operational CWA exposure rides on the
       <em>receiving</em> treatment plant's NPDES permit — the very permits this project tracks
@@ -697,11 +697,11 @@ def build_cwa_tab() -> str:
   several readings.</p>
   {insights}
   <details class="lazy">
-    <summary>Prioritized CWA-application theories — what could attach to a data center</summary>
+    <summary>Potential legal applications and evidence requirements</summary>
     <section class="panel">{theories}
     <h4 class="solution-cat-header">Beyond the Clean Water Act — state and doctrine theories</h4>
     <p>Most tracked conflicts are about <em>getting</em> water, which the Clean Water Act
-    barely addresses. Same merit-only scoring, applied to the non-CWA families in the
+    barely addresses. Same analytical scoring, applied to the non-CWA families in the
     Part&nbsp;1 toolkit.</p>
     {doctrine_theories}
     <p class="src-note">Full write-up with primary-source citations:
@@ -1372,7 +1372,7 @@ def build_sources_tab() -> str:
         for lbl, val, sub in [
             ("Sources accessible", sc["accessible"], "active data pipelines"),
             ("Hard-blocked",       sc["blocked"],    "NDA · WAF · voluntary-only · no mandate"),
-            ("Unlocking soon",     sc["coming"],     "HB 496 · Ohio per-DC NPDES · EIA 923"),
+            ("Pending data sources",     sc["coming"],     "HB 496 · Ohio per-DC NPDES · EIA 923"),
             ("Build queue",        sc["build_queue"], "data exists, scraper pending"),
         ]
     )
@@ -1438,7 +1438,7 @@ def build_sources_tab() -> str:
 </section>
 
 <section class="panel">
-  <h3>Upcoming data unlocks</h3>
+  <h3>Upcoming data releases</h3>
   <div class="tl">{tl_rows}</div>
 </section>
 """

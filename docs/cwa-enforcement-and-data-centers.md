@@ -8,14 +8,13 @@
 > VA/OH portal scraping (which captures *water-use* documents) with the *federal enforcement* angle.
 > Web-sourced from primary `.gov` (EPA, DOJ) + the Congressional Research Service. Captured 2026-06-02;
 > prioritized CWA-application theories section added 2026-06-23.
-> **Data-center application is forward-looking analysis — no data-center CWA enforcement case exists yet.**
+> **Data-center applications below are analysis. See the curated case registry for recorded enforcement actions.**
 
 ## Why this exists
 
-Compiled while scoping the regulatory exposure around data-center water use. There are (as of mid-2026)
-**no CWA enforcement actions against a data center** — so to understand the likely shape of future
-enforcement, this catalogs the energy/utility CWA cases that *have* been brought and reads their
-statutory hooks across to data-center operations. The case facts below are quoted from primary EPA/DOJ
+Compiled while scoping the regulatory exposure around data-center water use. This note catalogs energy/utility CWA cases
+and assesses how their statutory provisions may apply to data-center operations. The curated
+case registry separately records actions involving data centers and their contractors. The case facts below are quoted from primary EPA/DOJ
 sources; the data-center column is analysis, labeled as such.
 
 ## Enforcement actions — energy/utility, 2015–present
@@ -119,39 +118,36 @@ broader-than-federal water programs** (relevant for the project's VA/OH focus �
 programs), so a "no federal jurisdiction" wetland can still be fully state-regulated. Net: *Sackett*
 narrows the §404/§401 wetlands path, not the operational-discharge or spill paths that drove most cases.
 
-## Prioritized CWA-application theories (forward-looking)
+## Potential CWA applications and evidence requirements
 
-Beyond the hook-by-hook read-across above, here is a **prioritized menu of CWA theories** that
-could realistically attach to a data center, scored for how this project should spend research
-effort. Scoring is on public-interest merit only — **Impact** (community/environmental harm averted
-if the theory bites), **Viability** (legal strength post-*Sackett*/*Maui*; 5 = settled doctrine,
-2 = novel/untested), and **Tractability** (how readily *this tracker* can source the evidence —
-ECHO DMR/SNC, public permits, FOIA; 5 = already in-pipeline, 2 = needs bespoke data we don't have).
-**Priority** weights Impact × Tractability (the tracker's value is surfacing *real, sourceable*
-exposure), with Viability as a tie-breaker. All are analytical — **no data-center CWA case exists yet.**
+The table lists potential CWA applications and evidence sources. Scores are editorial
+estimates for research planning, not predictions of enforcement or litigation outcomes.
+**Impact** estimates the community/environmental harm that compliance could avert;
+**Viability** estimates legal support after *Sackett* and *Maui*;
+**Tractability** estimates evidence availability through ECHO DMR/SNC records, public permits,
+and FOIA. Scores run from 1 to 5. The existing research order and scores are retained.
+Applicability depends on the permit, jurisdiction, site facts, and statutory prerequisites.
 
 | Priority | Theory (CWA hook) | Impact | Viab. | Tract. | Why it matters / how to source it | Dataset analog |
 |---|---|:--:|:--:|:--:|---|---|
-| **1** | **Citizen suit (§505, 33 U.S.C. §1365) against the *receiving* POTW** for ongoing NPDES violations / SNC while loaded by DC cooling blowdown | 5 | 5 | 5 | Operationalizes this project's core insight: DC operational exposure lands on the *receiving plant's* permit, not the DC's stormwater-only permit. ECHO **SNC/QNCR** is already pulled; a plant flagged SNC is the citizen-suit predicate. | Port of Morrow (WWTP receiving DC wastewater) |
-| **2** | **Pretreatment / Industrial User (§307 + §403, 33 U.S.C. §1317/§1318)** — DC as a significant industrial user discharging blowdown to a POTW; local limits, slug control, IU permit, pass-through/interference | 5 | 5 | 4 | This is where DC blowdown *actually goes* (sewer, not surface water). Loading can force pass-through that puts the POTW in violation and raises every other ratepayer's costs — a direct community-cost story. IU permits + pretreatment-program records are FOIA-able. | Port of Morrow; industrial pretreatment consent decrees |
-| **3** | **Construction stormwater (§402 CGP)** — sediment/erosion across multi-hundred-acre site clears | 4 | 5 | 4 | The single most-enforced real CWA violation against large construction; acute turbidity/habitat impact during build-out. CGP NOIs + NOVs are public and ECHO-visible. | (Arch Coal mining-site analog) |
-| **4** | **§402 cooling-tower blowdown direct to surface water** — thermal, chlorine, biocides, anti-scalants, conductivity | 4 | 5 | 4 | The classic numeric-limit-exceedance pattern (the *West Penn* boron analog); directly overlaps the flow metrics the tracker scrapes. Permit + DMR via ECHO. | (West Penn Power) |
-| **5** | **On-site package WWTP / greywater-recycle plant effluent (§402)** — large campuses building their own treatment/reuse plant | 4 | 4 | 4 | The plant carries its *own* NPDES permit + DMR — a clean, trackable point source distinct from the DC building. | xAI Colossus greywater plant (Memphis) |
-| **6** | **§404 wetlands dredge-and-fill + §401 state certification** for the campus footprint | 5 | 3 | 4 | Permanent habitat/flood-storage loss; the live enforcement edge. *Sackett* narrowed *federal* jurisdiction, but §401 + retained state programs (VA/OH) remain. Permit applications are public. | New Carlisle IN; Project Raspberry/Loch VA; Port of Little Rock AR |
-| **7** | **§316(a) thermal variance + §316(b) cooling-water intake** — surface-water-sourced cooling or co-located/behind-the-meter generation | 4 | 4 | 3 | Heat is a regulated pollutant; intake impingement/entrainment. Bites hardest where a DC pairs with on-site gas turbines (full power-plant profile). | Greenidge Generation NY (§316 thermal/intake) |
-| **8** | **Antidegradation / Tier 2 review (§303(d)/state WQS)** of a new or expanded discharge into high-quality waters | 4 | 4 | 3 | A procedural lever that forces an *alternatives analysis* (e.g., dry/closed-loop cooling) before a new outfall is permitted — high leverage at the siting stage. State antideg records. | — |
-| **9** | **County of Maui "functional equivalent" (§402)** — cooling discharge, injection well, or land application that reaches surface water *via groundwater* | 4 | 3 | 2 | The most *novel* theory here: closes a common DC discharge loophole (to ground, not directly to a stream). Fact-intensive; needs tracer/hydrogeology evidence the tracker doesn't yet collect. | (*County of Maui v. HWF*, 2020) |
-| **10** | **PFAS in discharge (§402)** — AFFF fire-suppression systems + cooling-chemistry additives, as NPDES PFAS limits tighten | 4 | 3 | 2 | Strong regulatory tailwind; high and rising community concern. Only sourceable once effluent PFAS monitoring is permit-required. | (industrial PFAS cases) |
-| **11** | **§311 SPCC / oil spill (33 U.S.C. §1321)** — large backup-diesel fuel farms; release to a water of the U.S.; missing SPCC/FRP | 3 | 5 | 3 | Legally identical to the pipeline-spill cases (incl. negligence-criminal + duty-to-report); event-driven, so lower base rate but settled law. | (BP/Enbridge/Summit §311 line) |
-| **12** | **Industrial stormwater (§402 MSGP)** — exposed equipment yards, chemical/fuel storage areas | 3 | 4 | 3 | Lower per-event impact but routine; MSGP benchmark monitoring is public. | — |
+| **1** | **Citizen suit (§505, 33 U.S.C. §1365) against the *receiving* POTW** for ongoing NPDES violations / SNC while loaded by DC cooling blowdown | 5 | 5 | 5 | ECHO SNC/DMR records can help identify ongoing NPDES violations at a treatment plant receiving data-center cooling blowdown. A citizen suit requires the applicable notice, standing, and other statutory conditions. | Port of Morrow (WWTP receiving DC wastewater) |
+| **2** | **Pretreatment / Industrial User (§307 + §403, 33 U.S.C. §1317/§1318)** — DC as a significant industrial user discharging blowdown to a POTW; local limits, slug control, IU permit, pass-through/interference | 5 | 5 | 4 | Data-center blowdown discharged to a municipal treatment plant may be subject to industrial-user permits and local pretreatment limits. Pass-through or interference can affect plant compliance and treatment costs. | Port of Morrow; industrial pretreatment consent decrees |
+| **3** | **Construction stormwater (§402 CGP)** — sediment/erosion across multi-hundred-acre site clears | 4 | 5 | 4 | Construction runoff can carry sediment into nearby waters. Construction general-permit notices, inspection records, and notices of violation document applicable controls and compliance. | (Arch Coal mining-site analog) |
+| **4** | **§402 cooling-tower blowdown direct to surface water** — thermal, chlorine, biocides, anti-scalants, conductivity | 4 | 5 | 4 | Direct discharges may be subject to numeric limits for heat, chlorine, biocides, or other constituents. Permits and discharge monitoring reports provide compliance evidence. | (West Penn Power) |
+| **5** | **On-site package WWTP / greywater-recycle plant effluent (§402)** — large campuses building their own treatment/reuse plant | 4 | 4 | 4 | An on-site treatment or reuse plant may hold a separate NPDES permit. Its discharge monitoring reports can provide data distinct from the data-center building. | xAI Colossus greywater plant (Memphis) |
+| **6** | **§404 wetlands dredge-and-fill + §401 state certification** for the campus footprint | 5 | 3 | 4 | Wetland fill can affect habitat and flood storage. Federal jurisdiction depends on Sackett; applicable state wetland programs and certification requirements also need review. Permit applications are public. | New Carlisle IN; Project Raspberry/Loch VA; Port of Little Rock AR |
+| **7** | **§316(a) thermal variance + §316(b) cooling-water intake** — surface-water-sourced cooling or co-located/behind-the-meter generation | 4 | 4 | 3 | Thermal discharges and cooling-water intakes may trigger separate requirements. Applicability depends on the cooling system, intake, discharge, and any associated generating plant. | Greenidge Generation NY (§316 thermal/intake) |
+| **8** | **Antidegradation / Tier 2 review (§303(d)/state WQS)** of a new or expanded discharge into high-quality waters | 4 | 4 | 3 | State antidegradation rules may require alternatives analysis before a new or expanded discharge into high-quality waters is permitted. Review requirements vary by state and receiving water. | — |
+| **9** | **County of Maui "functional equivalent" (§402)** — cooling discharge, injection well, or land application that reaches surface water *via groundwater* | 4 | 3 | 2 | A discharge reaching surface water through groundwater may require a permit under the County of Maui functional-equivalent test. Applicability depends on site-specific transport and hydrologic evidence. | (*County of Maui v. HWF*, 2020) |
+| **10** | **PFAS in discharge (§402)** — AFFF fire-suppression systems + cooling-chemistry additives, as NPDES PFAS limits tighten | 4 | 3 | 2 | PFAS monitoring and discharge limits depend on the permit and applicable rules. Potential sources include fire-suppression systems and cooling additives; effluent data are needed to assess a particular facility. | (industrial PFAS cases) |
+| **11** | **§311 SPCC / oil spill (33 U.S.C. §1321)** — large backup-diesel fuel farms; release to a water of the U.S.; missing SPCC/FRP | 3 | 5 | 3 | An oil release from backup-fuel storage reaching covered waters may trigger Section 311 liability and reporting duties. Applicability depends on the release and facility circumstances. | (BP/Enbridge/Summit §311 line) |
+| **12** | **Industrial stormwater (§402 MSGP)** — exposed equipment yards, chemical/fuel storage areas | 3 | 4 | 3 | Exposed equipment yards and chemical or fuel storage may require industrial stormwater coverage. Permit coverage and benchmark monitoring records document applicable requirements. | — |
 
-**Where the project should lean first:** rows **1–2** (citizen-suit + pretreatment against the *receiving
-WWTP*) are the highest-leverage *and* most-tractable — they turn the tracker's existing ECHO DMR/SNC pull
-into an actionable community-cost finding, and they target the permit that actually carries the operational
-discharge. Row **9 (*Maui* functional-equivalent)** is the highest-novelty legal theory worth a deeper
-write-up if a candidate site discharges to ground rather than to a named stream. Rows **6–7** are already
-materializing in the `cwa_investigations.json` `datacenter`/`industrial` sets (New Carlisle, Greenidge),
-so they're the best-evidenced for near-term tracking.
+**Evidence sources:** receiving-treatment-plant DMR/SNC records and industrial-user permits
+can document discharge and pretreatment compliance. A *Maui* analysis requires additional
+site-specific transport evidence. Wetland and cooling-intake applications require the relevant
+permit and project records. A recorded exceedance or SNC flag does not by itself establish
+that every prerequisite for a citizen suit is satisfied.
 
 ## Primary sources
 - DOJ ENRD — Deepwater Horizon (BP, Anadarko): <https://www.justice.gov/enrd/deepwater-horizon>

@@ -27,7 +27,7 @@
         },
         {
           "reading_id": "sl-greenwashing-udap",
-          "how": "The precedent that made every later water claim checkable. Litigation here forced release of a decade of figures and prompted Google to stop asserting site-level water use as a trade secret nationwide — the disclosure that consumer-protection theories now build on.",
+          "how": "Litigation resulted in release of a decade of water-use figures, and Google said it would stop asserting site-level water use as a trade secret nationwide. Disclosed utility records can inform comparisons with published water claims.",
           "analogous_cases": [
             "Wangusi-v-Amazon-Web-Services-VA-2026"
           ]
@@ -239,7 +239,7 @@
       "applicable_readings": [
         {
           "reading_id": "sdwa-pws-compliance",
-          "how": "The fight was over a public system's obligation to its existing users — the demand-concentration risk the SDWA regime polices.",
+          "how": "The dispute concerns a public system's capacity to serve a large new user while meeting its obligations to existing customers. Supply-capacity and compliance records are relevant to assessing the proposed service.",
           "analogous_cases": [
             "US-v-Alisal-Water-Corp-2005",
             "Flint-MI-SDWA-1431-2016"
@@ -501,7 +501,7 @@
         },
         {
           "reading_id": "tsca-8a7-pfas-reporting",
-          "how": "The PFAS fight over the draft permit will eventually be armed by §8(a)(7) reporting data tracing fluorochemicals in cooling additives to their suppliers.",
+          "how": "TSCA §8(a)(7) reporting may provide information on fluorochemicals used in cooling additives. Its relevance to the draft permit depends on reporting coverage, available data, and the substances used at the site.",
           "analogous_cases": [
             "TSCA-PFAS-Reporting-Rule-2023",
             "Chemours-Washington-Works-PFAS-2023"

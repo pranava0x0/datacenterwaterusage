@@ -200,7 +200,7 @@ class TestStaticBuild:
         assert 'class="src-table"' in html
         assert "Federal" in html
         assert "Virginia" in html
-        assert "Unlocking soon" in html
+        assert "Pending data sources" in html
         assert "HB 496 / SB 553" in html
 
     def test_collapsed_panels_take_no_space(self):
