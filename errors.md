@@ -14,6 +14,12 @@ Format:
 
 ---
 
+### [2026-11-22] VA waterworks reporting monitor watched the Virginia State Bar's Town Hall page
+- **Module:** `data/reference/legislation.json` monitor block for "VA DEQ waterworks data-center reporting regulations"; `scrapers/monitors`.
+- **Error:** No exception. Weekly sweeps reported "changed" hits whose excerpts mentioned the Virginia State Bar.
+- **Root cause:** Data bug. The monitor key used `BoardID=125` (Virginia State Bar). The State Water Control Board is `BoardID=103`.
+- **Resolution:** Fixed. The key now points at the 9VAC25-200 chapter page (`chapterid=1911`). The next sweep records a new baseline for that key.
+
 ### [2026-11-03] Water supply language selected the industrial sewer reading
 - **Module:** Project checker, `refdata/taxonomies.py`.
 - **Root cause:** Code bug in the trigger vocabulary. Buying reclaimed municipal wastewater selected the sewer discharge facet, while “discharges to sewer” missed it.

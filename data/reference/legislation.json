@@ -3949,7 +3949,7 @@
       "status": "enacted",
       "status_detail": "Signed 2026-07-14; in force. This — not the tracked NY S10642/A11560 — is the instrument that actually imposed New York's moratorium. The Governor neither signed nor vetoed the bill; she superseded it with an executive order at a higher threshold (50 MW vs the bill's 20 MW), which is a materially narrower pause than the bill would have imposed.",
       "source_url": "https://www.governor.ny.gov/executive-order/no-62-establishing-temporary-moratorium-data-centers-new-york-while-state-develops",
-      "last_verified": "2026-07-25",
+      "last_verified": "2026-11-22",
       "verified": true,
       "confidence": "high",
       "general_principles": [
@@ -4052,9 +4052,9 @@
         "water"
       ],
       "status": "enacted",
-      "status_detail": "9VAC25-200-40 implements the supplier reporting categories. The October 2026 SCC budget report (RD637) is a separate collection.",
+      "status_detail": "9VAC25-200-40 implements the supplier reporting categories; the amendments took effect 2026-09-09 (Virginia Regulatory Town Hall). The October 2026 SCC budget report (RD637) is a separate collection.",
       "source_url": "https://law.lis.virginia.gov/admincode/title9/agency25/chapter200/section40/",
-      "last_verified": "2026-11-03",
+      "last_verified": "2026-11-22",
       "verified": true,
       "confidence": "high",
       "implements": [
@@ -4075,6 +4075,11 @@
           "date": "2026-06-26",
           "milestone": "Regulations reported adopted",
           "detail": "Potable and reclaimed deliveries are separate categories."
+        },
+        {
+          "date": "2026-09-09",
+          "milestone": "Final amendments effective",
+          "detail": "Town Hall lists the 9VAC25-200 action 'Amendments in response to Chapters 623 and 896 of the 2026 Acts of Assembly (HB496/SB553)' as final and effective 2026-09-09."
         },
         {
           "date": "2026-10-01",
@@ -4106,8 +4111,8 @@
       "public_sentiment": "Transparency advocates call the aggregate-only publication the compromise that keeps the data too coarse to hold any single campus accountable.",
       "monitor": {
         "kind": "url-watch",
-        "key": "https://townhall.virginia.gov/L/ViewBoard.cfm?BoardID=125",
-        "note": "Virginia Regulatory Town Hall board page for the State Water Control Board — tracks regulatory stages. deq.virginia.gov itself is WAF-blocked for automated clients (errors.md, 2026-02-24), so watch the Town Hall instead."
+        "key": "https://townhall.virginia.gov/L/ViewChapter.cfm?chapterid=1911",
+        "note": "Virginia Regulatory Town Hall chapter page for 9VAC25-200 (Water Withdrawal Reporting, State Water Control Board) — lists current and past regulatory actions. deq.virginia.gov itself is WAF-blocked for automated clients (errors.md, 2026-02-24), so watch the Town Hall instead. The previous key (BoardID=125) was the Virginia State Bar's board page, not the SWCB's (corrected 2026-11-22)."
       },
       "fact_triggers": [
         "src-utility"
@@ -4181,9 +4186,9 @@
         "energy"
       ],
       "status": "introduced",
-      "status_detail": "Introduced July 2026. Distinct from the tracked MI SB 762 and MI SB 1018-1020 — this package is the first to pair a hard consumptive-use cap with an NDA ban and a community-benefit mandate. Re-verify individual bill numbers against the Michigan Legislature bill lookup before treating any single number as settled.",
+      "status_detail": "SB 1046 was introduced 2026-06-18 by Sen. Rosemary Bayer and referred to the Senate Energy and Environment Committee; its bill history shows only co-sponsor additions through 2026-09-10 and no committee action as of 2026-11-22. Distinct from the tracked MI SB 762 and MI SB 1018-1020 — this package is the first to pair a hard consumptive-use cap with an NDA ban and a community-benefit mandate. Re-verify individual bill numbers against the Michigan Legislature bill lookup before treating any single number as settled.",
       "source_url": "https://www.multistate.us/insider/2026/7/15/michigan-data-center-legislation-targets-energy-use-and-community-benefits",
-      "last_verified": "2026-07-25",
+      "last_verified": "2026-11-22",
       "verified": false,
       "confidence": "medium",
       "general_principles": [
@@ -4205,6 +4210,11 @@
         }
       ],
       "timeline": [
+        {
+          "date": "2026-06-18",
+          "milestone": "SB 1046 introduced",
+          "detail": "Introduced by Sen. Rosemary Bayer; referred to the Senate Committee on Energy and Environment (Michigan Legislature bill history)."
+        },
         {
           "date": "2026-07-15",
           "milestone": "Package reported introduced",
@@ -4311,7 +4321,7 @@
       "status": "introduced",
       "status_detail": "PUCT's survey remains voluntary. A separate Texas Water Development Board water-use survey is mandatory: on 2026-09-14 Governor Abbott directed TWDB to penalize major users, including data centers, for nonresponse, with possible criminal referral and ineligibility for certain TCEQ Chapter 11 water permits, amendments, or renewals. TWDB must coordinate with PUCT and ERCOT on an audit of consumption, sources, and efficiency technology and report progress by 2026-10-14. Do not describe the voluntary PUCT survey itself as mandatory. On 2026-09-24 Attorney General Paxton opened an investigation into hundreds of data-center developments in 18 named counties for nonresponse to the mandatory TWDB survey.",
       "source_url": "https://www.puc.texas.gov/industry/water/utilities/energy-and-water-use-survey/faq/",
-      "last_verified": "2026-09-26",
+      "last_verified": "2026-11-22",
       "verified": true,
       "confidence": "high",
       "general_principles": [
