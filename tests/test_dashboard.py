@@ -1333,8 +1333,9 @@ class TestCWAApplicationTheories:
         html_str = _build_cwa_theories_html(CWA_APPLICATION_THEORIES)
         assert html_str.count("<tr>") == len(CWA_APPLICATION_THEORIES) + 1  # +header
         assert 'class="theory-table"' in html_str
-        # No data-center CWA case exists yet — the disclaimer must be present.
-        assert "no data-center cwa" in html_str.lower()
+        # Separate analytical estimates from recorded legal outcomes.
+        assert "Scores are editorial estimates" in html_str
+        assert "not predictions of legal outcomes" in html_str
         # Rank 1 must appear before rank 12 in document order (sorted).
         assert html_str.index('class="theory-rank">1<') < html_str.index(
             'class="theory-rank">12<'

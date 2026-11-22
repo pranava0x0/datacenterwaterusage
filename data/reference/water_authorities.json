@@ -211,7 +211,7 @@
       "section": "§402 Construction General Permit",
       "name": "Construction stormwater (CGP)",
       "agency": "EPA / delegated states",
-      "what_it_covers": "Land disturbance over one acre requires coverage under a construction general permit with a SWPPP, erosion/sediment BMPs, and inspection records. This is the single most-enforced CWA program against large construction projects.",
+      "what_it_covers": "Land disturbance over one acre requires coverage under a construction general permit with a SWPPP, erosion/sediment BMPs, and inspection records. Construction general-permit records document stormwater compliance at large construction projects.",
       "dc_applicability": "The primary CWA touchpoint for data centers today: multi-hundred-acre campus build-outs generate sediment-laden runoff, and every documented DC stormwater enforcement (Google Stillwater OK, Microsoft Boydton VA, QTS Fayetteville GA, Johns Hopkins DSAI) arose here. Enforcement usually names the general contractor — the permittee — not the operator.",
       "dc_activities": [
         "build"
@@ -436,7 +436,7 @@
       "name": "Citizen suits",
       "agency": "Private plaintiffs (riverkeepers, residents) in federal court",
       "what_it_covers": "Any citizen may sue a discharger for ongoing permit violations (or EPA for non-discretionary failures) after 60-day notice, with civil penalties payable to the Treasury and fee-shifting. Riverkeeper groups built much of the modern enforcement record this way; Port of Tacoma and CERF v. Naples set current scope/mootness limits.",
-      "dc_applicability": "The enforcement backstop when agencies stand down: DMR exceedances at a DC's own NPDES permit, at its contractor's CGP coverage, or at the receiving POTW are all citizen-suit predicates — and this tracker's ECHO SNC/DMR pull is exactly the evidence base a §505 notice letter needs. QTS Fayetteville and TransGas Adams Fork began as riverkeeper notices.",
+      "dc_applicability": "Ongoing violations at a data center, its construction permittee, or a receiving POTW may be relevant to a citizen suit, subject to standing, notice, diligent-prosecution limits, and other statutory requirements. ECHO SNC/DMR records can help assess compliance but do not alone establish that a suit may proceed. QTS Fayetteville and TransGas Adams Fork began with riverkeeper notices.",
       "dc_activities": [
         "build",
         "discharge"
@@ -807,7 +807,7 @@
       "name": "The permitting agency must weigh a well's off-site impact",
       "agency": "State natural-resource agencies",
       "what_it_covers": "Whether an agency issuing a high-capacity well permit must look beyond the applicant's own parcel. Where the state holds navigable waters in trust and the permitting statute protects waters of the state generally, the agency has both authority and a general duty to consider whether the proposed well may harm those waters — but the duty is triggered by concrete scientific evidence of potential harm, not by objection alone.",
-      "dc_applicability": "The most practically usable doctrine in the registry for an opponent, because it operates at the permit stage rather than after the damage. It also sets the price of admission: objections to a data-center well must arrive as hydrologic evidence, since generalized concern does not trigger the agency's duty. That is precisely the bind sites in this dataset describe — the evidence needs consumption data the operator holds.",
+      "dc_applicability": "A proposed high-capacity well may require review of off-site effects where state law recognizes that duty. The Lake Beulah decision requires scientific evidence of potential harm; generalized objections alone do not trigger the duty. Withdrawal and hydrologic records can contribute to the assessment.",
       "dc_activities": [
         "withdraw"
       ],
@@ -964,10 +964,10 @@
       "reading_id": "xfer-area-of-origin",
       "statute": "XFER",
       "section": "Tex. Water Code §11.085 — inter-basin transfers junior in priority",
-      "name": "Moving water between basins costs you your seniority",
+      "name": "Inter-basin transfer priority",
       "agency": "Texas Commission on Environmental Quality",
       "what_it_covers": "No one may divert state water from one river basin to another without a water right or permit amendment authorizing the transfer, and any right transferred out of basin becomes junior in priority to every right granted in the basin of origin before the transfer application was filed. In a shortage the transferred water is cut first.",
-      "dc_applicability": "The sharpest and least-used tool against a campus supplied by out-of-basin piping. Opposition to these projects is usually political — hearings, petitions, county votes — when the statute already imposes a structural penalty: the transferred supply sits at the back of the priority queue exactly when drought makes it matter. Worth checking wherever a project's water arrives from a reservoir in another basin.",
+      "dc_applicability": "A campus supplied through an inter-basin transfer may depend on water rights with junior priority under Texas law. The transfer permit, application date, existing basin rights, and drought restrictions determine the implications for supply reliability.",
       "dc_activities": [
         "withdraw",
         "supply"
@@ -1082,7 +1082,7 @@
       "name": "Water claims as a deceptive trade practice",
       "agency": "State attorneys general; state courts; private plaintiffs",
       "what_it_covers": "Statements a company makes to the public about its environmental performance, where those statements are alleged to be materially misleading. The subject of the claim is the company's own published figures rather than any discharge, withdrawal or permit, and the remedy sought is typically corrective disclosure and an accounting.",
-      "dc_applicability": "The one reading in this registry that does not require a permit, a discharge or an aquifer. It reaches the water-positive pledges and efficiency percentages that operators publish — which is significant because those figures are the industry's main public answer on water, and until 2026 nothing in the tracker connected a claim to a legal consequence. Its evidentiary base is utility billing records obtained by FOIA, so it is unusually available to outsiders compared with the hydrologic proof most other readings demand.",
+      "dc_applicability": "State consumer-protection laws may apply to published water-use claims without requiring a discharge-permit violation. Utility billing records can help assess those claims, provided the comparison accounts for measurement definitions, reporting periods, and facility boundaries. The Wangusi complaint is pending and AWS disputes the allegations.",
       "dc_activities": [
         "disclose"
       ],

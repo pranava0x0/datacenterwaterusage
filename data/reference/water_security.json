@@ -449,7 +449,7 @@
   "proposal": {
     "name": "Project Confluence",
     "long_name": "National Water Security Confluence",
-    "tagline": "Where water operations, national laboratories, states, and defenders meet.",
+    "tagline": "Proposed EPA–DOE water-infrastructure security program.",
     "mission": "Reduce the likelihood and public-health consequences of cyber, physical, supply-chain, and compound attacks on drinking-water and wastewater systems by joining EPA's utility relationships and financing channels with DOE laboratory testing, CISA threat and incident capabilities, state delivery networks, vendor remediation, and utility operations.",
     "leadership": "EPA is accountable lead because water is its sector responsibility. DOE co-leads laboratory testing and cyber-physical research. CISA owns cross-sector threat support and incident coordination, not water regulation.",
     "governance": "Begin with a five-year EPA-DOE interagency agreement and a CISA operating annex. Use the existing Water Government Coordinating Council and Water Sector Coordinating Council for oversight, with a technical steering committee representing states, tribes, utilities of every size and ownership model, WaterISAC, WARNs, public health, labs, vendors, integrators, and independent researchers.",
@@ -468,7 +468,7 @@
       },
       {
         "name": "Fix",
-        "description": "Prioritized implementation, vendor remediation sprints, segmentation, secure remote access, backup restoration, procurement clauses, and financing support."
+        "description": "Prioritized implementation, vendor remediation, segmentation, secure remote access, backup restoration, procurement clauses, and financing support."
       },
       {
         "name": "Share",
@@ -483,7 +483,7 @@
       },
       {
         "actor": "DOE and national laboratories",
-        "role": "Common test protocols; product, firmware, and supply-chain analysis; cyber-physical experiments; digital twins; safe validation; research-to-deployment transition."
+        "role": "Common test protocols; product, firmware, and supply-chain analysis; cyber-physical experiments; digital twins; safe validation; deployment of research results."
       },
       {
         "actor": "CISA and FBI",
@@ -531,7 +531,7 @@
       "Minimize collected data; keep raw captures, credentials, and detailed diagrams with the utility unless it opts in.",
       "No participant data for unrelated enforcement, commercial model training, or vendor marketing without separate authority.",
       "Require human authorization for AI-assisted exploit validation and every operational change.",
-      "Give small, rural, tribal, and disadvantaged systems governance seats, not only services.",
+      "Include small, rural, tribal, and disadvantaged systems in program governance.",
       "Vendor contributions cannot control test selection, findings, disclosure, or procurement."
     ],
     "funding_paths": [

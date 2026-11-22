@@ -32,7 +32,7 @@
       "public_sentiment": "The governor frames the order as a bargain: Nevada remains open to data-center investment only when developers pay school taxes and infrastructure costs and protect water and grid resources. The official materials document the administration's position; no comparably specific industry or community response was found in this bounded pass.",
       "general_principles": [
         {
-          "tag": "Anti-corporate-welfare",
+          "tag": "Subsidy conditions",
           "note": "Conditions partial tax abatements on tax payment and a binding Community Support Commitment."
         },
         {
@@ -641,7 +641,7 @@
           "note": "Imposes non-transferable strict liability for environmental and public health damage; bars indemnification or shell-entity shielding."
         },
         {
-          "tag": "Anti-corporate-welfare",
+          "tag": "Subsidy conditions",
           "note": "Prohibits state or local taxpayer-funded incentives benefiting data centers."
         },
         {
@@ -1800,7 +1800,7 @@
           "note": "25% non-emitting power requirement for largest facilities."
         },
         {
-          "tag": "Anti-corporate-welfare",
+          "tag": "Subsidy conditions",
           "note": "Repeals state sales/use tax exemption for DC equipment."
         }
       ],
@@ -1860,7 +1860,7 @@
           "note": "PSC pre-approval of utility-DC contracts."
         },
         {
-          "tag": "Anti-corporate-welfare",
+          "tag": "Subsidy conditions",
           "note": "Requires 'positive benefit' finding for ratepayers."
         }
       ],
@@ -1912,7 +1912,7 @@
           "note": "85% minimum-take ensures DCs cover utility's stranded capacity investment."
         },
         {
-          "tag": "Anti-corporate-welfare",
+          "tag": "Subsidy conditions",
           "note": "Prohibits cost-shifting to residential and small commercial customers."
         },
         {
@@ -1976,7 +1976,7 @@
           "note": "Sets a federal floor preempting state-by-state variation."
         },
         {
-          "tag": "Anti-corporate-welfare",
+          "tag": "Subsidy conditions",
           "note": "Conditions lifting moratorium on labor and community standards."
         }
       ],
@@ -3305,7 +3305,7 @@
       "public_sentiment": "Conservation groups view it as a modest but workable carrot; industry prefers it to mandates like SC H 4583 or KS SB 400 since Amazon and others are already expanding recycled-water cooling. Skeptics note it only binds grant recipients, not all operators.",
       "general_principles": [
         {
-          "tag": "Anti-corporate-welfare",
+          "tag": "Subsidy conditions",
           "note": "Attaches environmental strings to state grant subsidies rather than handing them out unconditionally."
         },
         {
@@ -3716,7 +3716,7 @@
       "public_sentiment": "AARP Connecticut supported eliminating state data-center tax incentives, and environmental groups (Environment America's CT chapter, river advocates) pushed paired water and energy efficiency standards; the Connecticut Business and Industry Association opposed repeal, arguing large capital projects need years of incentive certainty. Lawmakers ultimately let it lapse as high in-state electricity prices were already cooling developer interest.",
       "general_principles": [
         {
-          "tag": "Anti-corporate-welfare",
+          "tag": "Subsidy conditions",
           "note": "Core aim was repealing the data-center tax incentives enacted under PA 21-1."
         },
         {
@@ -5107,7 +5107,7 @@
           "note": "Monthly water withdrawal and consumption, sources, WUE and water rights, filed with DOE and EPA."
         },
         {
-          "tag": "Anti-corporate-welfare",
+          "tag": "Subsidy conditions",
           "note": "Bonus depreciation is withheld unless the facility discloses."
         },
         {
@@ -5217,7 +5217,7 @@
       "confidence": "high",
       "general_principles": [
         {
-          "tag": "Anti-corporate-welfare",
+          "tag": "Subsidy conditions",
           "note": "The sales and use tax exemption is conditioned on the protection framework."
         },
         {
@@ -5323,7 +5323,7 @@
       "confidence": "high",
       "general_principles": [
         {
-          "tag": "Anti-corporate-welfare",
+          "tag": "Subsidy conditions",
           "note": "Ends ImagiNE Act incentive approvals for new data-center applications."
         },
         {
@@ -5556,7 +5556,7 @@
       "confidence": "high",
       "general_principles": [
         {
-          "tag": "Anti-corporate-welfare",
+          "tag": "Subsidy conditions",
           "note": "The tax exemption carries water, investment, jobs and security-review conditions."
         },
         {
@@ -5605,7 +5605,7 @@
           "note": "Written notice to the water provider of expected water use."
         },
         {
-          "tag": "Anti-corporate-welfare",
+          "tag": "Subsidy conditions",
           "note": "Narrows the sales-tax exemption and phases out a property-tax exemption."
         },
         {
