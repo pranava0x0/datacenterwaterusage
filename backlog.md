@@ -76,6 +76,11 @@ Last reviewed: 2026-05-28 (External Tracker Survey added — see section below t
 
 ## High Priority
 
+### Map and verify the 221 new upstream local actions (found 2026-11-22)
+- **Priority**: high (the 21 water-related ones), medium (the rest)
+- **What**: The 2026-11-22 refresh found `datacentercommunitybenefits`'s `moratoriums.json` at 336 county/city/town records against our 125. This pass upserted only the 7 existing records that moved proposed → enacted (each confirmed in its cited source). The 221 new records outside our set — 21 of them name water, aquifer, sewer or cooling in their reasons or summary, 7 with no enacted date — need the §4b mapping (action_type, status, water_angle) and a primary-source check each. Also re-check the 96 existing records the source still calls `enacted` against their stated durations: several should now be `expired`.
+- **Sample prompt**: "Follow REFRESH.md §4b for the new county/city/town records in datacentercommunitybenefits' moratoriums.json, starting with the water-related ones; verify each against its source_url before upserting, then sweep existing active records for lapsed durations."
+
 ### Follow-ups from the 2026-09-26 session (statute paths, lazy tabs, commitments, overview)
 
 - **(High) Re-check the three proposed local actions on their dates.** Fort Worth TX (first public hearing due by 2026-11-10; adoption vote needs a supermajority, set for 2027-02-16), Leon County FL and Manatee County FL (proposed 2026-09). *Prompt:* "Re-verify local_actions.json records still marked proposed whose hearing dates have passed; update status/date/summary from primary coverage and pin in test_refdata."

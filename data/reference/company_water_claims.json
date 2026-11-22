@@ -664,6 +664,166 @@
       "project_id": "microsoft-san-antonio-tx",
       "formal_agreement": true,
       "claim_type": "water-positive-pledge"
+    },
+    {
+      "id": "google-lea-county-water-closed-loop-2026",
+      "company_slug": "google",
+      "theme": "water",
+      "statement": "Our prospective facility in Lea County would be a closed loop, air-cooled facility to minimize impacts on local watersheds.",
+      "source_url": "https://leacountydatacenter.com/",
+      "source_title": "Google — Lea County Data Center project site, 'Our Cooling & Water Approach'",
+      "captured_at": "2026-09-22",
+      "project_id": "google-lea-county-nm",
+      "claim_type": "zero-water-design"
+    },
+    {
+      "id": "meta-eagle-mountain-water-dry-cooling-2026",
+      "company_slug": "meta",
+      "theme": "water",
+      "statement": "For our new buildings in Eagle Mountain, we will use a water-efficient, closed-loop liquid cooling system with dry cooling, meaning there will be no operational water use in the cooling system.",
+      "source_url": "https://datacenters.atmeta.com/2026/09/deepening-our-investment-in-eagle-mountain-utah/",
+      "source_title": "Meta Data Centers — Deepening Our Investment in Eagle Mountain, Utah (Sep 14 2026)",
+      "captured_at": "2026-09-22",
+      "published_at": "2026-09-14",
+      "project_id": "meta-eagle-mountain-ut",
+      "claim_type": "zero-water-design"
+    },
+    {
+      "id": "meta-kuna-water-closed-loop-2026",
+      "company_slug": "meta",
+      "theme": "water",
+      "statement": "The Kuna Data Center uses a water efficient closed-loop, liquid cooled system that will use zero water for the majority of the year.",
+      "source_url": "https://datacenters.atmeta.com/2026/09/kuna-we-are-online/",
+      "source_title": "Meta Data Centers — Kuna, we are online! (Sep 3 2026)",
+      "captured_at": "2026-09-22",
+      "published_at": "2026-09-03",
+      "project_id": "meta-kuna-id",
+      "claim_type": "zero-water-design"
+    },
+    {
+      "id": "aws-boling-water-no-cooling-water-2026",
+      "company_slug": "amazon",
+      "theme": "water",
+      "statement": "The 13 buildings planned on the Wharton County campus will not use water for cooling. No groundwater will be used for data center cooling at this site.",
+      "source_url": "https://www.aboutamazon.com/news/aws/amazon-data-centers-locations-news?p=how-were-building-responsibly-in-wharton-county-texas",
+      "source_title": "Amazon — How we're building responsibly in Wharton County, Texas (Sep 10 2026)",
+      "captured_at": "2026-09-22",
+      "published_at": "2026-09-10",
+      "project_id": "aws-boling-tx",
+      "claim_type": "zero-water-design"
+    },
+    {
+      "id": "aws-boling-water-replenish-awd-2026",
+      "company_slug": "amazon",
+      "theme": "water",
+      "statement": "As part of this project, Amazon is funding a water replenishment project in Wharton County that helps local farmers adopt Alternate Wetting and Drying (AWD) irrigation practices—reducing flood-based irrigation demand by 25% or more without reducing crop yields—in the lower Colorado River watershed, where both area farmers and other users draw from the same surface water source. This effort is expected to replenish more than 225 million gallons of water per year over a 10-year period.",
+      "source_url": "https://www.aboutamazon.com/news/aws/amazon-data-centers-locations-news?p=how-were-building-responsibly-in-wharton-county-texas",
+      "source_title": "Amazon — How we're building responsibly in Wharton County, Texas (Sep 10 2026)",
+      "captured_at": "2026-09-22",
+      "published_at": "2026-09-10",
+      "metric": {
+        "value": 225000000.0,
+        "unit": "gallons",
+        "kind": "annual_replenishment"
+      },
+      "project_id": "aws-boling-tx",
+      "claim_type": "site-specific-promise"
+    },
+    {
+      "id": "aws-umatilla-water-400m-2026",
+      "company_slug": "amazon",
+      "theme": "water",
+      "statement": "Amazon is investing $400 million to improve public water systems in Eastern Oregon, supporting our growth and benefiting the public.",
+      "source_url": "https://press.aboutamazon.com/aws/2026/9/how-amazon-is-helping-protect-water-resources-in-eastern-oregon",
+      "source_title": "Amazon press center — How Amazon is helping protect water resources in Eastern Oregon (Sep 20 2026)",
+      "captured_at": "2026-09-22",
+      "published_at": "2026-09-20",
+      "metric": {
+        "value": 400000000.0,
+        "unit": "usd",
+        "kind": "water_infrastructure"
+      },
+      "project_id": "aws-umatilla-or",
+      "claim_type": "site-specific-promise"
+    },
+    {
+      "id": "aws-umatilla-water-replenish-957m-2026",
+      "company_slug": "amazon",
+      "theme": "water",
+      "statement": "Amazon's water replenishment projects in Eastern Oregon will return or improve 957 million gallons of water a year to the local ecosystem – nearly four times the total water used to cool our data centers in 2025.",
+      "source_url": "https://press.aboutamazon.com/aws/2026/9/how-amazon-is-helping-protect-water-resources-in-eastern-oregon",
+      "source_title": "Amazon press center — How Amazon is helping protect water resources in Eastern Oregon (Sep 20 2026)",
+      "captured_at": "2026-09-22",
+      "published_at": "2026-09-20",
+      "metric": {
+        "value": 957000000.0,
+        "unit": "gallons",
+        "kind": "annual_replenishment"
+      },
+      "project_id": "aws-umatilla-or",
+      "claim_type": "site-specific-promise"
+    },
+    {
+      "id": "aws-caroline-water-reclaimed-480m-2026",
+      "company_slug": "amazon",
+      "theme": "water",
+      "statement": "A new $480 million water project, built in partnership between Amazon and Spotsylvania County, will upgrade the Massaponax Wastewater Treatment Plant and add more than 20 miles of new pipeline to turn that wastewater into a resource. The system will produce the second-largest water reuse capacity in Virginia.",
+      "source_url": "https://www.aboutamazon.com/news/aws/amazon-data-centers-locations-news?p=amazon-is-turning-spotsylvanias-sewage-water-into-a-resource",
+      "source_title": "Amazon — Amazon is turning Spotsylvania's sewage water into a resource (Sep 10 2026)",
+      "captured_at": "2026-09-22",
+      "published_at": "2026-09-10",
+      "metric": {
+        "value": 480000000.0,
+        "unit": "usd",
+        "kind": "water_infrastructure"
+      },
+      "project_id": "aws-caroline-va",
+      "claim_type": "site-specific-promise"
+    },
+    {
+      "id": "anthropic-closed-loop-cooling-policy",
+      "company_slug": "anthropic",
+      "theme": "water",
+      "statement": "Our cooling standard is closed-loop and air-cooled, which means we don’t draw down local water supplies to cool servers.",
+      "source_url": "https://www.anthropic.com/policy/infrastructure",
+      "source_title": "Anthropic — Infrastructure policy (undated page)",
+      "captured_at": "2026-10-26",
+      "claim_type": "zero-water-design"
+    },
+    {
+      "id": "aws-somervell-water-replenishment-2026",
+      "company_slug": "amazon",
+      "theme": "water",
+      "statement": "Amazon is also investing about $3.75 million in a water-efficiency project expected to return more than 330 million gallons per year to the Brazos River Basin.",
+      "source_url": "https://www.aboutamazon.com/news/aws/amazon-data-centers-locations-news",
+      "source_title": "Amazon — Somervell County update",
+      "captured_at": "2026-11-07",
+      "published_at": "2026-11-05",
+      "project_id": "aws-somervell-tx",
+      "claim_type": "site-specific-promise"
+    },
+    {
+      "id": "google-morgan-county-water-fund-2026",
+      "company_slug": "google",
+      "theme": "water",
+      "statement": "Google is dedicating a $10 million investment to support community water resources and infrastructure in the places we call home.",
+      "source_url": "https://datacenters.google/morgan-county-indiana/",
+      "source_title": "Google — Morgan County water future",
+      "captured_at": "2026-11-07",
+      "project_id": "google-morgan-county-in",
+      "claim_type": "site-specific-promise"
+    },
+    {
+      "id": "qts-bessemer-al-water",
+      "company_slug": "qts",
+      "theme": "water",
+      "statement": "building our data centers with a closed-loop cooling system that does not consume water for cooling once operational",
+      "source_url": "https://abc3340.com/news/local/qts-data-centers-behind-bessemer-project-marvel-plans",
+      "source_title": "ABC 3340 — QTS statement on Bessemer Project Marvel",
+      "captured_at": "2026-11-11",
+      "published_at": "2026-07-01",
+      "project_id": "qts-bessemer-al",
+      "claim_type": "zero-water-design"
     }
   ]
 }

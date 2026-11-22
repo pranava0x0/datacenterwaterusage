@@ -198,3 +198,10 @@ Watched automatically (step 1), listed here so a human refresh doesn't miss them
 | NY EO 62 moratorium expiry / DEC withdrawal rulemaking | ~2027-07-14 |
 | NY S10642 veto | unscheduled (superseded by EO 62) |
 | Durbin transparency bill number assigned | unscheduled |
+
+## Learned patterns (append-only, dated)
+
+- 2026-11-22: **A monitor key can point at the wrong page for months and still "work".** The VA waterworks reporting record watched Town Hall `BoardID=125`, which is the Virginia State Bar, not the State Water Control Board (`BoardID=103`). Every sweep reported a cosmetic "changed". The key now watches the 9VAC25-200 chapter page (`ViewChapter.cfm?chapterid=1911`), which lists that chapter's actions. When triaging a `changed` hit, check the excerpt names the agency you expect.
+- 2026-11-22: **The url-watch fingerprints still pick up date banners.** The TX PUC FAQ ("Grid Condition for November NN") and the MI legislature header ("Senate adjourned until …") change every week, so they produce a `changed` hit each sweep. Expect that and read the bill history or FAQ body instead.
+- 2026-11-22: **The community-benefits mirror now refreshes daily upstream** and had grown to 336 local records vs our 125. A full §4b pass is several sessions of source checks. Upsert the status moves on records we already carry first (cheap, high value), then the water-related new records, then the rest (backlog).
+- 2026-11-22: Run tests and the build with the main checkout's venv (`"../../../.venv/bin/python"` from a worktree); worktrees have no `.venv`.

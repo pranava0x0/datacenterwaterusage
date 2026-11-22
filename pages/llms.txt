@@ -2,7 +2,7 @@
 
 > Tracking how US data centers draw, discharge, and disclose cooling water — permits, enforcement, statutes, and state and local policy, from public records. Scraped sources are EPA ECHO DMR flow at receiving wastewater treatment plants, state permit portals and utility financial reports; alongside them are curated national datasets: data-center water legislation, water-law cases relevant to data centers mapped to a registry of statutory and doctrinal readings, county and city measures, data-center sites with documented water conflicts, and company water claims.
 
-Static build 2026-11-06. Dashboard: https://pranava0x0.github.io/datacenterwaterusage/ · Source: https://github.com/pranava0x0/datacenterwaterusage
+Static build 2026-11-22. Dashboard: https://pranava0x0.github.io/datacenterwaterusage/ · Source: https://github.com/pranava0x0/datacenterwaterusage
 
 ## Key numbers
 
@@ -124,10 +124,11 @@ The dashboard's States & Localities tab covers 42 states with at least one track
 
 State activity, newest first: Virginia (2026-10-01), Florida (2026-10), Texas (2026-09-24), California (2026-09-21), Nevada (2026-09-18), Oregon (2026-09-08), Massachusetts (2026-09-08), Maryland (2026-09-01), South Carolina (2026-09), Ohio (2026-09), Minnesota (2026-09), Illinois (2026-09), Georgia (2026-09), Alabama (2026-09), Nebraska (2026-08-19), Pennsylvania (2026-08-18), Kentucky (2026-08-18), Wisconsin (2026-08), New York (2026-08), North Carolina (2026-08), Michigan (2026-08), Indiana (2026-08), New Mexico (2026-07-02), Utah (2026-07-01), Washington (2026-07), Mississippi (2026-07), Missouri (2026-07), Iowa (2026-07), Colorado (2026-07), Louisiana (2026-06-25), Wyoming (2026-06-03), Arkansas (2026-06), Vermont (2026-05-29), New Jersey (2026-05-27), Connecticut (2026-05-06), Kansas (2026-05-01), Rhode Island (2026-05), Idaho (2026-05), Maine (2026-04-29), Oklahoma (2026-04), West Virginia (2026-03-27), South Dakota (2026-03-24).
 
-### Moved in the last 120 days (54 movements)
+### Moved in the last 120 days (51 movements)
 
 - 2026-10-01 — Virginia — VA DEQ waterworks data-center reporting regulations — Enacted — Separate SCC budget report published
 - 2026-10 — Manatee County, FL — Manatee County — In force — The article states plainly: "Large-scale data centers are known to require substantial water and electrical resources to power and cool specialized computer servers."
+- 2026-10 — Leon County, FL — Leon County — In force — Commissioner Carolyn Cummings is described as wanting review to examine "water consumption, electricity demand, environmental impacts."
 - 2026-09-24 — Texas — TX PUC Energy and Water Use Survey (data centers) — Introduced — Attorney General investigation
 - 2026-09-21 — California — CA SB 887 — Enacted — Signed and chaptered
 - 2026-09-21 — California — CA AB 2619 — Enacted — Signed and chaptered
@@ -145,7 +146,6 @@ State activity, newest first: Virginia (2026-10-01), Florida (2026-10), Texas (2
 - 2026-09 — McDonald (village), OH — McDonald (village) — In force — A resident is quoted warning against becoming "a guinea pig to find out down the road all the noise, air and water pollution has led to catastrophic diseases," and the sibling's tag of water/noise/air concerns matches the article's framing of resident objections.
 - 2026-09 — Mattoon, IL — Mattoon — In force — The city's own release asks how large data centers "could affect our water, environment, health, power costs, City services, and finances."
 - 2026-09-01 — Maryland — MD HB 270 / SB 116 — Enacted — Report due
-- 2026-09 — Marion County, FL — Marion County — In force — Public comment quoted in the article ties the pause to cooling water use directly ("they use a great deal of water for cooling"), and county coverage frames the study period as covering aquifer withdrawals, cooling practices and spring protection.
 
 ## Water commitments
 
@@ -207,23 +207,29 @@ Who has committed to what on data-center water, and how binding it is. The Unite
 - Meta (meta-water-positive-2030, Water-positive pledge, partial): We are committed to restoring more water than we consume by 2030, focusing our efforts in regions of high and medium water stress.
 - Meta (meta-newton-ga-water-onsite-efficiency, Efficiency / WUE, not yet assessed): The Stanton Springs Data Center prioritizes on-site water efficiency by: Using cooling technology that is significantly more water efficient than the industry standard. Reusing water numerous times before discharging it as wastewater.
 - Meta (meta-temple-water-davis-2026, Zero-water design, not yet assessed): We use a water-efficient, closed-loop liquid-cooling system that will use zero water for a majority of the year.
+- Meta (meta-eagle-mountain-water-dry-cooling-2026, Zero-water design, not yet assessed): For our new buildings in Eagle Mountain, we will use a water-efficient, closed-loop liquid cooling system with dry cooling, meaning there will be no operational water use in the cooling system.
+- Meta (meta-kuna-water-closed-loop-2026, Zero-water design, not yet assessed): The Kuna Data Center uses a water efficient closed-loop, liquid cooled system that will use zero water for the majority of the year.
 - Google (google-water-replenish-120, Water-positive pledge, partial): By 2030, we aim to replenish 120% of the freshwater we consume across our offices and data centers.
 - Google (google-new-florence-water-air-cooling-2026, Zero-water design, not yet assessed): The Montgomery County data center will use advanced air-cooling technology, limiting water consumption to uses like kitchens.
+- Google (google-lea-county-water-closed-loop-2026, Zero-water design, not yet assessed): Our prospective facility in Lea County would be a closed loop, air-cooled facility to minimize impacts on local watersheds.
+- Amazon (AWS) (aws-water-positive-2030, Water-positive pledge, litigated): AWS is committed to being water positive by 2030, returning more water to communities than we use in our direct operations.
+- Amazon (AWS) (aws-boling-water-no-cooling-water-2026, Zero-water design, not yet assessed): The 13 buildings planned on the Wharton County campus will not use water for cooling. No groundwater will be used for data center cooling at this site.
+- Anthropic (anthropic-water-cooling-framework, Zero-water design, not yet assessed): deploying water-efficient cooling technologies
+- Anthropic (anthropic-closed-loop-cooling-policy, Zero-water design, not yet assessed): Our cooling standard is closed-loop and air-cooled, which means we don’t draw down local water supplies to cool servers.
 - Oracle (oracle-water-closed-loop-2026, Zero-water design, not yet assessed): Water is valuable, and we should engineer accordingly.
 - Oracle (oracle-abilene-water-magouyrk-2025, Zero-water design, not yet assessed): These data centers are designed to not use water. All of the data centers that we're building (in) this part of Stargate are designed to not use water. The reason we do that is because it turns out that's harmful for the environment and this is a better solution.
+- QTS (qts-water-water-free-design, Zero-water design, shortfall): Our innovative standard data center design uses no water for cooling, saving billions of gallons of water per year.
+- QTS (qts-bessemer-al-water, Zero-water design, not yet assessed): building our data centers with a closed-loop cooling system that does not consume water for cooling once operational
 - Switch (switch-water-net-positive-2x, Water-positive pledge, not yet assessed): Switch will replenish and restore up to two times more water than it uses operationally.
 - Switch (switch-water-100-percent-recycled, Replenishment milestone, not yet assessed): Switch identifies and leads water improvement projects in the communities where we operate to allow us to run our campuses on 100% recycled water.
 - Wonder Valley (wonder-valley-water-oleary-salt-lake-2026, Disclosure & transparency, not yet assessed): There's lots of rumors that we're going to suck the Great Salt Lake dry. That's ridiculous. Of course that's not gonna happen. In fact, if anything, we'll be adding to the Great Salt Lake because the water rights on that land will be used.
 - Wonder Valley (wonder-valley-water-oleary-env-studies-2026, Disclosure & transparency, not yet assessed): I'm the only developer of data centers on Earth that graduated from environmental studies. I'm pretty aware of what these concerns are. They are around air, water use, heat, noise pollution. So sustainability is at the heart of what we do in terms of all these proposals.
-- Amazon (AWS) (aws-water-positive-2030, Water-positive pledge, litigated): AWS is committed to being water positive by 2030, returning more water to communities than we use in our direct operations.
-- Anthropic (anthropic-water-cooling-framework, Zero-water design, not yet assessed): deploying water-efficient cooling technologies
 - Compass Data Centers (compass-water-zero-airside-mandate, Zero-water design, not yet assessed): Since day one, Compass saw a zero-water solution as a mandate.
 - CoreWeave (coreweave-water-uk-closedloop-intrator, Zero-water design, not yet assessed): It allows us to deliver unparalleled AI performance with the lowest possible environmental impact, setting a new global standard.
 - Crusoe (crusoe-water-abilene-closed-loop, Zero-water design, not yet assessed): We are building this project with closed-loop, non-evaporative liquid cooling systems, which are designed to significantly reduce our water footprint.
 - EdgeConneX (edgeconnex-water-neutral-2030, Water-positive pledge, not yet assessed): Become a carbon-, waste-, and water-neutral data center provider by the year 2030.
 - Nebius (nebius-water-closed-loop, Zero-water design, not yet assessed): Due to the innovative closed-loop water cooling design, the facility will require minimal annual water needs.
 - OpenAI (openai-water-stargate-community-2026, Zero-water design, not yet assessed): minimize water use by prioritizing closed-loop or low-water cooling systems
-- QTS (qts-water-water-free-design, Zero-water design, shortfall): Our innovative standard data center design uses no water for cooling, saving billions of gallons of water per year.
 - Vantage Data Centers (vantage-water-positivity-near-zero, Water-positive pledge, not yet assessed): Vantage is also committing to water positivity for new data centers, which is just one of several sustainability goals we have to ensure responsible growth around the world.
 
 ## How statutes apply — by data-center activity

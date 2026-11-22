@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-10-08",
+  "last_updated": "2026-11-22",
   "source_repo": "pranava0x0/datacentercommunitybenefits",
   "source_path": "docs/data/moratoriums.json",
   "note": "County and city data-center actions — moratoriums, permanent ordinances and resolutions — mirrored from the Data Center Community Benefits project's moratoriums.json (snapshot generated 2026-08-04), filtered to city/county/town scope. State-level measures stay in legislation.json; the four instruments that appear in both files are there because legislation.json keeps only the first-of-kind and litigated local measures as full instruments, while this file is the broader table. Records whose action_id starts with 'direct-' were verified directly rather than mirrored; the 2026-09-21 file update adds Gilroy from its city notice, not a fresh mirror snapshot. Refresh by fetching docs/data/moratoriums.json from source_repo, mapping each record to this schema, and upserting on action_id — the sync is a pure upsert, never a replace, so nothing here is lost when the upstream snapshot shrinks. Corrections in this file were verified against primary sources on 2026-08-24 and are newer than the mirror: Maine LD 307 was vetoed, not enacted (which is why it is absent here and correct in legislation.json); Hill County TX rescinded its moratorium under a $100M developer suit (superseded, not active); Cleveland's moratorium passed 14-1 on 2026-07-15 (active, not proposed); Indianapolis was finalized 6-0 on 2026-08-19 (active, not proposed); and Monterey Park's Measure NDC passed on 2026-06-02 with 86.4% in favour. A second verification pass (2026-08-24, commit cb9f348) added three more: Cheyenne WY rejected a 12-month (not nine-month) moratorium 8-1 on 2026-05-26, date 2026-05 and source upgraded to WyoFile; Santa Fe County NM voted on 2026-06-30 (not July 1), date 2026-06; Boulder County CO is water_related — the commissioners' announcement cites electricity and water demands. It also stripped the trailing 'Status.' sentence artifact from 13 summaries. Re-apply ALL corrections after any re-sync (the upsert has no field-level protection), and re-check any record still marked 'proposed' whose date is more than about 60 days old. See REFRESH.md. 2026-09-26: Spartanburg County SC moved from proposed to active (final reading 5-1 on 2026-09-21, with a 65 MW threshold and industrial-park carve-outs); Elkhart IN and Palm Beach County FL added as direct records (neither was in the mirror). 2026-09-26 mirror pass: 33 county/city records added from the source's water-tagged moratoriums not yet mirrored, each re-verified against primary coverage. Corrections to re-apply after any re-sync: Augusta GA is superseded, not active — its moratorium ended 2026-09-15 when a permanent ordinance requiring closed-loop cooling and barring private wells passed 6-5; Mercer County KY and Westover AL are not water-related (their sources cite environmental, property-value and utility-bill concerns, never water). Skip dccb-fort-worth-tx-2026-08 and dccb-athens-clarke-county-ga-2025-12 on sync: both duplicate direct- records already here.",
@@ -201,12 +201,12 @@
       "jurisdiction": "Hernando County",
       "state": "FL",
       "action_type": "moratorium",
-      "status": "proposed",
-      "date": "2026-07",
+      "status": "active",
+      "date": "2026-06",
       "water_related": true,
       "water_angle": "Triggered by resident concerns about data center energy and water impacts.",
-      "summary": "Hernando County (west Florida) commissioners unanimously approved a proposed 12-month moratorium on new data center applications at first reading June 24, 2026, with final adoption scheduled for the same July 14, 2026 meeting at which neighboring Pasco County finalized its own moratorium. Two secondary sources (a July 1 opinion column and a July 27 op-ed) describe the moratorium as already adopted, but neither is a neutral news report confirming the vote, so status is left as proposed pending a cleaner source. Triggered by resident concerns about data center energy and water impacts. Part of the broader wave of Central/North Florida county moratoriums under the 1-year pathway created by Florida SB484.",
-      "source_url": "https://www.wfla.com/news/local-news/hernando-county/hernando-county-moves-forward-with-proposed-data-center-moratorium-after-resident-concerns/"
+      "summary": "The Hernando County Commission adopted Ordinance No. 2026-15 on June 23, 2026 by a 4-0 roll-call vote: a one-year moratorium on large-scale data centers, triggered by resident concerns about energy and water. The clerk's transmittal is titled \"Adopted on June 23, 2026\"; the Florida Department of State acknowledged filing on June 24. An earlier version of this record, from a WFLA report, described a June 24 first reading and a July 14 final adoption; the county's own filing shows adoption on June 23. Part of the wave of Florida county moratoriums under the one-year pathway created by Florida SB484.",
+      "source_url": "https://hernandoclerk.com/wp-content/uploads/_Documents/Historical%20Ordinances/2026/Ordinance%20No.%202026-15.pdf"
     },
     {
       "action_id": "dccb-jackson-county-fl-2026-06",
@@ -225,12 +225,12 @@
       "jurisdiction": "Lake County",
       "state": "FL",
       "action_type": "moratorium",
-      "status": "proposed",
-      "date": "2026-07",
+      "status": "active",
+      "date": "2026-09",
       "water_related": true,
       "water_angle": "Led by Commissioner Anthony Sabatini, who cited 12 data center applications filed in Florida in the past year and concerns about water usage and electricity grid impacts.",
-      "summary": "Lake County (central Florida) commissioners proposed a 12-month moratorium on new data center development on June 24, 2026, with a final adoption vote scheduled within two weeks. Led by Commissioner Anthony Sabatini, who cited 12 data center applications filed in Florida in the past year and concerns about water usage and electricity grid impacts. Sabatini framed the moratorium as necessary because Florida's SB484 (signed May 7) restricts outright permanent bans, leaving moratoria of up to one year as the available tool. Status re-check 2026-07-26: the commission unanimously agreed to pursue an ordinance, but no ordinance has been drafted and no adoption vote has been scheduled. This is a direction to staff, not yet a moratorium.",
-      "source_url": "https://www.cfpublic.org/2026-06-25/lake-county-commission-plans-temporary-ban-on-data-centers"
+      "summary": "After directing staff in June 2026, at Commissioner Anthony Sabatini's urging, to draft a one-year moratorium, the Lake County Commission on Tuesday, September 8, 2026 voted unanimously to approve a 90-day pause on accepting any applications for large-scale data centers in unincorporated Lake County, to give the county time to write zoning and development regulations — including a possible conditional-use-permit requirement so that companies have no by-right entitlement to build such facilities. The pause cites Florida SB484 (signed May 7, 2026), which limits counties to time-limited pauses rather than permanent bans. Reported by Central Florida Public Media on September 9, 2026; the county's agenda portal had not posted the ordinance at capture (2026-09-22).",
+      "source_url": "https://www.cfpublic.org/politics/2026-09-09/lake-county-presses-pause-on-accepting-data-center-applications"
     },
     {
       "action_id": "dccb-pasco-county-fl-2026-06",
@@ -501,12 +501,12 @@
       "jurisdiction": "Greenfield",
       "state": "MA",
       "action_type": "moratorium",
-      "status": "proposed",
-      "date": "2026-07",
+      "status": "active",
+      "date": "2026-09",
       "water_related": false,
       "water_angle": "",
-      "summary": "A Greenfield city councilor is proposing a one-year data-center moratorium as an ordinance (rather than a slower zoning amendment). No data centers have been proposed in Greenfield yet — a proactive measure, not a response to a pending project.",
-      "source_url": "https://recorder.com/2026/07/06/greenfield-data-center-moratorium/"
+      "summary": "Greenfield City Council voted unanimously by roll call on Wednesday, September 16, 2026 to adopt the one-year data-center moratorium proposed by Precinct 7 Councilor Sarah Bolduc, as reported by the Greenfield Recorder on September 17 (the Recorder's report describes the adopted measure as a resolution; its July coverage described the ordinance route the council had chosen over a zoning amendment). The moratorium tasks the Planning Board with reviewing current zoning codes and regulations, developing research on the impacts such facilities may have on the community, public safety and city and adjacent infrastructure, and considering effects on wildlife and natural resources; it can be extended 180 days if that work is unfinished. No data center had been proposed in Greenfield — a proactive measure. Councilors cited Gov. Maura Healey's September 8, 2026 executive order requiring local approval before the state will permit a data center. Single confirming outlet as of 2026-09-22; council minutes not yet located.",
+      "source_url": "https://recorder.com/2026/09/17/greenfield-data-centers-moratorium-adopted/"
     },
     {
       "action_id": "dccb-baltimore-city-2026-05",
@@ -885,24 +885,24 @@
       "jurisdiction": "Colleton County",
       "state": "SC",
       "action_type": "moratorium",
-      "status": "proposed",
+      "status": "active",
       "date": "2026-07",
       "water_related": true,
       "water_angle": "Water is tagged among this jurisdiction's stated reasons in source data; the source summary does not itemize a specific water impact.",
-      "summary": "Colleton County Council (South Carolina) unanimously approved first reading on May 4, 2026 of an ordinance imposing a 6-month moratorium on special exceptions, conditional-use approvals, and other land-use/development approvals for data centers, giving officials time to revise the land-use code. Follows a proposed ~1 GW data center (Thomas & Hutton / Eagle Rock Partners) on 850 acres of Weyerhaeuser timberland near the environmentally sensitive ACE Basin, south of Walterboro, that drew opposition from seven state legislators and hundreds of residents at a public hearing. Two more readings are required under South Carolina's three-reading ordinance process; no second-reading date set as of this record.",
-      "source_url": "https://www.golaurens.com/news/sc-counties-enacting-data-center-moratoriums/article_e7888ad9-9d73-56a0-9cc2-ca9263c1b5dd.html"
+      "summary": "Colleton County Council (South Carolina) unanimously adopted Ordinance 26-O-04 on July 7, 2026, imposing a 6-month moratorium on special exceptions, conditional-use approvals, and other land-use/development approvals for data centers, giving officials time to revise the land-use code. Follows a proposed ~1 GW data center (Thomas & Hutton / Eagle Rock Partners) on 850 acres of Weyerhaeuser timberland near the environmentally sensitive ACE Basin, south of Walterboro, that drew opposition from seven state legislators and hundreds of residents. With the moratorium in place, the Southern Environmental Law Center agreed to pause its related lawsuit for the six-month period.",
+      "source_url": "https://www.live5news.com/2026/07/08/6-month-pause-data-center-developments-colleton-county-lawsuit-paused/"
     },
     {
       "action_id": "dccb-greenwood-county-sc-2026-06",
       "jurisdiction": "Greenwood County",
       "state": "SC",
       "action_type": "moratorium",
-      "status": "proposed",
+      "status": "active",
       "date": "2026-07",
       "water_related": false,
       "water_angle": "",
-      "summary": "Greenwood County Council (South Carolina) introduced Ordinance 2026-25 on first reading June 19, 2026, proposing a 12-month moratorium on new data center and related-infrastructure approvals so the county can study zoning, noise, setback, heat, and energy-demand standards. Sponsored by Councilmembers Mark Allison and Cathy Miller and Vice Chairman Dayne Pruitt. Second reading and public hearing set for July 7, 2026. The county Planning Commission had separately recommended denying a related data center text amendment (Ordinance 2026-19) and suggested a longer 24-month pause.",
-      "source_url": "https://www.indexjournal.com/news/greenwood-county-council-moves-data-center-moratorium-forward/article_5a49005a-9961-4db1-b78b-6bb5bad87d21.html"
+      "summary": "Greenwood County Council (South Carolina) gave third and final reading approval to Ordinance 2026-25 on July 21, 2026 by a 4-3 vote (Vice Chairman Dayne Pruitt and Councilmembers Mark Allison, Cathy Miller, and Robbie Templeton in favor), enacting a 12-month moratorium on new data center and related-infrastructure approvals so the county can study zoning, noise, setback, heat, and energy-demand standards. Second reading passed by the same 4-3 margin on July 8, 2026. The county Planning Commission had separately recommended denying a related data center text amendment (Ordinance 2026-19).",
+      "source_url": "https://www.foxcarolina.com/2026/07/21/greenwood-co-council-approves-final-reading-one-year-moratorium-data-centers/"
     },
     {
       "action_id": "dccb-newberry-county-sc-2026-06",
@@ -1053,12 +1053,12 @@
       "jurisdiction": "Oneida County",
       "state": "WI",
       "action_type": "moratorium",
-      "status": "proposed",
+      "status": "active",
       "date": "2026-08",
       "water_related": true,
       "water_angle": "Concerns cited: water and electricity consumption, noise, and potential pollution.",
-      "summary": "The Oneida County (Wisconsin) Planning and Development Committee unanimously passed an interim data center moratorium ordinance amendment that would bar the county from accepting, processing, or approving new data center developments for at least one year while it develops regulations. It still requires full County Board approval, expected on the August 2026 agenda; it excludes un-zoned towns and the City of Rhinelander. Concerns cited: water and electricity consumption, noise, and potential pollution.",
-      "source_url": "https://www.wxpr.org/energy-environment/2026-07-10/oneida-county-data-center-moratorium-advances-to-county-board"
+      "summary": "The Oneida County (Wisconsin) Board of Supervisors voted unanimously on August 19, 2026 to enact a one-year moratorium on new data center development in the county's zoned areas, approving Resolution 56-2026/Ordinance Amendment 02-2026 (amending Section 9.57 of the county's zoning and shoreland protection ordinance). For 12 months the county will not accept, process, or issue permits for new data center development or expansion in unincorporated, zoned areas, unless the board extends or replaces the moratorium sooner; it excludes un-zoned towns and the City of Rhinelander. Concerns cited: water and electricity consumption, noise, and potential pollution.",
+      "source_url": "https://www.wxpr.org/energy-environment/2026-08-19/oneida-county-passes-one-year-data-center-moratorium"
     },
     {
       "action_id": "dccb-cheyenne-wy-2026-06",
@@ -1353,12 +1353,12 @@
       "jurisdiction": "Leon County",
       "state": "FL",
       "action_type": "moratorium",
-      "status": "proposed",
-      "date": "2026-09",
+      "status": "active",
+      "date": "2026-10",
       "water_related": true,
       "water_angle": "Commissioner Carolyn Cummings is described as wanting review to examine \"water consumption, electricity demand, environmental impacts.\"",
-      "summary": "Leon County commissioners unanimously advanced, at the first of two required public hearings on September 15, 2026, an 18-month moratorium on development permits/orders, rezonings and site plans for large-load facilities including large-scale data centers in unincorporated Leon County; the second and final hearing is scheduled for October 13, 2026, so the ordinance is not yet finally adopted. The second and final public hearing is set for October 13, 2026.",
-      "source_url": "https://fox49.tv/news/local/leon-county-moves-toward-18-month-data-center-moratorium"
+      "summary": "Leon County commissioners unanimously adopted an 18-month moratorium on the review or acceptance of plans for new data centers (large-load customer facilities) in unincorporated Leon County at the second and final public hearing on Tuesday, October 13, 2026, after advancing it unanimously at the first hearing on September 15, 2026. Neither the land development code nor the 2050 Comprehensive Plan addresses data centers, and staff expect to return with proposed code changes by September 2027. Commissioner Nick Maddox: 'Once these things are built, you can't take them back'; Commissioner Carolyn Cummings cited water, electricity, environmental and utility-bill concerns alongside potential revenue.",
+      "source_url": "https://www.wctv.tv/2026/10/13/leon-county-commission-officially-adopts-data-center-moratorium/"
     },
     {
       "action_id": "dccb-colquitt-county-ga-2026-06",
