@@ -1,5 +1,5 @@
 {
-  "last_run": "2026-11-16T17:10:41Z",
+  "last_run": "2026-11-23T19:20:35Z",
   "note": "Monitor candidates awaiting human adjudication. Monitors propose; a curator decides what reaches a dataset. Append-only — triaged entries stay for the audit trail.",
   "candidates": [
     {
@@ -445,6 +445,54 @@
       "detected_at": "2026-11-16T17:10:41Z",
       "note": "Watch for the voluntary survey becoming a mandatory registration.",
       "excerpt": "PUCT Portal Login Contact PUCT Grid Condition for November 16 | Verifying Condition Public Utility Commission of Texas stay informed stay informed Skip to main content Home Consumer Help Industry Industry Information Electricity Telecommun"
+    },
+    {
+      "record_id": "UT HB 76",
+      "dataset": "legislation",
+      "kind": "url-watch",
+      "key": "https://www.waterrights.utah.gov/data-centers/",
+      "previous_fingerprint": "6ce3090ea6d2b03a",
+      "fingerprint": "032aba720887de43",
+      "summary": "watched page changed since last run",
+      "detected_at": "2026-11-23T19:20:35Z",
+      "note": "Check changes for published withdrawal reports. A form or an expected publication date is not an observation.",
+      "excerpt": "Annual Water Use Reporting Transparency More About the Law Reports Land Use Authority Notification Requirement Before the approval of a land use application for a new large data center, the land use authority of the municipality or county"
+    },
+    {
+      "record_id": "VA DEQ waterworks data-center reporting regulations",
+      "dataset": "legislation",
+      "kind": "url-watch",
+      "key": "https://townhall.virginia.gov/L/ViewChapter.cfm?chapterid=1911",
+      "previous_fingerprint": "e79e28ab52b8893f",
+      "fingerprint": "75f85fa12c06c6bf",
+      "summary": "watched page changed since last run",
+      "detected_at": "2026-11-23T19:20:35Z",
+      "note": "Virginia Regulatory Town Hall chapter page for 9VAC25-200 (Water Withdrawal Reporting, State Water Control Board) — lists current and past regulatory actions. deq.virginia.gov itself is WAF-blocked for automated clients (errors.md, 2026-02-24), so watch the Town Hall instead. The previous key (BoardID=125) was the Virginia State Bar's board page, not the SWCB's (corrected 2026-11-22).",
+      "excerpt": "Virginia Regulatory Town Hall View Chapter &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Search Options Home &gt; &nbsp; Find a Regulation Regulatory Activity Actions Underway Petitions Periodic Reviews General Notices Meetings Guidance Documents Comment"
+    },
+    {
+      "record_id": "MI SB 1046-1050",
+      "dataset": "legislation",
+      "kind": "url-watch",
+      "key": "https://legislature.mi.gov/Bills/Bill?ObjectName=2026-SB-1046",
+      "previous_fingerprint": "41355a4813872bb8",
+      "fingerprint": "1947168a634eda34",
+      "summary": "watched page changed since last run",
+      "detected_at": "2026-11-23T19:20:35Z",
+      "note": "Michigan legislature bill page for SB 1046, the water-permitting bill in the package. Bill numbers unverified; confirm against the lookup when status moves.",
+      "excerpt": "Through PA 114 of 2026; IL 1 of 2026 Senate adjourned until Tuesday, December 1, 2026 Senate adjourned until 12/1/26 House adjourned until Tuesday, December 1, 2026 House adjourned until 12/1/26 Home Legislature Legislative Document Search"
+    },
+    {
+      "record_id": "TX PUC Energy and Water Use Survey (data centers)",
+      "dataset": "legislation",
+      "kind": "url-watch",
+      "key": "https://www.puc.texas.gov/industry/water/utilities/energy-and-water-use-survey/faq/",
+      "previous_fingerprint": "c90ea3c5fad269fa",
+      "fingerprint": "def9c7fdd60c6e53",
+      "summary": "watched page changed since last run",
+      "detected_at": "2026-11-23T19:20:35Z",
+      "note": "Watch for the voluntary survey becoming a mandatory registration.",
+      "excerpt": "PUCT Portal Login Contact PUCT Grid Condition for November 23 | Verifying Condition Public Utility Commission of Texas stay informed stay informed Skip to main content Home Consumer Help Industry Industry Information Electricity Telecommun"
     }
   ]
 }

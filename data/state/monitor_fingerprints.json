@@ -1,11 +1,11 @@
 {
   "fingerprints": {
-    "MI SB 1046-1050": "41355a4813872bb8",
+    "MI SB 1046-1050": "1947168a634eda34",
     "NY EO 62": "dd7a51b1e6c85cb7",
     "OH EPA OHD000001 (draft general permit)": "6aaabdff65f62624",
-    "TX PUC Energy and Water Use Survey (data centers)": "c90ea3c5fad269fa",
-    "UT HB 76": "6ce3090ea6d2b03a",
-    "VA DEQ waterworks data-center reporting regulations": "e79e28ab52b8893f"
+    "TX PUC Energy and Water Use Survey (data centers)": "def9c7fdd60c6e53",
+    "UT HB 76": "032aba720887de43",
+    "VA DEQ waterworks data-center reporting regulations": "75f85fa12c06c6bf"
   },
-  "last_run": "2026-11-16T17:10:41Z"
+  "last_run": "2026-11-23T19:20:35Z"
 }
